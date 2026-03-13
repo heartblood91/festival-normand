@@ -73,7 +73,7 @@
         "E2E test: navigation links work, mobile menu opens/closes, skip-nav is functional"
       ],
       "priority": 4,
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-005",
@@ -92,7 +92,7 @@
         "E2E test: homepage loads, hero visible, events cards render, links navigate correctly"
       ],
       "priority": 5,
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-006",
@@ -112,7 +112,7 @@
         "E2E test: filter modal opens, filters apply, URL updates, pagination works, search returns results"
       ],
       "priority": 6,
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-007",
@@ -134,7 +134,7 @@
         "E2E test: event page loads from list click, all sections render, map displays, carousel navigates"
       ],
       "priority": 7,
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-008",
@@ -153,7 +153,7 @@
         "E2E test: news list renders, click navigates to detail, markdown renders correctly"
       ],
       "priority": 8,
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-009",
@@ -169,7 +169,7 @@
         "E2E test: page loads, all department sections render, links work"
       ],
       "priority": 9,
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-010",
@@ -189,7 +189,7 @@
         "E2E test: form validation errors display, successful submission shows toast"
       ],
       "priority": 10,
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-011",
@@ -205,7 +205,7 @@
         "E2E test: both pages load with correct content"
       ],
       "priority": 11,
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-012",

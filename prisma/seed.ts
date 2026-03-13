@@ -1,6 +1,8 @@
 import { PrismaClient, Department, Category } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+const prisma = new PrismaClient({ adapter });
 
 const clearDatabase = async () => {
   await prisma.$executeRawUnsafe(`
@@ -468,35 +470,81 @@ const seedPages = async () => {
 
 Pierres en Lumières est un événement festif et culturel, gratuit et ouvert à tous, qui met en valeur le patrimoine normand à travers des illuminations, animations, visites et expositions.
 
+Chaque année, les 29, 30 et 31 mai, plus de 500 sites patrimoniaux ouvrent leurs portes gratuitement pour faire découvrir la richesse du patrimoine normand. Des châteaux illuminés aux abbayes en fête, des manoirs aux sites industriels, c'est toute la Normandie qui se met en lumière.
+
+L'événement est organisé par la Région Normandie en partenariat avec les cinq départements normands et la Fondation du Patrimoine.
+
 ## Le Calvados
 
 Le département du Calvados participe activement à Pierres en Lumières avec plus de 100 sites ouverts chaque année. Des plages du Débarquement à la campagne du Pays d'Auge, le patrimoine calvadosien se révèle sous un nouveau jour.
 
+Les visiteurs peuvent découvrir des sites emblématiques comme l'Abbaye aux Hommes de Caen, le château de Falaise ou encore les manoirs du Pays d'Auge, tous illuminés et animés pour l'occasion.
+
+[Inscrivez-vous ici](https://inscription.calvados.pierresenlumieres.fr)
+
 **Contact :** patrimoine@calvados.fr
+
+![Abbaye aux Hommes de Caen illuminée lors de Pierres en Lumières](/images/seed/calvados-abbaye.jpg)
 
 ## L'Eure
 
 L'Eure, terre d'impressionnisme et de patrimoine médiéval, propose un parcours riche entre châteaux, abbayes et jardins remarquables.
 
+Le département met en lumière ses trésors architecturaux : le Château Gaillard aux Andelys, l'abbaye du Bec-Hellouin, la collégiale de Vernon et bien d'autres sites d'exception.
+
+[Inscrivez-vous ici](https://inscription.eure.pierresenlumieres.fr)
+
 **Contact :** patrimoine@eure.fr
+
+![Château Gaillard illuminé aux Andelys](/images/seed/eure-chateau-gaillard.jpg)
 
 ## La Manche
 
 Du Mont-Saint-Michel aux ports du Cotentin, la Manche offre un patrimoine maritime et religieux exceptionnel.
 
+Le département propose des parcours nocturnes à travers ses sites les plus remarquables : l'abbaye de Hambye, les forts Vauban, le phare de Gatteville et les charmants villages du Val de Saire.
+
+[Inscrivez-vous ici](https://inscription.manche.pierresenlumieres.fr)
+
 **Contact :** patrimoine@manche.fr
+
+![Le Mont-Saint-Michel illuminé de nuit](/images/seed/manche-mont-saint-michel.jpg)
 
 ## L'Orne
 
 Le département de l'Orne, avec ses haras, ses forêts et ses manoirs, propose une immersion dans la Normandie authentique.
 
+Le Haras du Pin, surnommé le "Versailles du cheval", les forges de Varenne et les nombreux manoirs du Perche sont autant de sites qui participent chaque année à cette grande fête du patrimoine.
+
+[Inscrivez-vous ici](https://inscription.orne.pierresenlumieres.fr)
+
 **Contact :** patrimoine@orne.fr
+
+![Le Haras du Pin illuminé lors de Pierres en Lumières](/images/seed/orne-haras-du-pin.jpg)
 
 ## La Seine-Maritime
 
 De Rouen au pays de Caux, la Seine-Maritime dévoile un patrimoine industriel, religieux et maritime d'une richesse incomparable.
 
-**Contact :** patrimoine@seine-maritime.fr`,
+La cathédrale de Rouen, l'abbaye de Jumièges, le palais Bénédictine de Fécamp et les falaises d'Étretat font partie des sites incontournables de cette édition.
+
+[Inscrivez-vous ici](https://inscription.seine-maritime.pierresenlumieres.fr)
+
+**Contact :** patrimoine@seine-maritime.fr
+
+![Cathédrale de Rouen illuminée la nuit](/images/seed/seine-maritime-cathedrale-rouen.jpg)
+
+## La Fondation du Patrimoine
+
+La [Fondation du Patrimoine](https://www.fondation-patrimoine.org) est partenaire historique de Pierres en Lumières. Elle contribue à la sauvegarde et à la valorisation du patrimoine de proximité partout en France.
+
+Grâce à son réseau de bénévoles et de mécènes, la Fondation soutient chaque année des centaines de projets de restauration en Normandie. Elle accompagne les propriétaires de monuments historiques et de patrimoine vernaculaire dans leurs démarches de préservation.
+
+![Restauration d'une chapelle normande par la Fondation du Patrimoine](/images/seed/fondation-patrimoine-1.jpg)
+
+![Bénévoles de la Fondation du Patrimoine en action](/images/seed/fondation-patrimoine-2.jpg)
+
+![Site restauré grâce à la Fondation du Patrimoine](/images/seed/fondation-patrimoine-3.jpg)`,
     },
     {
       title: "Inscrivez votre événement",
@@ -505,11 +553,23 @@ De Rouen au pays de Caux, la Seine-Maritime dévoile un patrimoine industriel, r
 
 Vous êtes propriétaire ou gestionnaire d'un site patrimonial en Normandie ? Participez à Pierres en Lumières 2026 !
 
+## Découvrez le festival en vidéo
+
+[Pierres en Lumières 2025 - Retour en images](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+
 ## Comment s'inscrire ?
 
 L'inscription est gratuite et ouverte à tous les sites patrimoniaux normands : châteaux, églises, manoirs, sites industriels, jardins...
 
-Chaque département dispose de son propre formulaire d'inscription. Cliquez sur le logo de votre département ci-dessous pour accéder au formulaire.
+Chaque département dispose de son propre formulaire d'inscription. Cliquez sur le lien de votre département ci-dessous pour accéder au formulaire.
+
+## Formulaires d'inscription par département
+
+- [Calvados — Formulaire d'inscription](https://inscription.calvados.pierresenlumieres.fr)
+- [Eure — Formulaire d'inscription](https://inscription.eure.pierresenlumieres.fr)
+- [Manche — Formulaire d'inscription](https://inscription.manche.pierresenlumieres.fr)
+- [Orne — Formulaire d'inscription](https://inscription.orne.pierresenlumieres.fr)
+- [Seine-Maritime — Formulaire d'inscription](https://inscription.seine-maritime.pierresenlumieres.fr)
 
 ## Critères de participation
 

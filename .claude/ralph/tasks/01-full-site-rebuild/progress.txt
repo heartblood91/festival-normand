@@ -88,3 +88,159 @@ Feature: 01-full-site-rebuild
   - Playwright auto web server with `reuseExistingServer: !process.env.CI` is the right pattern
 ---
 
+## 2026-03-13 - US-005: Home page: Hero, search, featured news, featured events
+- Built complete homepage with 6 components: HeroSection, SearchBar, EventCard, FeaturedEvents, NewsCarousel, PartnersSection
+- Data fetching: lib/queries/homepage.ts with getFeaturedEvents, getLatestNews, getPartners, getEventCities
+- Type exports: FeaturedEvent, LatestNewsItem, PartnerItem (inferred from Prisma queries)
+- ISR: export const revalidate = 3600 on homepage
+- Parallel data loading with Promise.all for all 4 queries
+- SearchBar: client component with city autocomplete, combobox ARIA pattern, click-outside dismiss
+- NewsCarousel: horizontal scroll with snap points, scrollbar-hide utility
+- EventCard: glassmorphism card with category badge, date/time, location
+- PartnersSection: logo grid with grayscale hover effect
+- HeroSection: gradient background (video placeholder), CTA buttons, festival badge
+- Files created: components/home/hero-section.tsx, search-bar.tsx, event-card.tsx, featured-events.tsx, news-carousel.tsx, partners-section.tsx, lib/queries/homepage.ts
+- Files modified: app/page.tsx (full rewrite), app/globals.css (scrollbar-hide utility), lib/prisma.ts (PrismaPg adapter), prisma/seed.ts (PrismaPg adapter), lib/prisma.test.ts (mock adapter)
+- Tests written: lib/queries/homepage.test.ts (8 unit tests), e2e/home.spec.ts (9 E2E tests)
+- All quality gates pass: tsc (0 errors), 19 unit tests, 19 E2E tests
+- **Learnings:**
+  - Prisma 7 runtime client REQUIRES a driver adapter (e.g., @prisma/adapter-pg) — `new PrismaClient()` without adapter throws PrismaClientInitializationError. The `url` in `prisma.config.ts` is only for CLI (migrate/seed), not runtime.
+  - Seed script also needs the adapter — any file using PrismaClient directly needs it
+  - Playwright strict mode: `getByText()` fails when text matches multiple elements — use `{ exact: true }` or `.first()`
+  - Playwright `getByRole('region')` matches both `<section aria-labelledby>` and `<div role="region">` — use heading-based selectors instead for less ambiguity
+  - scrollbar-hide CSS utility needs @layer utilities block in globals.css for Tailwind v4
+---
+
+## 2026-03-13 - US-006: Events list page: Grid, pagination, search, filters
+- Built complete events list page at /evenements with 6 components
+- Data fetching: lib/queries/events.ts with getEvents() supporting filters, pagination, search
+- EventFilters type: search, date, category, department, accessible, page
+- Pagination with Prisma skip/take (12 items per page) + count for total pages
+- Search: case-insensitive contains on title, city, location fields
+- Date filtering: maps "29"/"30"/"31" to festival dates, handles multi-day events
+- Components created: event-list-card.tsx, events-search-bar.tsx, filter-modal.tsx, pagination.tsx, active-filters.tsx
+- FilterModal: full-screen bottom sheet on mobile, centered on desktop, with radio options for date/category/department + PMR toggle
+- ActiveFilters: pill chips showing current filters with remove functionality
+- Pagination: numbered pages with prev/next, ellipsis for large page counts
+- EventsSearchBar: city autocomplete like homepage but preserves existing URL params
+- EventListCard: reuses event card design with accessibility badge
+- ISR: revalidate = 3600
+- URL-based filter state: ?date=29&category=illuminations&dept=calvados&accessible=true&search=Caen
+- Empty state when no results match filters
+- Files created: app/evenements/page.tsx, components/events/*.tsx, lib/queries/events.ts
+- Tests written: lib/queries/events.test.ts (8 unit tests), e2e/events.spec.ts (11 E2E tests)
+- All quality gates pass: tsc (0 errors), 28 unit tests, 30 E2E tests
+- **Learnings:**
+  - Cannot pass functions as props from Server Components to Client Components — Pagination must use useSearchParams internally instead of receiving a buildHref callback
+  - Prisma's `contains` with `mode: "insensitive"` works well for simple search without needing full-text search setup
+  - Wrapping client components that use useSearchParams in Suspense is required for server-side rendering
+  - Filter modal state: initialize from URL params on open, not on mount, to stay synced
+---
+
+## 2026-03-13 - US-007: Event detail page: Content, carousel, Leaflet map
+- Built complete event detail page at /evenement/[slug] with 3 components
+- Data fetching: getEventBySlug(slug) added to lib/queries/events.ts
+- Page layout: 2-column on desktop (content + sidebar), single column on mobile
+- PhotoCarousel: client component with prev/next arrows, dot indicators, ARIA carousel pattern
+- EventInfo: server component with practical info card (date, time, location, pricing, organizer) + contact card (email, phone, website as mailto/tel links)
+- EventMapWrapper: client wrapper using next/dynamic with ssr:false for Leaflet map
+- EventMap: Leaflet + OpenStreetMap tiles, custom amber marker, scroll wheel zoom disabled
+- Back button to events list, category + department + accessibility badges
+- SEO: generateMetadata with title, description, OG image
+- ISR: revalidate = 3600
+- Description renders with line breaks preserved (split on \n)
+- Files created: app/evenement/[slug]/page.tsx, components/event-detail/photo-carousel.tsx, event-map.tsx, event-map-wrapper.tsx, event-info.tsx, e2e/event-detail.spec.ts
+- Files modified: lib/queries/events.ts (added getEventBySlug + EventDetail type), lib/queries/events.test.ts (3 new tests)
+- Tests written: 3 unit tests (getEventBySlug happy path, not found, unpublished), 10 E2E tests
+- All quality gates pass: tsc (0 errors), 31 unit tests, 40 E2E tests
+- **Learnings:**
+  - `next/dynamic` with `ssr: false` CANNOT be used in Server Components — must create a Client Component wrapper that uses dynamic internally
+  - Leaflet is a good Mapbox alternative: no API key needed, smaller bundle, OpenStreetMap tiles are free
+  - `L.divIcon` with inline HTML styles works well for custom markers without needing image assets
+  - Prisma's `findUnique` with compound where clause (`{ slug, published: true }`) works but only if slug is marked @unique in the schema
+  - Playwright `page.title()` can return empty string if called too early — use `expect(page).toHaveTitle()` with auto-retry instead
+---
+
+## 2026-03-13 - US-008: News list + detail pages
+- Built news list page at /actualites with card grid (1 col mobile, 2 col md, 3 col lg)
+- Built news detail page at /actualite/[slug] with rich markdown rendering
+- Data fetching: lib/queries/news.ts with getNews() and getNewsBySlug()
+- NewsCard component: glassmorphism card with cover image, date, title, excerpt
+- MarkdownContent component: react-markdown with remark-gfm + rehype-raw
+- Markdown rendering supports: headings, paragraphs, bold/italic, links, images, YouTube embeds, lists, blockquotes
+- Heading hierarchy preserved: markdown h1→h2, h2→h3, h3→h4 (since page already has h1)
+- External links open in new tab with noopener noreferrer
+- YouTube links auto-detected and rendered as embedded iframes (youtube-nocookie for privacy)
+- Images in markdown rendered with figcaption from alt text
+- SEO: generateMetadata with title, description, OG image, article publishedTime
+- ISR: revalidate = 3600 on both pages
+- Back link to news list on detail page
+- Files created: app/actualites/page.tsx, app/actualite/[slug]/page.tsx, components/news/news-card.tsx, components/news/markdown-content.tsx, lib/queries/news.ts, lib/queries/news.test.ts, e2e/news.spec.ts
+- Tests written: 5 unit tests (getNews happy/empty, getNewsBySlug happy/not-found/unpublished), 14 E2E tests
+- All quality gates pass: tsc (0 errors), 36 unit tests, 54 E2E tests
+- **Learnings:**
+  - Markdown content that starts with `# Title` creates duplicate h1 when page already has one — always downgrade markdown headings by one level in article context
+  - Playwright strict mode: `page.locator("a[href='/actualites']")` matches header nav + article back link + footer nav — use `getByRole('link', { name: '...' })` for specificity
+  - react-markdown v10 with remark-gfm 4 + rehype-raw 7 works well together in Next.js 16
+  - YouTube embed detection via regex on link href is a clean pattern for markdown — renders iframe instead of anchor
+---
+
+## 2026-03-13 - US-009: Festival page: Editorial content per department
+- Built /festival page loading content from Page model (slug: "festival")
+- Reused existing MarkdownContent component from news — no new components needed
+- Enriched seed data with richer department sections: description, inscription links, contact emails, images, Fondation du Patrimoine section
+- ISR: revalidate = 86400 (24h for static editorial content)
+- Static metadata with OG tags
+- Files created: app/festival/page.tsx, lib/queries/pages.ts, lib/queries/pages.test.ts, e2e/festival.spec.ts
+- Files modified: prisma/seed.ts (enriched festival page content)
+- Tests written: 2 unit tests (getPageBySlug happy path + not found), 9 E2E tests
+- All quality gates pass: tsc (0 errors), 38 unit tests, 63 E2E tests
+- **Learnings:**
+  - Reusing MarkdownContent from news works perfectly for all Page model content — no need for separate page rendering components
+  - Playwright strict mode catches multiple nav elements with same link text — use `getByLabel('Navigation principale')` to scope to header nav specifically
+  - The Page model is intentionally minimal (title, slug, content) — all rich formatting lives in the markdown content itself
+  - Docker port conflicts: always check existing containers before starting new ones. Port 5433 was taken by another project's DB
+---
+
+## 2026-03-13 - US-010: Contact page: Form with Resend email
+- Built /contact page with 2-column layout (info cards + form)
+- Left column: "Nous écrire" description card + "Inscrivez votre événement" CTA link to /inscription
+- Right column: ContactForm client component with name, email, department select (5 options), message textarea
+- Server action: sendContactEmail with Zod validation, Resend email sending, department-based routing
+- Spam protection: honeypot field (hidden off-screen) + in-memory rate limiting (1 email/minute per address)
+- Toast notifications via Sonner (added to global layout)
+- Zod schema: contactSchema with detailed French error messages
+- Department email routing: DEPARTMENT_EMAILS map (5 entries matching seed data)
+- useActionState (React 19) for form state management — server action accepts (prevState, formData) signature
+- Files created: app/contact/page.tsx, components/contact/contact-form.tsx, components/ui/sonner.tsx, lib/contact-schema.ts, lib/actions/contact.ts
+- Files modified: app/layout.tsx (added Toaster), package.json (added resend, zod, sonner), .env (RESEND_API_KEY placeholder)
+- Tests written: lib/contact-schema.test.ts (11 unit tests), lib/actions/contact.test.ts (7 unit tests), e2e/contact.spec.ts (10 E2E tests)
+- All quality gates pass: tsc (0 errors), 56 unit tests, 10 contact E2E tests pass
+- **Learnings:**
+  - Resend v6 constructor throws synchronously if API key is undefined — must provide at least a placeholder key in .env for dev, and wrap all Resend usage in try/catch
+  - `useActionState` in React 19 requires the server action to accept `(prevState, formData)` signature — cannot wrap server action in a client-side async function
+  - vi.hoisted() is required in Vitest 4 when mock variables need to be accessible inside vi.mock() factory (otherwise hoisting causes "Cannot access before initialization" error)
+  - Rate limiting with in-memory Map persists across test runs in the same Vitest process — use unique emails per test to avoid false rate limiting
+  - Zod 4 enum custom errors use `{ message: "..." }` instead of `{ errorMap: () => ({ message: "..." }) }`
+  - `next-themes` is not needed when the theme is hardcoded — Sonner's `theme` prop can be set to `"dark"` directly
+  - Playwright `getByRole('link', { name: '...' })` matches across header, main, and footer — use `page.locator('main')` to scope link queries
+---
+
+## 2026-03-13 - US-011: Registration + Legal pages
+- Built /inscription page loading content from Page model (slug: "inscription")
+- Built /mentions-legales page loading content from Page model (slug: "mentions-legales")
+- Both pages reuse existing MarkdownContent component and getPageBySlug query — zero new components needed
+- Enriched inscription seed data with YouTube video embed and per-department registration links (5 departments)
+- ISR: revalidate = 86400 (24h for static editorial content)
+- Static metadata with OG tags on both pages
+- Files created: app/inscription/page.tsx, app/mentions-legales/page.tsx, e2e/inscription.spec.ts, e2e/legal.spec.ts
+- Files modified: prisma/seed.ts (enriched inscription content with YouTube + department links)
+- Tests written: 8 inscription E2E tests (title, intro, YouTube embed, dept links, new tab, criteria, deadline, CTA nav), 7 legal E2E tests (title, editor, hosting, IP, RGPD, cookies, footer nav)
+- All quality gates pass: tsc (0 errors), 56 unit tests, 15 new E2E tests
+- **Learnings:**
+  - Pages that follow the festival pattern are trivial to add — getPageBySlug + MarkdownContent is the whole implementation
+  - CTA button in header is NOT inside the `nav` element — scope to `header` not `nav[aria-label]` when testing CTA links
+  - Playwright strict mode: `getByText("Région Normandie")` matches in article content, footer, AND the full paragraph containing it — use `page.locator("article")` scoping + `.first()` for disambiguation
+  - Docker DB port changed from 5433 to 5435 — always check `.env` for current port, don't assume from progress notes
+---
+

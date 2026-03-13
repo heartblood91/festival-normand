@@ -1,17 +1,34 @@
-const HomePage = () => {
-  return (
-    <section className="flex flex-1 flex-col items-center justify-center px-4 py-24 text-center">
-      <h1 className="font-serif text-3xl font-bold text-primary md:text-5xl lg:text-6xl">
-        Pierres en Lumières
-      </h1>
-      <p className="mt-4 max-w-lg text-base text-muted-foreground md:text-lg">
-        Découvrez la magie du patrimoine normand en nocturne
-      </p>
-      <p className="mt-2 text-sm text-muted-foreground">
-        29, 30 &amp; 31 mai 2026
-      </p>
-    </section>
-  );
-};
+import { HeroSection } from "@/components/home/hero-section"
+import { SearchBar } from "@/components/home/search-bar"
+import { FeaturedEvents } from "@/components/home/featured-events"
+import { NewsCarousel } from "@/components/home/news-carousel"
+import { PartnersSection } from "@/components/home/partners-section"
+import {
+  getFeaturedEvents,
+  getLatestNews,
+  getPartners,
+  getEventCities,
+} from "@/lib/queries/homepage"
 
-export default HomePage;
+export const revalidate = 3600
+
+const HomePage = async () => {
+  const [events, news, partners, cities] = await Promise.all([
+    getFeaturedEvents(),
+    getLatestNews(),
+    getPartners(),
+    getEventCities(),
+  ])
+
+  return (
+    <>
+      <HeroSection />
+      <SearchBar cities={cities} />
+      <FeaturedEvents events={events} />
+      <NewsCarousel news={news} />
+      <PartnersSection partners={partners} />
+    </>
+  )
+}
+
+export default HomePage

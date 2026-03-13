@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { SkipNav } from "@/components/layout/skip-nav";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -28,6 +29,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
           {children}
         </main>
         <Footer />
+        <Toaster />
       </body>
     </html>
   );

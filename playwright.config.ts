@@ -8,7 +8,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: "html",
   use: {
-    baseURL: process.env.BASE_URL || "http://localhost:3000",
+    baseURL: process.env.BASE_URL || "http://localhost:3010",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
   },
@@ -20,7 +20,7 @@ export default defineConfig({
   ],
   webServer: {
     command: "pnpm dev",
-    url: "http://localhost:3000",
+    url: "http://localhost:3010",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },
