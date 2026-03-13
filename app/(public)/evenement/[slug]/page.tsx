@@ -18,11 +18,11 @@ export const generateMetadata = async ({ params }: EventDetailPageProps): Promis
   const event = await getEventBySlug(slug)
 
   if (!event) {
-    return { title: "Événement introuvable | Pierres en Lumières" }
+    return { title: "Événement introuvable" }
   }
 
   return {
-    title: `${event.title} | Pierres en Lumières`,
+    title: event.title,
     description: event.description.slice(0, 160),
     openGraph: {
       title: event.title,

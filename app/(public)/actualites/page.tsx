@@ -5,9 +5,14 @@ import { NewsCard } from "@/components/news/news-card"
 export const revalidate = 3600
 
 export const metadata: Metadata = {
-  title: "Actualités | Pierres en Lumières",
+  title: "Actualités",
   description:
     "Les dernières actualités du festival Pierres en Lumières. Programme, nouveautés, reportages et informations pratiques.",
+  openGraph: {
+    title: "Actualités - Pierres en Lumières",
+    description:
+      "Les dernières actualités du festival Pierres en Lumières. Programme, nouveautés, reportages et informations pratiques.",
+  },
 }
 
 const NewsListPage = async () => {

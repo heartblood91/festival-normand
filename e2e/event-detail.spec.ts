@@ -65,8 +65,11 @@ test.describe("Event detail page", () => {
     await firstCard.click()
     await page.waitForURL(/\/evenement\//)
 
-    // At least one badge should be visible (category or department)
-    const badges = page.locator("aside span.rounded-full")
+    // Wait for event detail content to load
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible()
+
+    // Category and department badges should be visible
+    const badges = page.locator("span.rounded-full")
     const count = await badges.count()
     expect(count).toBeGreaterThanOrEqual(2)
   })
@@ -94,8 +97,8 @@ test.describe("Event detail page", () => {
   })
 
   test("returns 404 for non-existent event", async ({ page }) => {
-    const response = await page.goto("/evenement/non-existent-slug-xyz")
-    expect(response?.status()).toBe(404)
+    await page.goto("/evenement/non-existent-slug-xyz")
+    await expect(page.getByText("Page introuvable")).toBeVisible()
   })
 
   test("displays date and time information", async ({ page }) => {

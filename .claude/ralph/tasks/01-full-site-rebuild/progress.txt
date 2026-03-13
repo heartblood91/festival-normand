@@ -326,3 +326,47 @@ Feature: 01-full-site-rebuild
   - Reusing `slugify` from event schema avoids code duplication — same function works for all slugifiable models
 ---
 
+## 2026-03-13 - US-015: SEO, sitemap, OG images, accessibility audit
+- Created dynamic sitemap.xml at /sitemap.xml listing all static pages + dynamic events + news + DB pages
+- Created robots.txt allowing all crawlers, disallowing /admin/ and /api/, referencing sitemap
+- Enhanced root layout metadata: metadataBase, title template (%s | Pierres en Lumières), OG tags, twitter card
+- Added OG tags to /actualites and /evenements pages (were missing)
+- Simplified page titles to use template pattern instead of manual " | Pierres en Lumières" suffix
+- Fixed skip-nav component: changed from Next.js `<Link>` to plain `<a>` for reliable focus behavior
+- Fixed pre-existing E2E failures in layout.spec.ts (skip-nav focus and mobile nav sheet timing)
+- Accessibility audit: already excellent — skip-nav, semantic HTML, heading hierarchy, alt text, focus-visible, ARIA attributes, keyboard navigation all in place
+- Added NEXT_PUBLIC_SITE_URL to .env.example
+- Files created: app/sitemap.ts, app/robots.ts, app/sitemap.test.ts, app/robots.test.ts, e2e/seo.spec.ts
+- Files modified: app/layout.tsx (enhanced metadata), all public page.tsx files (title template, OG tags), components/layout/skip-nav.tsx, e2e/layout.spec.ts, .env.example
+- Tests written: 9 unit tests (sitemap + robots), 15 E2E tests (sitemap, robots, meta tags, OG tags, keyboard nav, heading hierarchy, semantic HTML)
+- All quality gates pass: tsc (0 errors), 136 unit tests, 134 E2E tests
+- **Learnings:**
+  - Next.js metadata `title.template` with `%s | Site Name` avoids manual title suffix duplication across all pages
+  - `metadataBase` in root layout is required for OG images to resolve correctly as absolute URLs
+  - Skip-nav should use plain `<a>` not Next.js `<Link>` — Link adds client-side routing behavior that interferes with simple hash-based skip navigation
+  - Sitemap function in Next.js simply exports a default async function returning MetadataRoute.Sitemap array — no need for XML generation
+  - Robots function returns MetadataRoute.Robots object — clean and type-safe
+  - Event list cards on /evenements are direct `<Link>` elements (not wrapped in `<article>`), so E2E selectors should use `a[href^="/evenement/"]` not `article a`
+  - Playwright `.focus()` method is more reliable than keyboard Tab for testing skip-nav visibility, as Tab order depends on browser internals
+---
+
+## 2026-03-13 - US-016: Data migration from Directus + Final polish
+- Created Directus migration script (scripts/migrate-directus.ts) with token-based auth, field mapping (FR/EN), slug generation, department/category enum mapping, image URL construction, --dry-run support
+- Created global 404 page (app/not-found.tsx) with glassmorphism card, links to home and events
+- Created error boundary for public pages (app/(public)/error.tsx) with retry functionality
+- Created loading states: public spinner (app/(public)/loading.tsx), events skeleton grid (8 cards, 1/2/4 col), news skeleton grid (6 cards, 1/2/3 col), admin spinner
+- Fixed pre-existing E2E failures: badge selector (aside → span), 404 status checks (HTTP 200 in dev streaming → content check), loading state race conditions (wait for h1)
+- Added migrate:directus script to package.json, DIRECTUS_URL and DIRECTUS_TOKEN to .env.example
+- Files created: scripts/migrate-directus.ts, app/not-found.tsx, app/(public)/error.tsx, app/(public)/loading.tsx, app/(public)/evenements/loading.tsx, app/(public)/actualites/loading.tsx, app/admin/loading.tsx, scripts/migrate-directus.test.ts, e2e/not-found.spec.ts
+- Files modified: .env.example, package.json, e2e/event-detail.spec.ts, e2e/news.spec.ts
+- Tests written: 17 unit tests (slugify, mapDepartment, mapCategory, getImageUrl), 15 E2E tests (404 page, loading states, error handling)
+- All quality gates pass: tsc (0 errors), 153 unit tests, 146 E2E tests
+- **Learnings:**
+  - Next.js 16 dev mode with streaming returns HTTP 200 even for `notFound()` pages — E2E tests should check page content ("Page introuvable") instead of HTTP status codes
+  - `not-found.tsx` at app root renders inside the root layout (html/body) — do NOT add html/body tags in the component
+  - Loading.tsx files with `animate-spin` need Tailwind's built-in animation — no custom CSS `<style>` tags needed
+  - The Directus API at pierresenlumieres.fr/backend returns 403 for all item endpoints — requires auth token (DIRECTUS_TOKEN env var)
+  - Playwright `page.locator("aside span.rounded-full")` fails when the component structure changes — use broader selectors like `span.rounded-full` and wait for content to load first
+  - Client-side navigation to loading.tsx pages shows the loading state — E2E tests that click links must wait for actual content before asserting
+---
+

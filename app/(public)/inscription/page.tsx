@@ -6,7 +6,7 @@ import { MarkdownContent } from "@/components/news/markdown-content"
 export const revalidate = 86400
 
 export const metadata: Metadata = {
-  title: "Inscrivez votre événement | Pierres en Lumières",
+  title: "Inscrivez votre événement",
   description:
     "Inscrivez votre site patrimonial pour participer à Pierres en Lumières 2026, le festival gratuit du patrimoine normand.",
   openGraph: {

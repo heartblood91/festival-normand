@@ -4,7 +4,7 @@ import { Mail, CalendarPlus } from "lucide-react"
 import { ContactForm } from "@/components/contact/contact-form"
 
 export const metadata: Metadata = {
-  title: "Contact | Pierres en Lumières",
+  title: "Contact",
   description:
     "Contactez l'équipe Pierres en Lumières. Envoyez-nous un message pour toute question concernant le festival du patrimoine normand.",
   openGraph: {

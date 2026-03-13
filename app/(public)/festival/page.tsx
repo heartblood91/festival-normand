@@ -6,7 +6,7 @@ import { MarkdownContent } from "@/components/news/markdown-content"
 export const revalidate = 86400
 
 export const metadata: Metadata = {
-  title: "Le Festival | Pierres en Lumières",
+  title: "Le Festival",
   description:
     "Découvrez Pierres en Lumières, le festival gratuit qui illumine le patrimoine normand chaque année dans les cinq départements de Normandie.",
   openGraph: {

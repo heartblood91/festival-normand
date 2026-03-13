@@ -25,11 +25,11 @@ export const generateMetadata = async ({ params }: NewsDetailPageProps): Promise
   const article = await getNewsBySlug(slug)
 
   if (!article) {
-    return { title: "Article introuvable | Pierres en Lumières" }
+    return { title: "Article introuvable" }
   }
 
   return {
-    title: `${article.title} | Pierres en Lumières`,
+    title: article.title,
     description: article.excerpt ?? article.content.slice(0, 160),
     openGraph: {
       title: article.title,

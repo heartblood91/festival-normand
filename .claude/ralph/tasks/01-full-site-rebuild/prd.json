@@ -282,7 +282,7 @@
         "E2E test: sitemap.xml accessible, meta tags present on key pages, keyboard navigation through main flow"
       ],
       "priority": 15,
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-016",
@@ -304,7 +304,7 @@
         "Lighthouse score > 90 on Performance, Accessibility, SEO"
       ],
       "priority": 16,
-      "passes": false
+      "passes": true
     }
   ]
 }

@@ -10,10 +10,27 @@ const playfair = Playfair_Display({
   variable: "--font-serif",
 })
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
+
 export const metadata: Metadata = {
-  title: "Pierres en Lumières - Festival du Patrimoine Normand",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Pierres en Lumières - Festival du Patrimoine Normand",
+    template: "%s | Pierres en Lumières",
+  },
   description:
     "Découvrez la magie du patrimoine normand en nocturne. 29, 30 & 31 mai 2026.",
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    siteName: "Pierres en Lumières",
+    title: "Pierres en Lumières - Festival du Patrimoine Normand",
+    description:
+      "Découvrez la magie du patrimoine normand en nocturne. Illuminations, expositions, animations et visites du patrimoine normand. 29, 30 & 31 mai 2026.",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 }
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {

@@ -6,7 +6,7 @@ import { MarkdownContent } from "@/components/news/markdown-content"
 export const revalidate = 86400
 
 export const metadata: Metadata = {
-  title: "Mentions légales | Pierres en Lumières",
+  title: "Mentions légales",
   description:
     "Mentions légales du site Pierres en Lumières — informations éditeur, hébergement, propriété intellectuelle et données personnelles.",
   openGraph: {

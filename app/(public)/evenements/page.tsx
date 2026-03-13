@@ -12,9 +12,14 @@ import type { Category, Department } from "@prisma/client"
 export const revalidate = 3600
 
 export const metadata: Metadata = {
-  title: "Événements | Pierres en Lumières",
+  title: "Événements",
   description:
     "Découvrez tous les événements du festival Pierres en Lumières en Normandie. Illuminations, expositions, animations et visites nocturnes du patrimoine normand.",
+  openGraph: {
+    title: "Événements - Pierres en Lumières",
+    description:
+      "Découvrez tous les événements du festival Pierres en Lumières en Normandie. Illuminations, expositions, animations et visites nocturnes du patrimoine normand.",
+  },
 }
 
 type EventsPageProps = {

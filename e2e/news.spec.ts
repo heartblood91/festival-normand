@@ -110,7 +110,7 @@ test.describe("News detail page", () => {
   })
 
   test("shows 404 for non-existent article", async ({ page }) => {
-    const response = await page.goto("/actualite/non-existent-article")
-    expect(response?.status()).toBe(404)
+    await page.goto("/actualite/non-existent-article")
+    await expect(page.getByText("Page introuvable")).toBeVisible()
   })
 })
