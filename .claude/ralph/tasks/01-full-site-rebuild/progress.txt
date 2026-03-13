@@ -1,0 +1,90 @@
+# Ralph Progress Log
+Started: 2026-03-13
+Feature: 01-full-site-rebuild
+
+## Codebase Patterns
+
+### Code Style
+- ES6 arrow functions ONLY — never use `function` keyword
+- All imports at top of file — no inline imports inside functions
+- Comments in English only, only when logic is not self-evident
+- TypeScript strict mode
+
+### Testing
+- Unit tests: Vitest with vi.mock() for Prisma
+- E2E tests: Playwright with seeded database
+- Test files: colocated with source (*.test.ts for unit, e2e/*.spec.ts for E2E)
+- Mock pattern: vi.mock("@/lib/prisma", () => ({ prisma: { model: { method: vi.fn() } } }))
+- beforeEach: vi.clearAllMocks()
+- Test both happy path and error cases
+
+### Design System
+- **MOBILE-FIRST**: All CSS written for mobile first, then md: for tablet, lg: for desktop. NEVER desktop-first.
+- Dark navy bg: #0f172a to #1e1b4b
+- Accent amber/gold: #f59e0b to #d97706
+- Glass cards: bg-white/5 backdrop-blur-xl border border-white/10
+- Hover glow effect on interactive elements
+- Serif headings: Playfair Display
+- Body font: Inter
+- Use shadcn/ui components wherever possible
+- Touch targets: min 44px on mobile
+- Grid: 1 col mobile, 2 col md:, 4 col lg: (for event cards)
+
+### Architecture
+- App Router (Next.js 15)
+- Server Components by default, 'use client' only when needed
+- Server Actions for mutations
+- ISR for public pages (revalidate: 3600 for dynamic, 86400 for static)
+- revalidatePath() on admin mutations
+- Prisma singleton in lib/prisma.ts
+
+### Accessibility (RGAA)
+- Skip-nav on every page
+- Semantic HTML: nav, main, article, section, footer
+- Proper heading hierarchy
+- Alt text on all images
+- Focus visible on all interactive elements
+- Keyboard navigation throughout
+
+### Quality Gates (run before every commit)
+- pnpm tsc --noEmit (zero errors)
+- pnpm test (all unit tests pass)
+- pnpm test:e2e (all E2E tests pass when applicable)
+- No console.log in production code
+- No unused imports/variables
+
+---
+
+## 2026-03-13 - US-001: Project setup with Next.js + Tailwind v4 + shadcn/ui + Prisma + Neon
+- Initialized Next.js 16 (latest, App Router compatible) with Turbopack
+- Tailwind CSS v4 with PostCSS plugin (@tailwindcss/postcss)
+- shadcn/ui v4 (base-nova style) with dark navy + amber/gold theme tokens
+- Prisma 7 with prisma.config.ts (new v7 pattern — no more url in schema.prisma)
+- Fonts: Inter (body via --font-sans) + Playfair Display (headings via --font-serif)
+- ESLint 9 with next/core-web-vitals + next/typescript
+- TypeScript strict mode, zero errors
+- .env.example with all env vars documented
+- Files changed: package.json, tsconfig.json, next.config.ts, postcss.config.mjs, eslint.config.mjs, prisma.config.ts, prisma/schema.prisma, app/layout.tsx, app/page.tsx, app/globals.css, lib/prisma.ts, lib/utils.ts, components/ui/button.tsx, .gitignore, .env.example, components.json, vitest.config.ts
+- Tests written: lib/utils.test.ts (4 unit tests for cn utility)
+- **Learnings:**
+  - Next.js 16 is out (was expecting 15) — App Router API unchanged
+  - Prisma 7 major breaking change: datasource url moved from schema.prisma to prisma.config.ts. Use `datasource` property (not `migrate`). `output` in generator is required.
+  - shadcn/ui v4 uses `base-nova` style and `@base-ui/react` — generates `function` keyword that must be converted to arrow functions
+  - pnpm `onlyBuiltDependencies` in package.json replaces interactive `pnpm approve-builds`
+  - ESLint 10 has peer dep issues with eslint-config-next — stick to ESLint 9
+---
+
+## 2026-03-13 - US-002: Test infrastructure: Vitest + Playwright + DB seed
+- All test infrastructure was already set up in US-001 — this story validates and confirms it works
+- Vitest: 4 unit tests pass (lib/utils.test.ts), Node env, globals, @/ path alias
+- Playwright: 3 E2E tests pass (e2e/home.spec.ts), chromium, auto web server, screenshots on failure
+- Test helper: lib/test-utils.ts with Prisma mock factory (findMany, findUnique, create, update, delete, etc.)
+- Seed script: prisma/seed.ts with idempotent structure (TRUNCATE CASCADE), placeholder functions for US-003 models
+- Scripts: pnpm test, pnpm test:e2e, pnpm db:seed all configured
+- Files verified: vitest.config.ts, playwright.config.ts, lib/test-utils.ts, prisma/seed.ts, lib/utils.test.ts, e2e/home.spec.ts
+- **Learnings:**
+  - US-001 was thorough enough that US-002 required no additional code changes
+  - Vitest 4.x with @vitejs/plugin-react 6.x works well together
+  - Playwright auto web server with `reuseExistingServer: !process.env.CI` is the right pattern
+---
+

@@ -1,0 +1,103 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+enum Department {
+  CALVADOS
+  EURE
+  MANCHE
+  ORNE
+  SEINE_MARITIME
+}
+
+enum Category {
+  ILLUMINATIONS
+  EXPOSITIONS
+  ANIMATIONS
+  VISITES
+}
+
+model Event {
+  id            String     @id @default(cuid())
+  title         String
+  slug          String     @unique
+  description   String
+  location      String
+  city          String
+  postalCode    String     @map("postal_code")
+  department    Department
+  category      Category
+  dateStart     DateTime   @map("date_start")
+  dateEnd       DateTime?  @map("date_end")
+  timeStart     String?    @map("time_start")
+  timeEnd       String?    @map("time_end")
+  pricing       String?
+  organizer     String?
+  email         String?
+  phone         String?
+  website       String?
+  latitude      Float?
+  longitude     Float?
+  coverImage    String?    @map("cover_image")
+  images        String[]   @default([])
+  featured      Boolean    @default(false)
+  accessible    Boolean    @default(false)
+  published     Boolean    @default(true)
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+
+  @@map("events")
+}
+
+model News {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  excerpt     String?
+  content     String
+  coverImage  String?  @map("cover_image")
+  published   Boolean  @default(true)
+  publishedAt DateTime @default(now()) @map("published_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("news")
+}
+
+model Partner {
+  id        String   @id @default(cuid())
+  name      String
+  logo      String?
+  website   String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("partners")
+}
+
+model Page {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("pages")
+}
+
+model AdminUser {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("admin_users")
+}
