@@ -622,12 +622,23 @@ Ce site utilise des cookies techniques nécessaires à son fonctionnement. Aucun
 };
 
 const seedAdminUser = async () => {
+  const adminEmail = "admin@pierresenlumieres.fr";
+  const adminName = "Admin Pierres en Lumières";
+
+  // Create admin whitelist entry
   await prisma.adminUser.create({
+    data: { email: adminEmail, name: adminName },
+  });
+
+  // Create corresponding Better Auth user for magic link login
+  await prisma.user.create({
     data: {
-      email: "admin@pierresenlumieres.fr",
-      name: "Admin Pierres en Lumières",
+      email: adminEmail,
+      name: adminName,
+      emailVerified: true,
     },
   });
+
   console.log("Admin user seeded.");
 };
 

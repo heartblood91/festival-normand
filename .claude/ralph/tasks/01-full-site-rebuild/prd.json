@@ -223,7 +223,7 @@
         "E2E test: unauthenticated user redirected to login, login flow works"
       ],
       "priority": 12,
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-013",
@@ -242,7 +242,7 @@
         "E2E test: create event, verify in list, edit, delete with confirmation"
       ],
       "priority": 13,
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-014",
@@ -261,7 +261,7 @@
         "E2E test: create news article with Tiptap, reorder partners, edit page content"
       ],
       "priority": 14,
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-015",
