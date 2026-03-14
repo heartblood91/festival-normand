@@ -5,6 +5,11 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { ChevronDown, Accessibility, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+type FilterCounts = {
+  departments: Record<string, number>
+  categories: Record<string, number>
+}
+
 const DATE_OPTIONS = [
   { value: "29", label: "Ven 29" },
   { value: "30", label: "Sam 30" },
@@ -49,7 +54,7 @@ const FILTER_LABELS: Record<string, Record<string, string>> = {
 
 type DropdownState = "dept" | "category" | null
 
-const FilterBar = ({ total = 0 }: { total?: number }) => {
+const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCounts }) => {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [openDropdown, setOpenDropdown] = useState<DropdownState>(null)
@@ -257,20 +262,31 @@ const FilterBar = ({ total = 0 }: { total?: number }) => {
                 className="absolute left-0 top-full z-50 mt-2 w-48 origin-top-left rounded-lg border border-white/10 bg-background/95 backdrop-blur-xl shadow-lg"
                 role="listbox"
               >
-                {DEPARTMENT_OPTIONS.map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => handleDeptSelect(option.value)}
-                    role="option"
-                    aria-selected={selectedDept === option.value}
-                    className={cn(
-                      "w-full px-4 py-2.5 text-left text-sm transition-colors hover:bg-white/10 focus:bg-white/10 focus:outline-none",
-                      selectedDept === option.value && "bg-primary/10 text-primary"
-                    )}
-                  >
-                    {option.label}
-                  </button>
-                ))}
+                {DEPARTMENT_OPTIONS.map((option) => {
+                  const count = counts?.departments[option.value.toUpperCase()] ?? 0
+                  const hasResults = count > 0
+
+                  return (
+                    <button
+                      key={option.value}
+                      onClick={() => handleDeptSelect(option.value)}
+                      role="option"
+                      aria-selected={selectedDept === option.value}
+                      className={cn(
+                        "w-full px-4 py-2.5 text-left text-sm transition-colors hover:bg-white/10 focus:bg-white/10 focus:outline-none",
+                        !hasResults && "opacity-50",
+                        selectedDept === option.value && "bg-primary/10 text-primary"
+                      )}
+                    >
+                      <span className="flex items-center justify-between gap-2">
+                        <span>{option.label}</span>
+                        <span className="text-xs font-medium text-muted-foreground">
+                          ({count})
+                        </span>
+                      </span>
+                    </button>
+                  )
+                })}
               </div>
             )}
           </div>
@@ -310,21 +326,31 @@ const FilterBar = ({ total = 0 }: { total?: number }) => {
                 className="absolute left-0 top-full z-50 mt-2 w-48 origin-top-left rounded-lg border border-white/10 bg-background/95 backdrop-blur-xl shadow-lg"
                 role="listbox"
               >
-                {CATEGORY_OPTIONS.map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => handleCategorySelect(option.value)}
-                    role="option"
-                    aria-selected={selectedCategory === option.value}
-                    className={cn(
-                      "w-full px-4 py-2.5 text-left text-sm transition-colors hover:bg-white/10 focus:bg-white/10 focus:outline-none",
-                      selectedCategory === option.value &&
-                        "bg-primary/10 text-primary"
-                    )}
-                  >
-                    {option.label}
-                  </button>
-                ))}
+                {CATEGORY_OPTIONS.map((option) => {
+                  const count = counts?.categories[option.value.toUpperCase()] ?? 0
+                  const hasResults = count > 0
+
+                  return (
+                    <button
+                      key={option.value}
+                      onClick={() => handleCategorySelect(option.value)}
+                      role="option"
+                      aria-selected={selectedCategory === option.value}
+                      className={cn(
+                        "w-full px-4 py-2.5 text-left text-sm transition-colors hover:bg-white/10 focus:bg-white/10 focus:outline-none",
+                        !hasResults && "opacity-50",
+                        selectedCategory === option.value && "bg-primary/10 text-primary"
+                      )}
+                    >
+                      <span className="flex items-center justify-between gap-2">
+                        <span>{option.label}</span>
+                        <span className="text-xs font-medium text-muted-foreground">
+                          ({count})
+                        </span>
+                      </span>
+                    </button>
+                  )
+                })}
               </div>
             )}
           </div>

@@ -1,11 +1,14 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
-import { getEvents } from "@/lib/queries/events"
+import { getEvents, getFilterCounts, getAllFilteredEventsForMap } from "@/lib/queries/events"
 import { getEventCities } from "@/lib/queries/homepage"
 import { EventListCard } from "@/components/events/event-list-card"
 import { Pagination } from "@/components/events/pagination"
 import { FilterBar } from "@/components/events/filter-bar"
 import { EventsSearchBar } from "@/components/events/events-search-bar"
+import { ViewToggle } from "@/components/events/view-toggle"
+import { EventsMapWrapper } from "@/components/events/events-map-wrapper"
+import { NearbyButton } from "@/components/events/nearby-button"
 import type { Category, Department } from "@prisma/client"
 
 export const revalidate = 3600
@@ -33,6 +36,9 @@ const parseSearchParams = (params: Record<string, string | string[] | undefined>
 
   const page = parseInt(getString("page") ?? "1", 10)
 
+  const lat = parseFloat(getString("lat") ?? "")
+  const lng = parseFloat(getString("lng") ?? "")
+
   return {
     search: getString("search"),
     date: getString("date"),
@@ -40,16 +46,21 @@ const parseSearchParams = (params: Record<string, string | string[] | undefined>
     department: getString("dept")?.toUpperCase() as Department | undefined,
     accessible: getString("accessible") === "true",
     page: isNaN(page) || page < 1 ? 1 : page,
+    lat: isNaN(lat) ? undefined : lat,
+    lng: isNaN(lng) ? undefined : lng,
   }
 }
 
 const EventsPage = async ({ searchParams }: EventsPageProps) => {
   const params = await searchParams
   const filters = parseSearchParams(params)
+  const view = (params.view as string | undefined) ?? "grid"
 
-  const [{ events, total, page, totalPages }, cities] = await Promise.all([
+  const [{ events, total, page, totalPages }, cities, counts, mapEvents] = await Promise.all([
     getEvents(filters),
     getEventCities(),
+    getFilterCounts(filters),
+    view === "map" ? getAllFilteredEventsForMap(filters) : Promise.resolve([]),
   ])
 
   return (
@@ -74,36 +85,52 @@ const EventsPage = async ({ searchParams }: EventsPageProps) => {
       {/* Filter bar */}
       <div className="mb-6">
         <Suspense>
-          <FilterBar total={total} />
+          <FilterBar total={total} counts={counts} />
         </Suspense>
       </div>
 
-      {/* Events grid */}
+      {/* View toggle + nearby */}
+      <div className="mb-6 flex items-center justify-between">
+        <Suspense>
+          <NearbyButton />
+        </Suspense>
+        <ViewToggle />
+      </div>
+
+      {/* Content based on view */}
       {events.length > 0 ? (
         <>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
-            {events.map((event, index) => (
-              <div
-                key={event.id}
-                style={{ '--stagger-index': index } as React.CSSProperties}
-              >
-                <EventListCard
-                  event={event}
-                  className="[animation-delay:calc(var(--stagger-index)*50ms)]"
-                />
+          {view === "map" ? (
+            <div className="mb-10">
+              <EventsMapWrapper events={mapEvents} />
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
+                {events.map((event, index) => (
+                  <div
+                    key={event.id}
+                    style={{ '--stagger-index': index } as React.CSSProperties}
+                  >
+                    <EventListCard
+                      event={event}
+                      className="[animation-delay:calc(var(--stagger-index)*50ms)]"
+                    />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          {/* Pagination */}
-          <div className="mt-10">
-            <Suspense>
-              <Pagination
-                currentPage={page}
-                totalPages={totalPages}
-              />
-            </Suspense>
-          </div>
+              {/* Pagination */}
+              <div className="mt-10">
+                <Suspense>
+                  <Pagination
+                    currentPage={page}
+                    totalPages={totalPages}
+                  />
+                </Suspense>
+              </div>
+            </>
+          )}
         </>
       ) : (
         <div className="flex flex-col items-center justify-center rounded-xl border border-white/10 bg-white/5 px-6 py-16 text-center">

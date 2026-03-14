@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Search, SlidersHorizontal } from "lucide-react"
+import { Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -84,24 +84,6 @@ const SearchBar = ({ cities }: SearchBarProps) => {
               role="combobox"
             />
           </div>
-
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="size-10 shrink-0 text-muted-foreground hover:text-primary md:size-12"
-            aria-label="Aller aux filtres"
-            onClick={() => {
-              const params = new URLSearchParams()
-              if (query.trim()) {
-                params.set("search", query.trim())
-              }
-              const qs = params.toString()
-              router.push(`/evenements${qs ? `?${qs}` : ""}`)
-            }}
-          >
-            <SlidersHorizontal className="size-4 md:size-5" />
-          </Button>
 
           <Button
             type="submit"

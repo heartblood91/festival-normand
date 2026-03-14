@@ -106,6 +106,7 @@ const MenuBar = ({ editor }: { editor: ReturnType<typeof useEditor> }) => {
 
 export const TiptapEditor = ({ content, onChange }: TiptapEditorProps) => {
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit,
       Underline,

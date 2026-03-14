@@ -15,7 +15,8 @@ export const auth = betterAuth({
     provider: "postgresql",
   }),
   emailAndPassword: {
-    enabled: false,
+    enabled: true,
+    minPasswordLength: 8,
   },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
