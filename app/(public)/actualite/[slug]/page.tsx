@@ -5,7 +5,7 @@ import { ArrowLeft, Calendar } from "lucide-react"
 import { getNewsBySlug } from "@/lib/queries/news"
 import { MarkdownContent } from "@/components/news/markdown-content"
 
-export const revalidate = 3600
+export const revalidate = 1800
 
 type NewsDetailPageProps = {
   params: Promise<{ slug: string }>

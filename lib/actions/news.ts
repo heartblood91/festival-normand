@@ -1,6 +1,6 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { newsSchema } from "@/lib/schemas/news"
 
@@ -78,6 +78,7 @@ export const createNews = async (formData: FormData): Promise<NewsActionResult> 
       },
     })
 
+    revalidateTag("news")
     revalidatePath("/actualites")
     revalidatePath(`/actualite/${news.slug}`)
     revalidatePath("/")
@@ -137,6 +138,7 @@ export const updateNews = async (
       },
     })
 
+    revalidateTag("news")
     revalidatePath("/actualites")
     revalidatePath(`/actualite/${news.slug}`)
     revalidatePath("/")
@@ -158,6 +160,7 @@ export const deleteNews = async (id: string): Promise<NewsActionResult> => {
   try {
     const news = await prisma.news.delete({ where: { id } })
 
+    revalidateTag("news")
     revalidatePath("/actualites")
     revalidatePath(`/actualite/${news.slug}`)
     revalidatePath("/")

@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { getNews } from "@/lib/queries/news"
 import { NewsCard } from "@/components/news/news-card"
 
-export const revalidate = 3600
+export const revalidate = 600
 
 export const metadata: Metadata = {
   title: "Actualités",

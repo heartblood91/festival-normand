@@ -7,7 +7,7 @@ import { EventInfo } from "@/components/event-detail/event-info"
 import { PhotoCarousel } from "@/components/event-detail/photo-carousel"
 import { EventMapWrapper } from "@/components/event-detail/event-map-wrapper"
 
-export const revalidate = 3600
+export const revalidate = 1800
 
 type EventDetailPageProps = {
   params: Promise<{ slug: string }>

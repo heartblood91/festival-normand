@@ -10,7 +10,7 @@ import {
   getEventCities,
 } from "@/lib/queries/homepage"
 
-export const revalidate = 3600
+export const revalidate = 300
 
 const HomePage = async () => {
   const [events, news, partners, cities] = await Promise.all([

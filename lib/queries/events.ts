@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import type { Department, Category, Prisma } from "@prisma/client"
 
@@ -23,112 +24,126 @@ const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
 }
 
 export const getEvents = async (filters: EventFilters = {}) => {
-  const { search, date, category, department, accessible, page = 1, lat, lng } = filters
-  const skip = (page - 1) * ITEMS_PER_PAGE
+  const cacheKey = JSON.stringify(filters)
 
-  const where: Prisma.EventWhereInput = {
-    published: true,
-  }
+  return unstable_cache(
+    async () => {
+      const { search, date, category, department, accessible, page = 1, lat, lng } = filters
+      const skip = (page - 1) * ITEMS_PER_PAGE
 
-  if (category) {
-    where.category = category
-  }
+      const where: Prisma.EventWhereInput = {
+        published: true,
+      }
 
-  if (department) {
-    where.department = department
-  }
+      if (category) {
+        where.category = category
+      }
 
-  if (accessible) {
-    where.accessible = true
-  }
+      if (department) {
+        where.department = department
+      }
 
-  if (date) {
-    const dateMap: Record<string, string> = {
-      "29": "2026-05-29",
-      "30": "2026-05-30",
-      "31": "2026-05-31",
-    }
-    const dateStr = dateMap[date]
-    if (dateStr) {
-      const dayStart = new Date(`${dateStr}T00:00:00`)
-      const dayEnd = new Date(`${dateStr}T23:59:59`)
-      where.dateStart = { lte: dayEnd }
-      where.OR = [
-        { dateEnd: { gte: dayStart } },
-        { dateEnd: null, dateStart: { gte: dayStart } },
-      ]
-    }
-  }
+      if (accessible) {
+        where.accessible = true
+      }
 
-  if (search) {
-    const searchLower = search.toLowerCase()
-    where.AND = [
-      ...(Array.isArray(where.AND) ? where.AND : where.AND ? [where.AND] : []),
-      {
-        OR: [
-          { title: { contains: searchLower, mode: "insensitive" } },
-          { city: { contains: searchLower, mode: "insensitive" } },
-          { location: { contains: searchLower, mode: "insensitive" } },
-        ],
-      },
-    ]
-  }
+      if (date) {
+        const dateMap: Record<string, string> = {
+          "29": "2026-05-29",
+          "30": "2026-05-30",
+          "31": "2026-05-31",
+        }
+        const dateStr = dateMap[date]
+        if (dateStr) {
+          const dayStart = new Date(`${dateStr}T00:00:00`)
+          const dayEnd = new Date(`${dateStr}T23:59:59`)
+          where.dateStart = { lte: dayEnd }
+          where.OR = [
+            { dateEnd: { gte: dayStart } },
+            { dateEnd: null, dateStart: { gte: dayStart } },
+          ]
+        }
+      }
 
-  const isNearby = lat !== undefined && lng !== undefined
+      if (search) {
+        const searchLower = search.toLowerCase()
+        where.AND = [
+          ...(Array.isArray(where.AND) ? where.AND : where.AND ? [where.AND] : []),
+          {
+            OR: [
+              { title: { contains: searchLower, mode: "insensitive" } },
+              { city: { contains: searchLower, mode: "insensitive" } },
+              { location: { contains: searchLower, mode: "insensitive" } },
+            ],
+          },
+        ]
+      }
 
-  const [rawEvents, total] = await Promise.all([
-    prisma.event.findMany({
-      where,
-      orderBy: isNearby ? undefined : { dateStart: "asc" },
-      ...(isNearby ? {} : { skip, take: ITEMS_PER_PAGE }),
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        location: true,
-        city: true,
-        department: true,
-        category: true,
-        dateStart: true,
-        timeStart: true,
-        timeEnd: true,
-        coverImage: true,
-        accessible: true,
-        latitude: true,
-        longitude: true,
-      },
-    }),
-    prisma.event.count({ where }),
-  ])
+      const isNearby = lat !== undefined && lng !== undefined
 
-  // Sort by distance if geolocation is provided
-  const events = isNearby
-    ? rawEvents
-        .map((e) => ({
-          ...e,
-          distance: e.latitude && e.longitude
-            ? haversineDistance(lat, lng, e.latitude, e.longitude)
-            : Infinity,
-        }))
-        .sort((a, b) => a.distance - b.distance)
-        .slice(skip, skip + ITEMS_PER_PAGE)
-    : rawEvents
+      const [rawEvents, total] = await Promise.all([
+        prisma.event.findMany({
+          where,
+          orderBy: isNearby ? undefined : { dateStart: "asc" },
+          ...(isNearby ? {} : { skip, take: ITEMS_PER_PAGE }),
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            location: true,
+            city: true,
+            department: true,
+            category: true,
+            dateStart: true,
+            timeStart: true,
+            timeEnd: true,
+            coverImage: true,
+            accessible: true,
+            latitude: true,
+            longitude: true,
+          },
+        }),
+        prisma.event.count({ where }),
+      ])
 
-  return {
-    events,
-    total,
-    page,
-    totalPages: Math.ceil(total / ITEMS_PER_PAGE),
-    itemsPerPage: ITEMS_PER_PAGE,
-  }
+      // Sort by distance if geolocation is provided
+      const events = isNearby
+        ? rawEvents
+            .map((e) => ({
+              ...e,
+              distance: e.latitude && e.longitude
+                ? haversineDistance(lat, lng, e.latitude, e.longitude)
+                : Infinity,
+            }))
+            .sort((a, b) => a.distance - b.distance)
+            .slice(skip, skip + ITEMS_PER_PAGE)
+        : rawEvents
+
+      return {
+        events,
+        total,
+        page,
+        totalPages: Math.ceil(total / ITEMS_PER_PAGE),
+        itemsPerPage: ITEMS_PER_PAGE,
+      }
+    },
+    ["events-list", cacheKey],
+    { revalidate: 300, tags: ["events"] }
+  )()
 }
 
 export type EventListItem = Awaited<ReturnType<typeof getEvents>>["events"][number]
 
 export const getEventBySlug = async (slug: string) => {
-  return prisma.event.findUnique({
-    where: { slug, published: true },
-  })
+  return unstable_cache(
+    async () => {
+      return prisma.event.findUnique({
+        where: { slug, published: true },
+      })
+    },
+    ["event-detail", slug],
+    { revalidate: 1800, tags: ["events"] }
+  )()
 }
 
 export type EventDetail = NonNullable<Awaited<ReturnType<typeof getEventBySlug>>>
@@ -187,124 +202,140 @@ const buildFilterWhere = (filters: EventFilters): Prisma.EventWhereInput => {
 }
 
 export const getAllFilteredEventsForMap = async (filters: EventFilters = {}) => {
-  const where = buildFilterWhere(filters)
+  const cacheKey = JSON.stringify(filters)
 
-  const events = await prisma.event.findMany({
-    where: {
-      ...where,
-      latitude: { not: 0 },
-      longitude: { not: 0 },
-    },
-    orderBy: { dateStart: "asc" },
-    select: {
-      id: true,
-      title: true,
-      slug: true,
-      category: true,
-      latitude: true,
-      longitude: true,
-      dateStart: true,
-      timeStart: true,
-      city: true,
-      coverImage: true,
-    },
-  })
+  return unstable_cache(
+    async () => {
+      const where = buildFilterWhere(filters)
 
-  return events
+      const events = await prisma.event.findMany({
+        where: {
+          ...where,
+          latitude: { not: 0 },
+          longitude: { not: 0 },
+        },
+        orderBy: { dateStart: "asc" },
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          category: true,
+          latitude: true,
+          longitude: true,
+          dateStart: true,
+          timeStart: true,
+          city: true,
+          coverImage: true,
+        },
+      })
+
+      return events
+    },
+    ["events-map", cacheKey],
+    { revalidate: 300, tags: ["events"] }
+  )()
 }
 
 export type MapEventItem = Awaited<ReturnType<typeof getAllFilteredEventsForMap>>[number]
 
 export const getFilterCounts = async (filters: EventFilters = {}) => {
-  const { search, date, category, department, accessible } = filters
+  const cacheKey = JSON.stringify(filters)
 
-  const buildWhere = (overrideKey?: string, overrideValue?: string) => {
-    const where: Prisma.EventWhereInput = {
-      published: true,
-    }
+  return unstable_cache(
+    async () => {
+      const { search, date, category, department, accessible } = filters
 
-    // Use override values if provided, otherwise use active filter
-    // But ignore the override key's corresponding filter value
-    if (overrideKey === "dept" && overrideValue) {
-      where.department = overrideValue as Department
-    } else if (department && overrideKey !== "dept") {
-      where.department = department
-    }
+      const buildWhere = (overrideKey?: string, overrideValue?: string) => {
+        const where: Prisma.EventWhereInput = {
+          published: true,
+        }
 
-    if (overrideKey === "category" && overrideValue) {
-      where.category = overrideValue as Category
-    } else if (category && overrideKey !== "category") {
-      where.category = category
-    }
+        // Use override values if provided, otherwise use active filter
+        // But ignore the override key's corresponding filter value
+        if (overrideKey === "dept" && overrideValue) {
+          where.department = overrideValue as Department
+        } else if (department && overrideKey !== "dept") {
+          where.department = department
+        }
 
-    if (accessible) {
-      where.accessible = true
-    }
+        if (overrideKey === "category" && overrideValue) {
+          where.category = overrideValue as Category
+        } else if (category && overrideKey !== "category") {
+          where.category = category
+        }
 
-    if (date) {
-      const dateMap: Record<string, string> = {
-        "29": "2026-05-29",
-        "30": "2026-05-30",
-        "31": "2026-05-31",
+        if (accessible) {
+          where.accessible = true
+        }
+
+        if (date) {
+          const dateMap: Record<string, string> = {
+            "29": "2026-05-29",
+            "30": "2026-05-30",
+            "31": "2026-05-31",
+          }
+          const dateStr = dateMap[date]
+          if (dateStr) {
+            const dayStart = new Date(`${dateStr}T00:00:00`)
+            const dayEnd = new Date(`${dateStr}T23:59:59`)
+            where.dateStart = { lte: dayEnd }
+            where.OR = [
+              { dateEnd: { gte: dayStart } },
+              { dateEnd: null, dateStart: { gte: dayStart } },
+            ]
+          }
+        }
+
+        if (search) {
+          const searchLower = search.toLowerCase()
+          where.AND = [
+            ...(Array.isArray(where.AND) ? where.AND : where.AND ? [where.AND] : []),
+            {
+              OR: [
+                { title: { contains: searchLower, mode: "insensitive" } },
+                { city: { contains: searchLower, mode: "insensitive" } },
+                { location: { contains: searchLower, mode: "insensitive" } },
+              ],
+            },
+          ]
+        }
+
+        return where
       }
-      const dateStr = dateMap[date]
-      if (dateStr) {
-        const dayStart = new Date(`${dateStr}T00:00:00`)
-        const dayEnd = new Date(`${dateStr}T23:59:59`)
-        where.dateStart = { lte: dayEnd }
-        where.OR = [
-          { dateEnd: { gte: dayStart } },
-          { dateEnd: null, dateStart: { gte: dayStart } },
-        ]
-      }
-    }
 
-    if (search) {
-      const searchLower = search.toLowerCase()
-      where.AND = [
-        ...(Array.isArray(where.AND) ? where.AND : where.AND ? [where.AND] : []),
-        {
-          OR: [
-            { title: { contains: searchLower, mode: "insensitive" } },
-            { city: { contains: searchLower, mode: "insensitive" } },
-            { location: { contains: searchLower, mode: "insensitive" } },
-          ],
-        },
-      ]
-    }
+      const departments: Record<string, number> = {}
+      const categories: Record<string, number> = {}
 
-    return where
-  }
+      const deptValues = ["CALVADOS", "EURE", "MANCHE", "ORNE", "SEINE_MARITIME"]
+      const catValues = ["ILLUMINATIONS", "EXPOSITIONS", "ANIMATIONS", "VISITES"]
 
-  const departments: Record<string, number> = {}
-  const categories: Record<string, number> = {}
+      const deptCounts = await Promise.all(
+        deptValues.map((dept) =>
+          prisma.event.count({
+            where: buildWhere("dept", dept),
+          })
+        )
+      )
 
-  const deptValues = ["CALVADOS", "EURE", "MANCHE", "ORNE", "SEINE_MARITIME"]
-  const catValues = ["ILLUMINATIONS", "EXPOSITIONS", "ANIMATIONS", "VISITES"]
+      const catCounts = await Promise.all(
+        catValues.map((cat) =>
+          prisma.event.count({
+            where: buildWhere("category", cat),
+          })
+        )
+      )
 
-  const deptCounts = await Promise.all(
-    deptValues.map((dept) =>
-      prisma.event.count({
-        where: buildWhere("dept", dept),
+      deptValues.forEach((dept, idx) => {
+        departments[dept] = deptCounts[idx]
       })
-    )
-  )
 
-  const catCounts = await Promise.all(
-    catValues.map((cat) =>
-      prisma.event.count({
-        where: buildWhere("category", cat),
+      catValues.forEach((cat, idx) => {
+        categories[cat] = catCounts[idx]
       })
-    )
-  )
 
-  deptValues.forEach((dept, idx) => {
-    departments[dept] = deptCounts[idx]
-  })
-
-  catValues.forEach((cat, idx) => {
-    categories[cat] = catCounts[idx]
-  })
-
-  return { departments, categories }
+      return { departments, categories }
+    },
+    ["filter-counts", cacheKey],
+    { revalidate: 300, tags: ["events"] }
+  )()
 }

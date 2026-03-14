@@ -11,7 +11,7 @@ import { EventsMapWrapper } from "@/components/events/events-map-wrapper"
 import { NearbyButton } from "@/components/events/nearby-button"
 import type { Category, Department } from "@prisma/client"
 
-export const revalidate = 3600
+export const revalidate = 300
 
 export const metadata: Metadata = {
   title: "Événements",
