@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { NAV_ITEMS, CTA_LINK, SOCIAL_LINKS, FESTIVAL_NAME } from "@/lib/navigation"
 import { MobileNav } from "@/components/layout/mobile-nav"
+import { SparkleIcon } from "@/components/ui/sparkle-icon"
 import { useState } from "react"
 
 const Header = () => {
@@ -22,7 +23,7 @@ const Header = () => {
           className="flex items-center gap-2 text-lg font-serif font-bold text-foreground transition-colors hover:text-primary md:text-xl"
           aria-label={`${FESTIVAL_NAME} - Retour à l'accueil`}
         >
-          <span className="text-primary">✦</span>
+          <SparkleIcon className="size-5" />
           <span>{FESTIVAL_NAME}</span>
         </Link>
 
@@ -68,8 +69,10 @@ const Header = () => {
             </a>
           </div>
 
-          <Button render={<Link href={CTA_LINK.href} />} size="lg">
-            {CTA_LINK.label}
+          <Button asChild size="lg">
+            <Link href={CTA_LINK.href}>
+              {CTA_LINK.label}
+            </Link>
           </Button>
         </div>
 

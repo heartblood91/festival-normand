@@ -86,8 +86,13 @@ const EventsPage = async ({ searchParams }: EventsPageProps) => {
       {events.length > 0 ? (
         <>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
-            {events.map((event) => (
-              <EventListCard key={event.id} event={event} />
+            {events.map((event, index) => (
+              <EventListCard
+                key={event.id}
+                event={event}
+                className="[animation-delay:calc(var(--stagger-index)*50ms)]"
+                style={{ '--stagger-index': index } as React.CSSProperties}
+              />
             ))}
           </div>
 

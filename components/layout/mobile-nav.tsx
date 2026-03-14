@@ -11,6 +11,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet"
 import { NAV_ITEMS, CTA_LINK, SOCIAL_LINKS, FESTIVAL_NAME } from "@/lib/navigation"
+import { SparkleIcon } from "@/components/ui/sparkle-icon"
 
 type MobileNavProps = {
   open: boolean
@@ -28,7 +29,7 @@ const MobileNav = ({ open, onOpenChange, pathname }: MobileNavProps) => {
       >
         <SheetHeader className="border-b border-white/10 pb-4">
           <SheetTitle className="font-serif text-lg text-foreground">
-            <span className="text-primary">✦</span> {FESTIVAL_NAME}
+            <SparkleIcon className="size-5 inline-block" /> {FESTIVAL_NAME}
           </SheetTitle>
         </SheetHeader>
 
@@ -52,13 +53,10 @@ const MobileNav = ({ open, onOpenChange, pathname }: MobileNavProps) => {
         </nav>
 
         <div className="mt-auto flex flex-col gap-4 border-t border-white/10 p-4">
-          <Button
-            render={<Link href={CTA_LINK.href} />}
-            size="lg"
-            className="w-full"
-            onClick={() => onOpenChange(false)}
-          >
-            {CTA_LINK.label}
+          <Button asChild size="lg" className="w-full">
+            <Link href={CTA_LINK.href} onClick={() => onOpenChange(false)}>
+              {CTA_LINK.label}
+            </Link>
           </Button>
 
           <div className="flex items-center justify-center gap-2">

@@ -25,13 +25,11 @@ const FeaturedEvents = ({ events }: FeaturedEventsProps) => {
             Les incontournables de cette édition
           </p>
         </div>
-        <Button
-          render={<Link href="/evenements" />}
-          variant="ghost"
-          className="hidden items-center gap-1 text-primary sm:inline-flex"
-        >
-          Voir tous
-          <ArrowRight className="size-4" aria-hidden="true" />
+        <Button asChild variant="ghost" className="hidden items-center gap-1 text-primary sm:inline-flex">
+          <Link href="/evenements">
+            Voir tous
+            <ArrowRight className="size-4" aria-hidden="true" />
+          </Link>
         </Button>
       </div>
 
@@ -43,12 +41,11 @@ const FeaturedEvents = ({ events }: FeaturedEventsProps) => {
 
       <div className="mt-8 text-center sm:hidden">
         <Button
-          render={<Link href="/evenements" />}
-          variant="outline"
-          className="gap-1"
-        >
-          Voir tous les événements
-          <ArrowRight className="size-4" aria-hidden="true" />
+          asChild variant="outline" className="gap-1">
+          <Link href="/evenements">
+            Voir tous les événements
+            <ArrowRight className="size-4" aria-hidden="true" />
+          </Link>
         </Button>
       </div>
     </section>

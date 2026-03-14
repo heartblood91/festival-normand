@@ -38,13 +38,11 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
               Les dernières nouvelles du festival
             </p>
           </div>
-          <Button
-            render={<Link href="/actualites" />}
-            variant="ghost"
-            className="hidden items-center gap-1 text-primary sm:inline-flex"
-          >
-            Toutes les actualités
-            <ArrowRight className="size-4" aria-hidden="true" />
+          <Button asChild variant="ghost" className="hidden items-center gap-1 text-primary sm:inline-flex">
+            <Link href="/actualites">
+              Toutes les actualités
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </Link>
           </Button>
         </div>
       </div>
@@ -96,13 +94,11 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
       </div>
 
       <div className="mt-6 text-center sm:hidden">
-        <Button
-          render={<Link href="/actualites" />}
-          variant="outline"
-          className="gap-1"
-        >
-          Toutes les actualités
-          <ArrowRight className="size-4" aria-hidden="true" />
+        <Button asChild variant="outline" className="gap-1">
+          <Link href="/actualites">
+            Toutes les actualités
+            <ArrowRight className="size-4" aria-hidden="true" />
+          </Link>
         </Button>
       </div>
     </section>

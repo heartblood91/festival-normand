@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { MapPin, Calendar, Accessibility } from "lucide-react"
+import { MapPin, Calendar, Accessibility, Flame, Image, Music, MapPin as MapPinIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { EventListItem } from "@/lib/queries/events"
 
@@ -10,12 +10,31 @@ const CATEGORY_LABELS: Record<string, string> = {
   VISITES: "Visites",
 }
 
+const CATEGORY_GRADIENTS: Record<string, string> = {
+  ILLUMINATIONS: "from-amber-900/30 to-amber-700/10",
+  EXPOSITIONS: "from-blue-900/30 to-blue-700/10",
+  ANIMATIONS: "from-purple-900/30 to-purple-700/10",
+  VISITES: "from-emerald-900/30 to-emerald-700/10",
+}
+
+const CATEGORY_ICONS: Record<string, React.ReactNode> = {
+  ILLUMINATIONS: <Flame className="size-8" />,
+  EXPOSITIONS: <Image className="size-8" />,
+  ANIMATIONS: <Music className="size-8" />,
+  VISITES: <MapPinIcon className="size-8" />,
+}
+
 const formatEventDate = (date: Date): string => {
   return new Intl.DateTimeFormat("fr-FR", {
     weekday: "short",
     day: "numeric",
     month: "long",
   }).format(new Date(date))
+}
+
+const formatTime = (time: string | undefined): string | undefined => {
+  if (!time) return undefined
+  return time.slice(0, 5)
 }
 
 type EventListCardProps = {
@@ -28,12 +47,17 @@ const EventListCard = ({ event, className }: EventListCardProps) => {
     <Link
       href={`/evenement/${event.slug}`}
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all hover:border-primary/30 hover:bg-white/10 hover:shadow-lg hover:shadow-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+        "group relative flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all hover:border-primary/30 hover:bg-white/10 hover:shadow-lg hover:shadow-primary/5 hover:shadow-[0_0_30px_rgba(245,158,11,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 animate-fade-in-up",
         className
       )}
     >
       {/* Cover image or gradient placeholder */}
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-gradient-to-br from-primary/20 to-primary/5">
+      <div className={cn(
+        "relative aspect-[16/10] w-full overflow-hidden flex items-center justify-center",
+        event.coverImage
+          ? "bg-gradient-to-br from-primary/20 to-primary/5"
+          : `bg-gradient-to-br ${CATEGORY_GRADIENTS[event.category] || "from-primary/20 to-primary/5"}`
+      )}>
         {event.coverImage && (
           <img
             src={event.coverImage}
@@ -41,6 +65,11 @@ const EventListCard = ({ event, className }: EventListCardProps) => {
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             loading="lazy"
           />
+        )}
+        {!event.coverImage && (
+          <div className="flex items-center justify-center text-primary/60">
+            {CATEGORY_ICONS[event.category]}
+          </div>
         )}
         {/* Category badge */}
         <span className="absolute left-3 top-3 rounded-full border border-primary/30 bg-background/80 px-2.5 py-1 text-xs font-medium text-primary backdrop-blur-sm">
@@ -70,15 +99,17 @@ const EventListCard = ({ event, className }: EventListCardProps) => {
             <span>{formatEventDate(event.dateStart)}</span>
             {event.timeStart && (
               <span>
-                · {event.timeStart}
-                {event.timeEnd ? ` - ${event.timeEnd}` : ""}
+                · {formatTime(event.timeStart)}
+                {event.timeEnd ? ` - ${formatTime(event.timeEnd)}` : ""}
               </span>
             )}
           </div>
-          <div className="flex items-center gap-1.5">
-            <MapPin className="size-3.5 shrink-0" aria-hidden="true" />
-            <span>{event.city}</span>
-          </div>
+          {event.city && (
+            <div className="flex items-center gap-1.5">
+              <MapPin className="size-3.5 shrink-0" aria-hidden="true" />
+              <span>{event.city}</span>
+            </div>
+          )}
         </div>
       </div>
     </Link>

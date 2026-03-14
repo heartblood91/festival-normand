@@ -29,11 +29,17 @@ const components: Components = {
       {children}
     </h4>
   ),
-  p: ({ children }) => (
-    <p className="mb-4 leading-relaxed text-muted-foreground">
-      {children}
-    </p>
-  ),
+  p: ({ children, node }) => {
+    const hasBlockChildren = node?.children?.some(
+      (child: any) => child.type === 'element' && ['img'].includes(child.tagName)
+    )
+    const Tag = hasBlockChildren ? 'div' : 'p'
+    return (
+      <Tag className="mb-4 leading-relaxed text-muted-foreground">
+        {children}
+      </Tag>
+    )
+  },
   ul: ({ children }) => (
     <ul className="mb-4 ml-6 list-disc space-y-1 text-muted-foreground">
       {children}

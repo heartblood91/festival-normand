@@ -68,6 +68,7 @@ const FilterModal = () => {
     if (filters.category) params.set("category", filters.category.toLowerCase())
     if (filters.department) params.set("dept", filters.department.toLowerCase())
     if (filters.accessible) params.set("accessible", "true")
+    params.delete("page")
 
     const queryString = params.toString()
     router.push(`/evenements${queryString ? `?${queryString}` : ""}`)

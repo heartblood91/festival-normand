@@ -45,8 +45,8 @@ const PhotoCarousel = ({ images, alt }: PhotoCarouselProps) => {
       aria-label="Galerie photos"
       aria-roledescription="carousel"
     >
-      {/* Current image */}
-      <div className="relative aspect-[16/9] w-full">
+      {/* Current image with scroll snap support */}
+      <div className="relative aspect-[16/9] w-full snap-center">
         <img
           src={images[currentIndex]}
           alt={`${alt} - Photo ${currentIndex + 1} sur ${images.length}`}

@@ -1,15 +1,16 @@
 import Link from "next/link"
 import { Facebook, Instagram } from "lucide-react"
 import { NAV_ITEMS, SOCIAL_LINKS, FESTIVAL_NAME, FESTIVAL_DATES } from "@/lib/navigation"
+import { SparkleIcon } from "@/components/ui/sparkle-icon"
 
-const PARTNER_NAMES = [
-  "Région Normandie",
-  "Fondation du Patrimoine",
-  "Calvados",
-  "Eure",
-  "Manche",
-  "Orne",
-  "Seine-Maritime",
+const PARTNERS = [
+  { name: "Région Normandie", logo: "normandie.png", alt: "Région Normandie" },
+  { name: "Fondation du Patrimoine", logo: "fondation-patrimoine.png", alt: "Fondation du Patrimoine" },
+  { name: "Calvados", logo: "calvados.png", alt: "Calvados" },
+  { name: "Eure", logo: "eure.png", alt: "Eure" },
+  { name: "Manche", logo: "manche.png", alt: "Manche" },
+  { name: "Orne", logo: "orne.png", alt: "Orne" },
+  { name: "Seine-Maritime", logo: "seine-maritime.png", alt: "Seine-Maritime" },
 ]
 
 const Footer = () => {
@@ -25,7 +26,7 @@ const Footer = () => {
               className="inline-flex items-center gap-2 font-serif text-lg font-bold text-foreground transition-colors hover:text-primary"
               aria-label={`${FESTIVAL_NAME} - Retour à l'accueil`}
             >
-              <span className="text-primary">✦</span>
+              <SparkleIcon className="size-5" />
               <span>{FESTIVAL_NAME}</span>
             </Link>
             <p className="text-sm text-muted-foreground">
@@ -69,13 +70,20 @@ const Footer = () => {
             <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-foreground">
               Événement créé par
             </h2>
-            <ul className="flex flex-col gap-2">
-              {PARTNER_NAMES.map((name) => (
-                <li key={name} className="text-sm text-muted-foreground">
-                  {name}
-                </li>
+            <div className="flex flex-col gap-3">
+              {PARTNERS.map(({ name, logo, alt }) => (
+                <div
+                  key={name}
+                  className="grayscale transition-all duration-300 hover:grayscale-0"
+                >
+                  <img
+                    src={`/images/partners/${logo}`}
+                    alt={alt}
+                    className="h-10 w-auto object-contain"
+                  />
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
 
           {/* Social + Contact */}

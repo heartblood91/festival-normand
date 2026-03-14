@@ -1,3 +1,4 @@
+import Link from "next/link"
 import {
   Calendar,
   Clock,
@@ -18,12 +19,27 @@ const CATEGORY_LABELS: Record<string, string> = {
   VISITES: "Visites",
 }
 
+const CATEGORY_SLUG_MAP: Record<string, string> = {
+  ILLUMINATIONS: "illuminations",
+  EXPOSITIONS: "expositions",
+  ANIMATIONS: "animations",
+  VISITES: "visites",
+}
+
 const DEPARTMENT_LABELS: Record<string, string> = {
   CALVADOS: "Calvados",
   EURE: "Eure",
   MANCHE: "Manche",
   ORNE: "Orne",
   SEINE_MARITIME: "Seine-Maritime",
+}
+
+const DEPARTMENT_SLUG_MAP: Record<string, string> = {
+  CALVADOS: "calvados",
+  EURE: "eure",
+  MANCHE: "manche",
+  ORNE: "orne",
+  SEINE_MARITIME: "seine-maritime",
 }
 
 const formatEventDate = (date: Date): string => {
@@ -33,6 +49,11 @@ const formatEventDate = (date: Date): string => {
     month: "long",
     year: "numeric",
   }).format(new Date(date))
+}
+
+const formatTime = (time: string | undefined): string | undefined => {
+  if (!time) return undefined
+  return time.slice(0, 5)
 }
 
 type EventInfoProps = {
@@ -68,16 +89,25 @@ const EventInfo = ({ event }: EventInfoProps) => {
     return start
   })()
 
+  const categorySlug = CATEGORY_SLUG_MAP[event.category]
+  const departmentSlug = DEPARTMENT_SLUG_MAP[event.department]
+
   return (
     <div className="space-y-6">
       {/* Category + Department badges */}
       <div className="flex flex-wrap gap-2">
-        <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
+        <Link
+          href={categorySlug ? `/evenements?category=${categorySlug}` : "#"}
+          className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-medium text-primary transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+        >
           {CATEGORY_LABELS[event.category] ?? event.category}
-        </span>
-        <span className="rounded-full border border-white/20 bg-white/5 px-3 py-1 text-sm font-medium text-muted-foreground">
+        </Link>
+        <Link
+          href={departmentSlug ? `/evenements?dept=${departmentSlug}` : "#"}
+          className="rounded-full border border-white/20 bg-white/5 px-3 py-1 text-sm font-medium text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+        >
           {DEPARTMENT_LABELS[event.department] ?? event.department}
-        </span>
+        </Link>
         {event.accessible && (
           <span className="flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
             <Accessibility className="size-3.5" aria-hidden="true" />
@@ -99,8 +129,8 @@ const EventInfo = ({ event }: EventInfoProps) => {
           {(event.timeStart || event.timeEnd) && (
             <InfoRow icon={Clock} label="Horaires">
               <p>
-                {event.timeStart}
-                {event.timeEnd ? ` - ${event.timeEnd}` : ""}
+                {formatTime(event.timeStart)}
+                {event.timeEnd ? ` - ${formatTime(event.timeEnd)}` : ""}
               </p>
             </InfoRow>
           )}

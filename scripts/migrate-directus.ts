@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { PrismaClient, Department, Category } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
@@ -5,91 +6,65 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
 const DIRECTUS_URL = process.env.DIRECTUS_URL || "https://pierresenlumieres.fr/backend";
-const DIRECTUS_TOKEN = process.env.DIRECTUS_TOKEN || "";
 const DRY_RUN = process.argv.includes("--dry-run");
+
+interface DirectusDateHoraire {
+  Datedebut: string;
+  Datefin: string;
+  Heureouvert1: string;
+  Heurefermeture1: string;
+}
+
+interface DirectusOrganisme {
+  Commune: string;
+  Adresse1: string;
+  Codepostal: string;
+}
+
+interface DirectusLieuPrincipal {
+  Lieuprincipal: string;
+  Adresse1: string;
+  Codepostal: string;
+}
+
+interface DirectusContact {
+  tel: string;
+  mobile: string;
+  mail: string;
+  web: string;
+  facebook: string;
+}
 
 interface DirectusEvent {
   id: string;
-  title?: string;
-  nom?: string;
-  description?: string;
-  location?: string;
-  lieu?: string;
-  city?: string;
-  ville?: string;
-  postalCode?: string;
-  postal_code?: string;
-  code_postal?: string;
-  department?: string;
-  departement?: string;
-  category?: string;
-  categorie?: string;
-  dateStart?: string;
-  date_start?: string;
-  date_debut?: string;
-  dateEnd?: string;
-  date_end?: string;
-  date_fin?: string;
-  timeStart?: string;
-  time_start?: string;
-  heure_debut?: string;
-  timeEnd?: string;
-  time_end?: string;
-  heure_fin?: string;
-  pricing?: string;
-  tarif?: string;
-  organizer?: string;
-  organisateur?: string;
-  email?: string;
-  phone?: string;
-  telephone?: string;
-  website?: string;
-  site_web?: string;
-  latitude?: number;
-  longitude?: number;
-  coverImage?: string;
-  image_principale?: string;
-  images?: string[];
-  featured?: boolean;
-  en_avant?: boolean;
-  accessible?: boolean;
-  published?: boolean;
+  status: string;
+  title: string;
+  description: string;
+  departement: string;
+  categories: string[];
+  geo: { type: string; coordinates: [number, number] };
+  datehorairess: DirectusDateHoraire[];
+  organismes: DirectusOrganisme[];
+  lieu_principaux: DirectusLieuPrincipal[];
+  contacts: DirectusContact[];
+  photos: Array<{ directus_files_id: string } | number>;
+  sticky: boolean;
+  raison_social: string;
+}
+
+interface EditorJSBlock {
+  type: string;
+  data: Record<string, unknown>;
 }
 
 interface DirectusNews {
   id: string;
-  title?: string;
-  titre?: string;
-  excerpt?: string;
-  resume?: string;
-  content?: string;
-  contenu?: string;
-  coverImage?: string;
-  image_principale?: string;
-  published?: boolean;
-  publishedAt?: string;
-  published_at?: string;
-  date_publication?: string;
-}
-
-interface DirectusPartner {
-  id: string;
-  name?: string;
-  nom?: string;
-  logo?: string;
-  website?: string;
-  site_web?: string;
-  order?: number;
-  ordre?: number;
-}
-
-interface DirectusPage {
-  id: string;
-  title?: string;
-  titre?: string;
-  slug?: string;
-  content?: string;
-  contenu?: string;
+  status: string;
+  titre: string;
+  description: string;
+  corps: { blocks: EditorJSBlock[] };
+  illustration: string;
+  sticky: boolean;
 }
 
 const slugify = (text: string): string => {
@@ -104,35 +79,67 @@ const slugify = (text: string): string => {
     .slice(0, 100);
 };
 
-const mapDepartment = (dept: string | undefined): Department | undefined => {
-  if (!dept) return undefined;
-  const normalized = dept.toUpperCase().replace(/-/g, "_").replace(/\s/g, "_");
-  if (normalized in Department) {
-    return normalized as Department;
-  }
-  return undefined;
-};
-
-const mapCategory = (cat: string | undefined): Category | undefined => {
-  if (!cat) return undefined;
-  const normalized = cat.toUpperCase().replace(/-/g, "_").replace(/\s/g, "_");
-  if (normalized in Category) {
-    return normalized as Category;
-  }
-  return undefined;
-};
-
-const fetchDirectusData = async <T>(
-  collection: string
-): Promise<T[]> => {
-  const headers: HeadersInit = {
-    Authorization: `Bearer ${DIRECTUS_TOKEN}`,
+const mapDepartment = (dept: string): Department | undefined => {
+  const mapping: Record<string, Department> = {
+    "Calvados": "CALVADOS",
+    "Seine-Maritime": "SEINE_MARITIME",
+    "Eure": "EURE",
+    "Manche": "MANCHE",
+    "Orne": "ORNE",
   };
+  return mapping[dept];
+};
 
+const mapCategory = (cat: string): Category | undefined => {
+  const mapping: Record<string, Category> = {
+    "Illuminations": "ILLUMINATIONS",
+    "Visite": "VISITES",
+    "Exposition": "EXPOSITIONS",
+    "Animations et spectacles vivants": "ANIMATIONS",
+    "Animation": "ANIMATIONS",
+  };
+  return mapping[cat];
+};
+
+const editorJSToMarkdown = (blocks: EditorJSBlock[]): string => {
+  return blocks
+    .map((block) => {
+      if (block.type === "paragraph") {
+        return (block.data as Record<string, unknown>).text as string || "";
+      }
+      if (block.type === "header") {
+        const text = (block.data as Record<string, unknown>).text as string || "";
+        const level = ((block.data as Record<string, unknown>).level as number) || 2;
+        return `${"#".repeat(level)} ${text}`;
+      }
+      if (block.type === "image") {
+        const fileId = ((block.data as Record<string, unknown>).file as Record<string, unknown>)?.fileId as string;
+        if (fileId) {
+          return `![image](https://pierresenlumieres.fr/backend/assets/${fileId}?key=webp&width=1600&format=webp&quality=70)`;
+        }
+      }
+      if (block.type === "embed") {
+        const embed = (block.data as Record<string, unknown>).embed as string;
+        if (embed) {
+          return `[Embedded content](${embed})`;
+        }
+      }
+      return "";
+    })
+    .filter((line) => line.length > 0)
+    .join("\n\n");
+};
+
+const getImageUrl = (photo: { directus_files_id: string } | number): string => {
+  const id = typeof photo === 'object' && photo !== null ? photo.directus_files_id : photo;
+  return `${DIRECTUS_URL}/assets/${id}?key=webp&width=1600&format=webp&quality=70`;
+};
+
+const fetchDirectusData = async <T>(collection: string, extraFields = ""): Promise<T[]> => {
+  const fields = extraFields ? `*,${extraFields}` : "*";
   try {
     const response = await fetch(
-      `${DIRECTUS_URL}/items/${collection}?limit=-1`,
-      { headers }
+      `${DIRECTUS_URL}/items/${collection}?limit=-1&fields=${fields}`
     );
 
     if (!response.ok) {
@@ -149,200 +156,208 @@ const fetchDirectusData = async <T>(
   }
 };
 
-const getImageUrl = (fileId: string | undefined): string | undefined => {
-  if (!fileId) return undefined;
-  return `${DIRECTUS_URL}/assets/${fileId}`;
-};
+const getOrCreateSlug = async (baseSlug: string, eventId: string): Promise<string> => {
+  let slug = baseSlug;
+  let counter = 1;
+  let existingEvent = await prisma.event.findUnique({ where: { slug } });
 
-const clearDatabase = async () => {
-  if (DRY_RUN) {
-    console.log("[DRY RUN] Would clear database");
-    return;
+  while (existingEvent && existingEvent.id !== eventId) {
+    slug = `${baseSlug}-${counter}`;
+    existingEvent = await prisma.event.findUnique({ where: { slug } });
+    counter++;
   }
 
-  await prisma.$executeRawUnsafe(`
-    DO $$
-    DECLARE r RECORD;
-    BEGIN
-      FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename != '_prisma_migrations')
-      LOOP
-        EXECUTE 'TRUNCATE TABLE "' || r.tablename || '" CASCADE';
-      END LOOP;
-    END $$;
-  `);
-  console.log("Database cleared.");
+  return slug;
+};
+
+const getOrCreateNewsSlug = async (baseSlug: string, newsId: string): Promise<string> => {
+  let slug = baseSlug;
+  let counter = 1;
+  let existingNews = await prisma.news.findUnique({ where: { slug } });
+
+  while (existingNews && existingNews.id !== newsId) {
+    slug = `${baseSlug}-${counter}`;
+    existingNews = await prisma.news.findUnique({ where: { slug } });
+    counter++;
+  }
+
+  return slug;
 };
 
 const migrateEvents = async () => {
   console.log("Fetching events from Directus...");
-  let events = await fetchDirectusData<DirectusEvent>("evenements");
+  const events = await fetchDirectusData<DirectusEvent>("evenements", "photos.directus_files_id");
 
-  if (events.length === 0) {
-    events = await fetchDirectusData<DirectusEvent>("events");
-  }
-
-  console.log(`Found ${events.length} events`);
+  console.log(`Found ${events.length} events\n`);
 
   let createdCount = 0;
+  let skippedCount = 0;
 
-  for (const event of events) {
-    const title = event.title || event.nom;
-    if (!title) continue;
+  for (let i = 0; i < events.length; i++) {
+    const event = events[i];
 
-    const department = mapDepartment(event.department || event.departement);
-    const category = mapCategory(event.category || event.categorie);
+    if (!event.title || !event.departement || !event.categories?.[0]) {
+      skippedCount++;
+      continue;
+    }
 
-    if (!department || !category) continue;
+    const department = mapDepartment(event.departement);
+    const category = mapCategory(event.categories[0]);
 
-    const dateStart = new Date(
-      event.dateStart || event.date_start || event.date_debut || new Date()
-    );
-    const dateEnd = event.dateEnd || event.date_end || event.date_fin
-      ? new Date(event.dateEnd || event.date_end || event.date_fin || new Date())
-      : undefined;
+    if (!department || !category) {
+      skippedCount++;
+      continue;
+    }
+
+    const dateHoraire = event.datehorairess?.[0];
+    const lieu = event.lieu_principaux?.[0];
+    const organisme = event.organismes?.[0];
+    const contact = event.contacts?.[0];
+
+    const dateStart = dateHoraire ? new Date(dateHoraire.Datedebut) : new Date();
+    const dateEnd = dateHoraire ? new Date(dateHoraire.Datefin) : undefined;
+    const timeStart = dateHoraire?.Heureouvert1 || undefined;
+    const timeEnd = dateHoraire?.Heurefermeture1 || undefined;
+
+    const slug = await getOrCreateSlug(slugify(event.title), event.id);
 
     const eventData = {
-      title,
-      slug: slugify(title),
+      id: event.id,
+      title: event.title,
+      slug,
       description: event.description || "",
-      location: event.location || event.lieu || "",
-      city: event.city || event.ville || "",
-      postalCode: event.postalCode || event.postal_code || event.code_postal || "",
+      location: lieu?.Adresse1 || "",
+      city: organisme?.Commune || "",
+      postalCode: lieu?.Codepostal || organisme?.Codepostal || "",
       department,
       category,
       dateStart,
       dateEnd,
-      timeStart: event.timeStart || event.time_start || event.heure_debut || undefined,
-      timeEnd: event.timeEnd || event.time_end || event.heure_fin || undefined,
-      pricing: event.pricing || event.tarif || undefined,
-      organizer: event.organizer || event.organisateur || undefined,
-      email: event.email || undefined,
-      phone: event.phone || event.telephone || undefined,
-      website: event.website || event.site_web || undefined,
-      latitude: event.latitude || undefined,
-      longitude: event.longitude || undefined,
-      coverImage: getImageUrl(
-        (event.coverImage || event.image_principale) as string | undefined
-      ),
-      images: Array.isArray(event.images) ? event.images.map(getImageUrl).filter((url): url is string => Boolean(url)) : [],
-      featured: event.featured || event.en_avant || false,
-      accessible: event.accessible || false,
-      published: event.published !== false,
+      timeStart,
+      timeEnd,
+      organizer: event.raison_social || "",
+      email: contact?.mail || undefined,
+      phone: contact?.tel || contact?.mobile || undefined,
+      website: contact?.web || contact?.facebook || undefined,
+      latitude: event.geo?.coordinates?.[1] || 0,
+      longitude: event.geo?.coordinates?.[0] || 0,
+      coverImage: event.photos?.[0] ? getImageUrl(event.photos[0]) : undefined,
+      images: event.photos ? event.photos.map(getImageUrl) : [],
+      featured: event.sticky || false,
+      accessible: false,
+      published: event.status === "published",
     };
 
     if (DRY_RUN) {
-      console.log("[DRY RUN] Would create event:", eventData.title);
+      console.log(`[DRY RUN] Would create event: ${eventData.title}`);
     } else {
-      await prisma.event.create({ data: eventData });
-      createdCount++;
+      try {
+        await prisma.event.upsert({
+          where: { id: event.id },
+          update: eventData,
+          create: eventData,
+        });
+        createdCount++;
+      } catch (error) {
+        console.error(`Error creating event ${event.title}:`, error);
+        skippedCount++;
+      }
+    }
+
+    if ((i + 1) % 100 === 0) {
+      console.log(`Progress: ${i + 1}/${events.length} events processed...`);
     }
   }
 
-  console.log(`${createdCount} events migrated.`);
+  console.log(`\nMigrated ${createdCount}/${events.length} events (${skippedCount} skipped)\n`);
 };
 
 const migrateNews = async () => {
   console.log("Fetching news from Directus...");
-  let articles = await fetchDirectusData<DirectusNews>("actualites");
+  const articles = await fetchDirectusData<DirectusNews>("actualites");
 
-  if (articles.length === 0) {
-    articles = await fetchDirectusData<DirectusNews>("news");
-  }
-
-  console.log(`Found ${articles.length} news articles`);
+  const publishedArticles = articles.filter((a) => a.status === "published");
+  console.log(`Found ${publishedArticles.length} published news articles\n`);
 
   let createdCount = 0;
 
-  for (const article of articles) {
-    const title = article.title || article.titre;
-    if (!title) continue;
+  for (let i = 0; i < publishedArticles.length; i++) {
+    const article = publishedArticles[i];
+
+    if (!article.titre) continue;
+
+    const slug = await getOrCreateNewsSlug(slugify(article.titre), article.id);
 
     const newsData = {
-      title,
-      slug: slugify(title),
-      excerpt: article.excerpt || article.resume || undefined,
-      content: article.content || article.contenu || "",
-      coverImage: getImageUrl(
-        (article.coverImage || article.image_principale) as string | undefined
-      ),
-      published: article.published !== false,
-      publishedAt: new Date(
-        article.publishedAt || article.published_at || article.date_publication || new Date()
-      ),
+      id: article.id,
+      title: article.titre,
+      slug,
+      excerpt: article.description || "",
+      content: editorJSToMarkdown(article.corps?.blocks || []),
+      coverImage: article.illustration
+        ? `https://pierresenlumieres.fr/backend/assets/${article.illustration}?key=webp&width=1600&format=webp&quality=70`
+        : undefined,
+      published: true,
+      publishedAt: new Date(),
+      featured: article.sticky || false,
     };
 
     if (DRY_RUN) {
-      console.log("[DRY RUN] Would create news:", newsData.title);
+      console.log(`[DRY RUN] Would create news: ${newsData.title}`);
     } else {
-      await prisma.news.create({ data: newsData });
-      createdCount++;
+      try {
+        await prisma.news.upsert({
+          where: { id: article.id },
+          update: newsData,
+          create: newsData,
+        });
+        createdCount++;
+      } catch (error) {
+        console.error(`Error creating news ${article.titre}:`, error);
+      }
+    }
+
+    if ((i + 1) % 50 === 0) {
+      console.log(`Progress: ${i + 1}/${publishedArticles.length} news processed...`);
     }
   }
 
-  console.log(`${createdCount} news articles migrated.`);
+  console.log(`\nMigrated ${createdCount}/${publishedArticles.length} news articles\n`);
 };
 
 const migratePartners = async () => {
-  console.log("Fetching partners from Directus...");
-  let partners = await fetchDirectusData<DirectusPartner>("partenaires");
+  console.log("Creating partners (manual list)...\n");
 
-  if (partners.length === 0) {
-    partners = await fetchDirectusData<DirectusPartner>("partners");
-  }
-
-  console.log(`Found ${partners.length} partners`);
+  const partners = [
+    { name: "Région Normandie", logo: "/images/partners/normandie.png", order: 1 },
+    { name: "Fondation du Patrimoine", logo: "/images/partners/fondation-patrimoine.png", order: 2 },
+    { name: "Calvados", logo: "/images/partners/calvados.png", order: 3 },
+    { name: "Eure", logo: "/images/partners/eure.png", order: 4 },
+    { name: "Manche", logo: "/images/partners/manche.png", order: 5 },
+    { name: "Orne", logo: "/images/partners/orne.png", order: 6 },
+    { name: "Seine-Maritime", logo: "/images/partners/seine-maritime.png", order: 7 },
+  ];
 
   let createdCount = 0;
 
   for (const partner of partners) {
-    const name = partner.name || partner.nom;
-    if (!name) continue;
-
-    const partnerData = {
-      name,
-      logo: getImageUrl((partner.logo) as string | undefined),
-      website: partner.website || partner.site_web || undefined,
-      order: partner.order || partner.ordre || 0,
-    };
-
     if (DRY_RUN) {
-      console.log("[DRY RUN] Would create partner:", partnerData.name);
+      console.log(`[DRY RUN] Would create partner: ${partner.name}`);
     } else {
-      await prisma.partner.create({ data: partnerData });
-      createdCount++;
+      try {
+        await prisma.partner.upsert({
+          where: { name: partner.name },
+          update: { logo: partner.logo, order: partner.order },
+          create: { name: partner.name, logo: partner.logo, order: partner.order },
+        });
+        createdCount++;
+      } catch (error) {
+        console.error(`Error creating partner ${partner.name}:`, error);
+      }
     }
   }
 
-  console.log(`${createdCount} partners migrated.`);
-};
-
-const migratePages = async () => {
-  console.log("Fetching pages from Directus...");
-  const pages = await fetchDirectusData<DirectusPage>("pages");
-
-  console.log(`Found ${pages.length} pages`);
-
-  let createdCount = 0;
-
-  for (const page of pages) {
-    const title = page.title || page.titre;
-    if (!title) continue;
-
-    const pageData = {
-      title,
-      slug: page.slug || slugify(title),
-      content: page.content || page.contenu || "",
-    };
-
-    if (DRY_RUN) {
-      console.log("[DRY RUN] Would create page:", pageData.title);
-    } else {
-      await prisma.page.create({ data: pageData });
-      createdCount++;
-    }
-  }
-
-  console.log(`${createdCount} pages migrated.`);
+  console.log(`\nMigrated ${createdCount} partners\n`);
 };
 
 const main = async () => {
@@ -351,20 +366,13 @@ const main = async () => {
   }
 
   console.log("Starting Directus migration...\n");
-
-  if (!DIRECTUS_TOKEN) {
-    console.warn("Warning: DIRECTUS_TOKEN not set. API calls may fail.");
-  }
-
   console.log(`Directus URL: ${DIRECTUS_URL}\n`);
 
-  await clearDatabase();
   await migrateEvents();
   await migrateNews();
   await migratePartners();
-  await migratePages();
 
-  console.log("\nMigration complete.");
+  console.log("Migration complete.");
 };
 
 main()

@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { FESTIVAL_DATES } from "@/lib/navigation"
+import { SparkleIcon } from "@/components/ui/sparkle-icon"
 
 const HeroSection = () => {
   return (
@@ -8,11 +9,18 @@ const HeroSection = () => {
       className="relative flex min-h-[80dvh] flex-col items-center justify-center overflow-hidden px-4 py-20 text-center md:min-h-[85dvh] md:py-32"
       aria-label="Présentation du festival"
     >
-      {/* Video background placeholder — gradient for now */}
-      <div
-        className="absolute inset-0 -z-10 bg-gradient-to-b from-[#0f172a] via-[#1e1b4b] to-[#0f172a]"
+      {/* Video background */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 -z-10 h-full w-full object-cover"
         aria-hidden="true"
-      />
+      >
+        <source src="/videos/hero.mp4" type="video/mp4" />
+      </video>
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background/80 via-background/60 to-background" aria-hidden="true" />
 
       {/* Decorative ambient glow */}
       <div
@@ -21,7 +29,7 @@ const HeroSection = () => {
       />
 
       <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary md:text-base">
-        <span aria-hidden="true">✦</span>
+        <SparkleIcon className="size-4" />
         Festival du Patrimoine Normand
       </p>
 
@@ -38,20 +46,11 @@ const HeroSection = () => {
       </p>
 
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
-        <Button
-          render={<Link href="/evenements" />}
-          size="lg"
-          className="h-12 px-6 text-base"
-        >
-          Découvrir les événements
+        <Button asChild size="lg" className="h-12 px-6 text-base">
+          <Link href="/evenements">Découvrir les événements</Link>
         </Button>
-        <Button
-          render={<Link href="/inscription" />}
-          variant="outline"
-          size="lg"
-          className="h-12 px-6 text-base"
-        >
-          Inscrire un site
+        <Button asChild variant="outline" size="lg" className="h-12 px-6 text-base">
+          <Link href="/inscription">Inscrire un site</Link>
         </Button>
       </div>
     </section>

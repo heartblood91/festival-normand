@@ -18,6 +18,11 @@ const formatEventDate = (date: Date): string => {
   }).format(new Date(date))
 }
 
+const formatTime = (time: string | undefined): string | undefined => {
+  if (!time) return undefined
+  return time.slice(0, 5)
+}
+
 type EventCardProps = {
   event: FeaturedEvent
   className?: string
@@ -60,15 +65,17 @@ const EventCard = ({ event, className }: EventCardProps) => {
             <span>{formatEventDate(event.dateStart)}</span>
             {event.timeStart && (
               <span>
-                · {event.timeStart}
-                {event.timeEnd ? ` - ${event.timeEnd}` : ""}
+                · {formatTime(event.timeStart)}
+                {event.timeEnd ? ` - ${formatTime(event.timeEnd)}` : ""}
               </span>
             )}
           </div>
-          <div className="flex items-center gap-1.5">
-            <MapPin className="size-3.5 shrink-0" aria-hidden="true" />
-            <span>{event.city}</span>
-          </div>
+          {event.city && (
+            <div className="flex items-center gap-1.5">
+              <MapPin className="size-3.5 shrink-0" aria-hidden="true" />
+              <span>{event.city}</span>
+            </div>
+          )}
         </div>
       </div>
     </Link>
