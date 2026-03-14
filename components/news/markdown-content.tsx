@@ -31,7 +31,8 @@ const components: Components = {
   ),
   p: ({ children, node }) => {
     const hasBlockChildren = node?.children?.some(
-      (child: any) => child.type === 'element' && ['img'].includes(child.tagName)
+      (child: any) => child.type === 'element' && (['img'].includes(child.tagName) ||
+        (child.tagName === 'a' && child.properties?.href && YOUTUBE_REGEX.test(child.properties.href)))
     )
     const Tag = hasBlockChildren ? 'div' : 'p'
     return (

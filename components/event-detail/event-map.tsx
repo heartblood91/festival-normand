@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import L from "leaflet"
-import "leaflet/dist/leaflet.css"
+import mapboxgl from "mapbox-gl"
+import "mapbox-gl/dist/mapbox-gl.css"
 
 type EventMapProps = {
   latitude: number
@@ -12,32 +12,35 @@ type EventMapProps = {
 
 const EventMap = ({ latitude, longitude, title }: EventMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null)
-  const mapInstanceRef = useRef<L.Map | null>(null)
+  const mapInstanceRef = useRef<mapboxgl.Map | null>(null)
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return
 
-    const map = L.map(mapRef.current, {
-      center: [latitude, longitude],
-      zoom: 15,
-      scrollWheelZoom: false,
+    mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ""
+
+    const map = new mapboxgl.Map({
+      container: mapRef.current,
+      style: "mapbox://styles/mapbox/dark-v11",
+      center: [longitude, latitude],
+      zoom: 14,
+      scrollZoom: false,
+      attributionControl: true,
     })
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 19,
-    }).addTo(map)
+    map.addControl(new mapboxgl.NavigationControl(), "top-right")
 
-    const icon = L.divIcon({
-      className: "custom-marker",
-      html: `<div style="width:24px;height:24px;background:#f59e0b;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>`,
-      iconSize: [24, 24],
-      iconAnchor: [12, 12],
-    })
+    // Custom amber marker
+    const markerEl = document.createElement("div")
+    markerEl.style.cssText = "width:28px;height:28px;background:#f59e0b;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 12px rgba(0,0,0,0.4);cursor:pointer;"
 
-    L.marker([latitude, longitude], { icon })
+    new mapboxgl.Marker({ element: markerEl })
+      .setLngLat([longitude, latitude])
+      .setPopup(
+        new mapboxgl.Popup({ offset: 20, closeButton: false })
+          .setHTML(`<p style="font-weight:600;margin:0;padding:4px 8px;">${title}</p>`)
+      )
       .addTo(map)
-      .bindPopup(title)
 
     mapInstanceRef.current = map
 
