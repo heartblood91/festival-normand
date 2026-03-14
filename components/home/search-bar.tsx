@@ -25,11 +25,12 @@ const SearchBar = ({ cities }: SearchBarProps) => {
 
   const handleSubmit = (searchQuery?: string) => {
     const q = searchQuery ?? query
+    const params = new URLSearchParams()
     if (q.trim()) {
-      router.push(`/evenements?search=${encodeURIComponent(q.trim())}`)
-    } else {
-      router.push("/evenements")
+      params.set("search", q.trim())
     }
+    const qs = params.toString()
+    router.push(`/evenements${qs ? `?${qs}` : ""}`)
     setShowSuggestions(false)
   }
 
@@ -89,8 +90,15 @@ const SearchBar = ({ cities }: SearchBarProps) => {
             variant="ghost"
             size="icon"
             className="size-10 shrink-0 text-muted-foreground hover:text-primary md:size-12"
-            aria-label="Filtrer les événements"
-            onClick={() => router.push("/evenements")}
+            aria-label="Aller aux filtres"
+            onClick={() => {
+              const params = new URLSearchParams()
+              if (query.trim()) {
+                params.set("search", query.trim())
+              }
+              const qs = params.toString()
+              router.push(`/evenements${qs ? `?${qs}` : ""}`)
+            }}
           >
             <SlidersHorizontal className="size-4 md:size-5" />
           </Button>

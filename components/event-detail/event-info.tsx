@@ -129,8 +129,8 @@ const EventInfo = ({ event }: EventInfoProps) => {
           {(event.timeStart || event.timeEnd) && (
             <InfoRow icon={Clock} label="Horaires">
               <p>
-                {formatTime(event.timeStart) ?? ""}
-                {event.timeEnd ? ` - ${formatTime(event.timeEnd) ?? ""}` : ""}
+                {formatTime(event.timeStart)}
+                {event.timeEnd ? ` - ${formatTime(event.timeEnd)}` : ""}
               </p>
             </InfoRow>
           )}

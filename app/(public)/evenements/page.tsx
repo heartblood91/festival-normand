@@ -4,9 +4,8 @@ import { getEvents } from "@/lib/queries/events"
 import { getEventCities } from "@/lib/queries/homepage"
 import { EventListCard } from "@/components/events/event-list-card"
 import { Pagination } from "@/components/events/pagination"
-import { FilterModal } from "@/components/events/filter-modal"
+import { FilterBar } from "@/components/events/filter-bar"
 import { EventsSearchBar } from "@/components/events/events-search-bar"
-import { ActiveFilters } from "@/components/events/active-filters"
 import type { Category, Department } from "@prisma/client"
 
 export const revalidate = 3600
@@ -65,20 +64,17 @@ const EventsPage = async ({ searchParams }: EventsPageProps) => {
         </p>
       </div>
 
-      {/* Search + Filter bar */}
-      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center">
+      {/* Search bar */}
+      <div className="mb-6">
         <Suspense>
           <EventsSearchBar cities={cities} />
         </Suspense>
-        <Suspense>
-          <FilterModal />
-        </Suspense>
       </div>
 
-      {/* Active filters */}
+      {/* Filter bar */}
       <div className="mb-6">
         <Suspense>
-          <ActiveFilters />
+          <FilterBar total={total} />
         </Suspense>
       </div>
 
@@ -87,12 +83,15 @@ const EventsPage = async ({ searchParams }: EventsPageProps) => {
         <>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
             {events.map((event, index) => (
-              <EventListCard
+              <div
                 key={event.id}
-                event={event}
-                className="[animation-delay:calc(var(--stagger-index)*50ms)]"
                 style={{ '--stagger-index': index } as React.CSSProperties}
-              />
+              >
+                <EventListCard
+                  event={event}
+                  className="[animation-delay:calc(var(--stagger-index)*50ms)]"
+                />
+              </div>
             ))}
           </div>
 
