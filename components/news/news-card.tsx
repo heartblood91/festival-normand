@@ -3,7 +3,7 @@ import { Calendar } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { NewsListItem } from "@/lib/queries/news"
 
-const formatNewsDate = (date: Date): string => {
+const formatNewsDate = (date: Date | string): string => {
   return new Intl.DateTimeFormat("fr-FR", {
     day: "numeric",
     month: "long",

@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma"
 export const getFeaturedEvents = async () => {
   return unstable_cache(
     async () => {
-      return prisma.event.findMany({
+      const events = await prisma.event.findMany({
         where: {
           published: true,
           featured: true,
@@ -25,6 +25,10 @@ export const getFeaturedEvents = async () => {
           coverImage: true,
         },
       })
+      return events.map((e) => ({
+        ...e,
+        dateStart: e.dateStart?.toISOString() ?? null,
+      }))
     },
     ["featured-events"],
     { revalidate: 300, tags: ["events"] }
@@ -34,7 +38,7 @@ export const getFeaturedEvents = async () => {
 export const getLatestNews = async () => {
   return unstable_cache(
     async () => {
-      return prisma.news.findMany({
+      const news = await prisma.news.findMany({
         where: { published: true },
         orderBy: { publishedAt: "desc" },
         take: 6,
@@ -47,6 +51,10 @@ export const getLatestNews = async () => {
           publishedAt: true,
         },
       })
+      return news.map((n) => ({
+        ...n,
+        publishedAt: n.publishedAt?.toISOString() ?? null,
+      }))
     },
     ["latest-news"],
     { revalidate: 600, tags: ["news"] }

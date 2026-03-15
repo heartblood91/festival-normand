@@ -24,7 +24,7 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   VISITES: <MapPinIcon className="size-8" />,
 }
 
-const formatEventDate = (date: Date): string => {
+const formatEventDate = (date: Date | string): string => {
   return new Intl.DateTimeFormat("fr-FR", {
     weekday: "short",
     day: "numeric",

@@ -10,7 +10,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   VISITES: "Visites",
 }
 
-const formatEventDate = (date: Date): string => {
+const formatEventDate = (date: Date | string): string => {
   return new Intl.DateTimeFormat("fr-FR", {
     weekday: "short",
     day: "numeric",

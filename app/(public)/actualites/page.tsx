@@ -31,13 +31,7 @@ const NewsListPage = async () => {
       </div>
 
       {/* News grid */}
-      {articles.length > 0 ? (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
-          {articles.map((article) => (
-            <NewsCard key={article.id} article={article} />
-          ))}
-        </div>
-      ) : (
+      {articles.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-xl border border-white/10 bg-white/5 px-6 py-16 text-center">
           <p className="font-serif text-xl font-bold text-foreground">
             Aucune actualité pour le moment
@@ -45,6 +39,12 @@ const NewsListPage = async () => {
           <p className="mt-2 text-muted-foreground">
             Revenez bientôt pour découvrir les dernières nouvelles du festival
           </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
+          {articles.map((article) => (
+            <NewsCard key={article.id} article={article} />
+          ))}
         </div>
       )}
     </div>

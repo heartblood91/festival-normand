@@ -3,6 +3,7 @@ import Link from "next/link"
 import { Mail, CalendarPlus } from "lucide-react"
 import { ContactForm } from "@/components/contact/contact-form"
 
+
 export const metadata: Metadata = {
   title: "Contact",
   description:

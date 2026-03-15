@@ -4,14 +4,23 @@ import Link from "next/link"
 import { ArrowLeft, Calendar } from "lucide-react"
 import { getNewsBySlug } from "@/lib/queries/news"
 import { MarkdownContent } from "@/components/news/markdown-content"
+import { prisma } from "@/lib/prisma"
 
 export const revalidate = 1800
+
+export const generateStaticParams = async () => {
+  const news = await prisma.news.findMany({
+    where: { published: true },
+    select: { slug: true },
+  })
+  return news.map((n) => ({ slug: n.slug }))
+}
 
 type NewsDetailPageProps = {
   params: Promise<{ slug: string }>
 }
 
-const formatNewsDate = (date: Date): string => {
+const formatNewsDate = (date: Date | string): string => {
   return new Intl.DateTimeFormat("fr-FR", {
     weekday: "long",
     day: "numeric",

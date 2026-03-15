@@ -42,7 +42,7 @@ const DEPARTMENT_SLUG_MAP: Record<string, string> = {
   SEINE_MARITIME: "seine-maritime",
 }
 
-const formatEventDate = (date: Date): string => {
+const formatEventDate = (date: Date | string): string => {
   return new Intl.DateTimeFormat("fr-FR", {
     weekday: "long",
     day: "numeric",

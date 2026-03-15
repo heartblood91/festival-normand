@@ -6,8 +6,17 @@ import { getEventBySlug } from "@/lib/queries/events"
 import { EventInfo } from "@/components/event-detail/event-info"
 import { PhotoCarousel } from "@/components/event-detail/photo-carousel"
 import { EventMapWrapper } from "@/components/event-detail/event-map-wrapper"
+import { prisma } from "@/lib/prisma"
 
 export const revalidate = 1800
+
+export const generateStaticParams = async () => {
+  const events = await prisma.event.findMany({
+    where: { published: true },
+    select: { slug: true },
+  })
+  return events.map((e) => ({ slug: e.slug }))
+}
 
 type EventDetailPageProps = {
   params: Promise<{ slug: string }>

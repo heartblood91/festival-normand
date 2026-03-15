@@ -6,7 +6,7 @@ import { useRef } from "react"
 import { Button } from "@/components/ui/button"
 import type { LatestNewsItem } from "@/lib/queries/homepage"
 
-const formatNewsDate = (date: Date): string => {
+const formatNewsDate = (date: Date | string): string => {
   return new Intl.DateTimeFormat("fr-FR", {
     day: "numeric",
     month: "long",
