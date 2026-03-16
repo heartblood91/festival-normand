@@ -87,12 +87,13 @@ const EventsSearchBar = ({ cities }: EventsSearchBarProps) => {
             if (query.length >= 2) setShowSuggestions(true)
           }}
           placeholder="Rechercher une ville ou un lieu..."
-          className="h-10 w-full rounded-lg border border-white/10 bg-white/5 pl-10 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 md:h-12 md:text-base"
+          className="h-10 w-full rounded-lg border border-white/10 bg-white/5 pl-10 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 md:h-12 md:text-base"
           aria-label="Rechercher un événement par ville"
           aria-autocomplete="list"
           aria-expanded={showSuggestions && filteredCities.length > 0}
           aria-controls="events-city-suggestions"
           role="combobox"
+          autoComplete="off"
         />
       </form>
 
@@ -109,7 +110,7 @@ const EventsSearchBar = ({ cities }: EventsSearchBarProps) => {
                 onClick={() => handleSelectCity(city)}
                 className={cn(
                   "flex w-full items-center gap-2 px-4 py-3 text-left text-sm transition-colors hover:bg-white/5 hover:text-primary",
-                  "focus:bg-white/5 focus:text-primary focus:outline-none"
+                  "focus-visible:bg-white/5 focus-visible:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
                 )}
               >
                 <Search

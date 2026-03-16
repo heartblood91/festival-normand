@@ -14,9 +14,10 @@ const formatNewsDate = (date: Date | string): string => {
 type NewsCardProps = {
   article: NewsListItem
   className?: string
+  priority?: boolean
 }
 
-const NewsCard = ({ article, className }: NewsCardProps) => {
+const NewsCard = ({ article, className, priority = false }: NewsCardProps) => {
   return (
     <Link
       href={`/actualite/${article.slug}`}
@@ -31,8 +32,11 @@ const NewsCard = ({ article, className }: NewsCardProps) => {
           <img
             src={article.coverImage}
             alt={article.title}
+            width={680}
+            height={383}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            loading="lazy"
+            loading={priority ? "eager" : "lazy"}
+            fetchPriority={priority ? "high" : "auto"}
           />
         )}
       </div>

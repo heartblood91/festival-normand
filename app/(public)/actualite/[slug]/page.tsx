@@ -45,7 +45,7 @@ export const generateMetadata = async ({ params }: NewsDetailPageProps): Promise
       description: article.excerpt ?? article.content.slice(0, 160),
       images: article.coverImage ? [{ url: article.coverImage }] : [],
       type: "article",
-      publishedTime: article.publishedAt.toISOString(),
+      publishedTime: article.publishedAt ?? undefined,
     },
   }
 }
@@ -60,6 +60,31 @@ const NewsDetailPage = async ({ params }: NewsDetailPageProps) => {
 
   return (
     <article className="mx-auto max-w-4xl px-4 py-8 md:py-12 lg:py-16">
+      {/* Breadcrumb */}
+      <nav aria-label="Fil d'Ariane" className="mb-6">
+        <ol className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+          <li>
+            <Link
+              href="/"
+              className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
+            >
+              Accueil
+            </Link>
+          </li>
+          <li aria-hidden="true" className="text-muted-foreground/50">/</li>
+          <li>
+            <Link
+              href="/actualites"
+              className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
+            >
+              Actualités
+            </Link>
+          </li>
+          <li aria-hidden="true" className="text-muted-foreground/50">/</li>
+          <li aria-current="page" className="text-foreground font-medium">{article.title}</li>
+        </ol>
+      </nav>
+
       {/* Back link */}
       <Link
         href="/actualites"
@@ -77,7 +102,7 @@ const NewsDetailPage = async ({ params }: NewsDetailPageProps) => {
 
         <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
           <Calendar className="size-4 shrink-0" aria-hidden="true" />
-          <time dateTime={article.publishedAt.toISOString()}>
+          <time dateTime={article.publishedAt ?? ""}>
             {formatNewsDate(article.publishedAt)}
           </time>
         </div>
@@ -89,7 +114,11 @@ const NewsDetailPage = async ({ params }: NewsDetailPageProps) => {
           <img
             src={article.coverImage}
             alt={article.title}
+            width={896}
+            height={504}
             className="h-full w-full object-cover"
+            loading="eager"
+            fetchPriority="high"
           />
         </div>
       )}

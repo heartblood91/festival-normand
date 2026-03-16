@@ -25,7 +25,7 @@ const FeaturedEvents = ({ events }: FeaturedEventsProps) => {
             Les incontournables de cette édition
           </p>
         </div>
-        <Button asChild variant="ghost" className="hidden items-center gap-1 text-primary sm:inline-flex">
+        <Button asChild variant="ghost" className="hidden items-center gap-1 text-primary sm:inline-flex" aria-label="Voir tous les événements à la une">
           <Link href="/evenements">
             Voir tous
             <ArrowRight className="size-4" aria-hidden="true" />
@@ -34,14 +34,14 @@ const FeaturedEvents = ({ events }: FeaturedEventsProps) => {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
-        {events.map((event) => (
-          <EventCard key={event.id} event={event} />
+        {events.map((event, index) => (
+          <EventCard key={event.id} event={event} priority={index < 3} />
         ))}
       </div>
 
       <div className="mt-8 text-center sm:hidden">
         <Button
-          asChild variant="outline" className="gap-1">
+          asChild variant="outline" className="gap-1" aria-label="Voir tous les événements">
           <Link href="/evenements">
             Voir tous les événements
             <ArrowRight className="size-4" aria-hidden="true" />

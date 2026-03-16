@@ -11,7 +11,7 @@ const Footer = () => (
         <div className="flex flex-col gap-4">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 font-serif text-lg font-bold text-foreground transition-colors hover:text-primary"
+            className="inline-flex items-center gap-2 font-serif text-lg font-bold text-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
             aria-label={`${FESTIVAL_NAME} - Retour à l'accueil`}
           >
             <SparkleIcon className="size-5" />
@@ -49,13 +49,13 @@ const Footer = () => (
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-foreground">
             Navigation
           </h2>
-          <nav aria-label="Navigation du pied de page">
+          <nav id="footer-nav" aria-label="Navigation du pied de page">
             <ul className="flex flex-col gap-2">
               {NAV_ITEMS.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:text-primary"
+                    className="text-sm text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
                   >
                     {item.label}
                   </Link>
@@ -64,9 +64,17 @@ const Footer = () => (
               <li>
                 <Link
                   href="/mentions-legales"
-                  className="text-sm text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:text-primary"
+                  className="text-sm text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
                 >
                   Mentions légales
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/accessibilite"
+                  className="text-sm text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
+                >
+                  Accessibilité
                 </Link>
               </li>
             </ul>
@@ -83,7 +91,7 @@ const Footer = () => (
           </p>
           <Link
             href="/contact"
-            className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary transition-colors hover:text-primary/80 focus-visible:outline-none focus-visible:underline"
+            className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary transition-colors hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
           >
             Nous contacter →
           </Link>

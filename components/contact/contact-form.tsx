@@ -67,7 +67,7 @@ const ContactForm = () => {
           required
           minLength={2}
           maxLength={100}
-          className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white backdrop-blur-xl placeholder:text-white/40 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
+          className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white backdrop-blur-xl placeholder:text-white/40 focus-visible:border-amber-500/50 focus-visible:ring-2 focus-visible:ring-amber-500/20 focus-visible:outline-none"
           placeholder="Votre nom"
           aria-describedby={state.errors?.name ? "name-error" : undefined}
           aria-invalid={state.errors?.name ? true : undefined}
@@ -91,7 +91,7 @@ const ContactForm = () => {
           id="email"
           name="email"
           required
-          className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white backdrop-blur-xl placeholder:text-white/40 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
+          className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white backdrop-blur-xl placeholder:text-white/40 focus-visible:border-amber-500/50 focus-visible:ring-2 focus-visible:ring-amber-500/20 focus-visible:outline-none"
           placeholder="votre@email.fr"
           aria-describedby={state.errors?.email ? "email-error" : undefined}
           aria-invalid={state.errors?.email ? true : undefined}
@@ -118,7 +118,7 @@ const ContactForm = () => {
           id="department"
           name="department"
           required
-          className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white backdrop-blur-xl focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
+          className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white backdrop-blur-xl focus-visible:border-amber-500/50 focus-visible:ring-2 focus-visible:ring-amber-500/20 focus-visible:outline-none"
           defaultValue=""
           aria-describedby={
             state.errors?.department ? "department-error" : undefined
@@ -159,7 +159,7 @@ const ContactForm = () => {
           minLength={10}
           maxLength={5000}
           rows={6}
-          className="w-full resize-y rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white backdrop-blur-xl placeholder:text-white/40 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
+          className="w-full resize-y rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white backdrop-blur-xl placeholder:text-white/40 focus-visible:border-amber-500/50 focus-visible:ring-2 focus-visible:ring-amber-500/20 focus-visible:outline-none"
           placeholder="Votre message..."
           aria-describedby={
             state.errors?.message ? "message-error" : undefined

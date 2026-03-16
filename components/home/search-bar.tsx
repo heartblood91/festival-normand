@@ -76,12 +76,13 @@ const SearchBar = ({ cities }: SearchBarProps) => {
                 if (query.length >= 2) setShowSuggestions(true)
               }}
               placeholder="Rechercher une ville..."
-              className="h-10 w-full rounded-lg bg-white/5 pl-10 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 md:h-12 md:text-base"
+              className="h-10 w-full rounded-lg bg-white/5 pl-10 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 md:h-12 md:text-base"
               aria-label="Rechercher un événement par ville"
               aria-autocomplete="list"
               aria-expanded={showSuggestions && filteredCities.length > 0}
               aria-controls="city-suggestions"
               role="combobox"
+              autoComplete="off"
             />
           </div>
 
@@ -99,7 +100,7 @@ const SearchBar = ({ cities }: SearchBarProps) => {
           <ul
             id="city-suggestions"
             role="listbox"
-            className="absolute left-0 right-0 top-full z-10 mt-2 overflow-hidden rounded-xl border border-white/10 bg-background/95 backdrop-blur-xl"
+            className="absolute left-0 right-0 top-full z-20 mt-2 overflow-hidden rounded-xl border border-white/10 bg-background/95 backdrop-blur-xl"
           >
             {filteredCities.map((city) => (
               <li key={city} role="option" aria-selected={false}>
@@ -108,7 +109,7 @@ const SearchBar = ({ cities }: SearchBarProps) => {
                   onClick={() => handleSelectCity(city)}
                   className={cn(
                     "flex w-full items-center gap-2 px-4 py-3 text-left text-sm transition-colors hover:bg-white/5 hover:text-primary",
-                    "focus:bg-white/5 focus:text-primary focus:outline-none"
+                    "focus-visible:bg-white/5 focus-visible:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
                   )}
                 >
                   <Search className="size-3.5 text-muted-foreground" aria-hidden="true" />

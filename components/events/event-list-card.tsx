@@ -40,9 +40,10 @@ const formatTime = (time: string | undefined): string | undefined => {
 type EventListCardProps = {
   event: EventListItem
   className?: string
+  priority?: boolean
 }
 
-const EventListCard = ({ event, className }: EventListCardProps) => {
+const EventListCard = ({ event, className, priority = false }: EventListCardProps) => {
   return (
     <Link
       href={`/evenement/${event.slug}`}
@@ -62,8 +63,11 @@ const EventListCard = ({ event, className }: EventListCardProps) => {
           <img
             src={event.coverImage}
             alt={event.title}
+            width={680}
+            height={425}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            loading="lazy"
+            loading={priority ? "eager" : "lazy"}
+            fetchPriority={priority ? "high" : "auto"}
           />
         )}
         {!event.coverImage && (

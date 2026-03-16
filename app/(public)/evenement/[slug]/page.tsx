@@ -57,6 +57,31 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
 
   return (
     <article className="mx-auto max-w-7xl px-4 py-8 md:py-12 lg:py-16">
+      {/* Breadcrumb */}
+      <nav aria-label="Fil d'Ariane" className="mb-6">
+        <ol className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+          <li>
+            <Link
+              href="/"
+              className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
+            >
+              Accueil
+            </Link>
+          </li>
+          <li aria-hidden="true" className="text-muted-foreground/50">/</li>
+          <li>
+            <Link
+              href="/evenements"
+              className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
+            >
+              Événements
+            </Link>
+          </li>
+          <li aria-hidden="true" className="text-muted-foreground/50">/</li>
+          <li aria-current="page" className="text-foreground font-medium">{event.title}</li>
+        </ol>
+      </nav>
+
       {/* Back link */}
       <Link
         href="/evenements"

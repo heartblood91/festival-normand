@@ -65,7 +65,7 @@ const ContactPage = () => {
             </p>
             <Link
               href="/inscription"
-              className="inline-flex min-h-[44px] items-center rounded-lg border border-amber-500/30 bg-amber-500/10 px-6 py-3 font-medium text-amber-400 transition-colors hover:bg-amber-500/20 focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
+              className="inline-flex min-h-[44px] items-center rounded-lg border border-amber-500/30 bg-amber-500/10 px-6 py-3 font-medium text-amber-400 transition-colors hover:bg-amber-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
             >
               Inscrivez votre événement
             </Link>

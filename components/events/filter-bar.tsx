@@ -234,7 +234,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
                 setOpenDropdown(openDropdown === "dept" ? null : "dept")
               }
               className={cn(
-                "flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50",
+                "min-h-10 min-w-10 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50",
                 selectedDept
                   ? "border-primary/30 bg-primary/10 text-primary"
                   : "border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
@@ -298,7 +298,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
                 setOpenDropdown(openDropdown === "category" ? null : "category")
               }
               className={cn(
-                "flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50",
+                "min-h-10 min-w-10 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50",
                 selectedCategory
                   ? "border-primary/30 bg-primary/10 text-primary"
                   : "border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
@@ -362,7 +362,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
                 key={option.value}
                 onClick={() => handleDateToggle(option.value)}
                 className={cn(
-                  "rounded-full border px-3 py-2 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 sm:text-sm",
+                  "min-h-10 min-w-10 rounded-full border px-3 py-2 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 sm:text-sm",
                   selectedDates.includes(option.value)
                     ? "border-primary/30 bg-primary/10 text-primary"
                     : "border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
@@ -379,7 +379,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
           <button
             onClick={handlePmrToggle}
             className={cn(
-              "flex items-center justify-center gap-2 rounded-lg border px-3 py-2 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50",
+              "min-h-10 min-w-10 flex items-center justify-center gap-2 rounded-lg border px-3 py-2 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50",
               pmrEnabled
                 ? "border-primary/30 bg-primary/10 text-primary"
                 : "border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
@@ -409,7 +409,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
               <button
                 key={filter.key}
                 onClick={() => removeFilter(filter.type, filter.key.split("-")[1])}
-                className="flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary/50 sm:text-sm"
+                className="min-h-9 flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary/50 sm:text-sm"
                 aria-label={`Retirer le filtre ${filter.label}`}
               >
                 {filter.label}
@@ -418,7 +418,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
             ))}
             <button
               onClick={clearAll}
-              className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline focus:outline-none focus:ring-2 focus:ring-primary/50 sm:text-sm"
+              className="min-h-9 text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline focus:outline-none focus:ring-2 focus:ring-primary/50 rounded-sm sm:text-sm"
               aria-label="Effacer tous les filtres"
             >
               Tout effacer

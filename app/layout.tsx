@@ -4,10 +4,15 @@ import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/sonner"
 import "./globals.css"
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+})
 const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-serif",
+  display: "swap",
 })
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
@@ -35,7 +40,11 @@ export const metadata: Metadata = {
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <html lang="fr" className={cn(inter.variable, playfair.variable)}>
+    <html lang="fr" dir="ltr" className={cn(inter.variable, playfair.variable)}>
+      <head>
+        <link rel="preconnect" href="https://pierresenlumieres.fr" />
+        <link rel="dns-prefetch" href="https://pierresenlumieres.fr" />
+      </head>
       <body className="flex min-h-dvh flex-col font-sans antialiased">
         {children}
         <Toaster />

@@ -56,7 +56,7 @@ const NearbyButton = () => {
       onClick={handleClick}
       disabled={isLoading}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-3 py-2 text-sm font-medium transition-all whitespace-nowrap",
+        "min-h-10 min-w-10 inline-flex items-center gap-1.5 rounded-full border px-3 py-2 text-sm font-medium transition-all whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
         isActive
           ? "border-primary bg-primary text-primary-foreground"
           : "border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground",

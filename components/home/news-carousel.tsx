@@ -1,8 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight } from "lucide-react"
-import { useRef } from "react"
+import { ArrowRight, Pause, Play } from "lucide-react"
+import { useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import type { LatestNewsItem } from "@/lib/queries/homepage"
 
@@ -20,6 +20,7 @@ type NewsCarouselProps = {
 
 const NewsCarousel = ({ news }: NewsCarouselProps) => {
   const scrollRef = useRef<HTMLDivElement>(null)
+  const [autoScroll, setAutoScroll] = useState(true)
 
   if (news.length === 0) return null
 
@@ -38,12 +39,23 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
               Les dernières nouvelles du festival
             </p>
           </div>
-          <Button asChild variant="ghost" className="hidden items-center gap-1 text-primary sm:inline-flex">
-            <Link href="/actualites">
-              Toutes les actualités
-              <ArrowRight className="size-4" aria-hidden="true" />
-            </Link>
-          </Button>
+          <div className="hidden items-center gap-2 sm:inline-flex">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setAutoScroll(!autoScroll)}
+              aria-label={autoScroll ? "Pause le défilement automatique" : "Reprendre le défilement automatique"}
+              className="text-primary hover:text-primary/80"
+            >
+              {autoScroll ? <Pause className="size-4" /> : <Play className="size-4" />}
+            </Button>
+            <Button asChild variant="ghost" className="inline-flex items-center gap-1 text-primary" aria-label="Voir toutes les actualités du festival">
+              <Link href="/actualites">
+                Toutes les actualités
+                <ArrowRight className="size-4" aria-hidden="true" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -52,14 +64,18 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
         ref={scrollRef}
         className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 scrollbar-hide md:gap-6 md:px-[max(1rem,calc((100vw-80rem)/2+1rem))]"
         role="region"
-        aria-label="Carrousel d'actualités"
+        aria-roledescription="carrousel"
+        aria-label="Actualités récentes"
         tabIndex={0}
       >
-        {news.map((article) => (
+        {news.map((article, index) => (
           <Link
             key={article.id}
             href={`/actualite/${article.slug}`}
             className="group flex w-[280px] shrink-0 snap-start flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all hover:border-primary/30 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 md:w-[340px]"
+            role="group"
+            aria-roledescription="diapositive"
+            aria-label={`Diapositive ${index + 1} sur ${news.length}`}
           >
             {/* Cover image or gradient placeholder */}
             <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br from-primary/20 to-primary/5">
@@ -67,8 +83,11 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
                 <img
                   src={article.coverImage}
                   alt={article.title}
+                  width={680}
+                  height={383}
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="lazy"
+                  loading={index === 0 ? "eager" : "lazy"}
+                  fetchPriority={index === 0 ? "high" : "auto"}
                 />
               )}
             </div>
@@ -94,7 +113,7 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
       </div>
 
       <div className="mt-6 text-center sm:hidden">
-        <Button asChild variant="outline" className="gap-1">
+        <Button asChild variant="outline" className="gap-1" aria-label="Voir toutes les actualités">
           <Link href="/actualites">
             Toutes les actualités
             <ArrowRight className="size-4" aria-hidden="true" />

@@ -32,7 +32,11 @@ const PhotoCarousel = ({ images, alt }: PhotoCarouselProps) => {
         <img
           src={images[0]}
           alt={alt}
+          width={896}
+          height={504}
           className="aspect-[16/9] w-full object-cover"
+          loading="eager"
+          fetchPriority="high"
         />
       </div>
     )
@@ -50,8 +54,12 @@ const PhotoCarousel = ({ images, alt }: PhotoCarouselProps) => {
         <img
           src={images[currentIndex]}
           alt={`${alt} - Photo ${currentIndex + 1} sur ${images.length}`}
+          width={896}
+          height={504}
           className="h-full w-full object-cover"
           key={currentIndex}
+          loading={currentIndex === 0 ? "eager" : "lazy"}
+          fetchPriority={currentIndex === 0 ? "high" : "auto"}
         />
       </div>
 
@@ -83,10 +91,11 @@ const PhotoCarousel = ({ images, alt }: PhotoCarouselProps) => {
             aria-selected={index === currentIndex}
             aria-label={`Photo ${index + 1}`}
             className={cn(
-              "size-2.5 rounded-full transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+              "size-6 rounded-full transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 flex items-center justify-center",
+              "before:block before:size-2.5 before:rounded-full before:transition-all",
               index === currentIndex
-                ? "scale-110 bg-primary"
-                : "bg-white/40 hover:bg-white/60"
+                ? "before:scale-110 before:bg-primary"
+                : "before:bg-white/40 hover:before:bg-white/60"
             )}
           />
         ))}

@@ -208,7 +208,19 @@ const EventsMap = ({ events }: EventsMapProps) => {
     )
   }
 
-  return <div ref={mapContainer} className="h-[500px] w-full rounded-xl md:h-[650px]" />
+  return (
+    <>
+      <div
+        ref={mapContainer}
+        className="h-[500px] w-full rounded-xl md:h-[650px]"
+        role="img"
+        aria-label="Carte des événements du festival en Normandie. Utilisez la vue liste pour une navigation accessible."
+      />
+      <p className="sr-only">
+        Cette carte interactive n'est pas entièrement accessible aux lecteurs d'écran. Utilisez la vue grille pour naviguer les événements.
+      </p>
+    </>
+  )
 }
 
 export { EventsMap }

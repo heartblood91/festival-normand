@@ -24,7 +24,7 @@ const PartnersSection = ({ partners }: PartnersSectionProps) => {
         </p>
 
         <div className="mt-10 grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-7 md:gap-6">
-          {partners.map((partner) => {
+          {partners.map((partner, index) => {
             const Wrapper = partner.website ? "a" : "div"
             const linkProps = partner.website
               ? { href: partner.website, target: "_blank" as const, rel: "noopener noreferrer" }
@@ -35,14 +35,16 @@ const PartnersSection = ({ partners }: PartnersSectionProps) => {
                 key={partner.id}
                 {...linkProps}
                 className="flex aspect-square items-center justify-center rounded-xl bg-white/5 p-4 transition-all hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
-                aria-label={partner.name}
+                {...(partner.website ? { "aria-label": partner.name } : {})}
               >
                 {partner.logo ? (
                   <img
                     src={partner.logo}
                     alt={partner.name}
+                    width={120}
+                    height={80}
                     className="max-h-full max-w-full object-contain"
-                    loading="lazy"
+                    loading={index < 7 ? "eager" : "lazy"}
                   />
                 ) : (
                   <span className="text-xs text-muted-foreground">{partner.name}</span>

@@ -42,8 +42,8 @@ const NewsListPage = async () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
-          {articles.map((article) => (
-            <NewsCard key={article.id} article={article} />
+          {articles.map((article, index) => (
+            <NewsCard key={article.id} article={article} priority={index < 3} />
           ))}
         </div>
       )}

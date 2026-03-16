@@ -98,6 +98,7 @@ const EventsPage = async ({ searchParams }: EventsPageProps) => {
       </div>
 
       {/* Content based on view */}
+      <h2 className="sr-only">Résultats</h2>
       {events.length > 0 ? (
         <>
           {view === "map" ? (
@@ -114,6 +115,7 @@ const EventsPage = async ({ searchParams }: EventsPageProps) => {
                   >
                     <EventListCard
                       event={event}
+                      priority={index < 4}
                       className="[animation-delay:calc(var(--stagger-index)*50ms)]"
                     />
                   </div>

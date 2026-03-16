@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { NAV_ITEMS, CTA_LINK, SOCIAL_LINKS, FESTIVAL_NAME } from "@/lib/navigation"
 import { MobileNav } from "@/components/layout/mobile-nav"
 import { SparkleIcon } from "@/components/ui/sparkle-icon"
+import { ContrastToggle } from "@/components/layout/contrast-toggle"
 import { useState } from "react"
 
 const Header = () => {
@@ -20,7 +21,7 @@ const Header = () => {
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-2 text-lg font-serif font-bold text-foreground transition-colors hover:text-primary md:text-xl"
+          className="flex items-center gap-2 text-lg font-serif font-bold text-foreground transition-colors hover:text-primary md:text-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
           aria-label={`${FESTIVAL_NAME} - Retour à l'accueil`}
         >
           <SparkleIcon className="size-5" />
@@ -49,6 +50,7 @@ const Header = () => {
         {/* Desktop Actions */}
         <div className="hidden items-center gap-3 lg:flex">
           <div className="flex items-center gap-1">
+            <ContrastToggle />
             <a
               href={SOCIAL_LINKS.facebook}
               target="_blank"

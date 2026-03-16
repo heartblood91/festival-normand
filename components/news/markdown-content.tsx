@@ -93,6 +93,8 @@ const components: Components = {
       <img
         src={src}
         alt={alt ?? ""}
+        width={896}
+        height={504}
         className="w-full rounded-xl"
         loading="lazy"
       />

@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { FESTIVAL_DATES } from "@/lib/navigation"
 import { SparkleIcon } from "@/components/ui/sparkle-icon"
+import { HeroVideo } from "@/components/home/hero-video"
 
 const HeroSection = () => {
   return (
@@ -9,17 +10,7 @@ const HeroSection = () => {
       className="relative flex min-h-[80dvh] flex-col items-center justify-center overflow-hidden px-4 py-20 text-center md:min-h-[85dvh] md:py-32"
       aria-label="Présentation du festival"
     >
-      {/* Video background */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        className="absolute inset-0 -z-10 h-full w-full object-cover"
-        aria-hidden="true"
-      >
-        <source src="/videos/hero.mp4" type="video/mp4" />
-      </video>
+      <HeroVideo />
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background/80 via-background/60 to-background" aria-hidden="true" />
 
       {/* Decorative ambient glow */}

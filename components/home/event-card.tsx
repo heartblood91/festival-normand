@@ -26,9 +26,10 @@ const formatTime = (time: string | undefined): string | undefined => {
 type EventCardProps = {
   event: FeaturedEvent
   className?: string
+  priority?: boolean
 }
 
-const EventCard = ({ event, className }: EventCardProps) => {
+const EventCard = ({ event, className, priority = false }: EventCardProps) => {
   return (
     <Link
       href={`/evenement/${event.slug}`}
@@ -43,8 +44,11 @@ const EventCard = ({ event, className }: EventCardProps) => {
           <img
             src={event.coverImage}
             alt={event.title}
+            width={680}
+            height={425}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            loading="lazy"
+            loading={priority ? "eager" : "lazy"}
+            fetchPriority={priority ? "high" : "auto"}
           />
         )}
         {/* Category badge */}
