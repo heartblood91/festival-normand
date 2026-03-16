@@ -23,37 +23,33 @@ const PartnersSection = ({ partners }: PartnersSectionProps) => {
           Un événement soutenu par les acteurs du patrimoine normand
         </p>
 
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-8 md:gap-12">
-          {partners.map((partner) => (
-            <div key={partner.id} className="flex flex-col items-center gap-2">
-              {partner.logo ? (
-                <a
-                  href={partner.website ?? undefined}
-                  target={partner.website ? "_blank" : undefined}
-                  rel={partner.website ? "noopener noreferrer" : undefined}
-                  className="flex h-16 w-28 items-center justify-center rounded-lg bg-white/5 p-3 transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 md:h-20 md:w-36"
-                  aria-label={partner.name}
-                >
+        <div className="mt-10 grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-7 md:gap-6">
+          {partners.map((partner) => {
+            const Wrapper = partner.website ? "a" : "div"
+            const linkProps = partner.website
+              ? { href: partner.website, target: "_blank" as const, rel: "noopener noreferrer" }
+              : {}
+
+            return (
+              <Wrapper
+                key={partner.id}
+                {...linkProps}
+                className="flex aspect-square items-center justify-center rounded-xl bg-white/5 p-4 transition-all hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                aria-label={partner.name}
+              >
+                {partner.logo ? (
                   <img
                     src={partner.logo}
                     alt={partner.name}
-                    className="max-h-full max-w-full object-contain brightness-90 grayscale transition-all hover:brightness-100 hover:grayscale-0"
+                    className="max-h-full max-w-full object-contain"
                     loading="lazy"
                   />
-                </a>
-              ) : (
-                <a
-                  href={partner.website ?? undefined}
-                  target={partner.website ? "_blank" : undefined}
-                  rel={partner.website ? "noopener noreferrer" : undefined}
-                  className="flex h-16 w-28 items-center justify-center rounded-lg bg-white/5 p-3 text-center text-xs text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 md:h-20 md:w-36"
-                  aria-label={partner.name}
-                >
-                  {partner.name}
-                </a>
-              )}
-            </div>
-          ))}
+                ) : (
+                  <span className="text-xs text-muted-foreground">{partner.name}</span>
+                )}
+              </Wrapper>
+            )
+          })}
         </div>
       </div>
     </section>
