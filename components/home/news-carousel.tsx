@@ -2,8 +2,8 @@
 
 import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
-import { ArrowRight, Pause, Play } from "lucide-react"
-import { useRef, useState } from "react"
+import { ArrowRight } from "lucide-react"
+import { useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { formatNewsDate } from "@/lib/utils/format-date"
 import type { LatestNewsItem } from "@/lib/queries/homepage"
@@ -16,7 +16,6 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
   const t = useTranslations()
   const locale = useLocale()
   const scrollRef = useRef<HTMLDivElement>(null)
-  const [autoScroll, setAutoScroll] = useState(true)
 
   if (news.length === 0) return null
 
@@ -36,17 +35,8 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
             </p>
           </div>
           <div className="hidden items-center gap-2 sm:inline-flex">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setAutoScroll(!autoScroll)}
-              aria-label={autoScroll ? t("a11y.pauseCarousel") : t("a11y.playCarousel")}
-              className="text-primary hover:text-primary/80"
-            >
-              {autoScroll ? <Pause className="size-4" /> : <Play className="size-4" />}
-            </Button>
             <Button asChild variant="ghost" className="inline-flex items-center gap-1 text-primary" aria-label={t("newsSection.viewAllLabel")}>
-              <Link href="/actualites">
+              <Link href={`/${locale}/actualites`}>
                 {t("newsSection.viewAll")}
                 <ArrowRight className="size-4" aria-hidden="true" />
               </Link>
@@ -60,17 +50,16 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
         ref={scrollRef}
         className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 scrollbar-hide md:gap-6 md:px-[max(1rem,calc((100vw-80rem)/2+1rem))]"
         role="region"
-        aria-roledescription="carrousel"
         aria-label={t("a11y.carousel")}
         tabIndex={0}
       >
         {news.map((article, index) => (
           <Link
             key={article.id}
-            href={`/actualite/${article.slug}`}
+            href={`/${locale}/actualite/${article.slug}`}
             className="group flex w-[280px] shrink-0 snap-start flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all hover:border-primary/30 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 md:w-[340px]"
             role="group"
-            aria-roledescription="diapositive"
+            aria-roledescription={locale === "en" ? "slide" : "diapositive"}
             aria-label={t("a11y.slide", { current: index + 1, total: news.length })}
           >
             {/* Cover image or gradient placeholder */}
@@ -95,11 +84,11 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
               >
                 {formatNewsDate(article.publishedAt, locale)}
               </time>
-              <h3 className="mt-1.5 font-serif text-base font-bold leading-snug text-foreground group-hover:text-primary transition-colors md:text-lg">
+              <h3 className="mt-1.5 line-clamp-2 font-serif text-base font-bold leading-snug text-foreground group-hover:text-primary transition-colors md:text-lg">
                 {article.title}
               </h3>
               {article.excerpt && (
-                <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+                <p className="mt-auto line-clamp-2 pt-2 text-sm text-muted-foreground">
                   {article.excerpt}
                 </p>
               )}
@@ -110,7 +99,7 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
 
       <div className="mt-6 text-center sm:hidden">
         <Button asChild variant="outline" className="gap-1" aria-label={t("newsSection.viewAllLabel")}>
-          <Link href="/actualites">
+          <Link href={`/${locale}/actualites`}>
             {t("newsSection.viewAll")}
             <ArrowRight className="size-4" aria-hidden="true" />
           </Link>

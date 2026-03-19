@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import type { Locale } from "@/lib/i18n/config"
 import { Suspense } from "react"
 import { getEvents, getFilterCounts, getAllFilteredEventsForMap } from "@/lib/queries/events"
 import { getEventCities } from "@/lib/queries/homepage"
@@ -17,11 +18,11 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.
 export const revalidate = 300
 
 export const generateMetadata = async ({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> => {
-  const { locale } = await params
+  const { locale } = await params as { locale: Locale }
   const frenchTitle = "Événements"
   const englishTitle = "Events"
   const frenchDesc = "Découvrez tous les événements du festival Pierres en Lumières en Normandie. Illuminations, expositions, animations et visites nocturnes du patrimoine normand."
-  const englishDesc = "Discover all the events of the Stones in Lights festival in Normandy. Illuminations, exhibitions, animations and night tours of Norman heritage."
+  const englishDesc = "Discover all the events of the Pierres en Lumières festival in Normandy. Illuminations, exhibitions, animations and night tours of Norman heritage."
 
   const title = locale === "en" ? englishTitle : frenchTitle
   const description = locale === "en" ? englishDesc : frenchDesc
@@ -30,7 +31,7 @@ export const generateMetadata = async ({ params }: { params: Promise<{ locale: s
     title,
     description,
     openGraph: {
-      title: `${title} - Pierres en Lumières`,
+      title: `${title} — Pierres en Lumières`,
       description,
     },
     alternates: {
@@ -71,7 +72,7 @@ const parseSearchParams = (params: Record<string, string | string[] | undefined>
 }
 
 const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
-  const { locale } = await params
+  const { locale } = await params as { locale: Locale }
   const searchParamsData = await searchParams
   const filters = parseSearchParams(searchParamsData)
   const view = (searchParamsData.view as string | undefined) ?? "grid"
@@ -80,7 +81,7 @@ const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
   const [{ events, total, page, totalPages }, cities, counts, mapEvents] = await Promise.all([
     getEvents(filters, locale),
     getEventCities(),
-    getFilterCounts(filters, locale),
+    getFilterCounts(filters),
     view === "map" ? getAllFilteredEventsForMap(filters, locale) : Promise.resolve([]),
   ])
 
@@ -132,12 +133,13 @@ const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
                 {events.map((event, index) => (
                   <div
                     key={event.id}
+                    className="h-full"
                     style={{ '--stagger-index': index } as React.CSSProperties}
                   >
                     <EventListCard
                       event={event}
                       priority={index < 4}
-                      className="[animation-delay:calc(var(--stagger-index)*50ms)]"
+                      className="h-full [animation-delay:calc(var(--stagger-index)*50ms)]"
                     />
                   </div>
                 ))}

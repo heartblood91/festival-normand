@@ -33,10 +33,13 @@ const createFormData = (data: Record<string, string>): FormData => {
 }
 
 const validNewsData = {
-  title: "Nouvelle édition du festival",
+  titleFr: "Nouvelle édition du festival",
+  titleEn: "",
   slug: "nouvelle-edition-du-festival",
-  content: "<p>Le festival revient cette année avec de nombreuses nouveautés.</p>",
-  excerpt: "Le festival revient cette année",
+  contentFr: "<p>Le festival revient cette année avec de nombreuses nouveautés.</p>",
+  contentEn: "",
+  excerptFr: "Le festival revient cette année",
+  excerptEn: "",
   coverImage: "",
   published: "true",
   publishedAt: "2026-03-13",
@@ -61,7 +64,7 @@ describe("createNews", () => {
     expect(mockPrisma.news.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
-          title: "Nouvelle édition du festival",
+          titleFr: "Nouvelle édition du festival",
           slug: "nouvelle-edition-du-festival",
         }),
       })
@@ -70,13 +73,13 @@ describe("createNews", () => {
 
   it("returns validation errors for invalid data", async () => {
     const result = await createNews(
-      createFormData({ ...validNewsData, title: "ab", content: "short" })
+      createFormData({ ...validNewsData, titleFr: "ab", contentFr: "short" })
     )
 
     expect(result.success).toBe(false)
     expect(result.errors).toBeDefined()
-    expect(result.errors?.title).toBeDefined()
-    expect(result.errors?.content).toBeDefined()
+    expect(result.errors?.titleFr).toBeDefined()
+    expect(result.errors?.contentFr).toBeDefined()
   })
 
   it("returns error for duplicate slug", async () => {
@@ -167,7 +170,7 @@ describe("getAdminNews", () => {
   })
 
   it("returns all news without search", async () => {
-    const mockNews = [{ id: "1", title: "Article 1" }]
+    const mockNews = [{ id: "1", titleFr: "Article 1" }]
     mockPrisma.news.findMany.mockResolvedValue(mockNews)
 
     const result = await getAdminNews()
@@ -190,8 +193,8 @@ describe("getAdminNews", () => {
       expect.objectContaining({
         where: {
           OR: [
-            { title: { contains: "festival", mode: "insensitive" } },
-            { excerpt: { contains: "festival", mode: "insensitive" } },
+            { titleFr: { contains: "festival", mode: "insensitive" } },
+            { excerptFr: { contains: "festival", mode: "insensitive" } },
           ],
         },
       })
@@ -205,7 +208,7 @@ describe("getAdminNewsById", () => {
   })
 
   it("returns news by id", async () => {
-    const mockArticle = { id: "test-id", title: "Test Article" }
+    const mockArticle = { id: "test-id", titleFr: "Test Article" }
     mockPrisma.news.findUnique.mockResolvedValue(mockArticle)
 
     const result = await getAdminNewsById("test-id")

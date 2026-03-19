@@ -1,6 +1,6 @@
 "use server"
 
-import { revalidatePath, revalidateTag } from "next/cache"
+import { revalidatePath } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { eventSchema } from "@/lib/schemas/event"
 import type { Category, Department } from "@prisma/client"
@@ -103,7 +103,6 @@ export const createEvent = async (formData: FormData): Promise<EventActionResult
       },
     })
 
-    revalidateTag("events")
     revalidatePath("/evenements")
     revalidatePath(`/evenement/${event.slug}`)
     revalidatePath("/")
@@ -183,7 +182,6 @@ export const updateEvent = async (
       },
     })
 
-    revalidateTag("events")
     revalidatePath("/evenements")
     revalidatePath(`/evenement/${event.slug}`)
     revalidatePath("/")
@@ -205,7 +203,6 @@ export const deleteEvent = async (id: string): Promise<EventActionResult> => {
   try {
     const event = await prisma.event.delete({ where: { id } })
 
-    revalidateTag("events")
     revalidatePath("/evenements")
     revalidatePath(`/evenement/${event.slug}`)
     revalidatePath("/")

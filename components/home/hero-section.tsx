@@ -1,11 +1,12 @@
 import Link from "next/link"
-import { getTranslations } from "next-intl/server"
+import { getTranslations, getLocale } from "next-intl/server"
 import { Button } from "@/components/ui/button"
 import { SparkleIcon } from "@/components/ui/sparkle-icon"
 import { HeroVideo } from "@/components/home/hero-video"
 
 const HeroSection = async () => {
   const t = await getTranslations()
+  const locale = await getLocale()
   return (
     <section
       className="relative flex min-h-[80dvh] flex-col items-center justify-center overflow-hidden px-4 py-20 text-center md:min-h-[85dvh] md:py-32"
@@ -39,10 +40,10 @@ const HeroSection = async () => {
 
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
         <Button asChild size="lg" className="h-12 px-6 text-base">
-          <Link href="/evenements">{t("hero.cta")}</Link>
+          <Link href={`/${locale}/evenements`}>{t("hero.cta")}</Link>
         </Button>
         <Button asChild variant="outline" size="lg" className="h-12 px-6 text-base">
-          <Link href="/inscription">{t("hero.ctaSecondary")}</Link>
+          <Link href={`/${locale}/inscription`}>{t("hero.ctaSecondary")}</Link>
         </Button>
       </div>
     </section>

@@ -54,7 +54,7 @@
   "featured": {
     "title": "Featured events",
     "subtitle": "This edition's must-see highlights",
-    "viewAll": "View all",
+    "viewAll": "All events",
     "viewAllLabel": "View all featured events"
   },
   "newsSection": {
@@ -154,6 +154,33 @@
     "contactQuestion": "Have a question about the festival?",
     "contactCta": "Contact us →",
     "copyright": "© {year} Pierres en Lumières. All rights reserved."
+  },
+  "accessibilityPage": {
+    "title": "Accessibility Statement",
+    "description": "Accessibility statement for the Pierres en Lumières website in accordance with RGAA 4.1.",
+    "intro": "Pierres en Lumières is committed to making its website accessible in accordance with Article 47 of the French Law No. 2005-102 of 11 February 2005.",
+    "conformityTitle": "Conformity Status",
+    "conformityText": "This website is <bold>non-conformant</bold> with the General Reference for Digital Accessibility Improvement (RGAA), version 4.1. No conformity audit has been conducted yet.",
+    "nonAccessibleTitle": "Non-accessible Content",
+    "nonAccessible1": "Some externally sourced images may lack optimal text alternatives.",
+    "nonAccessible2": "The interactive map (Mapbox) has limited accessibility for screen reader users.",
+    "measuresTitle": "Accessibility Measures Implemented",
+    "measure1": "Skip link to main content",
+    "measure2": "Complete keyboard navigation",
+    "measure3": "Consistent heading hierarchy",
+    "measure4": "Identified navigation zones (ARIA landmarks)",
+    "measure5": "Compliant contrast ratios (minimum 4.5:1)",
+    "measure6": "Text alternatives for images",
+    "measure7": "Forms with associated labels",
+    "measure8": "Breadcrumbs on detail pages",
+    "measure9": "Respect for prefers-reduced-motion setting",
+    "feedbackTitle": "Feedback and Contact",
+    "feedbackText": "If you are unable to access content or a service, you can contact the site administrator to be directed to an accessible alternative or to obtain the content in another format.",
+    "feedbackContact": "Contact us via our ",
+    "feedbackLink": "contact form",
+    "recourseTitle": "Legal Recourse",
+    "recourseText": "If you encounter an accessibility problem preventing you from accessing content or a site feature, and you are unable to obtain a response from us, you have the right to file a complaint with the Defender of Rights (Défenseur des droits).",
+    "lastUpdated": "Last updated: March 2026"
   },
   "locale": {
     "fr": "Français",

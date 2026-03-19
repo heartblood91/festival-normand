@@ -14,7 +14,7 @@ export const generateMetadata = async ({ params }: { params: Promise<{ locale: s
     title: t("contact.title"),
     description: t("contact.subtitle"),
     openGraph: {
-      title: `${t("contact.title")} - Pierres en Lumières`,
+      title: `${t("contact.title")} — Pierres en Lumières`,
       description: t("contact.subtitle"),
     },
     alternates: {

@@ -20,10 +20,14 @@ describe("sitemap", () => {
     const result = await sitemap()
 
     const urls = result.map((entry) => entry.url)
-    expect(urls).toContain("https://pierresenlumieres.fr")
-    expect(urls).toContain("https://pierresenlumieres.fr/evenements")
-    expect(urls).toContain("https://pierresenlumieres.fr/actualites")
-    expect(urls).toContain("https://pierresenlumieres.fr/contact")
+    expect(urls).toContain("https://pierresenlumieres.fr/fr")
+    expect(urls).toContain("https://pierresenlumieres.fr/en")
+    expect(urls).toContain("https://pierresenlumieres.fr/fr/evenements")
+    expect(urls).toContain("https://pierresenlumieres.fr/en/evenements")
+    expect(urls).toContain("https://pierresenlumieres.fr/fr/actualites")
+    expect(urls).toContain("https://pierresenlumieres.fr/en/actualites")
+    expect(urls).toContain("https://pierresenlumieres.fr/fr/contact")
+    expect(urls).toContain("https://pierresenlumieres.fr/en/contact")
   })
 
   it("includes published events", async () => {
@@ -37,8 +41,10 @@ describe("sitemap", () => {
     const result = await sitemap()
 
     const urls = result.map((entry) => entry.url)
-    expect(urls).toContain("https://pierresenlumieres.fr/evenement/abbaye-jumieges")
-    expect(urls).toContain("https://pierresenlumieres.fr/evenement/chateau-caen")
+    expect(urls).toContain("https://pierresenlumieres.fr/fr/evenement/abbaye-jumieges")
+    expect(urls).toContain("https://pierresenlumieres.fr/en/evenement/abbaye-jumieges")
+    expect(urls).toContain("https://pierresenlumieres.fr/fr/evenement/chateau-caen")
+    expect(urls).toContain("https://pierresenlumieres.fr/en/evenement/chateau-caen")
   })
 
   it("includes published news articles", async () => {
@@ -51,7 +57,8 @@ describe("sitemap", () => {
     const result = await sitemap()
 
     const urls = result.map((entry) => entry.url)
-    expect(urls).toContain("https://pierresenlumieres.fr/actualite/programme-2026")
+    expect(urls).toContain("https://pierresenlumieres.fr/fr/actualite/programme-2026")
+    expect(urls).toContain("https://pierresenlumieres.fr/en/actualite/programme-2026")
   })
 
   it("includes pages from database", async () => {
@@ -66,9 +73,12 @@ describe("sitemap", () => {
     const result = await sitemap()
 
     const urls = result.map((entry) => entry.url)
-    expect(urls).toContain("https://pierresenlumieres.fr/festival")
-    expect(urls).toContain("https://pierresenlumieres.fr/inscription")
-    expect(urls).toContain("https://pierresenlumieres.fr/mentions-legales")
+    expect(urls).toContain("https://pierresenlumieres.fr/fr/festival")
+    expect(urls).toContain("https://pierresenlumieres.fr/en/festival")
+    expect(urls).toContain("https://pierresenlumieres.fr/fr/inscription")
+    expect(urls).toContain("https://pierresenlumieres.fr/en/inscription")
+    expect(urls).toContain("https://pierresenlumieres.fr/fr/mentions-legales")
+    expect(urls).toContain("https://pierresenlumieres.fr/en/mentions-legales")
   })
 
   it("queries only published events and news", async () => {
@@ -97,16 +107,16 @@ describe("sitemap", () => {
 
     const result = await sitemap()
 
-    const homepage = result.find((e) => e.url === "https://pierresenlumieres.fr")
+    const homepage = result.find((e) => e.url === "https://pierresenlumieres.fr/fr")
     expect(homepage?.priority).toBe(1)
 
-    const eventsPage = result.find((e) => e.url === "https://pierresenlumieres.fr/evenements")
+    const eventsPage = result.find((e) => e.url === "https://pierresenlumieres.fr/fr/evenements")
     expect(eventsPage?.priority).toBe(0.9)
 
-    const eventDetail = result.find((e) => e.url?.includes("/evenement/test-event"))
+    const eventDetail = result.find((e) => e.url?.includes("/fr/evenement/test-event"))
     expect(eventDetail?.priority).toBe(0.7)
 
-    const newsDetail = result.find((e) => e.url?.includes("/actualite/test-news"))
+    const newsDetail = result.find((e) => e.url?.includes("/fr/actualite/test-news"))
     expect(newsDetail?.priority).toBe(0.6)
   })
 })

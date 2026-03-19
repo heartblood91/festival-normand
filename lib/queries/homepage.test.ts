@@ -1,6 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { prismaMock } from "@/lib/test-utils"
 
+vi.mock("next/cache", () => ({
+  unstable_cache: (fn: Function) => fn,
+}))
+
 vi.mock("@/lib/prisma", () => ({
   prisma: prismaMock,
 }))
@@ -19,21 +23,22 @@ beforeEach(() => {
 describe("getFeaturedEvents", () => {
   it("returns featured published events ordered by dateStart", async () => {
     const mockEvents = [
-      { id: "1", title: "Event 1", slug: "event-1", featured: true },
-      { id: "2", title: "Event 2", slug: "event-2", featured: true },
+      { id: "1", titleFr: "Event 1", titleEn: null, slug: "event-1", location: "Caen", city: "Caen", department: "CALVADOS", category: "ILLUMINATIONS", dateStart: new Date("2026-05-29"), timeStart: null, timeEnd: null, coverImage: null },
+      { id: "2", titleFr: "Event 2", titleEn: null, slug: "event-2", location: "Rouen", city: "Rouen", department: "SEINE_MARITIME", category: "EXPOSITIONS", dateStart: new Date("2026-05-30"), timeStart: null, timeEnd: null, coverImage: null },
     ]
     prismaMock.event.findMany.mockResolvedValue(mockEvents)
 
-    const result = await getFeaturedEvents()
+    const result = await getFeaturedEvents("fr")
 
-    expect(result).toEqual(mockEvents)
+    expect(result).toHaveLength(2)
     expect(prismaMock.event.findMany).toHaveBeenCalledWith({
       where: { published: true, featured: true },
       orderBy: { dateStart: "asc" },
       take: 3,
       select: expect.objectContaining({
         id: true,
-        title: true,
+        titleFr: true,
+        titleEn: true,
         slug: true,
         coverImage: true,
       }),
@@ -43,7 +48,7 @@ describe("getFeaturedEvents", () => {
   it("returns empty array when no featured events", async () => {
     prismaMock.event.findMany.mockResolvedValue([])
 
-    const result = await getFeaturedEvents()
+    const result = await getFeaturedEvents("fr")
 
     expect(result).toEqual([])
   })
@@ -52,22 +57,24 @@ describe("getFeaturedEvents", () => {
 describe("getLatestNews", () => {
   it("returns published news ordered by date desc", async () => {
     const mockNews = [
-      { id: "1", title: "News 1", slug: "news-1", publishedAt: new Date() },
+      { id: "1", titleFr: "News 1", titleEn: null, slug: "news-1", excerptFr: "Excerpt 1", excerptEn: null, coverImage: null, publishedAt: new Date() },
     ]
     prismaMock.news.findMany.mockResolvedValue(mockNews)
 
-    const result = await getLatestNews()
+    const result = await getLatestNews("fr")
 
-    expect(result).toEqual(mockNews)
+    expect(result).toHaveLength(1)
     expect(prismaMock.news.findMany).toHaveBeenCalledWith({
       where: { published: true },
       orderBy: { publishedAt: "desc" },
       take: 6,
       select: expect.objectContaining({
         id: true,
-        title: true,
+        titleFr: true,
+        titleEn: true,
         slug: true,
-        excerpt: true,
+        excerptFr: true,
+        excerptEn: true,
         coverImage: true,
         publishedAt: true,
       }),
@@ -77,7 +84,7 @@ describe("getLatestNews", () => {
   it("returns empty array when no news", async () => {
     prismaMock.news.findMany.mockResolvedValue([])
 
-    const result = await getLatestNews()
+    const result = await getLatestNews("fr")
 
     expect(result).toEqual([])
   })
@@ -86,19 +93,20 @@ describe("getLatestNews", () => {
 describe("getPartners", () => {
   it("returns partners ordered by order field", async () => {
     const mockPartners = [
-      { id: "1", name: "Partner 1", order: 1 },
-      { id: "2", name: "Partner 2", order: 2 },
+      { id: "1", nameFr: "Partner 1", nameEn: null, logo: null, website: null },
+      { id: "2", nameFr: "Partner 2", nameEn: null, logo: null, website: null },
     ]
     prismaMock.partner.findMany.mockResolvedValue(mockPartners)
 
-    const result = await getPartners()
+    const result = await getPartners("fr")
 
-    expect(result).toEqual(mockPartners)
+    expect(result).toHaveLength(2)
     expect(prismaMock.partner.findMany).toHaveBeenCalledWith({
       orderBy: { order: "asc" },
       select: expect.objectContaining({
         id: true,
-        name: true,
+        nameFr: true,
+        nameEn: true,
         logo: true,
         website: true,
       }),

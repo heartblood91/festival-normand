@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import type { Locale } from "@/lib/i18n/config"
 import { getTranslations } from "next-intl/server"
 import { getNews } from "@/lib/queries/news"
 import { NewsCard } from "@/components/news/news-card"
@@ -8,14 +9,14 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.
 export const revalidate = 600
 
 export const generateMetadata = async ({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> => {
-  const { locale } = await params
+  const { locale } = await params as { locale: Locale }
   const t = await getTranslations({ locale })
 
   return {
     title: t("news.title"),
     description: t("news.subtitle"),
     openGraph: {
-      title: `${t("news.title")} - Pierres en Lumières`,
+      title: `${t("news.title")} — Pierres en Lumières`,
       description: t("news.subtitle"),
     },
     alternates: {
@@ -32,7 +33,7 @@ type NewsListPageProps = {
 }
 
 const NewsListPage = async ({ params }: NewsListPageProps) => {
-  const { locale } = await params
+  const { locale } = await params as { locale: Locale }
   const t = await getTranslations()
   const articles = await getNews(locale)
 

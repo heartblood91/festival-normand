@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import type { Locale } from "@/lib/i18n/config"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
@@ -29,7 +30,7 @@ type EventDetailPageProps = {
 }
 
 export const generateMetadata = async ({ params }: EventDetailPageProps): Promise<Metadata> => {
-  const { locale, slug } = await params
+  const { locale, slug } = await params as { locale: Locale; slug: string }
   const t = await getTranslations()
   const event = await getEventBySlug(slug, locale)
 
@@ -56,7 +57,7 @@ export const generateMetadata = async ({ params }: EventDetailPageProps): Promis
 }
 
 const EventDetailPage = async ({ params }: EventDetailPageProps) => {
-  const { locale, slug } = await params
+  const { locale, slug } = await params as { locale: Locale; slug: string }
   const t = await getTranslations()
   const event = await getEventBySlug(slug, locale)
 

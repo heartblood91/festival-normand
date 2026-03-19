@@ -1,10 +1,10 @@
-import { unstable_cache } from "next/cache"
+import { cachedQuery } from "@/lib/cache"
 import { prisma } from "@/lib/prisma"
 import { localizeEntity } from "@/lib/i18n/db"
 import type { Locale } from "@/lib/i18n/config"
 
 export const getNews = async (locale: Locale = "fr") => {
-  return unstable_cache(
+  return cachedQuery(
     async () => {
       const news = await prisma.news.findMany({
         where: { published: true },
@@ -33,7 +33,7 @@ export const getNews = async (locale: Locale = "fr") => {
 export type NewsListItem = Awaited<ReturnType<typeof getNews>>[number]
 
 export const getNewsBySlug = async (slug: string, locale: Locale = "fr") => {
-  return unstable_cache(
+  return cachedQuery(
     async () => {
       const news = await prisma.news.findUnique({
         where: { slug, published: true },

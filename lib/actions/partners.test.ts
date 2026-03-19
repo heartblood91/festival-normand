@@ -34,7 +34,8 @@ const createFormData = (data: Record<string, string>): FormData => {
 }
 
 const validPartnerData = {
-  name: "Région Normandie",
+  nameFr: "Région Normandie",
+  nameEn: "",
   logo: "https://example.com/logo.png",
   website: "https://normandie.fr",
   order: "0",
@@ -48,7 +49,7 @@ describe("createPartner", () => {
   it("creates partner successfully", async () => {
     mockPrisma.partner.create.mockResolvedValue({
       id: "test-id",
-      name: "Région Normandie",
+      nameFr: "Région Normandie",
     })
 
     const result = await createPartner(createFormData(validPartnerData))
@@ -58,7 +59,7 @@ describe("createPartner", () => {
     expect(mockPrisma.partner.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
-          name: "Région Normandie",
+          nameFr: "Région Normandie",
           website: "https://normandie.fr",
         }),
       })
@@ -67,7 +68,7 @@ describe("createPartner", () => {
 
   it("returns validation errors for invalid data", async () => {
     const result = await createPartner(
-      createFormData({ ...validPartnerData, name: "a", website: "not-url" })
+      createFormData({ ...validPartnerData, nameFr: "a", website: "not-url" })
     )
 
     expect(result.success).toBe(false)
@@ -92,7 +93,7 @@ describe("updatePartner", () => {
   it("updates partner successfully", async () => {
     mockPrisma.partner.update.mockResolvedValue({
       id: "test-id",
-      name: "Région Normandie",
+      nameFr: "Région Normandie",
     })
 
     const result = await updatePartner("test-id", createFormData(validPartnerData))
@@ -108,7 +109,7 @@ describe("updatePartner", () => {
   it("returns validation errors for invalid data", async () => {
     const result = await updatePartner(
       "test-id",
-      createFormData({ ...validPartnerData, name: "" })
+      createFormData({ ...validPartnerData, nameFr: "" })
     )
 
     expect(result.success).toBe(false)
@@ -173,8 +174,8 @@ describe("getAdminPartners", () => {
 
   it("returns partners ordered by order", async () => {
     const mockPartners = [
-      { id: "1", name: "Partner 1", order: 0 },
-      { id: "2", name: "Partner 2", order: 1 },
+      { id: "1", nameFr: "Partner 1", order: 0 },
+      { id: "2", nameFr: "Partner 2", order: 1 },
     ]
     mockPrisma.partner.findMany.mockResolvedValue(mockPartners)
 
@@ -193,7 +194,7 @@ describe("getAdminPartnerById", () => {
   })
 
   it("returns partner by id", async () => {
-    const mockPartner = { id: "test-id", name: "Test Partner" }
+    const mockPartner = { id: "test-id", nameFr: "Test Partner" }
     mockPrisma.partner.findUnique.mockResolvedValue(mockPartner)
 
     const result = await getAdminPartnerById("test-id")

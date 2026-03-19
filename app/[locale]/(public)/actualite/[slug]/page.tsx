@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import type { Locale } from "@/lib/i18n/config"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Calendar } from "lucide-react"
@@ -37,7 +38,7 @@ const formatNewsDate = (date: Date | string, locale: string): string => {
 }
 
 export const generateMetadata = async ({ params }: NewsDetailPageProps): Promise<Metadata> => {
-  const { locale, slug } = await params
+  const { locale, slug } = await params as { locale: Locale; slug: string }
   const article = await getNewsBySlug(slug, locale)
 
   if (!article) {
@@ -64,7 +65,7 @@ export const generateMetadata = async ({ params }: NewsDetailPageProps): Promise
 }
 
 const NewsDetailPage = async ({ params }: NewsDetailPageProps) => {
-  const { locale, slug } = await params
+  const { locale, slug } = await params as { locale: Locale; slug: string }
   const t = await getTranslations()
   const article = await getNewsBySlug(slug, locale)
 

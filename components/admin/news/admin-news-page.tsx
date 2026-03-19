@@ -177,7 +177,7 @@ export const AdminNewsPage = ({ news, search = "" }: AdminNewsPageProps) => {
                               variant="ghost"
                               size="icon-sm"
                               className="text-red-400 hover:text-red-300"
-                              aria-label={`Supprimer ${article.title}`}
+                              aria-label={`Supprimer ${article.titleFr}`}
                             />
                           }
                         >

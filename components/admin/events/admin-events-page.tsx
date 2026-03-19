@@ -223,7 +223,7 @@ export const AdminEventsPage = ({ events, search = "" }: AdminEventsPageProps) =
                               variant="ghost"
                               size="icon-sm"
                               className="text-red-400 hover:text-red-300"
-                              aria-label={`Supprimer ${event.title}`}
+                              aria-label={`Supprimer ${event.titleFr}`}
                             />
                           }
                         >

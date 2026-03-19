@@ -21,7 +21,7 @@ const geocode = async (query: string): Promise<{ lat: number; lng: number } | nu
 const main = async () => {
   const events = await prisma.event.findMany({
     where: { OR: [{ latitude: 0 }, { latitude: null }] },
-    select: { id: true, title: true, city: true, location: true, postalCode: true },
+    select: { id: true, titleFr: true, city: true, location: true, postalCode: true },
   })
 
   console.log(`${events.length} events to geocode\n`)
@@ -32,7 +32,7 @@ const main = async () => {
   for (const event of events) {
     const query = [event.location, event.city, event.postalCode].filter(Boolean).join(" ")
     if (!query.trim()) {
-      console.log("Skip (no data):", event.title)
+      console.log("Skip (no data):", event.titleFr)
       failed++
       continue
     }
@@ -49,10 +49,10 @@ const main = async () => {
         where: { id: event.id },
         data: { latitude: coords.lat, longitude: coords.lng },
       })
-      console.log(`✓ ${event.title} → ${coords.lat}, ${coords.lng}`)
+      console.log(`✓ ${event.titleFr} → ${coords.lat}, ${coords.lng}`)
       success++
     } else {
-      console.log(`✗ ${event.title}`)
+      console.log(`✗ ${event.titleFr}`)
       failed++
     }
 

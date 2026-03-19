@@ -4,9 +4,9 @@ import { eventSchema, slugify } from "./event"
 
 describe("eventSchema", () => {
   const validData = {
-    title: "Festival de Lumières",
+    titleFr: "Festival de Lumières",
     slug: "festival-de-lumieres",
-    description: "Un magnifique événement nocturne du patrimoine normand.",
+    descriptionFr: "Un magnifique événement nocturne du patrimoine normand.",
     location: "Château de Caen",
     city: "Caen",
     postalCode: "14000",
@@ -24,7 +24,7 @@ describe("eventSchema", () => {
   })
 
   it("rejects title shorter than 3 characters", () => {
-    const result = eventSchema.safeParse({ ...validData, title: "ab" })
+    const result = eventSchema.safeParse({ ...validData, titleFr: "ab" })
     expect(result.success).toBe(false)
   })
 
@@ -49,7 +49,7 @@ describe("eventSchema", () => {
       dateEnd: "",
       timeStart: "",
       timeEnd: "",
-      pricing: "",
+      pricingFr: "",
       email: "",
       website: "",
     })

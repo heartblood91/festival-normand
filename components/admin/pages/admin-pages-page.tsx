@@ -151,7 +151,7 @@ export const AdminPagesPage = ({ pages }: AdminPagesPageProps) => {
                                   variant="ghost"
                                   size="icon-sm"
                                   className="text-red-400 hover:text-red-300"
-                                  aria-label={`Supprimer ${page.title}`}
+                                  aria-label={`Supprimer ${page.titleFr}`}
                                 />
                               }
                             >

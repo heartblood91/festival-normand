@@ -77,11 +77,11 @@ const EventListCard = async ({ event, className, priority = false }: EventListCa
 
       {/* Content */}
       <div className="flex flex-1 flex-col p-4">
-        <h3 className="font-serif text-lg font-bold leading-snug text-foreground transition-colors group-hover:text-primary">
+        <h3 className="line-clamp-2 font-serif text-lg font-bold leading-snug text-foreground transition-colors group-hover:text-primary">
           {event.title}
         </h3>
 
-        <div className="mt-3 flex flex-col gap-1.5 text-sm text-muted-foreground">
+        <div className="mt-auto flex flex-col gap-1.5 pt-3 text-sm text-muted-foreground">
           <div className="flex items-center gap-1.5">
             <Calendar className="size-3.5 shrink-0" aria-hidden="true" />
             <span>{formatEventDate(event.dateStart, locale)}</span>

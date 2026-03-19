@@ -1,10 +1,10 @@
-import { unstable_cache } from "next/cache"
+import { cachedQuery } from "@/lib/cache"
 import { prisma } from "@/lib/prisma"
 import { localizeEntity } from "@/lib/i18n/db"
 import type { Locale } from "@/lib/i18n/config"
 
 export const getFeaturedEvents = async (locale: Locale = "fr") => {
-  return unstable_cache(
+  return cachedQuery(
     async () => {
       const events = await prisma.event.findMany({
         where: {
@@ -39,7 +39,7 @@ export const getFeaturedEvents = async (locale: Locale = "fr") => {
 }
 
 export const getLatestNews = async (locale: Locale = "fr") => {
-  return unstable_cache(
+  return cachedQuery(
     async () => {
       const news = await prisma.news.findMany({
         where: { published: true },
@@ -67,7 +67,7 @@ export const getLatestNews = async (locale: Locale = "fr") => {
 }
 
 export const getPartners = async (locale: Locale = "fr") => {
-  return unstable_cache(
+  return cachedQuery(
     async () => {
       const partners = await prisma.partner.findMany({
         orderBy: { order: "asc" },
@@ -91,7 +91,7 @@ export const getPartners = async (locale: Locale = "fr") => {
 }
 
 export const getEventCities = async () => {
-  return unstable_cache(
+  return cachedQuery(
     async () => {
       const events = await prisma.event.findMany({
         where: { published: true },

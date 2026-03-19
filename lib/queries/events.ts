@@ -1,4 +1,4 @@
-import { unstable_cache } from "next/cache"
+import { cachedQuery } from "@/lib/cache"
 import { prisma } from "@/lib/prisma"
 import { localizeEntity } from "@/lib/i18n/db"
 import type { Locale } from "@/lib/i18n/config"
@@ -100,7 +100,7 @@ const buildFilterWhere = (
 export const getEvents = async (filters: EventFilters = {}, locale: Locale = "fr") => {
   const cacheKey = JSON.stringify(filters)
 
-  return unstable_cache(
+  return cachedQuery(
     async () => {
       const { page = 1, lat, lng } = filters
       const skip = (page - 1) * ITEMS_PER_PAGE
@@ -144,7 +144,7 @@ export const getEvents = async (filters: EventFilters = {}, locale: Locale = "fr
 export type EventListItem = Awaited<ReturnType<typeof getEvents>>["events"][number]
 
 export const getEventBySlug = async (slug: string, locale: Locale = "fr") =>
-  unstable_cache(
+  cachedQuery(
     async () => {
       const event = await prisma.event.findUnique({ where: { slug, published: true } })
       if (!event) return null
@@ -165,7 +165,7 @@ export type EventDetail = NonNullable<Awaited<ReturnType<typeof getEventBySlug>>
 export const getAllFilteredEventsForMap = async (filters: EventFilters = {}, locale: Locale = "fr") => {
   const cacheKey = JSON.stringify(filters)
 
-  return unstable_cache(
+  return cachedQuery(
     async () => {
       const events = await prisma.event.findMany({
         where: { ...buildFilterWhere(filters), latitude: { not: 0 }, longitude: { not: 0 } },
@@ -191,7 +191,7 @@ export type MapEventItem = Awaited<ReturnType<typeof getAllFilteredEventsForMap>
 export const getFilterCounts = async (filters: EventFilters = {}) => {
   const cacheKey = JSON.stringify(filters)
 
-  return unstable_cache(
+  return cachedQuery(
     async () => {
       const deptValues = ["CALVADOS", "EURE", "MANCHE", "ORNE", "SEINE_MARITIME"]
       const catValues = ["ILLUMINATIONS", "EXPOSITIONS", "ANIMATIONS", "VISITES"]

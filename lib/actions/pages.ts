@@ -1,6 +1,6 @@
 "use server"
 
-import { revalidatePath, revalidateTag } from "next/cache"
+import { revalidatePath } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { pageSchema } from "@/lib/schemas/page"
 
@@ -65,7 +65,6 @@ export const createPage = async (formData: FormData): Promise<PageActionResult> 
       },
     })
 
-    revalidateTag("pages")
     revalidatePath(`/${page.slug}`)
 
     return {
@@ -121,7 +120,6 @@ export const updatePage = async (
       },
     })
 
-    revalidateTag("pages")
     revalidatePath(`/${page.slug}`)
     revalidatePath("/")
 
@@ -157,7 +155,6 @@ export const deletePage = async (id: string): Promise<PageActionResult> => {
 
     await prisma.page.delete({ where: { id } })
 
-    revalidateTag("pages")
     revalidatePath(`/${page.slug}`)
 
     return {

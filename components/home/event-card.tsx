@@ -16,7 +16,7 @@ const EventCard = async ({ event, className, priority = false }: EventCardProps)
   const locale = await getLocale()
   return (
     <Link
-      href={`/evenement/${event.slug}`}
+      href={`/${locale}/evenement/${event.slug}`}
       className={cn(
         "group relative flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all hover:border-primary/30 hover:bg-white/10 hover:shadow-lg hover:shadow-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
         className
@@ -43,11 +43,11 @@ const EventCard = async ({ event, className, priority = false }: EventCardProps)
 
       {/* Content */}
       <div className="flex flex-1 flex-col p-4">
-        <h3 className="font-serif text-lg font-bold leading-snug text-foreground group-hover:text-primary transition-colors">
+        <h3 className="line-clamp-2 font-serif text-lg font-bold leading-snug text-foreground group-hover:text-primary transition-colors">
           {event.title}
         </h3>
 
-        <div className="mt-3 flex flex-col gap-1.5 text-sm text-muted-foreground">
+        <div className="mt-auto flex flex-col gap-1.5 pt-3 text-sm text-muted-foreground">
           <div className="flex items-center gap-1.5">
             <Calendar className="size-3.5 shrink-0" aria-hidden="true" />
             <span>{formatEventDate(event.dateStart, locale)}</span>

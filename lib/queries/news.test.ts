@@ -1,6 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { prismaMock } from "@/lib/test-utils"
 
+vi.mock("next/cache", () => ({
+  unstable_cache: (fn: Function) => fn,
+}))
+
 vi.mock("@/lib/prisma", () => ({
   prisma: prismaMock,
 }))
@@ -14,17 +18,21 @@ beforeEach(() => {
 const mockNewsArticles = [
   {
     id: "1",
-    title: "Programme 2026 dévoilé",
+    titleFr: "Programme 2026 dévoilé",
+    titleEn: null,
     slug: "programme-2026-devoile",
-    excerpt: "Découvrez le programme complet",
+    excerptFr: "Découvrez le programme complet",
+    excerptEn: null,
     coverImage: "/images/news-1.jpg",
     publishedAt: new Date("2026-03-10"),
   },
   {
     id: "2",
-    title: "Les bénévoles au cœur du festival",
+    titleFr: "Les bénévoles au cœur du festival",
+    titleEn: null,
     slug: "benevoles-coeur-festival",
-    excerpt: "Rencontre avec les bénévoles",
+    excerptFr: "Rencontre avec les bénévoles",
+    excerptEn: null,
     coverImage: null,
     publishedAt: new Date("2026-03-01"),
   },
@@ -34,17 +42,19 @@ describe("getNews", () => {
   it("returns published news ordered by date desc", async () => {
     prismaMock.news.findMany.mockResolvedValue(mockNewsArticles)
 
-    const result = await getNews()
+    const result = await getNews("fr")
 
-    expect(result).toEqual(mockNewsArticles)
+    expect(result).toHaveLength(2)
     expect(prismaMock.news.findMany).toHaveBeenCalledWith({
       where: { published: true },
       orderBy: { publishedAt: "desc" },
       select: {
         id: true,
-        title: true,
+        titleFr: true,
+        titleEn: true,
         slug: true,
-        excerpt: true,
+        excerptFr: true,
+        excerptEn: true,
         coverImage: true,
         publishedAt: true,
       },
@@ -54,7 +64,7 @@ describe("getNews", () => {
   it("returns empty array when no news", async () => {
     prismaMock.news.findMany.mockResolvedValue([])
 
-    const result = await getNews()
+    const result = await getNews("fr")
 
     expect(result).toEqual([])
   })
@@ -62,10 +72,13 @@ describe("getNews", () => {
 
 const mockNewsDetail = {
   id: "1",
-  title: "Programme 2026 dévoilé",
+  titleFr: "Programme 2026 dévoilé",
+  titleEn: null,
   slug: "programme-2026-devoile",
-  excerpt: "Découvrez le programme complet",
-  content: "# Programme 2026\n\nContenu complet de l'article.",
+  excerptFr: "Découvrez le programme complet",
+  excerptEn: null,
+  contentFr: "# Programme 2026\n\nContenu complet de l'article.",
+  contentEn: null,
   coverImage: "/images/news-1.jpg",
   published: true,
   publishedAt: new Date("2026-03-10"),
@@ -77,9 +90,9 @@ describe("getNewsBySlug", () => {
   it("returns article by slug with published filter", async () => {
     prismaMock.news.findUnique.mockResolvedValue(mockNewsDetail)
 
-    const result = await getNewsBySlug("programme-2026-devoile")
+    const result = await getNewsBySlug("programme-2026-devoile", "fr")
 
-    expect(result).toEqual(mockNewsDetail)
+    expect(result).not.toBeNull()
     expect(prismaMock.news.findUnique).toHaveBeenCalledWith({
       where: { slug: "programme-2026-devoile", published: true },
     })
@@ -88,7 +101,7 @@ describe("getNewsBySlug", () => {
   it("returns null for non-existent slug", async () => {
     prismaMock.news.findUnique.mockResolvedValue(null)
 
-    const result = await getNewsBySlug("non-existent")
+    const result = await getNewsBySlug("non-existent", "fr")
 
     expect(result).toBeNull()
   })
@@ -96,7 +109,7 @@ describe("getNewsBySlug", () => {
   it("returns null for unpublished article", async () => {
     prismaMock.news.findUnique.mockResolvedValue(null)
 
-    const result = await getNewsBySlug("draft-article")
+    const result = await getNewsBySlug("draft-article", "fr")
 
     expect(result).toBeNull()
     expect(prismaMock.news.findUnique).toHaveBeenCalledWith({

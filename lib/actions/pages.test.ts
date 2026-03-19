@@ -33,9 +33,11 @@ const createFormData = (data: Record<string, string>): FormData => {
 }
 
 const validPageData = {
-  title: "À propos du festival",
+  titleFr: "À propos du festival",
+  titleEn: "",
   slug: "a-propos",
-  content: "<p>Contenu de la page à propos du festival Pierres en Lumières.</p>",
+  contentFr: "<p>Contenu de la page à propos du festival Pierres en Lumières.</p>",
+  contentEn: "",
 }
 
 describe("createPage", () => {
@@ -57,7 +59,7 @@ describe("createPage", () => {
     expect(mockPrisma.page.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
-          title: "À propos du festival",
+          titleFr: "À propos du festival",
           slug: "a-propos",
         }),
       })
@@ -66,13 +68,13 @@ describe("createPage", () => {
 
   it("returns validation errors for invalid data", async () => {
     const result = await createPage(
-      createFormData({ ...validPageData, title: "ab", content: "short" })
+      createFormData({ ...validPageData, titleFr: "ab", contentFr: "short" })
     )
 
     expect(result.success).toBe(false)
     expect(result.errors).toBeDefined()
-    expect(result.errors?.title).toBeDefined()
-    expect(result.errors?.content).toBeDefined()
+    expect(result.errors?.titleFr).toBeDefined()
+    expect(result.errors?.contentFr).toBeDefined()
   })
 
   it("returns error for duplicate slug", async () => {
@@ -191,8 +193,8 @@ describe("getAdminPages", () => {
 
   it("returns all pages ordered by title", async () => {
     const mockPages = [
-      { id: "1", title: "Festival", slug: "festival" },
-      { id: "2", title: "Inscription", slug: "inscription" },
+      { id: "1", titleFr: "Festival", slug: "festival" },
+      { id: "2", titleFr: "Inscription", slug: "inscription" },
     ]
     mockPrisma.page.findMany.mockResolvedValue(mockPages)
 
@@ -201,7 +203,7 @@ describe("getAdminPages", () => {
     expect(result).toEqual(mockPages)
     expect(mockPrisma.page.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        orderBy: { title: "asc" },
+        orderBy: { titleFr: "asc" },
       })
     )
   })
@@ -213,7 +215,7 @@ describe("getAdminPageById", () => {
   })
 
   it("returns page by id", async () => {
-    const mockPage = { id: "test-id", title: "Test Page" }
+    const mockPage = { id: "test-id", titleFr: "Test Page" }
     mockPrisma.page.findUnique.mockResolvedValue(mockPage)
 
     const result = await getAdminPageById("test-id")

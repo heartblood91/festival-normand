@@ -13,25 +13,29 @@ const extractYouTubeId = (url: string): string | null => {
 }
 
 const components: Components = {
-  // Downgrade h1 to h2 since the page already has an h1
+  // Page already has an h1, so markdown headings start at h2
   h1: ({ children }) => (
     <h2 className="mb-6 font-serif text-2xl font-bold text-foreground md:text-3xl">
       {children}
     </h2>
   ),
   h2: ({ children }) => (
-    <h3 className="mb-4 mt-8 font-serif text-xl font-bold text-foreground md:text-2xl">
+    <>
+      <hr className="my-8 border-white/10" aria-hidden="true" />
+      <h2 className="mb-4 font-serif text-xl font-bold text-foreground md:text-2xl">
+        {children}
+      </h2>
+    </>
+  ),
+  h3: ({ children }) => (
+    <h3 className="mb-3 mt-8 border-l-2 border-primary/50 pl-4 font-serif text-lg font-bold text-foreground md:text-xl">
       {children}
     </h3>
   ),
-  h3: ({ children }) => (
-    <h4 className="mb-3 mt-6 font-serif text-lg font-bold text-foreground md:text-xl">
-      {children}
-    </h4>
-  ),
   p: ({ children, node }) => {
     const hasBlockChildren = node?.children?.some(
-      (child: any) => child.type === 'element' && (['img'].includes(child.tagName) ||
+      (child: { type?: string; tagName?: string; properties?: { href?: string } }) =>
+        child.type === 'element' && (['img'].includes(child.tagName ?? '') ||
         (child.tagName === 'a' && child.properties?.href && YOUTUBE_REGEX.test(child.properties.href)))
     )
     const Tag = hasBlockChildren ? 'div' : 'p'

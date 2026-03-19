@@ -179,7 +179,7 @@ export const AdminPartnersPage = ({ partners: initialPartners }: AdminPartnersPa
                         variant="ghost"
                         size="icon-sm"
                         className="text-red-400 hover:text-red-300"
-                        aria-label={`Supprimer ${partner.name}`}
+                        aria-label={`Supprimer ${partner.nameFr}`}
                       />
                     }
                   >

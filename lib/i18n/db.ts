@@ -14,14 +14,17 @@ export const pickLocale = <T extends Record<string, unknown>>(
   return (item[frField] as string) ?? ""
 }
 
-export const localizeEntity = <T extends Record<string, unknown>>(
+export const localizeEntity = <
+  T extends Record<string, unknown>,
+  F extends string,
+>(
   item: T,
   locale: Locale,
-  fields: string[]
-): T & Record<string, string> => {
+  fields: readonly F[]
+): T & { [K in F]: string } => {
   const result = { ...item } as Record<string, unknown>
   for (const field of fields) {
     result[field] = pickLocale(item, locale, field)
   }
-  return result as T & Record<string, string>
+  return result as T & { [K in F]: string }
 }

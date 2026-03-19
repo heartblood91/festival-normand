@@ -1,10 +1,10 @@
-import { unstable_cache } from "next/cache"
+import { cachedQuery } from "@/lib/cache"
 import { prisma } from "@/lib/prisma"
 import { localizeEntity } from "@/lib/i18n/db"
 import type { Locale } from "@/lib/i18n/config"
 
 export const getPageBySlug = async (slug: string, locale: Locale = "fr") => {
-  return unstable_cache(
+  return cachedQuery(
     async () => {
       const page = await prisma.page.findUnique({
         where: { slug },

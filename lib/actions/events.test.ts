@@ -37,9 +37,11 @@ const createFormData = (data: Record<string, string>): FormData => {
 }
 
 const validEventData = {
-  title: "Festival de Lumières à Caen",
+  titleFr: "Festival de Lumières à Caen",
+  titleEn: "",
   slug: "festival-de-lumieres-a-caen",
-  description: "Un magnifique événement de mise en lumière du patrimoine caennais.",
+  descriptionFr: "Un magnifique événement de mise en lumière du patrimoine caennais.",
+  descriptionEn: "",
   location: "Château de Caen",
   city: "Caen",
   postalCode: "14000",
@@ -49,7 +51,8 @@ const validEventData = {
   dateEnd: "",
   timeStart: "20:00",
   timeEnd: "23:00",
-  pricing: "Gratuit",
+  pricingFr: "Gratuit",
+  pricingEn: "",
   organizer: "Ville de Caen",
   email: "contact@caen.fr",
   phone: "",
@@ -81,7 +84,7 @@ describe("createEvent", () => {
     expect(mockPrisma.event.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
-          title: "Festival de Lumières à Caen",
+          titleFr: "Festival de Lumières à Caen",
           slug: "festival-de-lumieres-a-caen",
           department: "CALVADOS",
           category: "ILLUMINATIONS",
@@ -93,13 +96,13 @@ describe("createEvent", () => {
 
   it("returns validation errors for invalid data", async () => {
     const result = await createEvent(
-      createFormData({ ...validEventData, title: "ab", description: "short" })
+      createFormData({ ...validEventData, titleFr: "ab", descriptionFr: "short" })
     )
 
     expect(result.success).toBe(false)
     expect(result.errors).toBeDefined()
-    expect(result.errors?.title).toBeDefined()
-    expect(result.errors?.description).toBeDefined()
+    expect(result.errors?.titleFr).toBeDefined()
+    expect(result.errors?.descriptionFr).toBeDefined()
   })
 
   it("returns error for duplicate slug", async () => {
@@ -201,8 +204,8 @@ describe("getAdminEvents", () => {
 
   it("returns all events without search", async () => {
     const mockEvents = [
-      { id: "1", title: "Event 1" },
-      { id: "2", title: "Event 2" },
+      { id: "1", titleFr: "Event 1" },
+      { id: "2", titleFr: "Event 2" },
     ]
     mockPrisma.event.findMany.mockResolvedValue(mockEvents)
 
@@ -226,7 +229,7 @@ describe("getAdminEvents", () => {
       expect.objectContaining({
         where: {
           OR: [
-            { title: { contains: "Caen", mode: "insensitive" } },
+            { titleFr: { contains: "Caen", mode: "insensitive" } },
             { city: { contains: "Caen", mode: "insensitive" } },
             { location: { contains: "Caen", mode: "insensitive" } },
           ],
@@ -242,7 +245,7 @@ describe("getAdminEventById", () => {
   })
 
   it("returns event by id", async () => {
-    const mockEvent = { id: "test-id", title: "Test Event" }
+    const mockEvent = { id: "test-id", titleFr: "Test Event" }
     mockPrisma.event.findUnique.mockResolvedValue(mockEvent)
 
     const result = await getAdminEventById("test-id")

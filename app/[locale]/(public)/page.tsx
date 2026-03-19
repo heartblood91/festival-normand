@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import type { Locale } from "@/lib/i18n/config"
 import { HeroSection } from "@/components/home/hero-section"
 import { SearchBar } from "@/components/home/search-bar"
 import { FeaturedEvents } from "@/components/home/featured-events"
@@ -16,9 +17,9 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.
 export const revalidate = 300
 
 export const generateMetadata = async ({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> => {
-  const { locale } = await params
-  const frenchTitle = "Pierres en Lumières - Festival du Patrimoine Normand"
-  const englishTitle = "Stones in Lights - Festival of Norman Heritage"
+  const { locale } = await params as { locale: Locale }
+  const frenchTitle = "Pierres en Lumières — Festival du Patrimoine Normand"
+  const englishTitle = "Pierres en Lumières — Festival of Norman Heritage"
   const frenchDesc = "Découvrez la magie du patrimoine normand en nocturne. 29, 30 & 31 mai 2026."
   const englishDesc = "Discover the magic of Norman heritage by night. May 29, 30 & 31, 2026."
 
@@ -47,7 +48,7 @@ type HomePageProps = {
 }
 
 const HomePage = async ({ params }: HomePageProps) => {
-  const { locale } = await params
+  const { locale } = await params as { locale: Locale }
   const [events, news, partners, cities] = await Promise.all([
     getFeaturedEvents(locale),
     getLatestNews(locale),

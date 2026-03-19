@@ -1,6 +1,6 @@
 "use server"
 
-import { revalidatePath, revalidateTag } from "next/cache"
+import { revalidatePath } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { partnerSchema } from "@/lib/schemas/partner"
 
@@ -48,7 +48,6 @@ export const createPartner = async (formData: FormData): Promise<PartnerActionRe
       },
     })
 
-    revalidateTag("partners")
     revalidatePath("/")
 
     return {
@@ -93,7 +92,6 @@ export const updatePartner = async (
       },
     })
 
-    revalidateTag("partners")
     revalidatePath("/")
 
     return {
@@ -113,7 +111,6 @@ export const deletePartner = async (id: string): Promise<PartnerActionResult> =>
   try {
     await prisma.partner.delete({ where: { id } })
 
-    revalidateTag("partners")
     revalidatePath("/")
 
     return {
@@ -141,7 +138,6 @@ export const reorderPartners = async (
       )
     )
 
-    revalidateTag("partners")
     revalidatePath("/")
 
     return {
