@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { getTranslations } from "next-intl/server"
 import {
   Calendar,
   Clock,
@@ -12,26 +13,11 @@ import {
 } from "lucide-react"
 import type { EventDetail } from "@/lib/queries/events"
 
-const CATEGORY_LABELS: Record<string, string> = {
-  ILLUMINATIONS: "Illuminations",
-  EXPOSITIONS: "Expositions",
-  ANIMATIONS: "Animations",
-  VISITES: "Visites",
-}
-
 const CATEGORY_SLUG_MAP: Record<string, string> = {
   ILLUMINATIONS: "illuminations",
   EXPOSITIONS: "expositions",
   ANIMATIONS: "animations",
   VISITES: "visites",
-}
-
-const DEPARTMENT_LABELS: Record<string, string> = {
-  CALVADOS: "Calvados",
-  EURE: "Eure",
-  MANCHE: "Manche",
-  ORNE: "Orne",
-  SEINE_MARITIME: "Seine-Maritime",
 }
 
 const DEPARTMENT_SLUG_MAP: Record<string, string> = {
@@ -42,8 +28,9 @@ const DEPARTMENT_SLUG_MAP: Record<string, string> = {
   SEINE_MARITIME: "seine-maritime",
 }
 
-const formatEventDate = (date: Date | string): string => {
-  return new Intl.DateTimeFormat("fr-FR", {
+const formatEventDate = (date: Date | string, locale: string): string => {
+  const localeStr = locale === "en" ? "en-US" : "fr-FR"
+  return new Intl.DateTimeFormat(localeStr, {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -58,6 +45,7 @@ const formatTime = (time: string | undefined | null): string | undefined => {
 
 type EventInfoProps = {
   event: EventDetail
+  locale: string
 }
 
 const InfoRow = ({
@@ -78,13 +66,14 @@ const InfoRow = ({
   </div>
 )
 
-const EventInfo = ({ event }: EventInfoProps) => {
+const EventInfo = async ({ event, locale }: EventInfoProps) => {
+  const t = await getTranslations()
   const dateDisplay = (() => {
-    const start = formatEventDate(event.dateStart)
+    const start = formatEventDate(event.dateStart, locale)
     if (event.dateEnd) {
-      const end = formatEventDate(event.dateEnd)
+      const end = formatEventDate(event.dateEnd, locale)
       if (start === end) return start
-      return `Du ${start} au ${end}`
+      return `${t("events.date")}: ${start} à ${end}`
     }
     return start
   })()
@@ -100,18 +89,18 @@ const EventInfo = ({ event }: EventInfoProps) => {
           href={categorySlug ? `/evenements?category=${categorySlug}` : "#"}
           className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-medium text-primary transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
         >
-          {CATEGORY_LABELS[event.category] ?? event.category}
+          {t(`categories.${event.category}`) ?? event.category}
         </Link>
         <Link
           href={departmentSlug ? `/evenements?dept=${departmentSlug}` : "#"}
           className="rounded-full border border-white/20 bg-white/5 px-3 py-1 text-sm font-medium text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
         >
-          {DEPARTMENT_LABELS[event.department] ?? event.department}
+          {t(`departments.${event.department}`) ?? event.department}
         </Link>
         {event.accessible && (
           <span className="flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
             <Accessibility className="size-3.5" aria-hidden="true" />
-            Accessible PMR
+            {t("events.accessible")}
           </span>
         )}
       </div>
@@ -119,15 +108,15 @@ const EventInfo = ({ event }: EventInfoProps) => {
       {/* Info card */}
       <div className="rounded-xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl md:p-6">
         <h2 className="mb-4 font-serif text-lg font-bold text-foreground">
-          Informations pratiques
+          {t("events.practicalInfo")}
         </h2>
         <div className="space-y-4">
-          <InfoRow icon={Calendar} label="Date">
+          <InfoRow icon={Calendar} label={t("events.date")}>
             <p>{dateDisplay}</p>
           </InfoRow>
 
           {(event.timeStart || event.timeEnd) && (
-            <InfoRow icon={Clock} label="Horaires">
+            <InfoRow icon={Clock} label={t("events.time")}>
               <p>
                 {formatTime(event.timeStart)}
                 {event.timeEnd ? ` - ${formatTime(event.timeEnd)}` : ""}
@@ -135,7 +124,7 @@ const EventInfo = ({ event }: EventInfoProps) => {
             </InfoRow>
           )}
 
-          <InfoRow icon={MapPin} label="Lieu">
+          <InfoRow icon={MapPin} label={t("events.venue")}>
             <p>{event.location}</p>
             <p className="text-sm text-muted-foreground">
               {event.postalCode} {event.city}
@@ -143,13 +132,13 @@ const EventInfo = ({ event }: EventInfoProps) => {
           </InfoRow>
 
           {event.pricing && (
-            <InfoRow icon={Euro} label="Tarification">
+            <InfoRow icon={Euro} label={t("events.pricing")}>
               <p>{event.pricing}</p>
             </InfoRow>
           )}
 
           {event.organizer && (
-            <InfoRow icon={Building2} label="Organisateur">
+            <InfoRow icon={Building2} label={t("events.organizer")}>
               <p>{event.organizer}</p>
             </InfoRow>
           )}
@@ -160,21 +149,21 @@ const EventInfo = ({ event }: EventInfoProps) => {
       {(event.email || event.phone || event.website) && (
         <div className="rounded-xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl md:p-6">
           <h2 className="mb-4 font-serif text-lg font-bold text-foreground">
-            Contact
+            {t("footer.contact")}
           </h2>
           <div className="space-y-4">
             {event.email && (
               <InfoRow icon={Mail} label="Email">
                 <a
                   href={`mailto:${event.email}`}
-                  className="text-primary underline-offset-2 transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                  className="text-primary underline-offset-2 transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 break-all"
                 >
                   {event.email}
                 </a>
               </InfoRow>
             )}
             {event.phone && (
-              <InfoRow icon={Phone} label="Téléphone">
+              <InfoRow icon={Phone} label={t("events.organizer")}>
                 <a
                   href={`tel:${event.phone}`}
                   className="text-primary underline-offset-2 transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
@@ -184,7 +173,7 @@ const EventInfo = ({ event }: EventInfoProps) => {
               </InfoRow>
             )}
             {event.website && (
-              <InfoRow icon={Globe} label="Site web">
+              <InfoRow icon={Globe} label={t("events.organizer")}>
                 <a
                   href={event.website}
                   target="_blank"

@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { TranslateButton } from "@/components/admin/translate-button"
 import { createEvent, updateEvent } from "@/lib/actions/events"
 import { slugify, DEPARTMENT_OPTIONS, CATEGORY_OPTIONS } from "@/lib/schemas/event"
 import type { Event } from "@prisma/client"
@@ -32,9 +34,16 @@ export const EventForm = ({ event }: EventFormProps) => {
   const [featured, setFeatured] = useState(event?.featured ?? false)
   const [accessible, setAccessible] = useState(event?.accessible ?? false)
   const [published, setPublished] = useState(event?.published ?? true)
+  const [titleFr, setTitleFr] = useState(event?.titleFr ?? "")
+  const [titleEn, setTitleEn] = useState(event?.titleEn ?? "")
+  const [descriptionFr, setDescriptionFr] = useState(event?.descriptionFr ?? "")
+  const [descriptionEn, setDescriptionEn] = useState(event?.descriptionEn ?? "")
+  const [pricingFr, setPricingFr] = useState(event?.pricingFr ?? "")
+  const [pricingEn, setPricingEn] = useState(event?.pricingEn ?? "")
 
-  const handleTitleChange = useCallback(
+  const handleTitleFrChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
+      setTitleFr(e.target.value)
       if (autoSlug) {
         setSlug(slugify(e.target.value))
       }
@@ -50,6 +59,12 @@ export const EventForm = ({ event }: EventFormProps) => {
     []
   )
 
+  const handleTranslated = (translations: Record<string, string>) => {
+    if (translations.titleEn) setTitleEn(translations.titleEn)
+    if (translations.descriptionEn) setDescriptionEn(translations.descriptionEn)
+    if (translations.pricingEn) setPricingEn(translations.pricingEn)
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
@@ -57,6 +72,12 @@ export const EventForm = ({ event }: EventFormProps) => {
 
     const formData = new FormData(e.currentTarget)
     formData.set("slug", slug)
+    formData.set("titleFr", titleFr)
+    formData.set("titleEn", titleEn)
+    formData.set("descriptionFr", descriptionFr)
+    formData.set("descriptionEn", descriptionEn)
+    formData.set("pricingFr", pricingFr)
+    formData.set("pricingEn", pricingEn)
     formData.set("featured", String(featured))
     formData.set("accessible", String(accessible))
     formData.set("published", String(published))
@@ -94,32 +115,113 @@ export const EventForm = ({ event }: EventFormProps) => {
         </Button>
       </div>
 
-      {/* Basic Info */}
+      {/* Basic Info with i18n tabs */}
       <Card className="border-white/10 bg-white/5">
         <CardHeader>
           <CardTitle className="text-white">Informations générales</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="title" className="text-slate-300">
-              Titre *
-            </Label>
-            <Input
-              id="title"
-              name="title"
-              defaultValue={event?.title ?? ""}
-              onChange={handleTitleChange}
-              required
-              className="mt-1 border-white/10 bg-white/5 text-white"
-              aria-invalid={!!errors.title}
-              aria-describedby={errors.title ? "title-error" : undefined}
-            />
-            {errors.title && (
-              <p id="title-error" className="mt-1 text-sm text-red-400">
-                {errors.title[0]}
-              </p>
-            )}
-          </div>
+          <Tabs defaultValue="fr">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="fr">Français</TabsTrigger>
+              <TabsTrigger value="en">English</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="fr" className="space-y-4">
+              <div>
+                <Label htmlFor="titleFr" className="text-slate-300">
+                  Titre *
+                </Label>
+                <Input
+                  id="titleFr"
+                  name="titleFr"
+                  value={titleFr}
+                  onChange={handleTitleFrChange}
+                  required
+                  className="mt-1 border-white/10 bg-white/5 text-white"
+                  aria-invalid={!!errors.titleFr}
+                  aria-describedby={errors.titleFr ? "titleFr-error" : undefined}
+                />
+                {errors.titleFr && (
+                  <p id="titleFr-error" className="mt-1 text-sm text-red-400">
+                    {errors.titleFr[0]}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="descriptionFr" className="text-slate-300">
+                  Description *
+                </Label>
+                <textarea
+                  id="descriptionFr"
+                  name="descriptionFr"
+                  value={descriptionFr}
+                  onChange={(e) => setDescriptionFr(e.target.value)}
+                  required
+                  rows={6}
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                  aria-invalid={!!errors.descriptionFr}
+                  aria-describedby={errors.descriptionFr ? "descriptionFr-error" : undefined}
+                />
+                {errors.descriptionFr && (
+                  <p id="descriptionFr-error" className="mt-1 text-sm text-red-400">
+                    {errors.descriptionFr[0]}
+                  </p>
+                )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="en" className="space-y-4">
+              <TranslateButton
+                sourceFields={{
+                  titleFr,
+                  descriptionFr,
+                  pricingFr,
+                }}
+                onTranslated={handleTranslated}
+              />
+
+              <div>
+                <Label htmlFor="titleEn" className="text-slate-300">
+                  Title
+                </Label>
+                <Input
+                  id="titleEn"
+                  name="titleEn"
+                  value={titleEn}
+                  onChange={(e) => setTitleEn(e.target.value)}
+                  className="mt-1 border-white/10 bg-white/5 text-white"
+                  aria-describedby={errors.titleEn ? "titleEn-error" : undefined}
+                />
+                {errors.titleEn && (
+                  <p id="titleEn-error" className="mt-1 text-sm text-red-400">
+                    {errors.titleEn[0]}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="descriptionEn" className="text-slate-300">
+                  Description
+                </Label>
+                <textarea
+                  id="descriptionEn"
+                  name="descriptionEn"
+                  value={descriptionEn}
+                  onChange={(e) => setDescriptionEn(e.target.value)}
+                  rows={6}
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                  aria-describedby={errors.descriptionEn ? "descriptionEn-error" : undefined}
+                />
+                {errors.descriptionEn && (
+                  <p id="descriptionEn-error" className="mt-1 text-sm text-red-400">
+                    {errors.descriptionEn[0]}
+                  </p>
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
 
           <div>
             <Label htmlFor="slug" className="text-slate-300">
@@ -138,27 +240,6 @@ export const EventForm = ({ event }: EventFormProps) => {
             {errors.slug && (
               <p id="slug-error" className="mt-1 text-sm text-red-400">
                 {errors.slug[0]}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <Label htmlFor="description" className="text-slate-300">
-              Description *
-            </Label>
-            <textarea
-              id="description"
-              name="description"
-              defaultValue={event?.description ?? ""}
-              required
-              rows={6}
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-              aria-invalid={!!errors.description}
-              aria-describedby={errors.description ? "description-error" : undefined}
-            />
-            {errors.description && (
-              <p id="description-error" className="mt-1 text-sm text-red-400">
-                {errors.description[0]}
               </p>
             )}
           </div>
@@ -415,18 +496,44 @@ export const EventForm = ({ event }: EventFormProps) => {
           <CardTitle className="text-white">Informations pratiques</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="pricing" className="text-slate-300">
-              Tarification
-            </Label>
-            <Input
-              id="pricing"
-              name="pricing"
-              defaultValue={event?.pricing ?? ""}
-              placeholder="Gratuit, 5€, etc."
-              className="mt-1 border-white/10 bg-white/5 text-white placeholder:text-slate-500"
-            />
-          </div>
+          <Tabs defaultValue="fr">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="fr">Français</TabsTrigger>
+              <TabsTrigger value="en">English</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="fr">
+              <div>
+                <Label htmlFor="pricingFr" className="text-slate-300">
+                  Tarification
+                </Label>
+                <Input
+                  id="pricingFr"
+                  name="pricingFr"
+                  value={pricingFr}
+                  onChange={(e) => setPricingFr(e.target.value)}
+                  placeholder="Gratuit, 5€, etc."
+                  className="mt-1 border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="en">
+              <div>
+                <Label htmlFor="pricingEn" className="text-slate-300">
+                  Pricing
+                </Label>
+                <Input
+                  id="pricingEn"
+                  name="pricingEn"
+                  value={pricingEn}
+                  onChange={(e) => setPricingEn(e.target.value)}
+                  placeholder="Free, 5€, etc."
+                  className="mt-1 border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+                />
+              </div>
+            </TabsContent>
+          </Tabs>
 
           <div>
             <Label htmlFor="organizer" className="text-slate-300">

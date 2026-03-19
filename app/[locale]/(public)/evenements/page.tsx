@@ -9,22 +9,41 @@ import { EventsSearchBar } from "@/components/events/events-search-bar"
 import { ViewToggle } from "@/components/events/view-toggle"
 import { EventsMapWrapper } from "@/components/events/events-map-wrapper"
 import { NearbyButton } from "@/components/events/nearby-button"
+import { getTranslations } from "next-intl/server"
 import type { Category, Department } from "@prisma/client"
+
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
 export const revalidate = 300
 
-export const metadata: Metadata = {
-  title: "Événements",
-  description:
-    "Découvrez tous les événements du festival Pierres en Lumières en Normandie. Illuminations, expositions, animations et visites nocturnes du patrimoine normand.",
-  openGraph: {
-    title: "Événements - Pierres en Lumières",
-    description:
-      "Découvrez tous les événements du festival Pierres en Lumières en Normandie. Illuminations, expositions, animations et visites nocturnes du patrimoine normand.",
-  },
+export const generateMetadata = async ({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> => {
+  const { locale } = await params
+  const frenchTitle = "Événements"
+  const englishTitle = "Events"
+  const frenchDesc = "Découvrez tous les événements du festival Pierres en Lumières en Normandie. Illuminations, expositions, animations et visites nocturnes du patrimoine normand."
+  const englishDesc = "Discover all the events of the Stones in Lights festival in Normandy. Illuminations, exhibitions, animations and night tours of Norman heritage."
+
+  const title = locale === "en" ? englishTitle : frenchTitle
+  const description = locale === "en" ? englishDesc : frenchDesc
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title: `${title} - Pierres en Lumières`,
+      description,
+    },
+    alternates: {
+      languages: {
+        fr: `${BASE_URL}/fr/evenements`,
+        en: `${BASE_URL}/en/evenements`,
+      },
+    },
+  }
 }
 
 type EventsPageProps = {
+  params: Promise<{ locale: string }>
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }
 
@@ -51,16 +70,18 @@ const parseSearchParams = (params: Record<string, string | string[] | undefined>
   }
 }
 
-const EventsPage = async ({ searchParams }: EventsPageProps) => {
-  const params = await searchParams
-  const filters = parseSearchParams(params)
-  const view = (params.view as string | undefined) ?? "grid"
+const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
+  const { locale } = await params
+  const searchParamsData = await searchParams
+  const filters = parseSearchParams(searchParamsData)
+  const view = (searchParamsData.view as string | undefined) ?? "grid"
 
+  const t = await getTranslations()
   const [{ events, total, page, totalPages }, cities, counts, mapEvents] = await Promise.all([
-    getEvents(filters),
+    getEvents(filters, locale),
     getEventCities(),
-    getFilterCounts(filters),
-    view === "map" ? getAllFilteredEventsForMap(filters) : Promise.resolve([]),
+    getFilterCounts(filters, locale),
+    view === "map" ? getAllFilteredEventsForMap(filters, locale) : Promise.resolve([]),
   ])
 
   return (
@@ -68,10 +89,10 @@ const EventsPage = async ({ searchParams }: EventsPageProps) => {
       {/* Page header */}
       <div className="mb-8 md:mb-10">
         <h1 className="font-serif text-3xl font-bold text-foreground md:text-4xl lg:text-5xl">
-          Événements
+          {t("events.title")}
         </h1>
         <p className="mt-2 text-muted-foreground md:text-lg">
-          Découvrez les {total} événements du festival à travers la Normandie
+          {t("events.subtitle", { count: total })}
         </p>
       </div>
 
@@ -98,7 +119,7 @@ const EventsPage = async ({ searchParams }: EventsPageProps) => {
       </div>
 
       {/* Content based on view */}
-      <h2 className="sr-only">Résultats</h2>
+      <h2 className="sr-only">{t("events.results")}</h2>
       {events.length > 0 ? (
         <>
           {view === "map" ? (
@@ -137,10 +158,10 @@ const EventsPage = async ({ searchParams }: EventsPageProps) => {
       ) : (
         <div className="flex flex-col items-center justify-center rounded-xl border border-white/10 bg-white/5 px-6 py-16 text-center">
           <p className="font-serif text-xl font-bold text-foreground">
-            Aucun événement trouvé
+            {t("events.noResults")}
           </p>
           <p className="mt-2 text-muted-foreground">
-            Essayez de modifier vos filtres ou votre recherche
+            {t("events.noResultsHint")}
           </p>
         </div>
       )}

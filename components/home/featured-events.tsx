@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { getTranslations } from "next-intl/server"
 import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { EventCard } from "@/components/home/event-card"
@@ -8,7 +9,8 @@ type FeaturedEventsProps = {
   events: FeaturedEvent[]
 }
 
-const FeaturedEvents = ({ events }: FeaturedEventsProps) => {
+const FeaturedEvents = async ({ events }: FeaturedEventsProps) => {
+  const t = await getTranslations()
   if (events.length === 0) return null
 
   return (
@@ -19,15 +21,15 @@ const FeaturedEvents = ({ events }: FeaturedEventsProps) => {
             id="featured-events-heading"
             className="font-serif text-2xl font-bold text-foreground md:text-3xl lg:text-4xl"
           >
-            Événements à la une
+            {t("featured.title")}
           </h2>
           <p className="mt-2 text-sm text-muted-foreground md:text-base">
-            Les incontournables de cette édition
+            {t("featured.subtitle")}
           </p>
         </div>
-        <Button asChild variant="ghost" className="hidden items-center gap-1 text-primary sm:inline-flex" aria-label="Voir tous les événements à la une">
+        <Button asChild variant="ghost" className="hidden items-center gap-1 text-primary sm:inline-flex" aria-label={t("featured.viewAllLabel")}>
           <Link href="/evenements">
-            Voir tous
+            {t("featured.viewAll")}
             <ArrowRight className="size-4" aria-hidden="true" />
           </Link>
         </Button>
@@ -41,9 +43,9 @@ const FeaturedEvents = ({ events }: FeaturedEventsProps) => {
 
       <div className="mt-8 text-center sm:hidden">
         <Button
-          asChild variant="outline" className="gap-1" aria-label="Voir tous les événements">
+          asChild variant="outline" className="gap-1" aria-label={t("featured.viewAllLabel")}>
           <Link href="/evenements">
-            Voir tous les événements
+            {t("featured.viewAll")}
             <ArrowRight className="size-4" aria-hidden="true" />
           </Link>
         </Button>

@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { Facebook, Instagram } from "lucide-react"
+import { useTranslations, useLocale } from "next-intl"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -10,9 +11,11 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
-import { NAV_ITEMS, CTA_LINK, SOCIAL_LINKS, FESTIVAL_NAME } from "@/lib/navigation"
+import { NAV_ITEMS, CTA_HREF, SOCIAL_LINKS } from "@/lib/navigation"
+import { isNavActive } from "@/lib/utils/nav"
 import { SparkleIcon } from "@/components/ui/sparkle-icon"
 import { ContrastToggle } from "@/components/layout/contrast-toggle"
+import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 
 type MobileNavProps = {
   open: boolean
@@ -21,6 +24,9 @@ type MobileNavProps = {
 }
 
 const MobileNav = ({ open, onOpenChange, pathname }: MobileNavProps) => {
+  const t = useTranslations()
+  const locale = useLocale()
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
@@ -30,35 +36,41 @@ const MobileNav = ({ open, onOpenChange, pathname }: MobileNavProps) => {
       >
         <SheetHeader className="border-b border-white/10 pb-4">
           <SheetTitle className="font-serif text-lg text-foreground">
-            <SparkleIcon className="size-5 inline-block" /> {FESTIVAL_NAME}
+            <SparkleIcon className="size-5 inline-block" /> {t("meta.festivalName")}
           </SheetTitle>
         </SheetHeader>
 
-        <nav className="flex flex-col gap-1 p-4" aria-label="Navigation mobile">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => onOpenChange(false)}
-              className={cn(
-                "rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
-                pathname === item.href
-                  ? "bg-white/5 text-primary"
-                  : "text-muted-foreground"
-              )}
-              aria-current={pathname === item.href ? "page" : undefined}
-            >
-              {item.label}
-            </Link>
-          ))}
+        <nav className="flex flex-col gap-1 p-4" aria-label={t("a11y.mainNav")}>
+          {NAV_ITEMS.map((item) => {
+            const href = `/${locale}${item.href}`
+            const pathWithoutLocale = pathname.replace(`/${locale}`, "") || "/"
+            const isActive = isNavActive(item.href, pathWithoutLocale)
+            return (
+              <Link
+                key={item.key}
+                href={href}
+                onClick={() => onOpenChange(false)}
+                className={cn(
+                  "rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+                  isActive ? "bg-white/5 text-primary" : "text-muted-foreground"
+                )}
+                aria-current={isActive ? "page" : undefined}
+              >
+                {t(`nav.${item.key}`)}
+              </Link>
+            )
+          })}
         </nav>
 
         <div className="mt-auto flex flex-col gap-4 border-t border-white/10 p-4">
-          <ContrastToggle />
+          <div className="flex items-center gap-2">
+            <ContrastToggle />
+            <LocaleSwitcher />
+          </div>
 
           <Button asChild size="lg" className="w-full">
-            <Link href={CTA_LINK.href} onClick={() => onOpenChange(false)}>
-              {CTA_LINK.label}
+            <Link href={`/${locale}${CTA_HREF}`} onClick={() => onOpenChange(false)}>
+              {t("nav.register")}
             </Link>
           </Button>
 

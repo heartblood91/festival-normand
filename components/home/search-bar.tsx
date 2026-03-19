@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -12,6 +13,7 @@ type SearchBarProps = {
 
 const SearchBar = ({ cities }: SearchBarProps) => {
   const router = useRouter()
+  const t = useTranslations()
   const [query, setQuery] = useState("")
   const [showSuggestions, setShowSuggestions] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -51,7 +53,7 @@ const SearchBar = ({ cities }: SearchBarProps) => {
   }, [])
 
   return (
-    <section className="mx-auto -mt-8 max-w-3xl px-4 md:-mt-12" aria-label="Recherche d'événements">
+    <section className="mx-auto -mt-8 max-w-3xl px-4 md:-mt-12" aria-label={t("search.ariaLabel")}>
       <div ref={wrapperRef} className="relative">
         <form
           onSubmit={(e) => {
@@ -60,7 +62,7 @@ const SearchBar = ({ cities }: SearchBarProps) => {
           }}
           className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 p-2 backdrop-blur-xl md:gap-3 md:p-3"
           role="search"
-          aria-label="Rechercher un événement par ville"
+          aria-label={t("search.ariaLabel")}
         >
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
@@ -75,9 +77,9 @@ const SearchBar = ({ cities }: SearchBarProps) => {
               onFocus={() => {
                 if (query.length >= 2) setShowSuggestions(true)
               }}
-              placeholder="Rechercher une ville..."
+              placeholder={t("search.placeholder")}
               className="h-10 w-full rounded-lg bg-white/5 pl-10 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 md:h-12 md:text-base"
-              aria-label="Rechercher un événement par ville"
+              aria-label={t("search.ariaLabel")}
               aria-autocomplete="list"
               aria-expanded={showSuggestions && filteredCities.length > 0}
               aria-controls="city-suggestions"
@@ -91,7 +93,7 @@ const SearchBar = ({ cities }: SearchBarProps) => {
             size="lg"
             className="hidden h-10 px-6 sm:flex md:h-12"
           >
-            Rechercher
+            {t("search.submit")}
           </Button>
         </form>
 

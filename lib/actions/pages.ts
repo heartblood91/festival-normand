@@ -15,10 +15,10 @@ const SYSTEM_SLUGS = ["festival", "inscription", "mentions-legales"]
 
 export const getAdminPages = async () => {
   return prisma.page.findMany({
-    orderBy: { title: "asc" },
+    orderBy: { titleFr: "asc" },
     select: {
       id: true,
-      title: true,
+      titleFr: true,
       slug: true,
       updatedAt: true,
     },
@@ -57,9 +57,11 @@ export const createPage = async (formData: FormData): Promise<PageActionResult> 
 
     const page = await prisma.page.create({
       data: {
-        title: data.title,
+        titleFr: data.titleFr,
+        titleEn: data.titleEn || null,
         slug: data.slug,
-        content: data.content,
+        contentFr: data.contentFr,
+        contentEn: data.contentEn || null,
       },
     })
 
@@ -111,9 +113,11 @@ export const updatePage = async (
     const page = await prisma.page.update({
       where: { id },
       data: {
-        title: data.title,
+        titleFr: data.titleFr,
+        titleEn: data.titleEn || null,
         slug: data.slug,
-        content: data.content,
+        contentFr: data.contentFr,
+        contentEn: data.contentEn || null,
       },
     })
 
@@ -169,7 +173,9 @@ export const deletePage = async (id: string): Promise<PageActionResult> => {
 }
 
 const extractPageFormData = (formData: FormData) => ({
-  title: (formData.get("title") as string) ?? "",
+  titleFr: (formData.get("titleFr") as string) ?? "",
+  titleEn: (formData.get("titleEn") as string) ?? "",
   slug: (formData.get("slug") as string) ?? "",
-  content: (formData.get("content") as string) ?? "",
+  contentFr: (formData.get("contentFr") as string) ?? "",
+  contentEn: (formData.get("contentEn") as string) ?? "",
 })

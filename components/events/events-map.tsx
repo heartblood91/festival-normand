@@ -1,25 +1,22 @@
 "use client"
 
 import { useEffect, useRef, useCallback } from "react"
+import { useLocale, useTranslations } from "next-intl"
 import mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
+import { formatEventDate } from "@/lib/utils/format-date"
 import type { MapEventItem } from "@/lib/queries/events"
 
 type EventsMapProps = {
   events: MapEventItem[]
 }
 
-const CATEGORY_LABELS: Record<string, string> = {
-  ILLUMINATIONS: "Illuminations",
-  EXPOSITIONS: "Expositions",
-  ANIMATIONS: "Animations",
-  VISITES: "Visites",
-}
-
-const formatDate = (date: Date | string) =>
-  new Intl.DateTimeFormat("fr-FR", { weekday: "short", day: "numeric", month: "long" }).format(new Date(date))
+const escapeHtml = (str: string): string =>
+  str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")
 
 const EventsMap = ({ events }: EventsMapProps) => {
+  const locale = useLocale()
+  const t = useTranslations()
   const mapContainer = useRef<HTMLDivElement>(null)
   const mapRef = useRef<mapboxgl.Map | null>(null)
 
@@ -57,9 +54,9 @@ const EventsMap = ({ events }: EventsMapProps) => {
             title: event.title,
             slug: event.slug,
             category: event.category,
-            categoryLabel: CATEGORY_LABELS[event.category] || event.category,
+            categoryLabel: t(`categories.${event.category}`),
             city: event.city || "",
-            dateStart: event.dateStart ? formatDate(event.dateStart) : "",
+            dateStart: event.dateStart ? formatEventDate(event.dateStart, locale) : "",
             timeStart: event.timeStart?.slice(0, 5) || "",
             coverImage: event.coverImage || "",
           },
@@ -150,9 +147,14 @@ const EventsMap = ({ events }: EventsMapProps) => {
         const props = feature.properties as Record<string, string>
         const coords = (feature.geometry as GeoJSON.Point).coordinates.slice() as [number, number]
 
+        const safeTitle = escapeHtml(props.title)
+        const safeCat = escapeHtml(props.categoryLabel)
+        const safeCity = escapeHtml(props.city)
+        const safeSlug = escapeHtml(props.slug)
         const imageHtml = props.coverImage
-          ? `<img src="${props.coverImage}" alt="${props.title}" style="width:100%;height:120px;object-fit:cover;border-radius:8px 8px 0 0;" />`
+          ? `<img src="${escapeHtml(props.coverImage)}" alt="${safeTitle}" style="width:100%;height:120px;object-fit:cover;border-radius:8px 8px 0 0;" />`
           : `<div style="width:100%;height:60px;background:linear-gradient(135deg,#f59e0b33,#1e1b4b);border-radius:8px 8px 0 0;"></div>`
+        const viewLabel = locale === "en" ? "View event →" : "Voir l&#39;événement →"
 
         new mapboxgl.Popup({
           offset: 15,
@@ -165,14 +167,14 @@ const EventsMap = ({ events }: EventsMapProps) => {
             <div style="background:#1e293b;border-radius:8px;overflow:hidden;color:#e2e8f0;font-family:Inter,sans-serif;">
               ${imageHtml}
               <div style="padding:12px;">
-                <h3 style="font-size:14px;font-weight:700;margin:0 0 6px;line-height:1.3;">${props.title}</h3>
+                <h3 style="font-size:14px;font-weight:700;margin:0 0 6px;line-height:1.3;">${safeTitle}</h3>
                 <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
-                  <span style="background:#f59e0b22;color:#f59e0b;font-size:11px;padding:2px 8px;border-radius:12px;font-weight:600;">${props.categoryLabel}</span>
+                  <span style="background:#f59e0b22;color:#f59e0b;font-size:11px;padding:2px 8px;border-radius:12px;font-weight:600;">${safeCat}</span>
                 </div>
-                ${props.city ? `<p style="font-size:12px;color:#94a3b8;margin:4px 0 0;">📍 ${props.city}</p>` : ""}
-                ${props.dateStart ? `<p style="font-size:12px;color:#94a3b8;margin:2px 0 0;">📅 ${props.dateStart}${props.timeStart ? ` · ${props.timeStart}` : ""}</p>` : ""}
-                <a href="/evenement/${props.slug}" style="display:inline-block;margin-top:8px;font-size:12px;color:#f59e0b;text-decoration:none;font-weight:600;">
-                  Voir l'événement →
+                ${safeCity ? `<p style="font-size:12px;color:#94a3b8;margin:4px 0 0;">📍 ${safeCity}</p>` : ""}
+                ${props.dateStart ? `<p style="font-size:12px;color:#94a3b8;margin:2px 0 0;">📅 ${escapeHtml(props.dateStart)}${props.timeStart ? ` · ${escapeHtml(props.timeStart)}` : ""}</p>` : ""}
+                <a href="/${locale}/evenement/${safeSlug}" style="display:inline-block;margin-top:8px;font-size:12px;color:#f59e0b;text-decoration:none;font-weight:600;">
+                  ${viewLabel}
                 </a>
               </div>
             </div>
@@ -193,7 +195,7 @@ const EventsMap = ({ events }: EventsMapProps) => {
       map.remove()
       mapRef.current = null
     }
-  }, [validEvents])
+  }, [validEvents, locale, t])
 
   useEffect(() => {
     const cleanup = initMap()
@@ -203,7 +205,7 @@ const EventsMap = ({ events }: EventsMapProps) => {
   if (validEvents.length === 0) {
     return (
       <div className="flex h-96 items-center justify-center rounded-xl border border-white/10 bg-white/5">
-        <p className="text-muted-foreground">Aucun événement avec coordonnées GPS trouvé</p>
+        <p className="text-muted-foreground">{t("a11y.noGpsEvents")}</p>
       </div>
     )
   }
@@ -214,10 +216,10 @@ const EventsMap = ({ events }: EventsMapProps) => {
         ref={mapContainer}
         className="h-[500px] w-full rounded-xl md:h-[650px]"
         role="img"
-        aria-label="Carte des événements du festival en Normandie. Utilisez la vue liste pour une navigation accessible."
+        aria-label={t("a11y.mapDescription")}
       />
       <p className="sr-only">
-        Cette carte interactive n'est pas entièrement accessible aux lecteurs d'écran. Utilisez la vue grille pour naviguer les événements.
+        {t("a11y.mapSrOnly")}
       </p>
     </>
   )

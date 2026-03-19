@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { ChevronDown, Accessibility, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -11,51 +12,31 @@ type FilterCounts = {
 }
 
 const DATE_OPTIONS = [
-  { value: "29", label: "Ven 29" },
-  { value: "30", label: "Sam 30" },
-  { value: "31", label: "Dim 31" },
+  { value: "29", labelKey: "date29" },
+  { value: "30", labelKey: "date30" },
+  { value: "31", labelKey: "date31" },
 ]
 
 const CATEGORY_OPTIONS = [
-  { value: "illuminations", label: "Illuminations" },
-  { value: "expositions", label: "Expositions" },
-  { value: "animations", label: "Animations" },
-  { value: "visites", label: "Visites" },
+  { value: "illuminations", labelKey: "ILLUMINATIONS" },
+  { value: "expositions", labelKey: "EXPOSITIONS" },
+  { value: "animations", labelKey: "ANIMATIONS" },
+  { value: "visites", labelKey: "VISITES" },
 ]
 
 const DEPARTMENT_OPTIONS = [
-  { value: "calvados", label: "Calvados" },
-  { value: "eure", label: "Eure" },
-  { value: "manche", label: "Manche" },
-  { value: "orne", label: "Orne" },
-  { value: "seine_maritime", label: "Seine-Maritime" },
+  { value: "calvados", labelKey: "CALVADOS" },
+  { value: "eure", labelKey: "EURE" },
+  { value: "manche", labelKey: "MANCHE" },
+  { value: "orne", labelKey: "ORNE" },
+  { value: "seine_maritime", labelKey: "SEINE_MARITIME" },
 ]
-
-const FILTER_LABELS: Record<string, Record<string, string>> = {
-  date: {
-    "29": "Ven 29 mai",
-    "30": "Sam 30 mai",
-    "31": "Dim 31 mai",
-  },
-  category: {
-    illuminations: "Illuminations",
-    expositions: "Expositions",
-    animations: "Animations",
-    visites: "Visites",
-  },
-  dept: {
-    calvados: "Calvados",
-    eure: "Eure",
-    manche: "Manche",
-    orne: "Orne",
-    seine_maritime: "Seine-Maritime",
-  },
-}
 
 type DropdownState = "dept" | "category" | null
 
 const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCounts }) => {
   const router = useRouter()
+  const t = useTranslations()
   const searchParams = useSearchParams()
   const [openDropdown, setOpenDropdown] = useState<DropdownState>(null)
   const [selectedDept, setSelectedDept] = useState(
@@ -176,12 +157,25 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
   const hasActiveFilters =
     selectedDept || selectedCategory || selectedDates.length > 0 || pmrEnabled
 
+  const getFilterLabel = (type: string, value: string): string => {
+    switch (type) {
+      case "dept":
+        return t(`departments.${DEPARTMENT_OPTIONS.find((d) => d.value === value)?.labelKey || "CALVADOS"}`)
+      case "category":
+        return t(`categories.${CATEGORY_OPTIONS.find((c) => c.value === value)?.labelKey || "ILLUMINATIONS"}`)
+      case "date":
+        return t(`filters.${DATE_OPTIONS.find((d) => d.value === value)?.labelKey || "date29"}Full`)
+      default:
+        return value
+    }
+  }
+
   const activeFilters: { key: string; label: string; type: string }[] = []
 
   if (selectedDept) {
     activeFilters.push({
       key: "dept",
-      label: FILTER_LABELS.dept[selectedDept] || selectedDept,
+      label: getFilterLabel("dept", selectedDept),
       type: "dept",
     })
   }
@@ -189,7 +183,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
   if (selectedCategory) {
     activeFilters.push({
       key: "category",
-      label: FILTER_LABELS.category[selectedCategory] || selectedCategory,
+      label: getFilterLabel("category", selectedCategory),
       type: "category",
     })
   }
@@ -197,7 +191,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
   selectedDates.forEach((date) => {
     activeFilters.push({
       key: `date-${date}`,
-      label: FILTER_LABELS.date[date] || date,
+      label: getFilterLabel("date", date),
       type: "date",
     })
   })
@@ -205,7 +199,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
   if (pmrEnabled) {
     activeFilters.push({
       key: "accessible",
-      label: "Accessible PMR",
+      label: t("filters.pmr"),
       type: "accessible",
     })
   }
@@ -239,15 +233,15 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
                   ? "border-primary/30 bg-primary/10 text-primary"
                   : "border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
               )}
-              aria-label="Filtrer par département"
+              aria-label={t("filters.department")}
               aria-expanded={openDropdown === "dept"}
               aria-haspopup="listbox"
             >
               <span className="truncate">
                 {selectedDept
-                  ? DEPARTMENT_OPTIONS.find((d) => d.value === selectedDept)
-                      ?.label
-                  : "Département"}
+                  ? t(`departments.${DEPARTMENT_OPTIONS.find((d) => d.value === selectedDept)
+                      ?.labelKey || "CALVADOS"}`)
+                  : t("filters.department")}
               </span>
               <ChevronDown
                 className={cn(
@@ -279,7 +273,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
                       )}
                     >
                       <span className="flex items-center justify-between gap-2">
-                        <span>{option.label}</span>
+                        <span>{t(`departments.${option.labelKey}`)}</span>
                         <span className="text-xs font-medium text-muted-foreground">
                           ({count})
                         </span>
@@ -303,15 +297,15 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
                   ? "border-primary/30 bg-primary/10 text-primary"
                   : "border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
               )}
-              aria-label="Filtrer par catégorie"
+              aria-label={t("filters.category")}
               aria-expanded={openDropdown === "category"}
               aria-haspopup="listbox"
             >
               <span className="truncate">
                 {selectedCategory
-                  ? CATEGORY_OPTIONS.find((c) => c.value === selectedCategory)
-                      ?.label
-                  : "Catégorie"}
+                  ? t(`categories.${CATEGORY_OPTIONS.find((c) => c.value === selectedCategory)
+                      ?.labelKey || "ILLUMINATIONS"}`)
+                  : t("filters.category")}
               </span>
               <ChevronDown
                 className={cn(
@@ -343,7 +337,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
                       )}
                     >
                       <span className="flex items-center justify-between gap-2">
-                        <span>{option.label}</span>
+                        <span>{t(`categories.${option.labelKey}`)}</span>
                         <span className="text-xs font-medium text-muted-foreground">
                           ({count})
                         </span>
@@ -368,9 +362,9 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
                     : "border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
                 )}
                 aria-pressed={selectedDates.includes(option.value)}
-                aria-label={`Filtrer par ${option.label}`}
+                aria-label={`${t("filters.removeFilter", { filter: t(`filters.${option.labelKey}`) })}`}
               >
-                {option.label}
+                {t(`filters.${option.labelKey}`)}
               </button>
             ))}
           </div>
@@ -384,12 +378,12 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
                 ? "border-primary/30 bg-primary/10 text-primary"
                 : "border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
             )}
-            title="Filtrer les événements accessibles aux personnes à mobilité réduite"
+            title={t("filters.pmr")}
             aria-pressed={pmrEnabled}
-            aria-label="Accessible PMR"
+            aria-label={t("filters.pmr")}
           >
             <Accessibility className="size-4" />
-            <span className="sr-only">Accessible PMR</span>
+            <span className="sr-only">{t("filters.pmr")}</span>
           </button>
 
           {/* Result counter */}
@@ -398,7 +392,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
             aria-live="polite"
             aria-atomic="true"
           >
-            {total} événements
+            {t("filters.eventCount", { count: total })}
           </div>
         </div>
 
@@ -410,7 +404,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
                 key={filter.key}
                 onClick={() => removeFilter(filter.type, filter.key.split("-")[1])}
                 className="min-h-9 flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary/50 sm:text-sm"
-                aria-label={`Retirer le filtre ${filter.label}`}
+                aria-label={t("filters.removeFilter", { filter: filter.label })}
               >
                 {filter.label}
                 <X className="size-3" aria-hidden="true" />
@@ -419,9 +413,9 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
             <button
               onClick={clearAll}
               className="min-h-9 text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline focus:outline-none focus:ring-2 focus:ring-primary/50 rounded-sm sm:text-sm"
-              aria-label="Effacer tous les filtres"
+              aria-label={t("filters.clearAll")}
             >
-              Tout effacer
+              {t("filters.clearAll")}
             </button>
           </div>
         )}

@@ -1,9 +1,13 @@
 import Link from "next/link"
+import { getTranslations } from "next-intl/server"
 import { Facebook, Instagram } from "lucide-react"
-import { NAV_ITEMS, SOCIAL_LINKS, FESTIVAL_NAME, FESTIVAL_DATES } from "@/lib/navigation"
+import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/navigation"
 import { SparkleIcon } from "@/components/ui/sparkle-icon"
 
-const Footer = () => (
+const Footer = async () => {
+  const t = await getTranslations()
+  const year = new Date().getFullYear()
+  return (
   <footer className="border-t border-white/10 bg-background/50" role="contentinfo">
     <div className="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
       <div className="grid gap-10 md:grid-cols-3">
@@ -12,15 +16,15 @@ const Footer = () => (
           <Link
             href="/"
             className="inline-flex items-center gap-2 font-serif text-lg font-bold text-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
-            aria-label={`${FESTIVAL_NAME} - Retour à l'accueil`}
+            aria-label={`${t("meta.festivalName")} - ${t("a11y.backToHome")}`}
           >
             <SparkleIcon className="size-5" />
-            <span>{FESTIVAL_NAME}</span>
+            <span>{t("meta.festivalName")}</span>
           </Link>
           <p className="text-sm text-muted-foreground">
-            Découvrez la magie du patrimoine normand en nocturne.
+            {t("footer.description")}
             <br />
-            {FESTIVAL_DATES}
+            {t("meta.festivalDates")}
           </p>
           <div className="mt-2 flex items-center gap-2">
             <a
@@ -47,9 +51,9 @@ const Footer = () => (
         {/* Navigation */}
         <div>
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-foreground">
-            Navigation
+            {t("footer.navigation")}
           </h2>
-          <nav id="footer-nav" aria-label="Navigation du pied de page">
+          <nav id="footer-nav" aria-label={t("a11y.footerNav")}>
             <ul className="flex flex-col gap-2">
               {NAV_ITEMS.map((item) => (
                 <li key={item.href}>
@@ -57,7 +61,7 @@ const Footer = () => (
                     href={item.href}
                     className="text-sm text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
                   >
-                    {item.label}
+                    {t(`nav.${item.key}`)}
                   </Link>
                 </li>
               ))}
@@ -66,7 +70,7 @@ const Footer = () => (
                   href="/mentions-legales"
                   className="text-sm text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
                 >
-                  Mentions légales
+                  {t("nav.legalNotice")}
                 </Link>
               </li>
               <li>
@@ -74,7 +78,7 @@ const Footer = () => (
                   href="/accessibilite"
                   className="text-sm text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
                 >
-                  Accessibilité
+                  {t("nav.accessibility")}
                 </Link>
               </li>
             </ul>
@@ -84,16 +88,16 @@ const Footer = () => (
         {/* Contact */}
         <div>
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-foreground">
-            Contact
+            {t("footer.contact")}
           </h2>
           <p className="text-sm text-muted-foreground">
-            Une question sur le festival ?
+            {t("footer.contactQuestion")}
           </p>
           <Link
             href="/contact"
             className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary transition-colors hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
           >
-            Nous contacter →
+            {t("footer.contactCta")}
           </Link>
         </div>
       </div>
@@ -101,11 +105,12 @@ const Footer = () => (
       {/* Bottom */}
       <div className="mt-12 border-t border-white/10 pt-8 text-center">
         <p className="text-xs text-muted-foreground">
-          © {new Date().getFullYear()} {FESTIVAL_NAME}. Tous droits réservés.
+          {t("footer.copyright", { year })}
         </p>
       </div>
     </div>
-  </footer>
-)
+      </footer>
+    )
+}
 
 export { Footer }

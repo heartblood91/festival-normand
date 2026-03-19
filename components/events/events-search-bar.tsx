@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { Search } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -11,6 +12,7 @@ type EventsSearchBarProps = {
 
 const EventsSearchBar = ({ cities }: EventsSearchBarProps) => {
   const router = useRouter()
+  const t = useTranslations()
   const searchParams = useSearchParams()
   const [query, setQuery] = useState(searchParams.get("search") ?? "")
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -69,7 +71,7 @@ const EventsSearchBar = ({ cities }: EventsSearchBarProps) => {
           handleSubmit()
         }}
         role="search"
-        aria-label="Rechercher un événement"
+        aria-label={t("search.ariaLabel")}
       >
         <Search
           className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
@@ -86,9 +88,9 @@ const EventsSearchBar = ({ cities }: EventsSearchBarProps) => {
           onFocus={() => {
             if (query.length >= 2) setShowSuggestions(true)
           }}
-          placeholder="Rechercher une ville ou un lieu..."
+          placeholder={t("search.placeholder")}
           className="h-10 w-full rounded-lg border border-white/10 bg-white/5 pl-10 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 md:h-12 md:text-base"
-          aria-label="Rechercher un événement par ville"
+          aria-label={t("search.ariaLabel")}
           aria-autocomplete="list"
           aria-expanded={showSuggestions && filteredCities.length > 0}
           aria-controls="events-city-suggestions"

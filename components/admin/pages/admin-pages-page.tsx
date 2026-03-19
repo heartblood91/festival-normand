@@ -117,7 +117,7 @@ export const AdminPagesPage = ({ pages }: AdminPagesPageProps) => {
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-white">{page.title}</span>
+                        <span className="font-medium text-white">{page.titleFr}</span>
                         {isSystem && (
                           <Lock
                             className="h-3.5 w-3.5 text-slate-500"
@@ -138,7 +138,7 @@ export const AdminPagesPage = ({ pages }: AdminPagesPageProps) => {
                           <Button
                             variant="ghost"
                             size="icon-sm"
-                            aria-label={`Modifier ${page.title}`}
+                            aria-label={`Modifier ${page.titleFr}`}
                           >
                             <Pencil className="h-3.5 w-3.5" />
                           </Button>
@@ -161,7 +161,7 @@ export const AdminPagesPage = ({ pages }: AdminPagesPageProps) => {
                               <AlertDialogHeader>
                                 <AlertDialogTitle>Supprimer la page</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Êtes-vous sûr de vouloir supprimer &quot;{page.title}&quot; ?
+                                  Êtes-vous sûr de vouloir supprimer &quot;{page.titleFr}&quot; ?
                                   Cette action est irréversible.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>

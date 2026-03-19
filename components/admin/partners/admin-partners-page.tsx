@@ -115,13 +115,13 @@ export const AdminPartnersPage = ({ partners: initialPartners }: AdminPartnersPa
               key={partner.id}
               className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10"
             >
-              <div className="flex flex-col gap-0.5" aria-label={`Réordonner ${partner.name}`}>
+              <div className="flex flex-col gap-0.5" aria-label={`Réordonner ${partner.nameFr}`}>
                 <Button
                   variant="ghost"
                   size="icon-xs"
                   onClick={() => movePartner(index, "up")}
                   disabled={index === 0 || isReordering}
-                  aria-label={`Monter ${partner.name}`}
+                  aria-label={`Monter ${partner.nameFr}`}
                   className="h-6 w-6 text-slate-500 hover:text-white"
                 >
                   <ArrowUp className="h-3 w-3" />
@@ -131,7 +131,7 @@ export const AdminPartnersPage = ({ partners: initialPartners }: AdminPartnersPa
                   size="icon-xs"
                   onClick={() => movePartner(index, "down")}
                   disabled={index === partners.length - 1 || isReordering}
-                  aria-label={`Descendre ${partner.name}`}
+                  aria-label={`Descendre ${partner.nameFr}`}
                   className="h-6 w-6 text-slate-500 hover:text-white"
                 >
                   <ArrowDown className="h-3 w-3" />
@@ -145,14 +145,14 @@ export const AdminPartnersPage = ({ partners: initialPartners }: AdminPartnersPa
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={partner.logo}
-                    alt={`Logo ${partner.name}`}
+                    alt={`Logo ${partner.nameFr}`}
                     className="h-full w-full object-contain"
                   />
                 </div>
               )}
 
               <div className="flex-1">
-                <p className="font-medium text-white">{partner.name}</p>
+                <p className="font-medium text-white">{partner.nameFr}</p>
                 {partner.website && (
                   <p className="text-xs text-slate-500 truncate">{partner.website}</p>
                 )}
@@ -167,7 +167,7 @@ export const AdminPartnersPage = ({ partners: initialPartners }: AdminPartnersPa
                   <Button
                     variant="ghost"
                     size="icon-sm"
-                    aria-label={`Modifier ${partner.name}`}
+                    aria-label={`Modifier ${partner.nameFr}`}
                   >
                     <Pencil className="h-3.5 w-3.5" />
                   </Button>
@@ -189,7 +189,7 @@ export const AdminPartnersPage = ({ partners: initialPartners }: AdminPartnersPa
                     <AlertDialogHeader>
                       <AlertDialogTitle>Supprimer le partenaire</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Êtes-vous sûr de vouloir supprimer &quot;{partner.name}&quot; ?
+                        Êtes-vous sûr de vouloir supprimer &quot;{partner.nameFr}&quot; ?
                         Cette action est irréversible.
                       </AlertDialogDescription>
                     </AlertDialogHeader>

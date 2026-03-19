@@ -15,8 +15,8 @@ export const getAdminNews = async (search?: string) => {
   const where = search
     ? {
         OR: [
-          { title: { contains: search, mode: "insensitive" as const } },
-          { excerpt: { contains: search, mode: "insensitive" as const } },
+          { titleFr: { contains: search, mode: "insensitive" as const } },
+          { excerptFr: { contains: search, mode: "insensitive" as const } },
         ],
       }
     : {}
@@ -26,9 +26,9 @@ export const getAdminNews = async (search?: string) => {
     orderBy: { publishedAt: "desc" },
     select: {
       id: true,
-      title: true,
+      titleFr: true,
       slug: true,
-      excerpt: true,
+      excerptFr: true,
       coverImage: true,
       published: true,
       publishedAt: true,
@@ -68,10 +68,13 @@ export const createNews = async (formData: FormData): Promise<NewsActionResult> 
 
     const news = await prisma.news.create({
       data: {
-        title: data.title,
+        titleFr: data.titleFr,
+        titleEn: data.titleEn || null,
         slug: data.slug,
-        content: data.content,
-        excerpt: data.excerpt || null,
+        contentFr: data.contentFr,
+        contentEn: data.contentEn || null,
+        excerptFr: data.excerptFr || null,
+        excerptEn: data.excerptEn || null,
         coverImage: data.coverImage || null,
         published: data.published,
         publishedAt: new Date(data.publishedAt),
@@ -128,10 +131,13 @@ export const updateNews = async (
     const news = await prisma.news.update({
       where: { id },
       data: {
-        title: data.title,
+        titleFr: data.titleFr,
+        titleEn: data.titleEn || null,
         slug: data.slug,
-        content: data.content,
-        excerpt: data.excerpt || null,
+        contentFr: data.contentFr,
+        contentEn: data.contentEn || null,
+        excerptFr: data.excerptFr || null,
+        excerptEn: data.excerptEn || null,
         coverImage: data.coverImage || null,
         published: data.published,
         publishedAt: new Date(data.publishedAt),
@@ -178,10 +184,13 @@ export const deleteNews = async (id: string): Promise<NewsActionResult> => {
 }
 
 const extractNewsFormData = (formData: FormData) => ({
-  title: (formData.get("title") as string) ?? "",
+  titleFr: (formData.get("titleFr") as string) ?? "",
+  titleEn: (formData.get("titleEn") as string) ?? "",
   slug: (formData.get("slug") as string) ?? "",
-  content: (formData.get("content") as string) ?? "",
-  excerpt: (formData.get("excerpt") as string) ?? "",
+  contentFr: (formData.get("contentFr") as string) ?? "",
+  contentEn: (formData.get("contentEn") as string) ?? "",
+  excerptFr: (formData.get("excerptFr") as string) ?? "",
+  excerptEn: (formData.get("excerptEn") as string) ?? "",
   coverImage: (formData.get("coverImage") as string) ?? "",
   published: formData.get("published") !== "false",
   publishedAt: (formData.get("publishedAt") as string) ?? "",

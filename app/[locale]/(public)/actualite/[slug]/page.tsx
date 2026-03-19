@@ -2,9 +2,13 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Calendar } from "lucide-react"
+import { getTranslations } from "next-intl/server"
 import { getNewsBySlug } from "@/lib/queries/news"
 import { MarkdownContent } from "@/components/news/markdown-content"
 import { prisma } from "@/lib/prisma"
+import { locales } from "@/lib/i18n/config"
+
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
 export const revalidate = 1800
 
@@ -13,15 +17,18 @@ export const generateStaticParams = async () => {
     where: { published: true },
     select: { slug: true },
   })
-  return news.map((n) => ({ slug: n.slug }))
+  return locales.flatMap((locale) =>
+    news.map((n) => ({ locale, slug: n.slug }))
+  )
 }
 
 type NewsDetailPageProps = {
-  params: Promise<{ slug: string }>
+  params: Promise<{ locale: string; slug: string }>
 }
 
-const formatNewsDate = (date: Date | string): string => {
-  return new Intl.DateTimeFormat("fr-FR", {
+const formatNewsDate = (date: Date | string, locale: string): string => {
+  const localeStr = locale === "en" ? "en-US" : "fr-FR"
+  return new Intl.DateTimeFormat(localeStr, {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -30,8 +37,8 @@ const formatNewsDate = (date: Date | string): string => {
 }
 
 export const generateMetadata = async ({ params }: NewsDetailPageProps): Promise<Metadata> => {
-  const { slug } = await params
-  const article = await getNewsBySlug(slug)
+  const { locale, slug } = await params
+  const article = await getNewsBySlug(slug, locale)
 
   if (!article) {
     return { title: "Article introuvable" }
@@ -47,12 +54,19 @@ export const generateMetadata = async ({ params }: NewsDetailPageProps): Promise
       type: "article",
       publishedTime: article.publishedAt ?? undefined,
     },
+    alternates: {
+      languages: {
+        fr: `${BASE_URL}/fr/actualite/${slug}`,
+        en: `${BASE_URL}/en/actualite/${slug}`,
+      },
+    },
   }
 }
 
 const NewsDetailPage = async ({ params }: NewsDetailPageProps) => {
-  const { slug } = await params
-  const article = await getNewsBySlug(slug)
+  const { locale, slug } = await params
+  const t = await getTranslations()
+  const article = await getNewsBySlug(slug, locale)
 
   if (!article) {
     notFound()
@@ -65,19 +79,19 @@ const NewsDetailPage = async ({ params }: NewsDetailPageProps) => {
         <ol className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
           <li>
             <Link
-              href="/"
+              href={`/${locale}`}
               className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
             >
-              Accueil
+              {t("news.breadcrumbHome")}
             </Link>
           </li>
           <li aria-hidden="true" className="text-muted-foreground/50">/</li>
           <li>
             <Link
-              href="/actualites"
+              href={`/${locale}/actualites`}
               className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
             >
-              Actualités
+              {t("news.breadcrumbNews")}
             </Link>
           </li>
           <li aria-hidden="true" className="text-muted-foreground/50">/</li>
@@ -87,11 +101,11 @@ const NewsDetailPage = async ({ params }: NewsDetailPageProps) => {
 
       {/* Back link */}
       <Link
-        href="/actualites"
+        href={`/${locale}/actualites`}
         className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:rounded-sm"
       >
         <ArrowLeft className="size-4" aria-hidden="true" />
-        Retour aux actualités
+        {t("news.backToNews")}
       </Link>
 
       {/* Header */}
@@ -103,7 +117,7 @@ const NewsDetailPage = async ({ params }: NewsDetailPageProps) => {
         <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
           <Calendar className="size-4 shrink-0" aria-hidden="true" />
           <time dateTime={article.publishedAt ?? ""}>
-            {formatNewsDate(article.publishedAt)}
+            {formatNewsDate(article.publishedAt, locale)}
           </time>
         </div>
       </header>

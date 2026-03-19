@@ -1,27 +1,9 @@
 import Link from "next/link"
+import { getLocale, getTranslations } from "next-intl/server"
 import { MapPin, Calendar } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { formatEventDate, formatTime } from "@/lib/utils/format-date"
 import type { FeaturedEvent } from "@/lib/queries/homepage"
-
-const CATEGORY_LABELS: Record<string, string> = {
-  ILLUMINATIONS: "Illuminations",
-  EXPOSITIONS: "Expositions",
-  ANIMATIONS: "Animations",
-  VISITES: "Visites",
-}
-
-const formatEventDate = (date: Date | string): string => {
-  return new Intl.DateTimeFormat("fr-FR", {
-    weekday: "short",
-    day: "numeric",
-    month: "long",
-  }).format(new Date(date))
-}
-
-const formatTime = (time: string | undefined): string | undefined => {
-  if (!time) return undefined
-  return time.slice(0, 5)
-}
 
 type EventCardProps = {
   event: FeaturedEvent
@@ -29,7 +11,9 @@ type EventCardProps = {
   priority?: boolean
 }
 
-const EventCard = ({ event, className, priority = false }: EventCardProps) => {
+const EventCard = async ({ event, className, priority = false }: EventCardProps) => {
+  const t = await getTranslations()
+  const locale = await getLocale()
   return (
     <Link
       href={`/evenement/${event.slug}`}
@@ -53,7 +37,7 @@ const EventCard = ({ event, className, priority = false }: EventCardProps) => {
         )}
         {/* Category badge */}
         <span className="absolute left-3 top-3 rounded-full border border-primary/30 bg-background/80 px-2.5 py-1 text-xs font-medium text-primary backdrop-blur-sm">
-          {CATEGORY_LABELS[event.category] ?? event.category}
+          {t(`categories.${event.category}`) ?? event.category}
         </span>
       </div>
 
@@ -66,7 +50,7 @@ const EventCard = ({ event, className, priority = false }: EventCardProps) => {
         <div className="mt-3 flex flex-col gap-1.5 text-sm text-muted-foreground">
           <div className="flex items-center gap-1.5">
             <Calendar className="size-3.5 shrink-0" aria-hidden="true" />
-            <span>{formatEventDate(event.dateStart)}</span>
+            <span>{formatEventDate(event.dateStart, locale)}</span>
             {event.timeStart && (
               <span>
                 · {formatTime(event.timeStart)}
@@ -86,4 +70,4 @@ const EventCard = ({ event, className, priority = false }: EventCardProps) => {
   )
 }
 
-export { EventCard, CATEGORY_LABELS, formatEventDate }
+export { EventCard }

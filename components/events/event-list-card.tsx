@@ -1,14 +1,9 @@
 import Link from "next/link"
+import { getLocale, getTranslations } from "next-intl/server"
 import { MapPin, Calendar, Accessibility, Flame, Image, Music, MapPin as MapPinIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { formatEventDate, formatTime } from "@/lib/utils/format-date"
 import type { EventListItem } from "@/lib/queries/events"
-
-const CATEGORY_LABELS: Record<string, string> = {
-  ILLUMINATIONS: "Illuminations",
-  EXPOSITIONS: "Expositions",
-  ANIMATIONS: "Animations",
-  VISITES: "Visites",
-}
 
 const CATEGORY_GRADIENTS: Record<string, string> = {
   ILLUMINATIONS: "from-amber-900/30 to-amber-700/10",
@@ -24,26 +19,15 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   VISITES: <MapPinIcon className="size-8" />,
 }
 
-const formatEventDate = (date: Date | string): string => {
-  return new Intl.DateTimeFormat("fr-FR", {
-    weekday: "short",
-    day: "numeric",
-    month: "long",
-  }).format(new Date(date))
-}
-
-const formatTime = (time: string | undefined): string | undefined => {
-  if (!time) return undefined
-  return time.slice(0, 5)
-}
-
 type EventListCardProps = {
   event: EventListItem
   className?: string
   priority?: boolean
 }
 
-const EventListCard = ({ event, className, priority = false }: EventListCardProps) => {
+const EventListCard = async ({ event, className, priority = false }: EventListCardProps) => {
+  const locale = await getLocale()
+  const t = await getTranslations()
   return (
     <Link
       href={`/evenement/${event.slug}`}
@@ -77,14 +61,14 @@ const EventListCard = ({ event, className, priority = false }: EventListCardProp
         )}
         {/* Category badge */}
         <span className="absolute left-3 top-3 rounded-full border border-primary/30 bg-background/80 px-2.5 py-1 text-xs font-medium text-primary backdrop-blur-sm">
-          {CATEGORY_LABELS[event.category] ?? event.category}
+          {t(`categories.${event.category}`) ?? event.category}
         </span>
         {/* Accessibility badge */}
         {event.accessible && (
           <span
             className="absolute right-3 top-3 flex size-7 items-center justify-center rounded-full border border-white/20 bg-background/80 backdrop-blur-sm"
-            title="Accessible PMR"
-            aria-label="Accessible aux personnes à mobilité réduite"
+            title={t("filters.accessible")}
+            aria-label={t("filters.accessible")}
           >
             <Accessibility className="size-3.5 text-primary" />
           </span>
@@ -100,7 +84,7 @@ const EventListCard = ({ event, className, priority = false }: EventListCardProp
         <div className="mt-3 flex flex-col gap-1.5 text-sm text-muted-foreground">
           <div className="flex items-center gap-1.5">
             <Calendar className="size-3.5 shrink-0" aria-hidden="true" />
-            <span>{formatEventDate(event.dateStart)}</span>
+            <span>{formatEventDate(event.dateStart, locale)}</span>
             {event.timeStart && (
               <span>
                 · {formatTime(event.timeStart)}

@@ -1,5 +1,7 @@
 import { unstable_cache } from "next/cache"
 import { prisma } from "@/lib/prisma"
+import { localizeEntity } from "@/lib/i18n/db"
+import type { Locale } from "@/lib/i18n/config"
 import type { Department, Category, Prisma } from "@prisma/client"
 
 const ITEMS_PER_PAGE = 12
@@ -31,7 +33,8 @@ const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
 
 const EVENT_LIST_SELECT = {
   id: true,
-  title: true,
+  titleFr: true,
+  titleEn: true,
   slug: true,
   location: true,
   city: true,
@@ -82,7 +85,8 @@ const buildFilterWhere = (
       ...(Array.isArray(where.AND) ? where.AND : where.AND ? [where.AND] : []),
       {
         OR: [
-          { title: { contains: search, mode: "insensitive" } },
+          { titleFr: { contains: search, mode: "insensitive" } },
+          { titleEn: { contains: search, mode: "insensitive" } },
           { city: { contains: search, mode: "insensitive" } },
           { location: { contains: search, mode: "insensitive" } },
         ],
@@ -93,7 +97,7 @@ const buildFilterWhere = (
   return where
 }
 
-export const getEvents = async (filters: EventFilters = {}) => {
+export const getEvents = async (filters: EventFilters = {}, locale: Locale = "fr") => {
   const cacheKey = JSON.stringify(filters)
 
   return unstable_cache(
@@ -126,39 +130,39 @@ export const getEvents = async (filters: EventFilters = {}) => {
         : rawEvents
 
       const serialized = events.map((e) => ({
-        ...e,
+        ...localizeEntity(e, locale, ["title"]),
         dateStart: e.dateStart?.toISOString() ?? null,
       }))
 
       return { events: serialized, total, page, totalPages: Math.ceil(total / ITEMS_PER_PAGE) }
     },
-    ["events-list", cacheKey],
+    ["events-list", locale, cacheKey],
     { revalidate: 300, tags: ["events"] }
   )()
 }
 
 export type EventListItem = Awaited<ReturnType<typeof getEvents>>["events"][number]
 
-export const getEventBySlug = async (slug: string) =>
+export const getEventBySlug = async (slug: string, locale: Locale = "fr") =>
   unstable_cache(
     async () => {
       const event = await prisma.event.findUnique({ where: { slug, published: true } })
       if (!event) return null
       return {
-        ...event,
+        ...localizeEntity(event, locale, ["title", "description", "pricing"]),
         dateStart: event.dateStart?.toISOString() ?? null,
         dateEnd: event.dateEnd?.toISOString() ?? null,
         createdAt: event.createdAt.toISOString(),
         updatedAt: event.updatedAt.toISOString(),
       }
     },
-    ["event-detail", slug],
+    ["event-detail", slug, locale],
     { revalidate: 1800, tags: ["events"] }
   )()
 
 export type EventDetail = NonNullable<Awaited<ReturnType<typeof getEventBySlug>>>
 
-export const getAllFilteredEventsForMap = async (filters: EventFilters = {}) => {
+export const getAllFilteredEventsForMap = async (filters: EventFilters = {}, locale: Locale = "fr") => {
   const cacheKey = JSON.stringify(filters)
 
   return unstable_cache(
@@ -167,17 +171,17 @@ export const getAllFilteredEventsForMap = async (filters: EventFilters = {}) => 
         where: { ...buildFilterWhere(filters), latitude: { not: 0 }, longitude: { not: 0 } },
         orderBy: { dateStart: "asc" },
         select: {
-          id: true, title: true, slug: true, category: true,
+          id: true, titleFr: true, titleEn: true, slug: true, category: true,
           latitude: true, longitude: true, dateStart: true,
           timeStart: true, city: true, coverImage: true,
         },
       })
       return events.map((e) => ({
-        ...e,
+        ...localizeEntity(e, locale, ["title"]),
         dateStart: e.dateStart?.toISOString() ?? null,
       }))
     },
-    ["events-map", cacheKey],
+    ["events-map", locale, cacheKey],
     { revalidate: 300, tags: ["events"] }
   )()
 }

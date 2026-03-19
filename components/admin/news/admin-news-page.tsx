@@ -138,9 +138,9 @@ export const AdminNewsPage = ({ news, search = "" }: AdminNewsPageProps) => {
                   className="border-b border-white/5 transition-colors hover:bg-white/5"
                 >
                   <td className="px-4 py-3">
-                    <span className="font-medium text-white">{article.title}</span>
-                    {article.excerpt && (
-                      <p className="mt-0.5 line-clamp-1 text-xs text-slate-500">{article.excerpt}</p>
+                    <span className="font-medium text-white">{article.titleFr}</span>
+                    {article.excerptFr && (
+                      <p className="mt-0.5 line-clamp-1 text-xs text-slate-500">{article.excerptFr}</p>
                     )}
                   </td>
                   <td className="hidden px-4 py-3 text-slate-400 md:table-cell">
@@ -165,7 +165,7 @@ export const AdminNewsPage = ({ news, search = "" }: AdminNewsPageProps) => {
                         <Button
                           variant="ghost"
                           size="icon-sm"
-                          aria-label={`Modifier ${article.title}`}
+                          aria-label={`Modifier ${article.titleFr}`}
                         >
                           <Pencil className="h-3.5 w-3.5" />
                         </Button>
@@ -187,7 +187,7 @@ export const AdminNewsPage = ({ news, search = "" }: AdminNewsPageProps) => {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Supprimer l&apos;article</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Êtes-vous sûr de vouloir supprimer &quot;{article.title}&quot; ?
+                              Êtes-vous sûr de vouloir supprimer &quot;{article.titleFr}&quot; ?
                               Cette action est irréversible.
                             </AlertDialogDescription>
                           </AlertDialogHeader>

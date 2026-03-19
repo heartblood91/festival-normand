@@ -165,7 +165,7 @@ export const AdminEventsPage = ({ events, search = "" }: AdminEventsPageProps) =
                 >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-white">{event.title}</span>
+                      <span className="font-medium text-white">{event.titleFr}</span>
                       {event.featured && (
                         <Star
                           className="h-3.5 w-3.5 fill-amber-500 text-amber-500"
@@ -211,7 +211,7 @@ export const AdminEventsPage = ({ events, search = "" }: AdminEventsPageProps) =
                         <Button
                           variant="ghost"
                           size="icon-sm"
-                          aria-label={`Modifier ${event.title}`}
+                          aria-label={`Modifier ${event.titleFr}`}
                         >
                           <Pencil className="h-3.5 w-3.5" />
                         </Button>
@@ -233,7 +233,7 @@ export const AdminEventsPage = ({ events, search = "" }: AdminEventsPageProps) =
                           <AlertDialogHeader>
                             <AlertDialogTitle>Supprimer l&apos;événement</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Êtes-vous sûr de vouloir supprimer &quot;{event.title}&quot; ?
+                              Êtes-vous sûr de vouloir supprimer &quot;{event.titleFr}&quot; ?
                               Cette action est irréversible.
                             </AlertDialogDescription>
                           </AlertDialogHeader>

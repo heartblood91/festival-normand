@@ -40,7 +40,8 @@ export const createPartner = async (formData: FormData): Promise<PartnerActionRe
 
     const partner = await prisma.partner.create({
       data: {
-        name: data.name,
+        nameFr: data.nameFr,
+        nameEn: data.nameEn || null,
         logo: data.logo || null,
         website: data.website || null,
         order: data.order,
@@ -84,7 +85,8 @@ export const updatePartner = async (
     await prisma.partner.update({
       where: { id },
       data: {
-        name: data.name,
+        nameFr: data.nameFr,
+        nameEn: data.nameEn || null,
         logo: data.logo || null,
         website: data.website || null,
         order: data.order,
@@ -155,7 +157,8 @@ export const reorderPartners = async (
 }
 
 const extractPartnerFormData = (formData: FormData) => ({
-  name: (formData.get("name") as string) ?? "",
+  nameFr: (formData.get("nameFr") as string) ?? "",
+  nameEn: (formData.get("nameEn") as string) ?? "",
   logo: (formData.get("logo") as string) ?? "",
   website: (formData.get("website") as string) ?? "",
   order: (formData.get("order") as string) ?? "0",

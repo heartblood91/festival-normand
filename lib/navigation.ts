@@ -1,25 +1,19 @@
 export type NavItem = {
-  label: string
+  key: string
   href: string
 }
 
 export const NAV_ITEMS: NavItem[] = [
-  { label: "Accueil", href: "/" },
-  { label: "Événements", href: "/evenements" },
-  { label: "Actualités", href: "/actualites" },
-  { label: "Le Festival", href: "/festival" },
-  { label: "Contact", href: "/contact" },
+  { key: "home", href: "/" },
+  { key: "events", href: "/evenements" },
+  { key: "news", href: "/actualites" },
+  { key: "festival", href: "/festival" },
+  { key: "contact", href: "/contact" },
 ]
 
-export const CTA_LINK = {
-  label: "Inscrivez votre événement",
-  href: "/inscription",
-}
+export const CTA_HREF = "/inscription"
 
 export const SOCIAL_LINKS = {
   facebook: "https://www.facebook.com/pierresenlumieres",
   instagram: "https://www.instagram.com/pierresenlumieres",
 }
-
-export const FESTIVAL_NAME = "Pierres en Lumières"
-export const FESTIVAL_DATES = "29, 30 & 31 mai 2026"

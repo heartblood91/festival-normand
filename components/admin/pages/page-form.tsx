@@ -9,7 +9,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TiptapEditor } from "@/components/admin/tiptap-editor"
+import { TranslateButton } from "@/components/admin/translate-button"
 import { createPage, updatePage } from "@/lib/actions/pages"
 import { slugify } from "@/lib/schemas/event"
 import type { Page } from "@prisma/client"
@@ -26,12 +28,16 @@ export const PageForm = ({ page }: PageFormProps) => {
   const [errors, setErrors] = useState<Record<string, string[]>>({})
   const [slug, setSlug] = useState(page?.slug ?? "")
   const [autoSlug, setAutoSlug] = useState(!page)
-  const [content, setContent] = useState(page?.content ?? "")
+  const [titleFr, setTitleFr] = useState(page?.titleFr ?? "")
+  const [titleEn, setTitleEn] = useState(page?.titleEn ?? "")
+  const [contentFr, setContentFr] = useState(page?.contentFr ?? "")
+  const [contentEn, setContentEn] = useState(page?.contentEn ?? "")
 
   const isSystemPage = page ? SYSTEM_SLUGS.includes(page.slug) : false
 
-  const handleTitleChange = useCallback(
+  const handleTitleFrChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
+      setTitleFr(e.target.value)
       if (autoSlug && !isSystemPage) {
         setSlug(slugify(e.target.value))
       }
@@ -49,6 +55,11 @@ export const PageForm = ({ page }: PageFormProps) => {
     [isSystemPage]
   )
 
+  const handleTranslated = (translations: Record<string, string>) => {
+    if (translations.titleEn) setTitleEn(translations.titleEn)
+    if (translations.contentEn) setContentEn(translations.contentEn)
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
@@ -56,7 +67,10 @@ export const PageForm = ({ page }: PageFormProps) => {
 
     const formData = new FormData(e.currentTarget)
     formData.set("slug", slug)
-    formData.set("content", content)
+    formData.set("titleFr", titleFr)
+    formData.set("titleEn", titleEn)
+    formData.set("contentFr", contentFr)
+    formData.set("contentEn", contentEn)
 
     const result = page
       ? await updatePage(page.id, formData)
@@ -96,26 +110,64 @@ export const PageForm = ({ page }: PageFormProps) => {
           <CardTitle className="text-white">Informations</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="title" className="text-slate-300">
-              Titre *
-            </Label>
-            <Input
-              id="title"
-              name="title"
-              defaultValue={page?.title ?? ""}
-              onChange={handleTitleChange}
-              required
-              className="mt-1 border-white/10 bg-white/5 text-white"
-              aria-invalid={!!errors.title}
-              aria-describedby={errors.title ? "title-error" : undefined}
-            />
-            {errors.title && (
-              <p id="title-error" className="mt-1 text-sm text-red-400">
-                {errors.title[0]}
-              </p>
-            )}
-          </div>
+          <Tabs defaultValue="fr">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="fr">Français</TabsTrigger>
+              <TabsTrigger value="en">English</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="fr">
+              <div>
+                <Label htmlFor="titleFr" className="text-slate-300">
+                  Titre *
+                </Label>
+                <Input
+                  id="titleFr"
+                  name="titleFr"
+                  value={titleFr}
+                  onChange={handleTitleFrChange}
+                  required
+                  className="mt-1 border-white/10 bg-white/5 text-white"
+                  aria-invalid={!!errors.titleFr}
+                  aria-describedby={errors.titleFr ? "titleFr-error" : undefined}
+                />
+                {errors.titleFr && (
+                  <p id="titleFr-error" className="mt-1 text-sm text-red-400">
+                    {errors.titleFr[0]}
+                  </p>
+                )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="en">
+              <TranslateButton
+                sourceFields={{
+                  titleFr,
+                  contentFr,
+                }}
+                onTranslated={handleTranslated}
+              />
+
+              <div>
+                <Label htmlFor="titleEn" className="text-slate-300">
+                  Title
+                </Label>
+                <Input
+                  id="titleEn"
+                  name="titleEn"
+                  value={titleEn}
+                  onChange={(e) => setTitleEn(e.target.value)}
+                  className="mt-1 border-white/10 bg-white/5 text-white"
+                  aria-describedby={errors.titleEn ? "titleEn-error" : undefined}
+                />
+                {errors.titleEn && (
+                  <p id="titleEn-error" className="mt-1 text-sm text-red-400">
+                    {errors.titleEn[0]}
+                  </p>
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
 
           <div>
             <Label htmlFor="slug" className="text-slate-300">
@@ -146,12 +198,30 @@ export const PageForm = ({ page }: PageFormProps) => {
           <CardTitle className="text-white">Contenu</CardTitle>
         </CardHeader>
         <CardContent>
-          <TiptapEditor content={content} onChange={setContent} />
-          {errors.content && (
-            <p className="mt-1 text-sm text-red-400">
-              {errors.content[0]}
-            </p>
-          )}
+          <Tabs defaultValue="fr">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="fr">Français</TabsTrigger>
+              <TabsTrigger value="en">English</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="fr">
+              <TiptapEditor content={contentFr} onChange={setContentFr} />
+              {errors.contentFr && (
+                <p className="mt-1 text-sm text-red-400">
+                  {errors.contentFr[0]}
+                </p>
+              )}
+            </TabsContent>
+
+            <TabsContent value="en">
+              <TiptapEditor content={contentEn} onChange={setContentEn} />
+              {errors.contentEn && (
+                <p className="mt-1 text-sm text-red-400">
+                  {errors.contentEn[0]}
+                </p>
+              )}
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
 

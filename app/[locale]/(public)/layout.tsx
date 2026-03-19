@@ -7,7 +7,7 @@ const PublicLayout = ({ children }: { children: React.ReactNode }) => {
     <>
       <SkipNav />
       <Header />
-      <main id="main-content" className="flex-1 pt-16 md:pt-20">
+      <main id="main-content" className="flex-1">
         {children}
       </main>
       <Footer />

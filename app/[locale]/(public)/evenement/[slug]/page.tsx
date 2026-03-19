@@ -2,11 +2,15 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
+import { getTranslations } from "next-intl/server"
 import { getEventBySlug } from "@/lib/queries/events"
 import { EventInfo } from "@/components/event-detail/event-info"
 import { PhotoCarousel } from "@/components/event-detail/photo-carousel"
 import { EventMapWrapper } from "@/components/event-detail/event-map-wrapper"
 import { prisma } from "@/lib/prisma"
+import { locales } from "@/lib/i18n/config"
+
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
 export const revalidate = 1800
 
@@ -15,19 +19,22 @@ export const generateStaticParams = async () => {
     where: { published: true },
     select: { slug: true },
   })
-  return events.map((e) => ({ slug: e.slug }))
+  return locales.flatMap((locale) =>
+    events.map((e) => ({ locale, slug: e.slug }))
+  )
 }
 
 type EventDetailPageProps = {
-  params: Promise<{ slug: string }>
+  params: Promise<{ locale: string; slug: string }>
 }
 
 export const generateMetadata = async ({ params }: EventDetailPageProps): Promise<Metadata> => {
-  const { slug } = await params
-  const event = await getEventBySlug(slug)
+  const { locale, slug } = await params
+  const t = await getTranslations()
+  const event = await getEventBySlug(slug, locale)
 
   if (!event) {
-    return { title: "Événement introuvable" }
+    return { title: locale === "en" ? "Event not found" : "Événement introuvable" }
   }
 
   return {
@@ -39,12 +46,19 @@ export const generateMetadata = async ({ params }: EventDetailPageProps): Promis
       images: event.coverImage ? [{ url: event.coverImage }] : [],
       type: "article",
     },
+    alternates: {
+      languages: {
+        fr: `${BASE_URL}/fr/evenement/${slug}`,
+        en: `${BASE_URL}/en/evenement/${slug}`,
+      },
+    },
   }
 }
 
 const EventDetailPage = async ({ params }: EventDetailPageProps) => {
-  const { slug } = await params
-  const event = await getEventBySlug(slug)
+  const { locale, slug } = await params
+  const t = await getTranslations()
+  const event = await getEventBySlug(slug, locale)
 
   if (!event) {
     notFound()
@@ -58,23 +72,23 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
   return (
     <article className="mx-auto max-w-7xl px-4 py-8 md:py-12 lg:py-16">
       {/* Breadcrumb */}
-      <nav aria-label="Fil d'Ariane" className="mb-6">
+      <nav aria-label={t("a11y.breadcrumb")} className="mb-6">
         <ol className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
           <li>
             <Link
-              href="/"
+              href={`/${locale}`}
               className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
             >
-              Accueil
+              {t("events.breadcrumbHome")}
             </Link>
           </li>
           <li aria-hidden="true" className="text-muted-foreground/50">/</li>
           <li>
             <Link
-              href="/evenements"
+              href={`/${locale}/evenements`}
               className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
             >
-              Événements
+              {t("events.breadcrumbEvents")}
             </Link>
           </li>
           <li aria-hidden="true" className="text-muted-foreground/50">/</li>
@@ -84,11 +98,11 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
 
       {/* Back link */}
       <Link
-        href="/evenements"
+        href={`/${locale}/evenements`}
         className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:rounded-sm"
       >
         <ArrowLeft className="size-4" aria-hidden="true" />
-        Retour aux événements
+        {t("events.backToEvents")}
       </Link>
 
       {/* Title */}
@@ -112,7 +126,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
           {/* Description */}
           <section>
             <h2 className="mb-4 font-serif text-xl font-bold text-foreground md:text-2xl">
-              Description
+              {t("events.description")}
             </h2>
             <div className="prose prose-invert max-w-none text-muted-foreground">
               {event.description.split("\n").map((paragraph, i) => (
@@ -125,7 +139,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
           {event.latitude && event.longitude && (
             <section>
               <h2 className="mb-4 font-serif text-xl font-bold text-foreground md:text-2xl">
-                Localisation
+                {t("events.location")}
               </h2>
               <EventMapWrapper
                 latitude={event.latitude}
@@ -139,7 +153,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
         {/* Sidebar — right column */}
         <aside className="lg:col-span-1">
           <div className="lg:sticky lg:top-24">
-            <EventInfo event={event} />
+            <EventInfo event={event} locale={locale} />
           </div>
         </aside>
       </div>

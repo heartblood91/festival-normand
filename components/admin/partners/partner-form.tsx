@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { TranslateButton } from "@/components/admin/translate-button"
 import { createPartner, updatePartner } from "@/lib/actions/partners"
 import type { Partner } from "@prisma/client"
 
@@ -20,6 +22,12 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string[]>>({})
+  const [nameFr, setNameFr] = useState(partner?.nameFr ?? "")
+  const [nameEn, setNameEn] = useState(partner?.nameEn ?? "")
+
+  const handleTranslated = (translations: Record<string, string>) => {
+    if (translations.nameEn) setNameEn(translations.nameEn)
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -27,6 +35,8 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
     setErrors({})
 
     const formData = new FormData(e.currentTarget)
+    formData.set("nameFr", nameFr)
+    formData.set("nameEn", nameEn)
 
     const result = partner
       ? await updatePartner(partner.id, formData)
@@ -66,25 +76,63 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
           <CardTitle className="text-white">Informations</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="name" className="text-slate-300">
-              Nom *
-            </Label>
-            <Input
-              id="name"
-              name="name"
-              defaultValue={partner?.name ?? ""}
-              required
-              className="mt-1 border-white/10 bg-white/5 text-white"
-              aria-invalid={!!errors.name}
-              aria-describedby={errors.name ? "name-error" : undefined}
-            />
-            {errors.name && (
-              <p id="name-error" className="mt-1 text-sm text-red-400">
-                {errors.name[0]}
-              </p>
-            )}
-          </div>
+          <Tabs defaultValue="fr">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="fr">Français</TabsTrigger>
+              <TabsTrigger value="en">English</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="fr">
+              <div>
+                <Label htmlFor="nameFr" className="text-slate-300">
+                  Nom *
+                </Label>
+                <Input
+                  id="nameFr"
+                  name="nameFr"
+                  value={nameFr}
+                  onChange={(e) => setNameFr(e.target.value)}
+                  required
+                  className="mt-1 border-white/10 bg-white/5 text-white"
+                  aria-invalid={!!errors.nameFr}
+                  aria-describedby={errors.nameFr ? "nameFr-error" : undefined}
+                />
+                {errors.nameFr && (
+                  <p id="nameFr-error" className="mt-1 text-sm text-red-400">
+                    {errors.nameFr[0]}
+                  </p>
+                )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="en">
+              <TranslateButton
+                sourceFields={{
+                  nameFr,
+                }}
+                onTranslated={handleTranslated}
+              />
+
+              <div>
+                <Label htmlFor="nameEn" className="text-slate-300">
+                  Name
+                </Label>
+                <Input
+                  id="nameEn"
+                  name="nameEn"
+                  value={nameEn}
+                  onChange={(e) => setNameEn(e.target.value)}
+                  className="mt-1 border-white/10 bg-white/5 text-white"
+                  aria-describedby={errors.nameEn ? "nameEn-error" : undefined}
+                />
+                {errors.nameEn && (
+                  <p id="nameEn-error" className="mt-1 text-sm text-red-400">
+                    {errors.nameEn[0]}
+                  </p>
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
 
           <div>
             <Label htmlFor="logo" className="text-slate-300">

@@ -1,24 +1,20 @@
 "use client"
 
 import Link from "next/link"
+import { useLocale, useTranslations } from "next-intl"
 import { ArrowRight, Pause, Play } from "lucide-react"
 import { useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
+import { formatNewsDate } from "@/lib/utils/format-date"
 import type { LatestNewsItem } from "@/lib/queries/homepage"
-
-const formatNewsDate = (date: Date | string): string => {
-  return new Intl.DateTimeFormat("fr-FR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date(date))
-}
 
 type NewsCarouselProps = {
   news: LatestNewsItem[]
 }
 
 const NewsCarousel = ({ news }: NewsCarouselProps) => {
+  const t = useTranslations()
+  const locale = useLocale()
   const scrollRef = useRef<HTMLDivElement>(null)
   const [autoScroll, setAutoScroll] = useState(true)
 
@@ -33,10 +29,10 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
               id="news-heading"
               className="font-serif text-2xl font-bold text-foreground md:text-3xl lg:text-4xl"
             >
-              Actualités
+              {t("newsSection.title")}
             </h2>
             <p className="mt-2 text-sm text-muted-foreground md:text-base">
-              Les dernières nouvelles du festival
+              {t("newsSection.subtitle")}
             </p>
           </div>
           <div className="hidden items-center gap-2 sm:inline-flex">
@@ -44,14 +40,14 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
               variant="ghost"
               size="sm"
               onClick={() => setAutoScroll(!autoScroll)}
-              aria-label={autoScroll ? "Pause le défilement automatique" : "Reprendre le défilement automatique"}
+              aria-label={autoScroll ? t("a11y.pauseCarousel") : t("a11y.playCarousel")}
               className="text-primary hover:text-primary/80"
             >
               {autoScroll ? <Pause className="size-4" /> : <Play className="size-4" />}
             </Button>
-            <Button asChild variant="ghost" className="inline-flex items-center gap-1 text-primary" aria-label="Voir toutes les actualités du festival">
+            <Button asChild variant="ghost" className="inline-flex items-center gap-1 text-primary" aria-label={t("newsSection.viewAllLabel")}>
               <Link href="/actualites">
-                Toutes les actualités
+                {t("newsSection.viewAll")}
                 <ArrowRight className="size-4" aria-hidden="true" />
               </Link>
             </Button>
@@ -65,7 +61,7 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
         className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 scrollbar-hide md:gap-6 md:px-[max(1rem,calc((100vw-80rem)/2+1rem))]"
         role="region"
         aria-roledescription="carrousel"
-        aria-label="Actualités récentes"
+        aria-label={t("a11y.carousel")}
         tabIndex={0}
       >
         {news.map((article, index) => (
@@ -75,7 +71,7 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
             className="group flex w-[280px] shrink-0 snap-start flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all hover:border-primary/30 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 md:w-[340px]"
             role="group"
             aria-roledescription="diapositive"
-            aria-label={`Diapositive ${index + 1} sur ${news.length}`}
+            aria-label={t("a11y.slide", { current: index + 1, total: news.length })}
           >
             {/* Cover image or gradient placeholder */}
             <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br from-primary/20 to-primary/5">
@@ -97,7 +93,7 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
                 dateTime={new Date(article.publishedAt).toISOString()}
                 className="text-xs text-muted-foreground"
               >
-                {formatNewsDate(article.publishedAt)}
+                {formatNewsDate(article.publishedAt, locale)}
               </time>
               <h3 className="mt-1.5 font-serif text-base font-bold leading-snug text-foreground group-hover:text-primary transition-colors md:text-lg">
                 {article.title}
@@ -113,9 +109,9 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
       </div>
 
       <div className="mt-6 text-center sm:hidden">
-        <Button asChild variant="outline" className="gap-1" aria-label="Voir toutes les actualités">
+        <Button asChild variant="outline" className="gap-1" aria-label={t("newsSection.viewAllLabel")}>
           <Link href="/actualites">
-            Toutes les actualités
+            {t("newsSection.viewAll")}
             <ArrowRight className="size-4" aria-hidden="true" />
           </Link>
         </Button>
@@ -124,4 +120,4 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
   )
 }
 
-export { NewsCarousel, formatNewsDate }
+export { NewsCarousel }

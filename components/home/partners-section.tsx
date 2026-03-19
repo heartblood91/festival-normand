@@ -1,10 +1,12 @@
+import { getTranslations } from "next-intl/server"
 import type { PartnerItem } from "@/lib/queries/homepage"
 
 type PartnersSectionProps = {
   partners: PartnerItem[]
 }
 
-const PartnersSection = ({ partners }: PartnersSectionProps) => {
+const PartnersSection = async ({ partners }: PartnersSectionProps) => {
+  const t = await getTranslations()
   if (partners.length === 0) return null
 
   return (
@@ -17,10 +19,10 @@ const PartnersSection = ({ partners }: PartnersSectionProps) => {
           id="partners-heading"
           className="font-serif text-xl font-bold text-foreground md:text-2xl"
         >
-          Nos partenaires
+          {t("partners.title")}
         </h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Un événement soutenu par les acteurs du patrimoine normand
+          {t("partners.subtitle")}
         </p>
 
         <div className="mt-10 grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-7 md:gap-6">

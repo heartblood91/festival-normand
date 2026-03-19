@@ -1,7 +1,9 @@
 import { unstable_cache } from "next/cache"
 import { prisma } from "@/lib/prisma"
+import { localizeEntity } from "@/lib/i18n/db"
+import type { Locale } from "@/lib/i18n/config"
 
-export const getFeaturedEvents = async () => {
+export const getFeaturedEvents = async (locale: Locale = "fr") => {
   return unstable_cache(
     async () => {
       const events = await prisma.event.findMany({
@@ -13,7 +15,8 @@ export const getFeaturedEvents = async () => {
         take: 3,
         select: {
           id: true,
-          title: true,
+          titleFr: true,
+          titleEn: true,
           slug: true,
           location: true,
           city: true,
@@ -26,16 +29,16 @@ export const getFeaturedEvents = async () => {
         },
       })
       return events.map((e) => ({
-        ...e,
+        ...localizeEntity(e, locale, ["title"]),
         dateStart: e.dateStart?.toISOString() ?? null,
       }))
     },
-    ["featured-events"],
+    ["featured-events", locale],
     { revalidate: 300, tags: ["events"] }
   )()
 }
 
-export const getLatestNews = async () => {
+export const getLatestNews = async (locale: Locale = "fr") => {
   return unstable_cache(
     async () => {
       const news = await prisma.news.findMany({
@@ -44,37 +47,45 @@ export const getLatestNews = async () => {
         take: 6,
         select: {
           id: true,
-          title: true,
+          titleFr: true,
+          titleEn: true,
           slug: true,
-          excerpt: true,
+          excerptFr: true,
+          excerptEn: true,
           coverImage: true,
           publishedAt: true,
         },
       })
       return news.map((n) => ({
-        ...n,
+        ...localizeEntity(n, locale, ["title", "excerpt"]),
         publishedAt: n.publishedAt?.toISOString() ?? null,
       }))
     },
-    ["latest-news"],
+    ["latest-news", locale],
     { revalidate: 600, tags: ["news"] }
   )()
 }
 
-export const getPartners = async () => {
+export const getPartners = async (locale: Locale = "fr") => {
   return unstable_cache(
     async () => {
-      return prisma.partner.findMany({
+      const partners = await prisma.partner.findMany({
         orderBy: { order: "asc" },
         select: {
           id: true,
-          name: true,
+          nameFr: true,
+          nameEn: true,
           logo: true,
           website: true,
         },
       })
+      return partners.map((p) => ({
+        ...localizeEntity(p, locale, ["name"]),
+        logo: p.logo,
+        website: p.website,
+      }))
     },
-    ["partners"],
+    ["partners", locale],
     { revalidate: 86400, tags: ["partners"] }
   )()
 }

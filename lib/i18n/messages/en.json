@@ -1,0 +1,163 @@
+{
+  "meta": {
+    "siteName": "Pierres en Lumières",
+    "siteDescription": "Discover the magic of Normandy's heritage by night. May 29, 30 & 31, 2026.",
+    "festivalName": "Pierres en Lumières",
+    "festivalDates": "May 29, 30 & 31, 2026"
+  },
+  "nav": {
+    "home": "Home",
+    "events": "Events",
+    "news": "News",
+    "festival": "The Festival",
+    "contact": "Contact",
+    "register": "Register your event",
+    "legalNotice": "Legal notice",
+    "accessibility": "Accessibility"
+  },
+  "a11y": {
+    "skipToContent": "Skip to main content",
+    "skipToFooter": "Skip to footer navigation",
+    "backToHome": "Back to home",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "mainNav": "Main navigation",
+    "footerNav": "Footer navigation",
+    "contrast": "Contrast",
+    "contrastOn": "Disable high contrast",
+    "contrastOff": "Enable high contrast",
+    "previousPhoto": "Previous photo",
+    "nextPhoto": "Next photo",
+    "photo": "Photo {current} of {total}",
+    "photoGallery": "Photo gallery",
+    "carousel": "News carousel",
+    "slide": "Slide {current} of {total}",
+    "pauseCarousel": "Pause auto-scroll",
+    "playCarousel": "Resume auto-scroll",
+    "mapDescription": "Map of festival events in Normandy. Use the list view for accessible navigation.",
+    "mapSrOnly": "This interactive map is not fully accessible to screen readers. Use the grid view to browse events.",
+    "noGpsEvents": "No events with GPS coordinates found",
+    "breadcrumb": "Breadcrumb"
+  },
+  "hero": {
+    "badge": "Normandy Heritage Festival",
+    "title": "Pierres en Lumières",
+    "subtitle": "Discover the magic of Normandy's heritage by night",
+    "cta": "Explore events",
+    "ctaSecondary": "Register a site"
+  },
+  "search": {
+    "placeholder": "Search for a city...",
+    "submit": "Search",
+    "ariaLabel": "Search for an event by city"
+  },
+  "featured": {
+    "title": "Featured events",
+    "subtitle": "This edition's must-see highlights",
+    "viewAll": "View all",
+    "viewAllLabel": "View all featured events"
+  },
+  "newsSection": {
+    "title": "News",
+    "subtitle": "Latest festival news",
+    "viewAll": "All news",
+    "viewAllLabel": "View all festival news"
+  },
+  "partners": {
+    "title": "Our partners",
+    "subtitle": "An event supported by Normandy heritage stakeholders"
+  },
+  "events": {
+    "title": "Events",
+    "subtitle": "Discover the {count} festival events across Normandy",
+    "results": "Results",
+    "noResults": "No events found",
+    "noResultsHint": "Try adjusting your filters or search terms",
+    "backToEvents": "Back to events",
+    "breadcrumbHome": "Home",
+    "breadcrumbEvents": "Events",
+    "description": "Description",
+    "location": "Location",
+    "practicalInfo": "Practical information",
+    "date": "Date",
+    "time": "Hours",
+    "venue": "Venue",
+    "pricing": "Pricing",
+    "organizer": "Organizer",
+    "free": "Free",
+    "accessible": "Wheelchair accessible"
+  },
+  "filters": {
+    "department": "Department",
+    "category": "Category",
+    "date29": "Fri 29",
+    "date30": "Sat 30",
+    "date31": "Sun 31",
+    "date29Full": "Fri May 29",
+    "date30Full": "Sat May 30",
+    "date31Full": "Sun May 31",
+    "pmr": "Wheelchair accessible",
+    "removeFilter": "Remove {filter} filter",
+    "clearAll": "Clear all",
+    "eventCount": "{count} events",
+    "grid": "Grid",
+    "map": "Map",
+    "nearby": "Near me",
+    "nearbyLabel": "Find events near me",
+    "geoNotSupported": "Geolocation is not supported by your browser.",
+    "geoDenied": "Please allow geolocation in your browser settings.",
+    "geoError": "Unable to determine your position."
+  },
+  "categories": {
+    "ILLUMINATIONS": "Light shows",
+    "EXPOSITIONS": "Exhibitions",
+    "ANIMATIONS": "Activities",
+    "VISITES": "Tours"
+  },
+  "departments": {
+    "CALVADOS": "Calvados",
+    "EURE": "Eure",
+    "MANCHE": "Manche",
+    "ORNE": "Orne",
+    "SEINE_MARITIME": "Seine-Maritime"
+  },
+  "news": {
+    "title": "News",
+    "subtitle": "Latest news from the Pierres en Lumières festival",
+    "noResults": "No news at the moment",
+    "noResultsHint": "Come back soon to discover the latest festival news.",
+    "backToNews": "Back to news",
+    "breadcrumbHome": "Home",
+    "breadcrumbNews": "News"
+  },
+  "contact": {
+    "title": "Contact us",
+    "subtitle": "Have a question about the festival? Don't hesitate to reach out.",
+    "formTitle": "Write to us",
+    "name": "Full name",
+    "email": "Email",
+    "departmentLabel": "Department",
+    "departmentPlaceholder": "Select a department",
+    "message": "Message",
+    "send": "Send message",
+    "sending": "Sending...",
+    "success": "Message sent successfully!",
+    "error": "An error occurred. Please try again.",
+    "registerTitle": "Register your event",
+    "registerDescription": "Want to participate in the festival? Register your site or monument.",
+    "registerCta": "Register"
+  },
+  "footer": {
+    "description": "Discover the magic of Normandy's heritage by night.",
+    "navigation": "Navigation",
+    "contact": "Contact",
+    "contactQuestion": "Have a question about the festival?",
+    "contactCta": "Contact us →",
+    "copyright": "© {year} Pierres en Lumières. All rights reserved."
+  },
+  "locale": {
+    "fr": "Français",
+    "en": "English",
+    "switchTo": "Passer en français"
+  }
+}

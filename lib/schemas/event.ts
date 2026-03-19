@@ -1,18 +1,20 @@
 import { z } from "zod"
 
 export const eventSchema = z.object({
-  title: z
+  titleFr: z
     .string()
     .min(3, "Le titre doit contenir au moins 3 caractères")
     .max(200, "Le titre ne peut pas dépasser 200 caractères"),
+  titleEn: z.string().optional().or(z.literal("")),
   slug: z
     .string()
     .min(3, "Le slug doit contenir au moins 3 caractères")
     .max(200, "Le slug ne peut pas dépasser 200 caractères")
     .regex(/^[a-z0-9-]+$/, "Le slug ne peut contenir que des lettres minuscules, chiffres et tirets"),
-  description: z
+  descriptionFr: z
     .string()
     .min(10, "La description doit contenir au moins 10 caractères"),
+  descriptionEn: z.string().optional().or(z.literal("")),
   location: z
     .string()
     .min(2, "Le lieu doit contenir au moins 2 caractères"),
@@ -33,7 +35,8 @@ export const eventSchema = z.object({
   dateEnd: z.string().optional().or(z.literal("")),
   timeStart: z.string().optional().or(z.literal("")),
   timeEnd: z.string().optional().or(z.literal("")),
-  pricing: z.string().optional().or(z.literal("")),
+  pricingFr: z.string().optional().or(z.literal("")),
+  pricingEn: z.string().optional().or(z.literal("")),
   organizer: z.string().optional().or(z.literal("")),
   email: z.string().email("Email invalide").optional().or(z.literal("")),
   phone: z.string().optional().or(z.literal("")),

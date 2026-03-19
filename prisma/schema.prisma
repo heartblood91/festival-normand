@@ -1,7 +1,5 @@
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
 }
 
 generator client {
@@ -26,9 +24,11 @@ enum Category {
 
 model Event {
   id            String     @id @default(cuid())
-  title         String
+  titleFr       String     @map("title_fr")
+  titleEn       String?    @map("title_en")
   slug          String     @unique
-  description   String
+  descriptionFr String     @map("description_fr") @db.Text
+  descriptionEn String?    @map("description_en") @db.Text
   location      String
   city          String
   postalCode    String     @map("postal_code")
@@ -38,7 +38,8 @@ model Event {
   dateEnd       DateTime?  @map("date_end")
   timeStart     String?    @map("time_start")
   timeEnd       String?    @map("time_end")
-  pricing       String?
+  pricingFr     String?    @map("pricing_fr")
+  pricingEn     String?    @map("pricing_en")
   organizer     String?
   email         String?
   phone         String?
@@ -58,10 +59,13 @@ model Event {
 
 model News {
   id          String   @id @default(cuid())
-  title       String
+  titleFr     String   @map("title_fr")
+  titleEn     String?  @map("title_en")
   slug        String   @unique
-  excerpt     String?
-  content     String
+  excerptFr   String?  @map("excerpt_fr")
+  excerptEn   String?  @map("excerpt_en")
+  contentFr   String   @map("content_fr") @db.Text
+  contentEn   String?  @map("content_en") @db.Text
   coverImage  String?  @map("cover_image")
   published   Boolean  @default(true)
   publishedAt DateTime @default(now()) @map("published_at")
@@ -73,7 +77,8 @@ model News {
 
 model Partner {
   id        String   @id @default(cuid())
-  name      String
+  nameFr    String   @map("name_fr")
+  nameEn    String?  @map("name_en")
   logo      String?
   website   String?
   order     Int      @default(0)
@@ -85,9 +90,11 @@ model Partner {
 
 model Page {
   id        String   @id @default(cuid())
-  title     String
+  titleFr   String   @map("title_fr")
+  titleEn   String?  @map("title_en")
   slug      String   @unique
-  content   String
+  contentFr String   @map("content_fr") @db.Text
+  contentEn String?  @map("content_en") @db.Text
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 

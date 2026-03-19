@@ -27,7 +27,6 @@ export const metadata: Metadata = {
     "Découvrez la magie du patrimoine normand en nocturne. 29, 30 & 31 mai 2026.",
   openGraph: {
     type: "website",
-    locale: "fr_FR",
     siteName: "Pierres en Lumières",
     title: "Pierres en Lumières - Festival du Patrimoine Normand",
     description:
@@ -36,21 +35,25 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
   },
+  alternates: {
+    languages: {
+      fr: `${SITE_URL}/fr`,
+      en: `${SITE_URL}/en`,
+    },
+  },
 }
 
-const RootLayout = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <html lang="fr" dir="ltr" className={cn(inter.variable, playfair.variable)}>
-      <head>
-        <link rel="preconnect" href="https://pierresenlumieres.fr" />
-        <link rel="dns-prefetch" href="https://pierresenlumieres.fr" />
-      </head>
-      <body className="flex min-h-dvh flex-col font-sans antialiased">
-        {children}
-        <Toaster />
-      </body>
-    </html>
-  )
-}
+const RootLayout = ({ children }: { children: React.ReactNode }) => (
+  <html lang="fr" dir="ltr" suppressHydrationWarning className={cn(inter.variable, playfair.variable)}>
+    <head>
+      <link rel="preconnect" href="https://pierresenlumieres.fr" />
+      <link rel="dns-prefetch" href="https://pierresenlumieres.fr" />
+    </head>
+    <body className="flex min-h-dvh flex-col font-sans antialiased">
+      {children}
+      <Toaster />
+    </body>
+  </html>
+)
 
 export default RootLayout

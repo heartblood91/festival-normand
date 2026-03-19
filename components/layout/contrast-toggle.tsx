@@ -1,12 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useTranslations } from "next-intl"
 import { Eye } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const STORAGE_KEY = "pel-high-contrast"
 
 const ContrastToggle = () => {
+  const t = useTranslations("a11y")
   const [highContrast, setHighContrast] = useState(false)
 
   useEffect(() => {
@@ -37,7 +39,7 @@ const ContrastToggle = () => {
       aria-pressed={highContrast}
     >
       <Eye className="size-3.5" aria-hidden="true" />
-      <span>Contraste</span>
+      <span>{t("contrast")}</span>
     </button>
   )
 }

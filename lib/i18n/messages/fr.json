@@ -1,0 +1,163 @@
+{
+  "meta": {
+    "siteName": "Pierres en Lumières",
+    "siteDescription": "Découvrez la magie du patrimoine normand en nocturne. 29, 30 & 31 mai 2026.",
+    "festivalName": "Pierres en Lumières",
+    "festivalDates": "29, 30 & 31 mai 2026"
+  },
+  "nav": {
+    "home": "Accueil",
+    "events": "Événements",
+    "news": "Actualités",
+    "festival": "Le Festival",
+    "contact": "Contact",
+    "register": "Inscrivez votre événement",
+    "legalNotice": "Mentions légales",
+    "accessibility": "Accessibilité"
+  },
+  "a11y": {
+    "skipToContent": "Aller au contenu principal",
+    "skipToFooter": "Aller à la navigation du pied de page",
+    "backToHome": "Retour à l'accueil",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu",
+    "mainNav": "Navigation principale",
+    "footerNav": "Navigation du pied de page",
+    "contrast": "Contraste",
+    "contrastOn": "Désactiver le contraste élevé",
+    "contrastOff": "Activer le contraste élevé",
+    "previousPhoto": "Photo précédente",
+    "nextPhoto": "Photo suivante",
+    "photo": "Photo {current} sur {total}",
+    "photoGallery": "Galerie photos",
+    "carousel": "Carrousel d'actualités",
+    "slide": "Diapositive {current} sur {total}",
+    "pauseCarousel": "Pause le défilement automatique",
+    "playCarousel": "Reprendre le défilement automatique",
+    "mapDescription": "Carte des événements du festival en Normandie. Utilisez la vue liste pour une navigation accessible.",
+    "mapSrOnly": "Cette carte interactive n'est pas entièrement accessible aux lecteurs d'écran. Utilisez la vue grille pour naviguer les événements.",
+    "noGpsEvents": "Aucun événement avec coordonnées GPS trouvé",
+    "breadcrumb": "Fil d'Ariane"
+  },
+  "hero": {
+    "badge": "Festival du Patrimoine Normand",
+    "title": "Pierres en Lumières",
+    "subtitle": "Découvrez la magie du patrimoine normand en nocturne",
+    "cta": "Découvrir les événements",
+    "ctaSecondary": "Inscrire un site"
+  },
+  "search": {
+    "placeholder": "Rechercher une ville...",
+    "submit": "Rechercher",
+    "ariaLabel": "Rechercher un événement par ville"
+  },
+  "featured": {
+    "title": "Événements à la une",
+    "subtitle": "Les incontournables de cette édition",
+    "viewAll": "Voir tous",
+    "viewAllLabel": "Voir tous les événements à la une"
+  },
+  "newsSection": {
+    "title": "Actualités",
+    "subtitle": "Les dernières nouvelles du festival",
+    "viewAll": "Toutes les actualités",
+    "viewAllLabel": "Voir toutes les actualités du festival"
+  },
+  "partners": {
+    "title": "Nos partenaires",
+    "subtitle": "Un événement soutenu par les acteurs du patrimoine normand"
+  },
+  "events": {
+    "title": "Événements",
+    "subtitle": "Découvrez les {count} événements du festival à travers la Normandie",
+    "results": "Résultats",
+    "noResults": "Aucun événement trouvé",
+    "noResultsHint": "Essayez de modifier vos filtres ou votre recherche",
+    "backToEvents": "Retour aux événements",
+    "breadcrumbHome": "Accueil",
+    "breadcrumbEvents": "Événements",
+    "description": "Description",
+    "location": "Localisation",
+    "practicalInfo": "Informations pratiques",
+    "date": "Date",
+    "time": "Horaires",
+    "venue": "Lieu",
+    "pricing": "Tarification",
+    "organizer": "Organisateur",
+    "free": "Gratuit",
+    "accessible": "Accessible PMR"
+  },
+  "filters": {
+    "department": "Département",
+    "category": "Catégorie",
+    "date29": "Ven 29",
+    "date30": "Sam 30",
+    "date31": "Dim 31",
+    "date29Full": "Ven 29 mai",
+    "date30Full": "Sam 30 mai",
+    "date31Full": "Dim 31 mai",
+    "pmr": "Accessible PMR",
+    "removeFilter": "Retirer le filtre {filter}",
+    "clearAll": "Tout effacer",
+    "eventCount": "{count} événements",
+    "grid": "Grille",
+    "map": "Carte",
+    "nearby": "Près de moi",
+    "nearbyLabel": "Trouver les événements près de moi",
+    "geoNotSupported": "La géolocalisation n'est pas supportée par votre navigateur.",
+    "geoDenied": "Veuillez autoriser la géolocalisation dans votre navigateur.",
+    "geoError": "Impossible de déterminer votre position."
+  },
+  "categories": {
+    "ILLUMINATIONS": "Illuminations",
+    "EXPOSITIONS": "Expositions",
+    "ANIMATIONS": "Animations",
+    "VISITES": "Visites"
+  },
+  "departments": {
+    "CALVADOS": "Calvados",
+    "EURE": "Eure",
+    "MANCHE": "Manche",
+    "ORNE": "Orne",
+    "SEINE_MARITIME": "Seine-Maritime"
+  },
+  "news": {
+    "title": "Actualités",
+    "subtitle": "Les dernières nouvelles du festival Pierres en Lumières",
+    "noResults": "Aucune actualité pour le moment",
+    "noResultsHint": "Revenez bientôt pour découvrir les dernières nouvelles du festival.",
+    "backToNews": "Retour aux actualités",
+    "breadcrumbHome": "Accueil",
+    "breadcrumbNews": "Actualités"
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "subtitle": "Une question sur le festival ? N'hésitez pas à nous contacter.",
+    "formTitle": "Nous écrire",
+    "name": "Nom complet",
+    "email": "Email",
+    "departmentLabel": "Département",
+    "departmentPlaceholder": "Sélectionnez un département",
+    "message": "Message",
+    "send": "Envoyer le message",
+    "sending": "Envoi en cours...",
+    "success": "Message envoyé avec succès !",
+    "error": "Une erreur est survenue. Veuillez réessayer.",
+    "registerTitle": "Inscrivez votre événement",
+    "registerDescription": "Vous souhaitez participer au festival ? Inscrivez votre site ou monument.",
+    "registerCta": "S'inscrire"
+  },
+  "footer": {
+    "description": "Découvrez la magie du patrimoine normand en nocturne.",
+    "navigation": "Navigation",
+    "contact": "Contact",
+    "contactQuestion": "Une question sur le festival ?",
+    "contactCta": "Nous contacter →",
+    "copyright": "© {year} Pierres en Lumières. Tous droits réservés."
+  },
+  "locale": {
+    "fr": "Français",
+    "en": "English",
+    "switchTo": "Switch to English"
+  }
+}

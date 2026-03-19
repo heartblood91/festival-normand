@@ -1,10 +1,12 @@
 "use client"
 
 import { useRouter, useSearchParams } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { Grid3X3, Map } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const ViewToggle = () => {
+  const t = useTranslations()
   const router = useRouter()
   const searchParams = useSearchParams()
   const view = searchParams.get("view") ?? "grid"
@@ -31,10 +33,10 @@ const ViewToggle = () => {
             : "border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
         )}
         aria-pressed={view === "grid"}
-        aria-label="Affichage grille"
+        aria-label={t("filters.grid")}
       >
         <Grid3X3 className="size-4" />
-        <span className="hidden sm:inline">Grille</span>
+        <span className="hidden sm:inline">{t("filters.grid")}</span>
       </button>
 
       <button
@@ -46,10 +48,10 @@ const ViewToggle = () => {
             : "border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
         )}
         aria-pressed={view === "map"}
-        aria-label="Affichage carte"
+        aria-label={t("filters.map")}
       >
         <Map className="size-4" />
-        <span className="hidden sm:inline">Carte</span>
+        <span className="hidden sm:inline">{t("filters.map")}</span>
       </button>
     </div>
   )

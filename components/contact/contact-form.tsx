@@ -2,6 +2,7 @@
 
 import { useActionState } from "react"
 import { useEffect, useRef } from "react"
+import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { Send } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -17,6 +18,7 @@ const initialState: ContactActionResult = {
 }
 
 const ContactForm = () => {
+  const t = useTranslations()
   const [state, formAction, isPending] = useActionState(
     sendContactEmail,
     initialState
@@ -58,7 +60,7 @@ const ContactForm = () => {
           htmlFor="name"
           className="mb-2 block text-sm font-medium text-white/80"
         >
-          Nom complet <span className="text-amber-500">*</span>
+          {t("contact.name")} <span className="text-amber-500">*</span>
         </label>
         <input
           type="text"
@@ -68,7 +70,7 @@ const ContactForm = () => {
           minLength={2}
           maxLength={100}
           className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white backdrop-blur-xl placeholder:text-white/40 focus-visible:border-amber-500/50 focus-visible:ring-2 focus-visible:ring-amber-500/20 focus-visible:outline-none"
-          placeholder="Votre nom"
+          placeholder={t("contact.name")}
           aria-describedby={state.errors?.name ? "name-error" : undefined}
           aria-invalid={state.errors?.name ? true : undefined}
         />
@@ -84,7 +86,7 @@ const ContactForm = () => {
           htmlFor="email"
           className="mb-2 block text-sm font-medium text-white/80"
         >
-          Adresse email <span className="text-amber-500">*</span>
+          {t("contact.email")} <span className="text-amber-500">*</span>
         </label>
         <input
           type="email"
@@ -92,7 +94,7 @@ const ContactForm = () => {
           name="email"
           required
           className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white backdrop-blur-xl placeholder:text-white/40 focus-visible:border-amber-500/50 focus-visible:ring-2 focus-visible:ring-amber-500/20 focus-visible:outline-none"
-          placeholder="votre@email.fr"
+          placeholder={t("contact.email")}
           aria-describedby={state.errors?.email ? "email-error" : undefined}
           aria-invalid={state.errors?.email ? true : undefined}
         />
@@ -112,7 +114,7 @@ const ContactForm = () => {
           htmlFor="department"
           className="mb-2 block text-sm font-medium text-white/80"
         >
-          Département <span className="text-amber-500">*</span>
+          {t("contact.departmentLabel")} <span className="text-amber-500">*</span>
         </label>
         <select
           id="department"
@@ -126,7 +128,7 @@ const ContactForm = () => {
           aria-invalid={state.errors?.department ? true : undefined}
         >
           <option value="" disabled className="bg-slate-900">
-            Sélectionnez un département
+            {t("contact.departmentPlaceholder")}
           </option>
           {DEPARTMENT_OPTIONS.map((dept) => (
             <option key={dept.value} value={dept.value} className="bg-slate-900">
@@ -150,7 +152,7 @@ const ContactForm = () => {
           htmlFor="message"
           className="mb-2 block text-sm font-medium text-white/80"
         >
-          Message <span className="text-amber-500">*</span>
+          {t("contact.message")} <span className="text-amber-500">*</span>
         </label>
         <textarea
           id="message"
@@ -160,7 +162,7 @@ const ContactForm = () => {
           maxLength={5000}
           rows={6}
           className="w-full resize-y rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white backdrop-blur-xl placeholder:text-white/40 focus-visible:border-amber-500/50 focus-visible:ring-2 focus-visible:ring-amber-500/20 focus-visible:outline-none"
-          placeholder="Votre message..."
+          placeholder={t("contact.message")}
           aria-describedby={
             state.errors?.message ? "message-error" : undefined
           }
@@ -184,11 +186,11 @@ const ContactForm = () => {
         className="min-h-[44px] w-full cursor-pointer bg-amber-500 py-3 text-base font-semibold text-slate-900 hover:bg-amber-400 disabled:opacity-50"
       >
         {isPending ? (
-          "Envoi en cours..."
+          t("contact.sending")
         ) : (
           <>
             <Send className="mr-2 size-4" aria-hidden="true" />
-            Envoyer
+            {t("contact.send")}
           </>
         )}
       </Button>

@@ -1,7 +1,9 @@
 import { unstable_cache } from "next/cache"
 import { prisma } from "@/lib/prisma"
+import { localizeEntity } from "@/lib/i18n/db"
+import type { Locale } from "@/lib/i18n/config"
 
-export const getNews = async () => {
+export const getNews = async (locale: Locale = "fr") => {
   return unstable_cache(
     async () => {
       const news = await prisma.news.findMany({
@@ -9,26 +11,28 @@ export const getNews = async () => {
         orderBy: { publishedAt: "desc" },
         select: {
           id: true,
-          title: true,
+          titleFr: true,
+          titleEn: true,
           slug: true,
-          excerpt: true,
+          excerptFr: true,
+          excerptEn: true,
           coverImage: true,
           publishedAt: true,
         },
       })
       return news.map((n) => ({
-        ...n,
+        ...localizeEntity(n, locale, ["title", "excerpt"]),
         publishedAt: n.publishedAt?.toISOString() ?? null,
       }))
     },
-    ["news-list"],
+    ["news-list", locale],
     { revalidate: 600, tags: ["news"] }
   )()
 }
 
 export type NewsListItem = Awaited<ReturnType<typeof getNews>>[number]
 
-export const getNewsBySlug = async (slug: string) => {
+export const getNewsBySlug = async (slug: string, locale: Locale = "fr") => {
   return unstable_cache(
     async () => {
       const news = await prisma.news.findUnique({
@@ -36,13 +40,13 @@ export const getNewsBySlug = async (slug: string) => {
       })
       if (!news) return null
       return {
-        ...news,
+        ...localizeEntity(news, locale, ["title", "excerpt", "content"]),
         publishedAt: news.publishedAt?.toISOString() ?? null,
         createdAt: news.createdAt.toISOString(),
         updatedAt: news.updatedAt.toISOString(),
       }
     },
-    ["news-detail", slug],
+    ["news-detail", slug, locale],
     { revalidate: 1800, tags: ["news"] }
   )()
 }

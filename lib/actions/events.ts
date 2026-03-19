@@ -16,7 +16,7 @@ export const getAdminEvents = async (search?: string) => {
   const where = search
     ? {
         OR: [
-          { title: { contains: search, mode: "insensitive" as const } },
+          { titleFr: { contains: search, mode: "insensitive" as const } },
           { city: { contains: search, mode: "insensitive" as const } },
           { location: { contains: search, mode: "insensitive" as const } },
         ],
@@ -28,7 +28,7 @@ export const getAdminEvents = async (search?: string) => {
     orderBy: { createdAt: "desc" },
     select: {
       id: true,
-      title: true,
+      titleFr: true,
       slug: true,
       city: true,
       department: true,
@@ -74,9 +74,11 @@ export const createEvent = async (formData: FormData): Promise<EventActionResult
 
     const event = await prisma.event.create({
       data: {
-        title: data.title,
+        titleFr: data.titleFr,
+        titleEn: data.titleEn || null,
         slug: data.slug,
-        description: data.description,
+        descriptionFr: data.descriptionFr,
+        descriptionEn: data.descriptionEn || null,
         location: data.location,
         city: data.city,
         postalCode: data.postalCode,
@@ -86,7 +88,8 @@ export const createEvent = async (formData: FormData): Promise<EventActionResult
         dateEnd: data.dateEnd ? new Date(data.dateEnd) : null,
         timeStart: data.timeStart || null,
         timeEnd: data.timeEnd || null,
-        pricing: data.pricing || null,
+        pricingFr: data.pricingFr || null,
+        pricingEn: data.pricingEn || null,
         organizer: data.organizer || null,
         email: data.email || null,
         phone: data.phone || null,
@@ -151,9 +154,11 @@ export const updateEvent = async (
     const event = await prisma.event.update({
       where: { id },
       data: {
-        title: data.title,
+        titleFr: data.titleFr,
+        titleEn: data.titleEn || null,
         slug: data.slug,
-        description: data.description,
+        descriptionFr: data.descriptionFr,
+        descriptionEn: data.descriptionEn || null,
         location: data.location,
         city: data.city,
         postalCode: data.postalCode,
@@ -163,7 +168,8 @@ export const updateEvent = async (
         dateEnd: data.dateEnd ? new Date(data.dateEnd) : null,
         timeStart: data.timeStart || null,
         timeEnd: data.timeEnd || null,
-        pricing: data.pricing || null,
+        pricingFr: data.pricingFr || null,
+        pricingEn: data.pricingEn || null,
         organizer: data.organizer || null,
         email: data.email || null,
         phone: data.phone || null,
@@ -217,9 +223,11 @@ export const deleteEvent = async (id: string): Promise<EventActionResult> => {
 }
 
 const extractFormData = (formData: FormData) => ({
-  title: (formData.get("title") as string) ?? "",
+  titleFr: (formData.get("titleFr") as string) ?? "",
+  titleEn: (formData.get("titleEn") as string) ?? "",
   slug: (formData.get("slug") as string) ?? "",
-  description: (formData.get("description") as string) ?? "",
+  descriptionFr: (formData.get("descriptionFr") as string) ?? "",
+  descriptionEn: (formData.get("descriptionEn") as string) ?? "",
   location: (formData.get("location") as string) ?? "",
   city: (formData.get("city") as string) ?? "",
   postalCode: (formData.get("postalCode") as string) ?? "",
@@ -229,7 +237,8 @@ const extractFormData = (formData: FormData) => ({
   dateEnd: (formData.get("dateEnd") as string) ?? "",
   timeStart: (formData.get("timeStart") as string) ?? "",
   timeEnd: (formData.get("timeEnd") as string) ?? "",
-  pricing: (formData.get("pricing") as string) ?? "",
+  pricingFr: (formData.get("pricingFr") as string) ?? "",
+  pricingEn: (formData.get("pricingEn") as string) ?? "",
   organizer: (formData.get("organizer") as string) ?? "",
   email: (formData.get("email") as string) ?? "",
   phone: (formData.get("phone") as string) ?? "",

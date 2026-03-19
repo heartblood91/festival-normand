@@ -2,11 +2,13 @@
 
 import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { MapPin, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 
 const NearbyButton = () => {
+  const t = useTranslations()
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -24,7 +26,7 @@ const NearbyButton = () => {
     }
 
     if (!navigator.geolocation) {
-      toast.error("La géolocalisation n'est pas supportée par votre navigateur.")
+      toast.error(t("filters.geoNotSupported"))
       return
     }
 
@@ -41,9 +43,9 @@ const NearbyButton = () => {
       (error) => {
         setIsLoading(false)
         if (error.code === error.PERMISSION_DENIED) {
-          toast.error("Veuillez autoriser la géolocalisation dans votre navigateur.")
+          toast.error(t("filters.geoDenied"))
         } else {
-          toast.error("Impossible de déterminer votre position.")
+          toast.error(t("filters.geoError"))
         }
       },
       { enableHighAccuracy: false, timeout: 10000 }
@@ -62,14 +64,14 @@ const NearbyButton = () => {
           : "border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground",
         isLoading && "opacity-50 cursor-wait"
       )}
-      aria-label="Trouver les événements près de moi"
+      aria-label={t("filters.nearbyLabel")}
     >
       {isLoading ? (
         <Loader2 className="size-4 animate-spin" />
       ) : (
         <MapPin className="size-4" />
       )}
-      <span className="hidden sm:inline">Près de moi</span>
+      <span className="hidden sm:inline">{t("filters.nearby")}</span>
     </button>
   )
 }
