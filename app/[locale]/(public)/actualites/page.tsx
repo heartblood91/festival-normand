@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import type { Locale } from "@/lib/i18n/config"
 import { getTranslations } from "next-intl/server"
-import { getNews } from "@/lib/queries/news"
+import { getNews, type NewsListItem } from "@/lib/queries/news"
 import { NewsCard } from "@/components/news/news-card"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
@@ -59,7 +59,7 @@ const NewsListPage = async ({ params }: NewsListPageProps) => {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
-          {articles.map((article, index) => (
+          {articles.map((article: NewsListItem, index: number) => (
             <NewsCard key={article.id} article={article} priority={index < 3} />
           ))}
         </div>
