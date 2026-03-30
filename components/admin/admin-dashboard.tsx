@@ -1,10 +1,9 @@
 "use client"
 
-import { useRouter } from "next/navigation"
-import { LogOut, Settings, FileText, Calendar, Newspaper, Users } from "lucide-react"
+import Link from "next/link"
+import { useLocale, useTranslations } from "next-intl"
+import { Calendar, Newspaper, Handshake, FileText, Plus, FileEdit, EyeOff, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { authClient } from "@/lib/auth-client"
 
 type AdminDashboardProps = {
   user: {
@@ -12,70 +11,169 @@ type AdminDashboardProps = {
     name: string
     email: string
   }
+  stats: {
+    events: number
+    news: number
+    partners: number
+    pages: number
+    draftEvents: number
+    draftNews: number
+    depublishedEvents: number
+    depublishedNews: number
+  }
 }
 
-const adminLinks = [
-  { title: "Événements", description: "Gérer les événements du festival", icon: Calendar, href: "/admin/events" },
-  { title: "Actualités", description: "Gérer les articles d'actualité", icon: Newspaper, href: "/admin/news" },
-  { title: "Partenaires", description: "Gérer les partenaires", icon: Users, href: "/admin/partners" },
-  { title: "Pages", description: "Modifier le contenu des pages", icon: FileText, href: "/admin/pages" },
-]
+const statCards = [
+  { key: "totalEvents", icon: Calendar, color: "text-amber-500", bgColor: "bg-amber-500/10" },
+  { key: "totalNews", icon: Newspaper, color: "text-blue-400", bgColor: "bg-blue-400/10" },
+  { key: "totalPartners", icon: Handshake, color: "text-emerald-400", bgColor: "bg-emerald-400/10" },
+  { key: "totalPages", icon: FileText, color: "text-purple-400", bgColor: "bg-purple-400/10" },
+] as const
 
-export const AdminDashboard = ({ user }: AdminDashboardProps) => {
-  const router = useRouter()
+export const AdminDashboard = ({ user, stats }: AdminDashboardProps) => {
+  const t = useTranslations("admin")
+  const locale = useLocale()
 
-  const handleLogout = async () => {
-    await authClient.signOut()
-    router.push("/admin/login")
+  const statValues: Record<string, number> = {
+    totalEvents: stats.events,
+    totalNews: stats.news,
+    totalPartners: stats.partners,
+    totalPages: stats.pages,
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl p-4 md:p-8">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="font-serif text-2xl font-bold text-amber-500 md:text-3xl">
-            Administration
-          </h1>
-          <p className="mt-1 text-sm text-slate-400">
-            Connecté en tant que {user.name || user.email}
-          </p>
-        </div>
-        <Button
-          variant="ghost"
-          onClick={handleLogout}
-          className="text-slate-400 hover:text-white"
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          Déconnexion
-        </Button>
+    <div className="space-y-8">
+      {/* Header */}
+      <div>
+        <h1 className="font-serif text-2xl font-bold text-foreground md:text-3xl">
+          {t("dashboard.title")}
+        </h1>
+        <p className="mt-1 text-muted-foreground">
+          {t("dashboard.greeting", { name: user.name || user.email })}
+        </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        {adminLinks.map((link) => (
-          <Card
-            key={link.href}
-            className="cursor-pointer border-white/10 bg-white/5 backdrop-blur-xl transition-colors hover:border-amber-500/30 hover:bg-white/10"
-            onClick={() => router.push(link.href)}
-            role="link"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault()
-                router.push(link.href)
-              }
-            }}
-          >
-            <CardHeader className="flex flex-row items-center gap-4">
-              <link.icon className="h-8 w-8 text-amber-500" />
-              <div>
-                <CardTitle className="text-white">{link.title}</CardTitle>
-                <CardDescription className="text-slate-400">
-                  {link.description}
-                </CardDescription>
+      {/* Stat cards */}
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {statCards.map(({ key, icon: Icon, color, bgColor }) => {
+          const links: Record<string, string> = {
+            totalEvents: `/${locale}/admin/events?status=published`,
+            totalNews: `/${locale}/admin/news?status=published`,
+            totalPartners: `/${locale}/admin/partners`,
+            totalPages: `/${locale}/admin/pages`,
+          }
+          return (
+            <Link key={key} href={links[key]}>
+              <div className="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl transition-all hover:border-amber-500/30 md:p-6">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    {t(`dashboard.${key}`)}
+                  </p>
+                  <div className={`rounded-lg p-2 ${bgColor}`}>
+                    <Icon className={`size-4 ${color}`} aria-hidden="true" />
+                  </div>
+                </div>
+                <p className="mt-2 text-2xl font-bold text-foreground md:text-3xl">
+                  {statValues[key]}
+                </p>
               </div>
-            </CardHeader>
-          </Card>
-        ))}
+            </Link>
+          )
+        })}
+      </div>
+
+      {/* Drafts + Depublished + Quick actions — 3 columns */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Drafts — never published, work in progress */}
+        <div className="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+          <h2 className="mb-2 flex items-center gap-2 font-serif text-lg font-bold text-foreground">
+            <FileEdit className="size-5 text-amber-500" aria-hidden="true" />
+            {t("dashboard.drafts")}
+          </h2>
+          <p className="mb-4 text-xs text-muted-foreground" title={t("dashboard.draftsTooltip")}>
+            <Info className="mr-1 inline size-3" aria-hidden="true" />
+            {t("dashboard.draftsDescription")}
+          </p>
+          <div className="flex flex-col gap-3">
+            <Link href={`/${locale}/admin/events?status=draft`} className="block">
+              <div className="flex items-center justify-between rounded-lg bg-white/5 px-4 py-3 transition-all hover:bg-white/10">
+                <div className="flex items-center gap-3">
+                  <Calendar className="size-4 text-amber-500" aria-hidden="true" />
+                  <span className="text-sm text-foreground">{t("dashboard.totalEvents")}</span>
+                </div>
+                <span className="text-sm font-bold text-amber-500">{stats.draftEvents}</span>
+              </div>
+            </Link>
+            <Link href={`/${locale}/admin/news?status=draft`} className="block">
+              <div className="flex items-center justify-between rounded-lg bg-white/5 px-4 py-3 transition-all hover:bg-white/10">
+                <div className="flex items-center gap-3">
+                  <Newspaper className="size-4 text-blue-400" aria-hidden="true" />
+                  <span className="text-sm text-foreground">{t("dashboard.totalNews")}</span>
+                </div>
+                <span className="text-sm font-bold text-blue-400">{stats.draftNews}</span>
+              </div>
+            </Link>
+          </div>
+        </div>
+
+        {/* Depublished — was published, now hidden */}
+        <div className="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+          <h2 className="mb-2 flex items-center gap-2 font-serif text-lg font-bold text-foreground">
+            <EyeOff className="size-5 text-orange-400" aria-hidden="true" />
+            {t("dashboard.depublished")}
+          </h2>
+          <p className="mb-4 text-xs text-muted-foreground">
+            <Info className="mr-1 inline size-3" aria-hidden="true" />
+            {t("dashboard.depublishedDescription")}
+          </p>
+          <div className="flex flex-col gap-3">
+            <Link href={`/${locale}/admin/events?status=depublished`} className="block">
+              <div className="flex items-center justify-between rounded-lg bg-white/5 px-4 py-3 transition-all hover:bg-white/10">
+                <div className="flex items-center gap-3">
+                  <Calendar className="size-4 text-orange-400" aria-hidden="true" />
+                  <span className="text-sm text-foreground">{t("dashboard.totalEvents")}</span>
+                </div>
+                <span className="text-sm font-bold text-orange-400">{stats.depublishedEvents}</span>
+              </div>
+            </Link>
+            <Link href={`/${locale}/admin/news?status=depublished`} className="block">
+              <div className="flex items-center justify-between rounded-lg bg-white/5 px-4 py-3 transition-all hover:bg-white/10">
+                <div className="flex items-center gap-3">
+                  <Newspaper className="size-4 text-orange-400" aria-hidden="true" />
+                  <span className="text-sm text-foreground">{t("dashboard.totalNews")}</span>
+                </div>
+                <span className="text-sm font-bold text-orange-400">{stats.depublishedNews}</span>
+              </div>
+            </Link>
+          </div>
+        </div>
+
+        {/* Quick actions */}
+        <div className="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+          <h2 className="mb-4 font-serif text-lg font-bold text-foreground">
+            {t("dashboard.quickActions")}
+          </h2>
+          <div className="space-y-3">
+            <Button asChild variant="ghost" className="w-full justify-start gap-3 border border-white/10 bg-white/5 hover:bg-white/10">
+              <Link href={`/${locale}/admin/events/new`}>
+                <Plus className="size-4 text-amber-500" aria-hidden="true" />
+                {t("dashboard.createEvent")}
+              </Link>
+            </Button>
+            <Button asChild variant="ghost" className="w-full justify-start gap-3 border border-white/10 bg-white/5 hover:bg-white/10">
+              <Link href={`/${locale}/admin/news/new`}>
+                <Plus className="size-4 text-blue-400" aria-hidden="true" />
+                {t("dashboard.createNews")}
+              </Link>
+            </Button>
+            <Button asChild variant="ghost" className="w-full justify-start gap-3 border border-white/10 bg-white/5 hover:bg-white/10">
+              <Link href={`/${locale}/admin/partners`}>
+                <Handshake className="size-4 text-emerald-400" aria-hidden="true" />
+                {t("dashboard.managePartners")}
+              </Link>
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   )

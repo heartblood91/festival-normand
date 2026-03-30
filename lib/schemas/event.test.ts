@@ -65,6 +65,40 @@ describe("eventSchema", () => {
     const result = eventSchema.safeParse({ ...validData, website: "not-a-url" })
     expect(result.success).toBe(false)
   })
+
+  it("accepts empty string latitude/longitude (coerced to 0)", () => {
+    const result = eventSchema.safeParse({ ...validData, latitude: "", longitude: "" })
+    expect(result.success).toBe(true)
+    if (result.success) {
+      // Number("") === 0, so empty string is coerced to 0
+      expect(result.data.latitude).toBe(0)
+      expect(result.data.longitude).toBe(0)
+    }
+  })
+
+  it("accepts valid numeric string latitude/longitude", () => {
+    const result = eventSchema.safeParse({ ...validData, latitude: "49.1844", longitude: "-0.3706" })
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.latitude).toBe(49.1844)
+      expect(result.data.longitude).toBe(-0.3706)
+    }
+  })
+
+  it("rejects string 'undefined' for latitude/longitude", () => {
+    const result = eventSchema.safeParse({ ...validData, latitude: "undefined", longitude: "undefined" })
+    expect(result.success).toBe(false)
+  })
+
+  it("rejects out-of-range latitude", () => {
+    const result = eventSchema.safeParse({ ...validData, latitude: "100" })
+    expect(result.success).toBe(false)
+  })
+
+  it("accepts omitted latitude/longitude (optional)", () => {
+    const result = eventSchema.safeParse(validData)
+    expect(result.success).toBe(true)
+  })
 })
 
 describe("slugify", () => {

@@ -118,7 +118,7 @@ const NewsDetailPage = async ({ params }: NewsDetailPageProps) => {
         <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
           <Calendar className="size-4 shrink-0" aria-hidden="true" />
           <time dateTime={article.publishedAt ?? ""}>
-            {formatNewsDate(article.publishedAt, locale)}
+            {article.publishedAt ? formatNewsDate(article.publishedAt, locale) : ""}
           </time>
         </div>
       </header>

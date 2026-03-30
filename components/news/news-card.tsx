@@ -14,11 +14,11 @@ const NewsCard = async ({ article, className, priority = false }: NewsCardProps)
   const locale = await getLocale()
   const dateLocale = locale === "en" ? "en-GB" : "fr-FR"
 
-  const formattedDate = new Intl.DateTimeFormat(dateLocale, {
+  const formattedDate = article.publishedAt ? new Intl.DateTimeFormat(dateLocale, {
     day: "numeric",
     month: "long",
     year: "numeric",
-  }).format(new Date(article.publishedAt))
+  }).format(new Date(article.publishedAt)) : ""
 
   return (
     <Link
@@ -45,7 +45,7 @@ const NewsCard = async ({ article, className, priority = false }: NewsCardProps)
       <div className="flex flex-1 flex-col p-4">
         <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
           <Calendar className="size-3.5 shrink-0" aria-hidden="true" />
-          <time dateTime={new Date(article.publishedAt).toISOString()}>
+          <time dateTime={article.publishedAt ? new Date(article.publishedAt).toISOString() : ""}>
             {formattedDate}
           </time>
         </div>

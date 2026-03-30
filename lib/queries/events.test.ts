@@ -137,18 +137,23 @@ describe("getEvents", () => {
     expect(call.where.OR).toBeDefined()
   })
 
-  it("applies search filter on title, city and location", async () => {
+  it("applies search filter via unaccent raw query", async () => {
     prismaMock.event.findMany.mockResolvedValue([])
     prismaMock.event.count.mockResolvedValue(0)
+    prismaMock.$queryRawUnsafe.mockResolvedValue([{ id: "match-1" }])
 
     await getEvents({ search: "Caen" }, "fr")
 
+    expect(prismaMock.$queryRawUnsafe).toHaveBeenCalledWith(
+      expect.stringContaining("unaccent"),
+      "%Caen%"
+    )
     const call = prismaMock.event.findMany.mock.calls[0][0]
     expect(call.where.AND).toBeDefined()
-    const searchCondition = call.where.AND.find(
-      (c: Record<string, unknown>) => c.OR
+    const idFilter = call.where.AND.find(
+      (c: Record<string, unknown>) => c.id
     )
-    expect(searchCondition.OR).toHaveLength(4)
+    expect(idFilter.id.in).toEqual(["match-1"])
   })
 
   it("returns empty result with zero totalPages", async () => {

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { newsSchema } from "@/lib/schemas/news"
+import { searchNewsIds } from "@/lib/search"
 
 export type NewsActionResult = {
   success: boolean
@@ -11,19 +12,56 @@ export type NewsActionResult = {
   newsId?: string
 }
 
-export const getAdminNews = async (search?: string) => {
-  const where = search
-    ? {
-        OR: [
-          { titleFr: { contains: search, mode: "insensitive" as const } },
-          { excerptFr: { contains: search, mode: "insensitive" as const } },
-        ],
-      }
-    : {}
+type GetAdminNewsParams = {
+  search?: string
+  page?: number
+  limit?: number
+  status?: "published" | "draft" | "depublished" | "all"
+}
 
-  return prisma.news.findMany({
+import type { AdminNewsListItem } from "@/lib/types/admin"
+
+type GetAdminNewsResult = {
+  items: AdminNewsListItem[]
+  total: number
+  page: number
+  totalPages: number
+}
+
+export const getAdminNews = async ({
+  search,
+  page = 1,
+  limit = 25,
+  status = "all",
+}: GetAdminNewsParams = {}): Promise<GetAdminNewsResult> => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const where: any = {}
+
+  if (search) {
+    const matchedIds = await searchNewsIds(search)
+    where.id = { in: matchedIds }
+  }
+
+  if (status === "published") {
+    where.published = true
+  } else if (status === "draft") {
+    where.published = false
+    where.publishedAt = null
+    where.unpublishedAt = null
+  } else if (status === "depublished") {
+    where.published = false
+    where.unpublishedAt = { not: null }
+  }
+
+  const total = await prisma.news.count({ where })
+  const totalPages = Math.ceil(total / limit)
+  const skip = (page - 1) * limit
+
+  const items = await prisma.news.findMany({
     where,
     orderBy: { publishedAt: "desc" },
+    skip,
+    take: limit,
     select: {
       id: true,
       titleFr: true,
@@ -34,9 +72,9 @@ export const getAdminNews = async (search?: string) => {
       publishedAt: true,
     },
   })
-}
 
-export type AdminNewsListItem = Awaited<ReturnType<typeof getAdminNews>>[number]
+  return { items, total, page, totalPages }
+}
 
 export const getAdminNewsById = async (id: string) => {
   return prisma.news.findUnique({ where: { id } })
@@ -176,6 +214,42 @@ export const deleteNews = async (id: string): Promise<NewsActionResult> => {
     return {
       success: false,
       message: "Une erreur est survenue lors de la suppression de l'article.",
+    }
+  }
+}
+
+export const bulkDeleteNews = async (ids: string[]): Promise<NewsActionResult> => {
+  try {
+    if (!ids.length) {
+      return {
+        success: false,
+        message: "Aucun article sélectionné.",
+      }
+    }
+
+    const articles = await prisma.news.findMany({
+      where: { id: { in: ids } },
+      select: { slug: true },
+    })
+
+    await prisma.news.deleteMany({
+      where: { id: { in: ids } },
+    })
+
+    revalidatePath("/actualites")
+    articles.forEach((article) => {
+      revalidatePath(`/actualite/${article.slug}`)
+    })
+    revalidatePath("/")
+
+    return {
+      success: true,
+      message: `${ids.length} article${ids.length > 1 ? "s" : ""} supprimé${ids.length > 1 ? "s" : ""} avec succès.`,
+    }
+  } catch {
+    return {
+      success: false,
+      message: "Une erreur est survenue lors de la suppression des articles.",
     }
   }
 }

@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { Search } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn, removeAccents } from "@/lib/utils"
 
 type EventsSearchBarProps = {
   cities: string[]
@@ -22,7 +22,7 @@ const EventsSearchBar = ({ cities }: EventsSearchBarProps) => {
   const filteredCities =
     query.length >= 2
       ? cities
-          .filter((city) => city.toLowerCase().includes(query.toLowerCase()))
+          .filter((city) => removeAccents(city.toLowerCase()).includes(removeAccents(query.toLowerCase())))
           .slice(0, 5)
       : []
 

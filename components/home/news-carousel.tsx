@@ -79,10 +79,10 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
 
             <div className="flex flex-1 flex-col p-4">
               <time
-                dateTime={new Date(article.publishedAt).toISOString()}
+                dateTime={article.publishedAt ? new Date(article.publishedAt).toISOString() : ""}
                 className="text-xs text-muted-foreground"
               >
-                {formatNewsDate(article.publishedAt, locale)}
+                {article.publishedAt ? formatNewsDate(article.publishedAt, locale) : ""}
               </time>
               <h3 className="mt-1.5 line-clamp-2 font-serif text-base font-bold leading-snug text-foreground group-hover:text-primary transition-colors md:text-lg">
                 {article.title}

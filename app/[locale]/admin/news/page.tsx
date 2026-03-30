@@ -1,6 +1,3 @@
-import { headers } from "next/headers"
-import { redirect } from "next/navigation"
-import { auth } from "@/lib/auth"
 import { getAdminNews } from "@/lib/actions/news"
 import { AdminNewsPage } from "@/components/admin/news/admin-news-page"
 
@@ -10,22 +7,35 @@ export const metadata = {
 }
 
 type Props = {
-  searchParams: Promise<{ search?: string }>
+  searchParams: Promise<{
+    search?: string
+    page?: string
+    status?: string
+  }>
 }
 
 const AdminNewsRoute = async ({ searchParams }: Props) => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
+  const params = await searchParams
+  const page = params.page ? parseInt(params.page, 10) : 1
+  const limit = 25
+
+  const data = await getAdminNews({
+    search: params.search,
+    page,
+    limit,
+    status: (params.status as "published" | "draft" | "all") || "all",
   })
 
-  if (!session) {
-    redirect("/admin/login")
-  }
-
-  const params = await searchParams
-  const news = await getAdminNews(params.search)
-
-  return <AdminNewsPage news={news} search={params.search} />
+  return (
+    <AdminNewsPage
+      items={data.items}
+      total={data.total}
+      page={data.page}
+      totalPages={data.totalPages}
+      search={params.search}
+      status={params.status}
+    />
+  )
 }
 
 export default AdminNewsRoute

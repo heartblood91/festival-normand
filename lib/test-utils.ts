@@ -25,4 +25,5 @@ export const prismaMock = {
   $connect: vi.fn(),
   $disconnect: vi.fn(),
   $transaction: vi.fn(),
+  $queryRawUnsafe: vi.fn().mockResolvedValue([]),
 };

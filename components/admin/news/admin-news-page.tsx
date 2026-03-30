@@ -6,11 +6,11 @@ import Link from "next/link"
 import {
   Plus,
   Search,
-  ArrowLeft,
   Pencil,
   Trash2,
   Eye,
   EyeOff,
+  X,
 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -26,23 +26,57 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { deleteNews, type AdminNewsListItem } from "@/lib/actions/news"
+import { deleteNews, bulkDeleteNews } from "@/lib/actions/news"
+import type { AdminNewsListItem } from "@/lib/types/admin"
+import { AdminFilters, type FilterConfig } from "@/components/admin/shared/admin-filters"
+import { AdminPagination } from "@/components/admin/shared/admin-pagination"
 
 type AdminNewsPageProps = {
-  news: AdminNewsListItem[]
+  items: AdminNewsListItem[]
+  total: number
+  page: number
+  totalPages: number
   search?: string
+  status?: string
 }
 
-export const AdminNewsPage = ({ news, search = "" }: AdminNewsPageProps) => {
+export const AdminNewsPage = ({
+  items,
+  total,
+  page,
+  totalPages,
+  search = "",
+  status = "all",
+}: AdminNewsPageProps) => {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState(search)
   const [isDeleting, setIsDeleting] = useState<string | null>(null)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false)
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     const params = new URLSearchParams()
     if (searchQuery) params.set("search", searchQuery)
+    if (status && status !== "all") params.set("status", status)
+    params.set("page", "1")
     router.push(`/admin/news${params.toString() ? `?${params}` : ""}`)
+  }
+
+  const filterConfigs: FilterConfig[] = [
+    {
+      key: "status",
+      label: "Statut",
+      options: [
+        { value: "published", label: "Publié" },
+        { value: "draft", label: "Brouillon" },
+        { value: "depublished", label: "Dépublié" },
+      ],
+    },
+  ]
+
+  const currentFilterValues = {
+    status: status || "all",
   }
 
   const handleDelete = async (id: string) => {
@@ -52,6 +86,38 @@ export const AdminNewsPage = ({ news, search = "" }: AdminNewsPageProps) => {
 
     if (result.success) {
       toast.success(result.message)
+      router.refresh()
+    } else {
+      toast.error(result.message)
+    }
+  }
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIds(new Set(items.map((item) => item.id)))
+    } else {
+      setSelectedIds(new Set())
+    }
+  }
+
+  const handleToggleSelect = (id: string) => {
+    const newSelected = new Set(selectedIds)
+    if (newSelected.has(id)) {
+      newSelected.delete(id)
+    } else {
+      newSelected.add(id)
+    }
+    setSelectedIds(newSelected)
+  }
+
+  const handleBulkDelete = async () => {
+    setIsBulkDeleting(true)
+    const result = await bulkDeleteNews(Array.from(selectedIds))
+    setIsBulkDeleting(false)
+
+    if (result.success) {
+      toast.success(result.message)
+      setSelectedIds(new Set())
       router.refresh()
     } else {
       toast.error(result.message)
@@ -68,19 +134,12 @@ export const AdminNewsPage = ({ news, search = "" }: AdminNewsPageProps) => {
 
   return (
     <div className="mx-auto w-full max-w-6xl p-4 md:p-8">
-      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-3">
-          <Link href="/admin">
-            <Button variant="ghost" size="icon" aria-label="Retour au tableau de bord">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </Link>
+      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div>
           <h1 className="font-serif text-2xl font-bold text-amber-500">
             Actualités
           </h1>
-          <span className="text-sm text-slate-400">
-            ({news.length} article{news.length !== 1 ? "s" : ""})
-          </span>
+          <p className="mt-1 text-sm text-slate-400">{total} article{total !== 1 ? "s" : ""}</p>
         </div>
         <Link href="/admin/news/new">
           <Button className="w-full md:w-auto">
@@ -97,14 +156,44 @@ export const AdminNewsPage = ({ news, search = "" }: AdminNewsPageProps) => {
             type="search"
             placeholder="Rechercher par titre..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="border-white/10 bg-white/5 pl-10 text-white placeholder:text-slate-500"
+            onChange={(e) => {
+              setSearchQuery(e.target.value)
+              if (e.target.value === "") {
+                const params = new URLSearchParams()
+                if (status && status !== "all") params.set("status", status)
+                params.set("page", "1")
+                router.push(`/admin/news${params.toString() ? `?${params}` : ""}`)
+              }
+            }}
+            className="border-white/10 bg-white/5 pl-10 pr-10 text-white placeholder:text-slate-500"
             aria-label="Rechercher des articles"
           />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery("")
+                const params = new URLSearchParams()
+                if (status && status !== "all") params.set("status", status)
+                params.set("page", "1")
+                router.push(`/admin/news${params.toString() ? `?${params}` : ""}`)
+              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+              aria-label="Effacer la recherche"
+            >
+              ×
+            </button>
+          )}
         </div>
       </form>
 
-      {news.length === 0 ? (
+      <AdminFilters
+        filters={filterConfigs}
+        baseUrl="/admin/news"
+        currentValues={currentFilterValues}
+      />
+
+      {items.length === 0 ? (
         <div className="rounded-xl border border-white/10 bg-white/5 p-12 text-center">
           <p className="text-slate-400">
             {search
@@ -113,10 +202,20 @@ export const AdminNewsPage = ({ news, search = "" }: AdminNewsPageProps) => {
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-white/10">
+        <>
+          <div className="overflow-x-auto rounded-xl border border-white/10">
           <table className="w-full text-sm" role="table">
             <thead>
               <tr className="border-b border-white/10 bg-white/5">
+                <th className="w-10 px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.size === items.length && items.length > 0}
+                    onChange={(e) => handleSelectAll(e.target.checked)}
+                    className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
+                    aria-label="Sélectionner tous les articles"
+                  />
+                </th>
                 <th className="px-4 py-3 text-left font-medium text-slate-300">
                   Titre
                 </th>
@@ -132,11 +231,20 @@ export const AdminNewsPage = ({ news, search = "" }: AdminNewsPageProps) => {
               </tr>
             </thead>
             <tbody>
-              {news.map((article) => (
+              {items.map((article) => (
                 <tr
                   key={article.id}
-                  className="border-b border-white/5 transition-colors hover:bg-white/5"
+                  className={`border-b border-white/5 transition-colors ${selectedIds.has(article.id) ? "bg-amber-500/10" : "hover:bg-white/5"}`}
                 >
+                  <td className="w-10 px-4 py-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(article.id)}
+                      onChange={() => handleToggleSelect(article.id)}
+                      className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
+                      aria-label={`Sélectionner ${article.titleFr}`}
+                    />
+                  </td>
                   <td className="px-4 py-3">
                     <span className="font-medium text-white">{article.titleFr}</span>
                     {article.excerptFr && (
@@ -144,7 +252,7 @@ export const AdminNewsPage = ({ news, search = "" }: AdminNewsPageProps) => {
                     )}
                   </td>
                   <td className="hidden px-4 py-3 text-slate-400 md:table-cell">
-                    {formatDate(article.publishedAt)}
+                    {article.publishedAt ? formatDate(article.publishedAt) : "—"}
                   </td>
                   <td className="px-4 py-3 text-center">
                     {article.published ? (
@@ -209,6 +317,64 @@ export const AdminNewsPage = ({ news, search = "" }: AdminNewsPageProps) => {
               ))}
             </tbody>
           </table>
+          </div>
+
+          <AdminPagination
+            currentPage={page}
+            totalPages={totalPages}
+            baseUrl="/admin/news"
+            searchParams={{
+              search: search || "",
+              status: status || "",
+            }}
+          />
+        </>
+      )}
+
+      {selectedIds.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 flex items-center justify-between gap-6 rounded-xl border border-white/10 bg-slate-900/95 px-6 py-3 shadow-2xl backdrop-blur-xl">
+          <span className="text-sm font-medium text-white">
+            {selectedIds.size} sélectionné{selectedIds.size > 1 ? "s" : ""}
+          </span>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setSelectedIds(new Set())}
+              className="border-white/20 text-white hover:bg-white/10"
+            >
+              <X className="mr-1 h-4 w-4" />
+              Annuler
+            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger
+                className="inline-flex h-7 items-center gap-1.5 rounded-md bg-destructive px-2.5 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50"
+                disabled={isBulkDeleting}
+              >
+                <Trash2 className="size-3.5" />
+                Supprimer
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Supprimer les articles</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Êtes-vous sûr de vouloir supprimer {selectedIds.size} article{selectedIds.size > 1 ? "s" : ""} ? Cette action est irréversible.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  <AlertDialogAction
+                    variant="destructive"
+                    onClick={handleBulkDelete}
+                    disabled={isBulkDeleting}
+                  >
+                    {isBulkDeleting ? "Suppression..." : "Supprimer"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </div>
       )}
     </div>

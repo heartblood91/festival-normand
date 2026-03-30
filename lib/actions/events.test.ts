@@ -11,6 +11,7 @@ const { mockPrisma } = vi.hoisted(() => ({
       delete: vi.fn(),
       count: vi.fn(),
     },
+    $queryRawUnsafe: vi.fn().mockResolvedValue([]),
   },
 }))
 
@@ -207,11 +208,17 @@ describe("getAdminEvents", () => {
       { id: "1", titleFr: "Event 1" },
       { id: "2", titleFr: "Event 2" },
     ]
+    mockPrisma.event.count.mockResolvedValue(2)
     mockPrisma.event.findMany.mockResolvedValue(mockEvents)
 
     const result = await getAdminEvents()
 
-    expect(result).toEqual(mockEvents)
+    expect(result).toEqual({
+      items: mockEvents,
+      total: 2,
+      page: 1,
+      totalPages: 1,
+    })
     expect(mockPrisma.event.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: {},
@@ -220,20 +227,22 @@ describe("getAdminEvents", () => {
     )
   })
 
-  it("filters events by search query", async () => {
+  it("filters events by search query via unaccent", async () => {
+    mockPrisma.event.count.mockResolvedValue(0)
     mockPrisma.event.findMany.mockResolvedValue([])
+    mockPrisma.$queryRawUnsafe.mockResolvedValue([{ id: "match-1" }])
 
-    await getAdminEvents("Caen")
+    await getAdminEvents({ search: "Caen" })
 
+    expect(mockPrisma.$queryRawUnsafe).toHaveBeenCalledWith(
+      expect.stringContaining("unaccent"),
+      "%Caen%"
+    )
     expect(mockPrisma.event.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: {
-          OR: [
-            { titleFr: { contains: "Caen", mode: "insensitive" } },
-            { city: { contains: "Caen", mode: "insensitive" } },
-            { location: { contains: "Caen", mode: "insensitive" } },
-          ],
-        },
+        where: expect.objectContaining({
+          id: { in: ["match-1"] },
+        }),
       })
     )
   })

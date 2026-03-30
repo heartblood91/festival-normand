@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TranslateButton } from "@/components/admin/translate-button"
+import { ImageUpload } from "@/components/admin/image-upload"
 import { createPartner, updatePartner } from "@/lib/actions/partners"
 import type { Partner } from "@prisma/client"
 
@@ -22,8 +23,10 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string[]>>({})
+  const [formLocale, setFormLocale] = useState<"fr" | "en">("fr")
   const [nameFr, setNameFr] = useState(partner?.nameFr ?? "")
   const [nameEn, setNameEn] = useState(partner?.nameEn ?? "")
+  const [logo, setLogo] = useState(partner?.logo ?? "")
 
   const handleTranslated = (translations: Record<string, string>) => {
     if (translations.nameEn) setNameEn(translations.nameEn)
@@ -37,6 +40,7 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
     const formData = new FormData(e.currentTarget)
     formData.set("nameFr", nameFr)
     formData.set("nameEn", nameEn)
+    formData.set("logo", logo)
 
     const result = partner
       ? await updatePartner(partner.id, formData)
@@ -72,46 +76,68 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
       </div>
 
       <Card className="border-white/10 bg-white/5">
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-white">Informations</CardTitle>
+          <div className="flex items-center gap-2">
+            <div className="inline-flex gap-1 rounded-lg border border-white/10 p-1">
+              <button
+                type="button"
+                onClick={() => setFormLocale("fr")}
+                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                  formLocale === "fr"
+                    ? "bg-amber-500 text-white"
+                    : "text-slate-400 hover:text-slate-300"
+                }`}
+              >
+                FR
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormLocale("en")}
+                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                  formLocale === "en"
+                    ? "bg-amber-500 text-white"
+                    : "text-slate-400 hover:text-slate-300"
+                }`}
+              >
+                EN
+              </button>
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Tabs defaultValue="fr">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="fr">Français</TabsTrigger>
-              <TabsTrigger value="en">English</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="fr">
-              <div>
-                <Label htmlFor="nameFr" className="text-slate-300">
-                  Nom *
-                </Label>
-                <Input
-                  id="nameFr"
-                  name="nameFr"
-                  value={nameFr}
-                  onChange={(e) => setNameFr(e.target.value)}
-                  required
-                  className="mt-1 border-white/10 bg-white/5 text-white"
-                  aria-invalid={!!errors.nameFr}
-                  aria-describedby={errors.nameFr ? "nameFr-error" : undefined}
-                />
-                {errors.nameFr && (
-                  <p id="nameFr-error" className="mt-1 text-sm text-red-400">
-                    {errors.nameFr[0]}
-                  </p>
-                )}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="en">
-              <TranslateButton
-                sourceFields={{
-                  nameFr,
-                }}
-                onTranslated={handleTranslated}
+          {formLocale === "fr" ? (
+            <div>
+              <Label htmlFor="nameFr" className="text-slate-300">
+                Nom *
+              </Label>
+              <Input
+                id="nameFr"
+                name="nameFr"
+                value={nameFr}
+                onChange={(e) => setNameFr(e.target.value)}
+                required
+                className="mt-1 border-white/10 bg-white/5 text-white"
+                aria-invalid={!!errors.nameFr}
+                aria-describedby={errors.nameFr ? "nameFr-error" : undefined}
               />
+              {errors.nameFr && (
+                <p id="nameFr-error" className="mt-1 text-sm text-red-400">
+                  {errors.nameFr[0]}
+                </p>
+              )}
+            </div>
+          ) : (
+            <>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-300 text-sm">Traduction automatique</span>
+                <TranslateButton
+                  sourceFields={{
+                    nameFr,
+                  }}
+                  onTranslated={handleTranslated}
+                />
+              </div>
 
               <div>
                 <Label htmlFor="nameEn" className="text-slate-300">
@@ -131,23 +157,18 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
                   </p>
                 )}
               </div>
-            </TabsContent>
-          </Tabs>
+            </>
+          )}
 
           <div>
-            <Label htmlFor="logo" className="text-slate-300">
-              URL du logo
+            <Label className="text-slate-300 block mb-2">
+              Logo
             </Label>
-            <Input
-              id="logo"
-              name="logo"
-              defaultValue={partner?.logo ?? ""}
-              placeholder="https://..."
-              className="mt-1 border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+            <ImageUpload
+              value={logo}
+              onChange={setLogo}
+              preset="logo"
             />
-            <p className="mt-1 text-xs text-slate-500">
-              L&apos;upload vers Vercel Blob sera disponible prochainement.
-            </p>
           </div>
 
           <div>

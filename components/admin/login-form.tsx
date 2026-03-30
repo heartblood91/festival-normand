@@ -41,7 +41,7 @@ export const LoginForm = () => {
       }
 
       toast.success("Connexion réussie !")
-      router.push(callbackUrl)
+      window.location.href = callbackUrl
     } catch {
       toast.error("Une erreur est survenue. Veuillez réessayer.")
     } finally {

@@ -11,7 +11,7 @@ export type PageActionResult = {
   pageId?: string
 }
 
-const SYSTEM_SLUGS = ["festival", "inscription", "mentions-legales"]
+const SYSTEM_SLUGS = ["festival", "inscription", "mentions-legales", "accessibilite"]
 
 export const getAdminPages = async () => {
   return prisma.page.findMany({

@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth"
 import { prismaAdapter } from "better-auth/adapters/prisma"
-import { magicLink } from "better-auth/plugins"
+import { magicLink, twoFactor } from "better-auth/plugins"
 import { createAuthMiddleware, APIError } from "better-auth/api"
 import { Resend } from "resend"
 import { prisma } from "@/lib/prisma"
@@ -20,16 +20,17 @@ export const auth = betterAuth({
   },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
-      // Only allow emails registered in AdminUser table
-      if (ctx.path === "/sign-in/magic-link") {
+      // Only allow registered users (with a role) to sign in
+      if (ctx.path === "/sign-in/magic-link" || ctx.path === "/sign-in/email") {
         const email = ctx.body?.email as string | undefined
         if (!email) return
 
-        const adminUser = await prisma.adminUser.findUnique({
+        const user = await prisma.user.findUnique({
           where: { email },
+          select: { role: true },
         })
 
-        if (!adminUser) {
+        if (!user) {
           throw new APIError("FORBIDDEN", {
             message: "This email is not authorized to access the admin area.",
           })
@@ -59,6 +60,9 @@ export const auth = betterAuth({
           `,
         })
       },
+    }),
+    twoFactor({
+      issuer: "Pierres en Lumières",
     }),
   ],
 })

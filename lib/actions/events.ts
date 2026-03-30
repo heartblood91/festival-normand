@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { eventSchema } from "@/lib/schemas/event"
+import { searchEventIds } from "@/lib/search"
 import type { Category, Department } from "@prisma/client"
 
 export type EventActionResult = {
@@ -12,20 +13,75 @@ export type EventActionResult = {
   eventId?: string
 }
 
-export const getAdminEvents = async (search?: string) => {
-  const where = search
-    ? {
-        OR: [
-          { titleFr: { contains: search, mode: "insensitive" as const } },
-          { city: { contains: search, mode: "insensitive" as const } },
-          { location: { contains: search, mode: "insensitive" as const } },
-        ],
-      }
-    : {}
+type GetAdminEventsParams = {
+  search?: string
+  page?: number
+  limit?: number
+  status?: "published" | "draft" | "depublished" | "all"
+  department?: string
+  category?: string
+  featured?: string
+}
 
-  return prisma.event.findMany({
+import type { AdminEventListItem } from "@/lib/types/admin"
+
+type GetAdminEventsResult = {
+  items: AdminEventListItem[]
+  total: number
+  page: number
+  totalPages: number
+}
+
+export const getAdminEvents = async ({
+  search,
+  page = 1,
+  limit = 25,
+  status = "all",
+  department,
+  category,
+  featured,
+}: GetAdminEventsParams = {}): Promise<GetAdminEventsResult> => {
+  const where: any = {}
+
+  if (search) {
+    const matchedIds = await searchEventIds(search)
+    where.id = { in: matchedIds }
+  }
+
+  if (status === "published") {
+    where.published = true
+  } else if (status === "draft") {
+    where.published = false
+    where.publishedAt = null
+    where.unpublishedAt = null
+  } else if (status === "depublished") {
+    where.published = false
+    where.unpublishedAt = { not: null }
+  }
+
+  if (department && department !== "all") {
+    where.department = department
+  }
+
+  if (category && category !== "all") {
+    where.category = category
+  }
+
+  if (featured === "true") {
+    where.featured = true
+  } else if (featured === "false") {
+    where.featured = false
+  }
+
+  const total = await prisma.event.count({ where })
+  const totalPages = Math.ceil(total / limit)
+  const skip = (page - 1) * limit
+
+  const items = await prisma.event.findMany({
     where,
     orderBy: { createdAt: "desc" },
+    skip,
+    take: limit,
     select: {
       id: true,
       titleFr: true,
@@ -36,12 +92,15 @@ export const getAdminEvents = async (search?: string) => {
       dateStart: true,
       featured: true,
       published: true,
+      publishedAt: true,
+      unpublishedAt: true,
       accessible: true,
     },
   })
+
+  return { items, total, page, totalPages }
 }
 
-export type AdminEventListItem = Awaited<ReturnType<typeof getAdminEvents>>[number]
 
 export const getAdminEventById = async (id: string) => {
   return prisma.event.findUnique({ where: { id } })
@@ -100,6 +159,7 @@ export const createEvent = async (formData: FormData): Promise<EventActionResult
         featured: data.featured,
         accessible: data.accessible,
         published: data.published,
+        publishedAt: data.published ? new Date() : null,
       },
     })
 
@@ -150,6 +210,11 @@ export const updateEvent = async (
       }
     }
 
+    // Check if publishing state changed
+    const current = await prisma.event.findUnique({ where: { id }, select: { published: true } })
+    const isPublishing = !current?.published && data.published
+    const isUnpublishing = current?.published && !data.published
+
     const event = await prisma.event.update({
       where: { id },
       data: {
@@ -179,6 +244,8 @@ export const updateEvent = async (
         featured: data.featured,
         accessible: data.accessible,
         published: data.published,
+        ...(isPublishing ? { publishedAt: new Date(), unpublishedAt: null } : {}),
+        ...(isUnpublishing ? { unpublishedAt: new Date() } : {}),
       },
     })
 
@@ -215,6 +282,42 @@ export const deleteEvent = async (id: string): Promise<EventActionResult> => {
     return {
       success: false,
       message: "Une erreur est survenue lors de la suppression de l'événement.",
+    }
+  }
+}
+
+export const bulkDeleteEvents = async (ids: string[]): Promise<EventActionResult> => {
+  try {
+    if (!ids.length) {
+      return {
+        success: false,
+        message: "Aucun événement sélectionné.",
+      }
+    }
+
+    const events = await prisma.event.findMany({
+      where: { id: { in: ids } },
+      select: { slug: true },
+    })
+
+    await prisma.event.deleteMany({
+      where: { id: { in: ids } },
+    })
+
+    revalidatePath("/evenements")
+    events.forEach((event) => {
+      revalidatePath(`/evenement/${event.slug}`)
+    })
+    revalidatePath("/")
+
+    return {
+      success: true,
+      message: `${ids.length} événement${ids.length > 1 ? "s" : ""} supprimé${ids.length > 1 ? "s" : ""} avec succès.`,
+    }
+  } catch {
+    return {
+      success: false,
+      message: "Une erreur est survenue lors de la suppression des événements.",
     }
   }
 }

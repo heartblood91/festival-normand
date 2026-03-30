@@ -6,13 +6,13 @@ import Link from "next/link"
 import {
   Plus,
   Search,
-  ArrowLeft,
   Pencil,
   Trash2,
   Star,
   Eye,
   EyeOff,
   Accessibility,
+  X,
 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -28,11 +28,21 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { deleteEvent, type AdminEventListItem } from "@/lib/actions/events"
+import { deleteEvent, bulkDeleteEvents } from "@/lib/actions/events"
+import type { AdminEventListItem } from "@/lib/types/admin"
+import { AdminFilters, type FilterConfig } from "@/components/admin/shared/admin-filters"
+import { AdminPagination } from "@/components/admin/shared/admin-pagination"
 
 type AdminEventsPageProps = {
-  events: AdminEventListItem[]
+  items: AdminEventListItem[]
+  total: number
+  page: number
+  totalPages: number
   search?: string
+  status?: string
+  department?: string
+  category?: string
+  featured?: string
 }
 
 const DEPARTMENT_LABELS: Record<string, string> = {
@@ -43,6 +53,14 @@ const DEPARTMENT_LABELS: Record<string, string> = {
   SEINE_MARITIME: "Seine-Maritime",
 }
 
+const DEPARTMENT_VALUES = [
+  { value: "CALVADOS", label: "Calvados" },
+  { value: "EURE", label: "Eure" },
+  { value: "MANCHE", label: "Manche" },
+  { value: "ORNE", label: "Orne" },
+  { value: "SEINE_MARITIME", label: "Seine-Maritime" },
+]
+
 const CATEGORY_LABELS: Record<string, string> = {
   ILLUMINATIONS: "Illuminations",
   EXPOSITIONS: "Expositions",
@@ -50,16 +68,76 @@ const CATEGORY_LABELS: Record<string, string> = {
   VISITES: "Visites",
 }
 
-export const AdminEventsPage = ({ events, search = "" }: AdminEventsPageProps) => {
+const CATEGORY_VALUES = [
+  { value: "ILLUMINATIONS", label: "Illuminations" },
+  { value: "EXPOSITIONS", label: "Expositions" },
+  { value: "ANIMATIONS", label: "Animations" },
+  { value: "VISITES", label: "Visites" },
+]
+
+export const AdminEventsPage = ({
+  items,
+  total,
+  page,
+  totalPages,
+  search = "",
+  status = "all",
+  department = "",
+  category = "",
+  featured = "",
+}: AdminEventsPageProps) => {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState(search)
   const [isDeleting, setIsDeleting] = useState<string | null>(null)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false)
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     const params = new URLSearchParams()
     if (searchQuery) params.set("search", searchQuery)
+    if (status && status !== "all") params.set("status", status)
+    if (department) params.set("department", department)
+    if (category) params.set("category", category)
+    params.set("page", "1")
     router.push(`/admin/events${params.toString() ? `?${params}` : ""}`)
+  }
+
+  const filterConfigs: FilterConfig[] = [
+    {
+      key: "status",
+      label: "Statut",
+      options: [
+        { value: "published", label: "Publié" },
+        { value: "draft", label: "Brouillon" },
+        { value: "depublished", label: "Dépublié" },
+      ],
+    },
+    {
+      key: "department",
+      label: "Département",
+      options: DEPARTMENT_VALUES,
+    },
+    {
+      key: "category",
+      label: "Catégorie",
+      options: CATEGORY_VALUES,
+    },
+    {
+      key: "featured",
+      label: "À la une",
+      options: [
+        { value: "true", label: "Oui" },
+        { value: "false", label: "Non" },
+      ],
+    },
+  ]
+
+  const currentFilterValues = {
+    status: status || "all",
+    department: department || "",
+    featured: featured || "",
+    category: category || "",
   }
 
   const handleDelete = async (id: string) => {
@@ -69,6 +147,38 @@ export const AdminEventsPage = ({ events, search = "" }: AdminEventsPageProps) =
 
     if (result.success) {
       toast.success(result.message)
+      router.refresh()
+    } else {
+      toast.error(result.message)
+    }
+  }
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIds(new Set(items.map((item) => item.id)))
+    } else {
+      setSelectedIds(new Set())
+    }
+  }
+
+  const handleToggleSelect = (id: string) => {
+    const newSelected = new Set(selectedIds)
+    if (newSelected.has(id)) {
+      newSelected.delete(id)
+    } else {
+      newSelected.add(id)
+    }
+    setSelectedIds(newSelected)
+  }
+
+  const handleBulkDelete = async () => {
+    setIsBulkDeleting(true)
+    const result = await bulkDeleteEvents(Array.from(selectedIds))
+    setIsBulkDeleting(false)
+
+    if (result.success) {
+      toast.success(result.message)
+      setSelectedIds(new Set())
       router.refresh()
     } else {
       toast.error(result.message)
@@ -85,19 +195,10 @@ export const AdminEventsPage = ({ events, search = "" }: AdminEventsPageProps) =
 
   return (
     <div className="mx-auto w-full max-w-6xl p-4 md:p-8">
-      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-3">
-          <Link href="/admin">
-            <Button variant="ghost" size="icon" aria-label="Retour au tableau de bord">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </Link>
-          <h1 className="font-serif text-2xl font-bold text-amber-500">
-            Événements
-          </h1>
-          <span className="text-sm text-slate-400">
-            ({events.length} résultat{events.length !== 1 ? "s" : ""})
-          </span>
+      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div>
+          <h1 className="font-serif text-2xl font-bold text-amber-500">Événements</h1>
+          <p className="mt-1 text-sm text-slate-400">{total} résultat{total !== 1 ? "s" : ""}</p>
         </div>
         <Link href="/admin/events/new">
           <Button className="w-full md:w-auto">
@@ -114,14 +215,48 @@ export const AdminEventsPage = ({ events, search = "" }: AdminEventsPageProps) =
             type="search"
             placeholder="Rechercher par titre, ville ou lieu..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="border-white/10 bg-white/5 pl-10 text-white placeholder:text-slate-500"
+            onChange={(e) => {
+              setSearchQuery(e.target.value)
+              if (e.target.value === "") {
+                const params = new URLSearchParams()
+                if (status && status !== "all") params.set("status", status)
+                if (department) params.set("department", department)
+                if (category) params.set("category", category)
+                params.set("page", "1")
+                router.push(`/admin/events${params.toString() ? `?${params}` : ""}`)
+              }
+            }}
+            className="border-white/10 bg-white/5 pl-10 pr-10 text-white placeholder:text-slate-500"
             aria-label="Rechercher des événements"
           />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery("")
+                const params = new URLSearchParams()
+                if (status && status !== "all") params.set("status", status)
+                if (department) params.set("department", department)
+                if (category) params.set("category", category)
+                params.set("page", "1")
+                router.push(`/admin/events${params.toString() ? `?${params}` : ""}`)
+              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+              aria-label="Effacer la recherche"
+            >
+              ×
+            </button>
+          )}
         </div>
       </form>
 
-      {events.length === 0 ? (
+      <AdminFilters
+        filters={filterConfigs}
+        baseUrl="/admin/events"
+        currentValues={currentFilterValues}
+      />
+
+      {items.length === 0 ? (
         <div className="rounded-xl border border-white/10 bg-white/5 p-12 text-center">
           <p className="text-slate-400">
             {search
@@ -130,10 +265,20 @@ export const AdminEventsPage = ({ events, search = "" }: AdminEventsPageProps) =
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-white/10">
+        <>
+          <div className="overflow-x-auto rounded-xl border border-white/10">
           <table className="w-full text-sm" role="table">
             <thead>
               <tr className="border-b border-white/10 bg-white/5">
+                <th className="w-10 px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.size === items.length && items.length > 0}
+                    onChange={(e) => handleSelectAll(e.target.checked)}
+                    className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
+                    aria-label="Sélectionner tous les événements"
+                  />
+                </th>
                 <th className="px-4 py-3 text-left font-medium text-slate-300">
                   Titre
                 </th>
@@ -158,25 +303,34 @@ export const AdminEventsPage = ({ events, search = "" }: AdminEventsPageProps) =
               </tr>
             </thead>
             <tbody>
-              {events.map((event) => (
+              {items.map((event) => (
                 <tr
                   key={event.id}
-                  className="border-b border-white/5 transition-colors hover:bg-white/5"
+                  className={`border-b border-white/5 transition-colors ${selectedIds.has(event.id) ? "bg-amber-500/10" : "hover:bg-white/5"}`}
                 >
+                  <td className="w-10 px-4 py-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(event.id)}
+                      onChange={() => handleToggleSelect(event.id)}
+                      className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
+                      aria-label={`Sélectionner ${event.titleFr}`}
+                    />
+                  </td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className="font-medium text-white">{event.titleFr}</span>
                       {event.featured && (
-                        <Star
-                          className="h-3.5 w-3.5 fill-amber-500 text-amber-500"
-                          aria-label="À la une"
-                        />
+                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-400" aria-label="À la une">
+                          <Star className="size-3 fill-amber-400" aria-hidden="true" />
+                          À la une
+                        </span>
                       )}
                       {event.accessible && (
-                        <Accessibility
-                          className="h-3.5 w-3.5 text-blue-400"
-                          aria-label="Accessible PMR"
-                        />
+                        <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/20 px-2 py-0.5 text-xs font-medium text-blue-400" aria-label="Accessible PMR">
+                          <Accessibility className="size-3" aria-hidden="true" />
+                          PMR
+                        </span>
                       )}
                     </div>
                   </td>
@@ -197,6 +351,11 @@ export const AdminEventsPage = ({ events, search = "" }: AdminEventsPageProps) =
                       <span className="inline-flex items-center gap-1 text-emerald-400" aria-label="Publié">
                         <Eye className="h-3.5 w-3.5" />
                         <span className="hidden md:inline">Publié</span>
+                      </span>
+                    ) : event.unpublishedAt ? (
+                      <span className="inline-flex items-center gap-1 text-orange-400" aria-label="Dépublié">
+                        <EyeOff className="h-3.5 w-3.5" />
+                        <span className="hidden md:inline">Dépublié</span>
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 text-slate-500" aria-label="Brouillon">
@@ -255,6 +414,65 @@ export const AdminEventsPage = ({ events, search = "" }: AdminEventsPageProps) =
               ))}
             </tbody>
           </table>
+          </div>
+
+          <AdminPagination
+            currentPage={page}
+            totalPages={totalPages}
+            baseUrl="/admin/events"
+            searchParams={{
+              search: search || "",
+              status: status || "",
+              department: department || "",
+              category: category || "",
+            }}
+          />
+        </>
+      )}
+
+      {selectedIds.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-4 rounded-xl border border-white/10 bg-slate-900/95 px-6 py-3 shadow-2xl backdrop-blur-xl">
+          <span className="text-sm font-medium text-white">
+            {selectedIds.size} sélectionné{selectedIds.size > 1 ? "s" : ""}
+          </span>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setSelectedIds(new Set())}
+              className="border-white/20 text-white hover:bg-white/10"
+            >
+              Annuler
+            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger
+                className="inline-flex h-7 items-center gap-1.5 rounded-md bg-destructive px-2.5 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50"
+                disabled={isBulkDeleting}
+              >
+                <Trash2 className="size-3.5" />
+                Supprimer
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Supprimer les événements</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Êtes-vous sûr de vouloir supprimer {selectedIds.size} événement{selectedIds.size > 1 ? "s" : ""} ? Cette action est irréversible.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  <AlertDialogAction
+                    variant="destructive"
+                    onClick={handleBulkDelete}
+                    disabled={isBulkDeleting}
+                  >
+                    {isBulkDeleting ? "Suppression..." : "Supprimer"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </div>
       )}
     </div>

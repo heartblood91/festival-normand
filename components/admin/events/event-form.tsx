@@ -1,16 +1,21 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import { useLocale } from "next-intl"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { TranslateButton } from "@/components/admin/translate-button"
+import { ImageUpload } from "@/components/admin/image-upload"
+import { AddressAutocomplete } from "@/components/admin/address-autocomplete"
+import { PublishWizard } from "@/components/admin/publish/publish-wizard"
+import { FormActionBar } from "@/components/admin/shared/form-action-bar"
+import { TiptapEditor } from "@/components/admin/tiptap-editor"
 import { createEvent, updateEvent } from "@/lib/actions/events"
 import { slugify, DEPARTMENT_OPTIONS, CATEGORY_OPTIONS } from "@/lib/schemas/event"
 import type { Event } from "@prisma/client"
@@ -27,19 +32,31 @@ const formatDateForInput = (date: Date | null | undefined): string => {
 
 export const EventForm = ({ event }: EventFormProps) => {
   const router = useRouter()
+  const locale = useLocale()
+  const formRef = useRef<HTMLFormElement>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string[]>>({})
+  const [formLocale, setFormLocale] = useState<"fr" | "en">("fr")
   const [slug, setSlug] = useState(event?.slug ?? "")
   const [autoSlug, setAutoSlug] = useState(!event)
   const [featured, setFeatured] = useState(event?.featured ?? false)
   const [accessible, setAccessible] = useState(event?.accessible ?? false)
-  const [published, setPublished] = useState(event?.published ?? true)
+  const [published, setPublished] = useState(event?.published ?? false)
   const [titleFr, setTitleFr] = useState(event?.titleFr ?? "")
   const [titleEn, setTitleEn] = useState(event?.titleEn ?? "")
   const [descriptionFr, setDescriptionFr] = useState(event?.descriptionFr ?? "")
   const [descriptionEn, setDescriptionEn] = useState(event?.descriptionEn ?? "")
   const [pricingFr, setPricingFr] = useState(event?.pricingFr ?? "")
   const [pricingEn, setPricingEn] = useState(event?.pricingEn ?? "")
+  const [location, setLocation] = useState(event?.location ?? "")
+  const [city, setCity] = useState(event?.city ?? "")
+  const [postalCode, setPostalCode] = useState(event?.postalCode ?? "")
+  const [department, setDepartment] = useState(event?.department ?? "")
+  const [latitude, setLatitude] = useState(event?.latitude ?? 0)
+  const [longitude, setLongitude] = useState(event?.longitude ?? 0)
+  const [showPublishWizard, setShowPublishWizard] = useState(false)
+  const [publishingFields, setPublishingFields] = useState<Record<string, string>>({})
+  const [coverImage, setCoverImage] = useState(event?.coverImage ?? "")
 
   const handleTitleFrChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,13 +68,11 @@ export const EventForm = ({ event }: EventFormProps) => {
     [autoSlug]
   )
 
-  const handleSlugChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setAutoSlug(false)
-      setSlug(e.target.value)
-    },
-    []
-  )
+  const handleSaveClick = useCallback(() => {
+    formRef.current?.dispatchEvent(
+      new Event("submit", { bubbles: true, cancelable: true })
+    )
+  }, [])
 
   const handleTranslated = (translations: Record<string, string>) => {
     if (translations.titleEn) setTitleEn(translations.titleEn)
@@ -65,8 +80,103 @@ export const EventForm = ({ event }: EventFormProps) => {
     if (translations.pricingEn) setPricingEn(translations.pricingEn)
   }
 
+  const handlePublishClick = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setPublishingFields({
+      titleFr,
+      descriptionFr,
+      pricingFr,
+    })
+    setShowPublishWizard(true)
+  }
+
+  const handleWizardComplete = async (translatedFields?: Record<string, string>) => {
+    setShowPublishWizard(false)
+
+    const newTitleEn = translatedFields?.title || titleEn
+    const newDescriptionEn = translatedFields?.description || descriptionEn
+    const newPricingEn = translatedFields?.pricing || pricingEn
+
+    if (translatedFields?.title) setTitleEn(newTitleEn)
+    if (translatedFields?.description) setDescriptionEn(newDescriptionEn)
+    if (translatedFields?.pricing) setPricingEn(newPricingEn)
+
+    const formData = new FormData()
+    formData.set("slug", slug)
+    formData.set("titleFr", titleFr)
+    formData.set("titleEn", newTitleEn)
+    formData.set("descriptionFr", descriptionFr)
+    formData.set("descriptionEn", newDescriptionEn)
+    formData.set("pricingFr", pricingFr)
+    formData.set("pricingEn", newPricingEn)
+    formData.set("location", location)
+    formData.set("city", city)
+    formData.set("postalCode", postalCode)
+    formData.set("department", department)
+    formData.set("latitude", latitude != null ? String(latitude) : "")
+    formData.set("longitude", longitude != null ? String(longitude) : "")
+    formData.set("coverImage", coverImage)
+    formData.set("featured", String(featured))
+    formData.set("accessible", String(accessible))
+    formData.set("published", String(true))
+
+    const categoryInput = document.querySelector<HTMLSelectElement>('[name="category"]')
+    const organizerInput = document.querySelector<HTMLInputElement>('[name="organizer"]')
+    const emailInput = document.querySelector<HTMLInputElement>('[name="email"]')
+    const phoneInput = document.querySelector<HTMLInputElement>('[name="phone"]')
+    const websiteInput = document.querySelector<HTMLInputElement>('[name="website"]')
+    const dateStartInput = document.querySelector<HTMLInputElement>('[name="dateStart"]')
+    const dateEndInput = document.querySelector<HTMLInputElement>('[name="dateEnd"]')
+    const timeStartInput = document.querySelector<HTMLInputElement>('[name="timeStart"]')
+    const timeEndInput = document.querySelector<HTMLInputElement>('[name="timeEnd"]')
+
+    if (categoryInput?.value) formData.set("category", categoryInput.value)
+    if (organizerInput?.value) formData.set("organizer", organizerInput.value)
+    if (emailInput?.value) formData.set("email", emailInput.value)
+    if (phoneInput?.value) formData.set("phone", phoneInput.value)
+    if (websiteInput?.value) formData.set("website", websiteInput.value)
+    if (dateStartInput?.value) formData.set("dateStart", dateStartInput.value)
+    if (dateEndInput?.value) formData.set("dateEnd", dateEndInput.value)
+    if (timeStartInput?.value) formData.set("timeStart", timeStartInput.value)
+    if (timeEndInput?.value) formData.set("timeEnd", timeEndInput.value)
+
+    setIsSubmitting(true)
+    setErrors({})
+
+    const result = event
+      ? await updateEvent(event.id, formData)
+      : await createEvent(formData)
+
+    setIsSubmitting(false)
+
+    if (result.success) {
+      toast.success(result.message)
+      router.push("/admin/events")
+      router.refresh()
+    } else {
+      if (result.errors) {
+        setErrors(result.errors)
+        const errorList = Object.entries(result.errors)
+          .map(([, msgs]) => msgs.join(", "))
+          .join(" • ")
+        toast.error(`${result.message} — ${errorList}`, { duration: 8000 })
+        const firstErrorField = Object.keys(result.errors)[0]
+        const el = document.querySelector(`[name="${firstErrorField}"], [id="${firstErrorField}"]`)
+        el?.scrollIntoView({ behavior: "smooth", block: "center" })
+      } else {
+        toast.error(result.message)
+      }
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
+    if (published) {
+      handlePublishClick(e)
+      return
+    }
+
     setIsSubmitting(true)
     setErrors({})
 
@@ -78,6 +188,13 @@ export const EventForm = ({ event }: EventFormProps) => {
     formData.set("descriptionEn", descriptionEn)
     formData.set("pricingFr", pricingFr)
     formData.set("pricingEn", pricingEn)
+    formData.set("location", location)
+    formData.set("city", city)
+    formData.set("postalCode", postalCode)
+    formData.set("department", department)
+    formData.set("latitude", latitude != null ? String(latitude) : "")
+    formData.set("longitude", longitude != null ? String(longitude) : "")
+    formData.set("coverImage", coverImage)
     formData.set("featured", String(featured))
     formData.set("accessible", String(accessible))
     formData.set("published", String(published))
@@ -93,43 +210,87 @@ export const EventForm = ({ event }: EventFormProps) => {
       router.push("/admin/events")
       router.refresh()
     } else {
-      toast.error(result.message)
       if (result.errors) {
         setErrors(result.errors)
+        const errorList = Object.entries(result.errors)
+          .map(([, msgs]) => msgs.join(", "))
+          .join(" • ")
+        toast.error(`${result.message} — ${errorList}`, { duration: 8000 })
+        const firstErrorField = Object.keys(result.errors)[0]
+        const el = document.querySelector(`[name="${firstErrorField}"], [id="${firstErrorField}"]`)
+        el?.scrollIntoView({ behavior: "smooth", block: "center" })
+      } else {
+        toast.error(result.message)
       }
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="flex items-center justify-between">
-        <Link href="/admin/events">
-          <Button type="button" variant="ghost">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Retour
-          </Button>
-        </Link>
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {event ? "Mettre à jour" : "Créer l'événement"}
-        </Button>
-      </div>
+    <>
+      {showPublishWizard && (
+        <PublishWizard
+          title={titleFr}
+          content={descriptionFr}
+          locale="fr"
+          contentType="event"
+          onComplete={handleWizardComplete}
+          onCancel={() => setShowPublishWizard(false)}
+        />
+      )}
 
-      {/* Basic Info with i18n tabs */}
+      <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
+        <FormActionBar
+          previewUrl={event ? `/${locale}/admin/preview/event/${event.id}` : undefined}
+          isPublished={published}
+          onTogglePublish={setPublished}
+          onTranslate={() => {
+            const button = document.querySelector(
+              '[data-translate-button]'
+            ) as HTMLButtonElement
+            button?.click()
+          }}
+          onSubmit={handleSaveClick}
+          isSubmitting={isSubmitting}
+          saveLabel={event ? "Mettre à jour" : "Créer l'événement"}
+          backUrl="/admin/events"
+        />
+
+      {/* Basic Info with global i18n toggle */}
       <Card className="border-white/10 bg-white/5">
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-white">Informations générales</CardTitle>
+          <div className="flex items-center gap-2">
+            <div className="inline-flex gap-1 rounded-lg border border-white/10 p-1">
+              <button
+                type="button"
+                onClick={() => setFormLocale("fr")}
+                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                  formLocale === "fr"
+                    ? "bg-amber-500 text-white"
+                    : "text-slate-400 hover:text-slate-300"
+                }`}
+              >
+                FR
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormLocale("en")}
+                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                  formLocale === "en"
+                    ? "bg-amber-500 text-white"
+                    : "text-slate-400 hover:text-slate-300"
+                }`}
+              >
+                EN
+              </button>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <Tabs defaultValue="fr">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="fr">Français</TabsTrigger>
-              <TabsTrigger value="en">English</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="fr" className="space-y-4">
+        <CardContent className="space-y-5">
+          {formLocale === "fr" ? (
+            <>
               <div>
-                <Label htmlFor="titleFr" className="text-slate-300">
+                <Label htmlFor="titleFr" className="text-slate-300 block mb-2">
                   Titre *
                 </Label>
                 <Input
@@ -138,7 +299,7 @@ export const EventForm = ({ event }: EventFormProps) => {
                   value={titleFr}
                   onChange={handleTitleFrChange}
                   required
-                  className="mt-1 border-white/10 bg-white/5 text-white"
+                  className="border-white/10 bg-white/5 text-white"
                   aria-invalid={!!errors.titleFr}
                   aria-describedby={errors.titleFr ? "titleFr-error" : undefined}
                 />
@@ -150,19 +311,12 @@ export const EventForm = ({ event }: EventFormProps) => {
               </div>
 
               <div>
-                <Label htmlFor="descriptionFr" className="text-slate-300">
+                <Label htmlFor="descriptionFr" className="text-slate-300 block mb-2">
                   Description *
                 </Label>
-                <textarea
-                  id="descriptionFr"
-                  name="descriptionFr"
-                  value={descriptionFr}
-                  onChange={(e) => setDescriptionFr(e.target.value)}
-                  required
-                  rows={6}
-                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                  aria-invalid={!!errors.descriptionFr}
-                  aria-describedby={errors.descriptionFr ? "descriptionFr-error" : undefined}
+                <TiptapEditor
+                  content={descriptionFr}
+                  onChange={setDescriptionFr}
                 />
                 {errors.descriptionFr && (
                   <p id="descriptionFr-error" className="mt-1 text-sm text-red-400">
@@ -170,20 +324,11 @@ export const EventForm = ({ event }: EventFormProps) => {
                   </p>
                 )}
               </div>
-            </TabsContent>
-
-            <TabsContent value="en" className="space-y-4">
-              <TranslateButton
-                sourceFields={{
-                  titleFr,
-                  descriptionFr,
-                  pricingFr,
-                }}
-                onTranslated={handleTranslated}
-              />
-
+            </>
+          ) : (
+            <>
               <div>
-                <Label htmlFor="titleEn" className="text-slate-300">
+                <Label htmlFor="titleEn" className="text-slate-300 block mb-2">
                   Title
                 </Label>
                 <Input
@@ -191,7 +336,7 @@ export const EventForm = ({ event }: EventFormProps) => {
                   name="titleEn"
                   value={titleEn}
                   onChange={(e) => setTitleEn(e.target.value)}
-                  className="mt-1 border-white/10 bg-white/5 text-white"
+                  className="border-white/10 bg-white/5 text-white"
                   aria-describedby={errors.titleEn ? "titleEn-error" : undefined}
                 />
                 {errors.titleEn && (
@@ -202,17 +347,12 @@ export const EventForm = ({ event }: EventFormProps) => {
               </div>
 
               <div>
-                <Label htmlFor="descriptionEn" className="text-slate-300">
+                <Label htmlFor="descriptionEn" className="text-slate-300 block mb-2">
                   Description
                 </Label>
-                <textarea
-                  id="descriptionEn"
-                  name="descriptionEn"
-                  value={descriptionEn}
-                  onChange={(e) => setDescriptionEn(e.target.value)}
-                  rows={6}
-                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                  aria-describedby={errors.descriptionEn ? "descriptionEn-error" : undefined}
+                <TiptapEditor
+                  content={descriptionEn}
+                  onChange={setDescriptionEn}
                 />
                 {errors.descriptionEn && (
                   <p id="descriptionEn-error" className="mt-1 text-sm text-red-400">
@@ -220,20 +360,20 @@ export const EventForm = ({ event }: EventFormProps) => {
                   </p>
                 )}
               </div>
-            </TabsContent>
-          </Tabs>
+            </>
+          )}
 
           <div>
-            <Label htmlFor="slug" className="text-slate-300">
-              Slug *
+            <Label htmlFor="slug" className="text-slate-300 block mb-2">
+              Slug
             </Label>
             <Input
               id="slug"
               name="slug"
               value={slug}
-              onChange={handleSlugChange}
+              readOnly
               required
-              className="mt-1 border-white/10 bg-white/5 text-white"
+              className="border-white/10 bg-slate-900 text-slate-400 cursor-not-allowed opacity-60"
               aria-invalid={!!errors.slug}
               aria-describedby={errors.slug ? "slug-error" : undefined}
             />
@@ -252,65 +392,48 @@ export const EventForm = ({ event }: EventFormProps) => {
           <CardTitle className="text-white">Localisation</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="location" className="text-slate-300">
-              Lieu *
-            </Label>
-            <Input
-              id="location"
-              name="location"
-              defaultValue={event?.location ?? ""}
-              required
-              className="mt-1 border-white/10 bg-white/5 text-white"
-              aria-invalid={!!errors.location}
-              aria-describedby={errors.location ? "location-error" : undefined}
-            />
-            {errors.location && (
-              <p id="location-error" className="mt-1 text-sm text-red-400">
-                {errors.location[0]}
-              </p>
-            )}
-          </div>
+          <AddressAutocomplete
+            onSelect={(result) => {
+              setLocation(result.location)
+              setCity(result.city)
+              setPostalCode(result.postalCode)
+              setDepartment(result.department)
+              setLatitude(result.latitude)
+              setLongitude(result.longitude)
+            }}
+            defaultValue={location ? `${location}, ${postalCode} ${city}` : ""}
+          />
+          {errors.location && (
+            <p className="mt-1 text-sm text-red-400">
+              {errors.location[0]}
+            </p>
+          )}
 
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <Label htmlFor="city" className="text-slate-300">
-                Ville *
+                Ville
               </Label>
               <Input
                 id="city"
                 name="city"
-                defaultValue={event?.city ?? ""}
-                required
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
                 className="mt-1 border-white/10 bg-white/5 text-white"
-                aria-invalid={!!errors.city}
-                aria-describedby={errors.city ? "city-error" : undefined}
               />
-              {errors.city && (
-                <p id="city-error" className="mt-1 text-sm text-red-400">
-                  {errors.city[0]}
-                </p>
-              )}
             </div>
 
             <div>
               <Label htmlFor="postalCode" className="text-slate-300">
-                Code postal *
+                Code postal
               </Label>
               <Input
                 id="postalCode"
                 name="postalCode"
-                defaultValue={event?.postalCode ?? ""}
-                required
+                value={postalCode}
+                onChange={(e) => setPostalCode(e.target.value)}
                 className="mt-1 border-white/10 bg-white/5 text-white"
-                aria-invalid={!!errors.postalCode}
-                aria-describedby={errors.postalCode ? "postalCode-error" : undefined}
               />
-              {errors.postalCode && (
-                <p id="postalCode-error" className="mt-1 text-sm text-red-400">
-                  {errors.postalCode[0]}
-                </p>
-              )}
             </div>
           </div>
 
@@ -322,7 +445,8 @@ export const EventForm = ({ event }: EventFormProps) => {
               <select
                 id="department"
                 name="department"
-                defaultValue={event?.department ?? ""}
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
                 required
                 className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                 aria-invalid={!!errors.department}
@@ -373,48 +497,6 @@ export const EventForm = ({ event }: EventFormProps) => {
               )}
             </div>
           </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <Label htmlFor="latitude" className="text-slate-300">
-                Latitude
-              </Label>
-              <Input
-                id="latitude"
-                name="latitude"
-                type="number"
-                step="any"
-                defaultValue={event?.latitude ?? ""}
-                className="mt-1 border-white/10 bg-white/5 text-white"
-                aria-describedby={errors.latitude ? "latitude-error" : undefined}
-              />
-              {errors.latitude && (
-                <p id="latitude-error" className="mt-1 text-sm text-red-400">
-                  {errors.latitude[0]}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="longitude" className="text-slate-300">
-                Longitude
-              </Label>
-              <Input
-                id="longitude"
-                name="longitude"
-                type="number"
-                step="any"
-                defaultValue={event?.longitude ?? ""}
-                className="mt-1 border-white/10 bg-white/5 text-white"
-                aria-describedby={errors.longitude ? "longitude-error" : undefined}
-              />
-              {errors.longitude && (
-                <p id="longitude-error" className="mt-1 text-sm text-red-400">
-                  {errors.longitude[0]}
-                </p>
-              )}
-            </div>
-          </div>
         </CardContent>
       </Card>
 
@@ -447,21 +529,6 @@ export const EventForm = ({ event }: EventFormProps) => {
             </div>
 
             <div>
-              <Label htmlFor="dateEnd" className="text-slate-300">
-                Date de fin
-              </Label>
-              <Input
-                id="dateEnd"
-                name="dateEnd"
-                type="date"
-                defaultValue={formatDateForInput(event?.dateEnd)}
-                className="mt-1 border-white/10 bg-white/5 text-white"
-              />
-            </div>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
               <Label htmlFor="timeStart" className="text-slate-300">
                 Heure de début
               </Label>
@@ -470,6 +537,21 @@ export const EventForm = ({ event }: EventFormProps) => {
                 name="timeStart"
                 type="time"
                 defaultValue={event?.timeStart ?? ""}
+                className="mt-1 border-white/10 bg-white/5 text-white"
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <Label htmlFor="dateEnd" className="text-slate-300">
+                Date de fin
+              </Label>
+              <Input
+                id="dateEnd"
+                name="dateEnd"
+                type="date"
+                defaultValue={formatDateForInput(event?.dateEnd)}
                 className="mt-1 border-white/10 bg-white/5 text-white"
               />
             </div>
@@ -496,44 +578,35 @@ export const EventForm = ({ event }: EventFormProps) => {
           <CardTitle className="text-white">Informations pratiques</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Tabs defaultValue="fr">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="fr">Français</TabsTrigger>
-              <TabsTrigger value="en">English</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="fr">
-              <div>
-                <Label htmlFor="pricingFr" className="text-slate-300">
-                  Tarification
-                </Label>
-                <Input
-                  id="pricingFr"
-                  name="pricingFr"
-                  value={pricingFr}
-                  onChange={(e) => setPricingFr(e.target.value)}
-                  placeholder="Gratuit, 5€, etc."
-                  className="mt-1 border-white/10 bg-white/5 text-white placeholder:text-slate-500"
-                />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="en">
-              <div>
-                <Label htmlFor="pricingEn" className="text-slate-300">
-                  Pricing
-                </Label>
-                <Input
-                  id="pricingEn"
-                  name="pricingEn"
-                  value={pricingEn}
-                  onChange={(e) => setPricingEn(e.target.value)}
-                  placeholder="Free, 5€, etc."
-                  className="mt-1 border-white/10 bg-white/5 text-white placeholder:text-slate-500"
-                />
-              </div>
-            </TabsContent>
-          </Tabs>
+          {formLocale === "fr" ? (
+            <div>
+              <Label htmlFor="pricingFr" className="text-slate-300">
+                Tarification
+              </Label>
+              <Input
+                id="pricingFr"
+                name="pricingFr"
+                value={pricingFr}
+                onChange={(e) => setPricingFr(e.target.value)}
+                placeholder="Gratuit, 5€, etc."
+                className="mt-1 border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+              />
+            </div>
+          ) : (
+            <div>
+              <Label htmlFor="pricingEn" className="text-slate-300">
+                Pricing
+              </Label>
+              <Input
+                id="pricingEn"
+                name="pricingEn"
+                value={pricingEn}
+                onChange={(e) => setPricingEn(e.target.value)}
+                placeholder="Free, 5€, etc."
+                className="mt-1 border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+              />
+            </div>
+          )}
 
           <div>
             <Label htmlFor="organizer" className="text-slate-300">
@@ -598,19 +671,14 @@ export const EventForm = ({ event }: EventFormProps) => {
         </CardHeader>
         <CardContent>
           <div>
-            <Label htmlFor="coverImage" className="text-slate-300">
-              URL de l&apos;image de couverture
+            <Label className="text-slate-300 block mb-2">
+              Image de couverture
             </Label>
-            <Input
-              id="coverImage"
-              name="coverImage"
-              defaultValue={event?.coverImage ?? ""}
-              placeholder="https://..."
-              className="mt-1 border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+            <ImageUpload
+              value={coverImage}
+              onChange={setCoverImage}
+              preset="cover"
             />
-            <p className="mt-1 text-xs text-slate-500">
-              L&apos;upload vers Vercel Blob sera disponible prochainement.
-            </p>
           </div>
         </CardContent>
       </Card>
@@ -668,45 +736,17 @@ export const EventForm = ({ event }: EventFormProps) => {
               />
             </button>
           </label>
-
-          <label className="flex cursor-pointer items-center justify-between rounded-lg border border-white/10 p-3 transition-colors hover:bg-white/5">
-            <div>
-              <p className="font-medium text-white">Publié</p>
-              <p className="text-sm text-slate-400">
-                Rendre cet événement visible sur le site public
-              </p>
-            </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={published}
-              onClick={() => setPublished(!published)}
-              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
-                published ? "bg-amber-500" : "bg-slate-600"
-              }`}
-            >
-              <span
-                className={`pointer-events-none block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform ${
-                  published ? "translate-x-5" : "translate-x-0"
-                }`}
-              />
-            </button>
-          </label>
         </CardContent>
       </Card>
 
-      {/* Submit */}
-      <div className="flex justify-end gap-3">
-        <Link href="/admin/events">
-          <Button type="button" variant="ghost">
-            Annuler
-          </Button>
-        </Link>
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {event ? "Mettre à jour" : "Créer l'événement"}
-        </Button>
-      </div>
+      {/* Hidden inputs for address fields */}
+      <input type="hidden" name="location" value={location} />
+      <input type="hidden" name="city" value={city} />
+      <input type="hidden" name="postalCode" value={postalCode} />
+      <input type="hidden" name="department" value={department} />
+      <input type="hidden" name="latitude" value={latitude ?? ""} />
+      <input type="hidden" name="longitude" value={longitude ?? ""} />
     </form>
+    </>
   )
 }

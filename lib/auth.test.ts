@@ -11,6 +11,7 @@ const { prismaMock } = vi.hoisted(() => {
     deleteMany: vi.fn(),
     count: vi.fn(),
     upsert: vi.fn(),
+    updateMany: vi.fn(),
   })
 
   return {
@@ -46,8 +47,8 @@ describe("auth admin restriction hook", () => {
     vi.clearAllMocks()
   })
 
-  it("blocks magic link for non-admin emails", async () => {
-    prismaMock.adminUser.findUnique.mockResolvedValue(null)
+  it("blocks sign-in for non-registered emails", async () => {
+    prismaMock.user.findUnique.mockResolvedValue(null)
 
     const response = await auth.api.signInMagicLink({
       body: { email: "hacker@evil.com" },
@@ -55,27 +56,25 @@ describe("auth admin restriction hook", () => {
     }).catch((e: Error) => e)
 
     expect(response).toBeInstanceOf(Error)
-    expect(prismaMock.adminUser.findUnique).toHaveBeenCalledWith({
+    expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
       where: { email: "hacker@evil.com" },
+      select: { role: true },
     })
   })
 
-  it("allows magic link for admin emails", async () => {
-    prismaMock.adminUser.findUnique.mockResolvedValue({
-      id: "1",
-      email: "admin@pierresenlumieres.fr",
-      name: "Admin",
+  it("allows sign-in for registered users", async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      role: "ADMIN",
     })
 
-    // This will try to send an email and may fail because of user lookup,
-    // but the hook should NOT block it
     const response = await auth.api.signInMagicLink({
       body: { email: "admin@pierresenlumieres.fr" },
       headers: new Headers(),
     }).catch((e: Error) => e)
 
-    expect(prismaMock.adminUser.findUnique).toHaveBeenCalledWith({
+    expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
       where: { email: "admin@pierresenlumieres.fr" },
+      select: { role: true },
     })
 
     // If it gets past the hook, the error should NOT be about authorization

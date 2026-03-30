@@ -182,6 +182,66 @@
     "recourseText": "Si vous constatez un défaut d'accessibilité vous empêchant d'accéder à un contenu ou une fonctionnalité du site, que vous nous le signalez et que vous ne parvenez pas à obtenir une réponse de notre part, vous êtes en droit de faire parvenir vos doléances ou une demande de saisine au Défenseur des droits.",
     "lastUpdated": "Dernière mise à jour : mars 2026"
   },
+  "admin": {
+    "title": "Administration",
+    "backToSite": "Retour au site",
+    "sidebar": {
+      "dashboard": "Tableau de bord",
+      "events": "Événements",
+      "news": "Actualités",
+      "partners": "Partenaires",
+      "pages": "Pages",
+      "users": "Utilisateurs",
+      "settings": "Paramètres"
+    },
+    "dashboard": {
+      "title": "Tableau de bord",
+      "greeting": "Bonjour, {name}",
+      "totalEvents": "Événements",
+      "totalNews": "Actualités",
+      "totalPartners": "Partenaires",
+      "totalPages": "Pages",
+      "drafts": "Brouillons",
+      "draftsDescription": "Contenu en cours de rédaction, jamais publié",
+      "draftsTooltip": "Les brouillons sont des contenus que vous êtes en train de créer et qui n'ont jamais été publiés sur le site.",
+      "depublished": "Dépubliés",
+      "depublishedDescription": "Contenu retiré du site, anciennement publié",
+      "published": "Publiés",
+      "recentActivity": "Activité récente",
+      "quickActions": "Actions rapides",
+      "createEvent": "Créer un événement",
+      "createNews": "Créer une actualité",
+      "managePartners": "Gérer les partenaires"
+    },
+    "common": {
+      "save": "Enregistrer",
+      "publish": "Publier",
+      "preview": "Aperçu",
+      "delete": "Supprimer",
+      "cancel": "Annuler",
+      "edit": "Modifier",
+      "create": "Créer",
+      "search": "Rechercher...",
+      "noResults": "Aucun résultat",
+      "loading": "Chargement...",
+      "confirmDelete": "Êtes-vous sûr de vouloir supprimer cet élément ?",
+      "logout": "Déconnexion",
+      "role": "Rôle",
+      "admin": "Administrateur",
+      "editor": "Éditeur"
+    },
+    "users": {
+      "title": "Utilisateurs",
+      "invite": "Inviter un utilisateur",
+      "inviteDescription": "Envoyez une invitation par email",
+      "email": "Adresse email",
+      "role": "Rôle",
+      "inviteSent": "Invitation envoyée avec succès",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cet utilisateur ?",
+      "soleAdmin": "Impossible de supprimer le seul administrateur",
+      "changeRole": "Modifier le rôle"
+    }
+  },
   "locale": {
     "fr": "Français",
     "en": "English",

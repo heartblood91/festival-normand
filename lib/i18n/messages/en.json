@@ -182,6 +182,66 @@
     "recourseText": "If you encounter an accessibility problem preventing you from accessing content or a site feature, and you are unable to obtain a response from us, you have the right to file a complaint with the Defender of Rights (Défenseur des droits).",
     "lastUpdated": "Last updated: March 2026"
   },
+  "admin": {
+    "title": "Administration",
+    "backToSite": "Back to site",
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "events": "Events",
+      "news": "News",
+      "partners": "Partners",
+      "pages": "Pages",
+      "users": "Users",
+      "settings": "Settings"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "greeting": "Hello, {name}",
+      "totalEvents": "Events",
+      "totalNews": "News",
+      "totalPartners": "Partners",
+      "totalPages": "Pages",
+      "drafts": "Drafts",
+      "draftsDescription": "Work in progress, never published",
+      "draftsTooltip": "Drafts are content you are currently creating that has never been published on the site.",
+      "depublished": "Unpublished",
+      "depublishedDescription": "Content removed from the site, previously published",
+      "published": "Published",
+      "recentActivity": "Recent activity",
+      "quickActions": "Quick actions",
+      "createEvent": "Create event",
+      "createNews": "Create news article",
+      "managePartners": "Manage partners"
+    },
+    "common": {
+      "save": "Save",
+      "publish": "Publish",
+      "preview": "Preview",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "create": "Create",
+      "search": "Search...",
+      "noResults": "No results",
+      "loading": "Loading...",
+      "confirmDelete": "Are you sure you want to delete this item?",
+      "logout": "Log out",
+      "role": "Role",
+      "admin": "Administrator",
+      "editor": "Editor"
+    },
+    "users": {
+      "title": "Users",
+      "invite": "Invite user",
+      "inviteDescription": "Send an invitation by email",
+      "email": "Email address",
+      "role": "Role",
+      "inviteSent": "Invitation sent successfully",
+      "deleteConfirm": "Are you sure you want to delete this user?",
+      "soleAdmin": "Cannot delete the only administrator",
+      "changeRole": "Change role"
+    }
+  },
   "locale": {
     "fr": "Français",
     "en": "English",

@@ -1,17 +1,16 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { ArrowLeft, Loader2 } from "lucide-react"
 import { toast } from "sonner"
-import { Button } from "@/components/ui/button"
+import { useLocale } from "next-intl"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TiptapEditor } from "@/components/admin/tiptap-editor"
-import { TranslateButton } from "@/components/admin/translate-button"
+import { ImageUpload } from "@/components/admin/image-upload"
+import { FormActionBar } from "@/components/admin/shared/form-action-bar"
+import { PublishWizard } from "@/components/admin/publish/publish-wizard"
 import { createNews, updateNews } from "@/lib/actions/news"
 import { slugify } from "@/lib/schemas/event"
 import type { News } from "@prisma/client"
@@ -28,8 +27,11 @@ const formatDateForInput = (date: Date | null | undefined): string => {
 
 export const NewsForm = ({ article }: NewsFormProps) => {
   const router = useRouter()
+  const locale = useLocale()
+  const formRef = useRef<HTMLFormElement>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string[]>>({})
+  const [formLocale, setFormLocale] = useState<"fr" | "en">("fr")
   const [slug, setSlug] = useState(article?.slug ?? "")
   const [autoSlug, setAutoSlug] = useState(!article)
   const [contentFr, setContentFr] = useState(article?.contentFr ?? "")
@@ -38,7 +40,9 @@ export const NewsForm = ({ article }: NewsFormProps) => {
   const [titleEn, setTitleEn] = useState(article?.titleEn ?? "")
   const [excerptFr, setExcerptFr] = useState(article?.excerptFr ?? "")
   const [excerptEn, setExcerptEn] = useState(article?.excerptEn ?? "")
-  const [published, setPublished] = useState(article?.published ?? true)
+  const [coverImage, setCoverImage] = useState(article?.coverImage ?? "")
+  const [published, setPublished] = useState(article?.published ?? false)
+  const [showPublishWizard, setShowPublishWizard] = useState(false)
 
   const handleTitleFrChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,13 +54,11 @@ export const NewsForm = ({ article }: NewsFormProps) => {
     [autoSlug]
   )
 
-  const handleSlugChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setAutoSlug(false)
-      setSlug(e.target.value)
-    },
-    []
-  )
+  const handleSaveClick = useCallback(() => {
+    formRef.current?.dispatchEvent(
+      new Event("submit", { bubbles: true, cancelable: true })
+    )
+  }, [])
 
   const handleTranslated = (translations: Record<string, string>) => {
     if (translations.titleEn) setTitleEn(translations.titleEn)
@@ -64,8 +66,70 @@ export const NewsForm = ({ article }: NewsFormProps) => {
     if (translations.contentEn) setContentEn(translations.contentEn)
   }
 
+  const handlePublishClick = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setShowPublishWizard(true)
+  }
+
+  const handleWizardComplete = async (translatedFields?: Record<string, string>) => {
+    setShowPublishWizard(false)
+
+    const newTitleEn = translatedFields?.title || titleEn
+    const newContentEn = translatedFields?.description || contentEn
+    const newExcerptEn = translatedFields?.excerpt || excerptEn
+
+    if (translatedFields?.title) setTitleEn(newTitleEn)
+    if (translatedFields?.description) setContentEn(newContentEn)
+    if (translatedFields?.excerpt) setExcerptEn(newExcerptEn)
+
+    const formData = new FormData()
+    formData.set("slug", slug)
+    formData.set("titleFr", titleFr)
+    formData.set("titleEn", newTitleEn)
+    formData.set("contentFr", contentFr)
+    formData.set("contentEn", newContentEn)
+    formData.set("excerptFr", excerptFr)
+    formData.set("excerptEn", newExcerptEn)
+    formData.set("coverImage", coverImage)
+    formData.set("published", String(true))
+
+    const publishedAtInput = document.querySelector<HTMLInputElement>('[name="publishedAt"]')
+    if (publishedAtInput?.value) formData.set("publishedAt", publishedAtInput.value)
+
+    setIsSubmitting(true)
+    setErrors({})
+
+    const result = article
+      ? await updateNews(article.id, formData)
+      : await createNews(formData)
+
+    setIsSubmitting(false)
+
+    if (result.success) {
+      toast.success(result.message)
+      router.push("/admin/news")
+      router.refresh()
+    } else {
+      if (result.errors) {
+        setErrors(result.errors)
+        const errorList = Object.entries(result.errors)
+          .map(([, msgs]) => msgs.join(", "))
+          .join(" • ")
+        toast.error(`${result.message} — ${errorList}`, { duration: 8000 })
+      } else {
+        toast.error(result.message)
+      }
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
+    if (published) {
+      handlePublishClick(e)
+      return
+    }
+
     setIsSubmitting(true)
     setErrors({})
 
@@ -77,6 +141,7 @@ export const NewsForm = ({ article }: NewsFormProps) => {
     formData.set("contentEn", contentEn)
     formData.set("excerptFr", excerptFr)
     formData.set("excerptEn", excerptEn)
+    formData.set("coverImage", coverImage)
     formData.set("published", String(published))
 
     const result = article
@@ -90,40 +155,75 @@ export const NewsForm = ({ article }: NewsFormProps) => {
       router.push("/admin/news")
       router.refresh()
     } else {
-      toast.error(result.message)
       if (result.errors) {
         setErrors(result.errors)
+        const errorList = Object.entries(result.errors)
+          .map(([, msgs]) => msgs.join(", "))
+          .join(" • ")
+        toast.error(`${result.message} — ${errorList}`, { duration: 8000 })
+      } else {
+        toast.error(result.message)
       }
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="flex items-center justify-between">
-        <Link href="/admin/news">
-          <Button type="button" variant="ghost">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Retour
-          </Button>
-        </Link>
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {article ? "Mettre à jour" : "Créer l'article"}
-        </Button>
-      </div>
+    <>
+      {showPublishWizard && (
+        <PublishWizard
+          title={titleFr}
+          content={contentFr}
+          locale="fr"
+          contentType="news"
+          onComplete={handleWizardComplete}
+          onCancel={() => setShowPublishWizard(false)}
+        />
+      )}
+
+      <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
+        <FormActionBar
+        previewUrl={article ? `/${locale}/admin/preview/news/${article.id}` : undefined}
+        isPublished={published}
+        onTogglePublish={setPublished}
+        onSubmit={handleSaveClick}
+        isSubmitting={isSubmitting}
+        saveLabel={article ? "Mettre à jour" : "Créer l'article"}
+        backUrl="/admin/news"
+      />
 
       <Card className="border-white/10 bg-white/5">
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-white">Informations générales</CardTitle>
+          <div className="flex items-center gap-2">
+            <div className="inline-flex gap-1 rounded-lg border border-white/10 p-1">
+              <button
+                type="button"
+                onClick={() => setFormLocale("fr")}
+                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                  formLocale === "fr"
+                    ? "bg-amber-500 text-white"
+                    : "text-slate-400 hover:text-slate-300"
+                }`}
+              >
+                FR
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormLocale("en")}
+                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                  formLocale === "en"
+                    ? "bg-amber-500 text-white"
+                    : "text-slate-400 hover:text-slate-300"
+                }`}
+              >
+                EN
+              </button>
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Tabs defaultValue="fr">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="fr">Français</TabsTrigger>
-              <TabsTrigger value="en">English</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="fr" className="space-y-4">
+          {formLocale === "fr" ? (
+            <>
               <div>
                 <Label htmlFor="titleFr" className="text-slate-300">
                   Titre *
@@ -154,23 +254,14 @@ export const NewsForm = ({ article }: NewsFormProps) => {
                   name="excerptFr"
                   value={excerptFr}
                   onChange={(e) => setExcerptFr(e.target.value)}
-                  rows={2}
+                  rows={4}
                   className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                   placeholder="Résumé court de l'article..."
                 />
               </div>
-            </TabsContent>
-
-            <TabsContent value="en" className="space-y-4">
-              <TranslateButton
-                sourceFields={{
-                  titleFr,
-                  excerptFr,
-                  contentFr,
-                }}
-                onTranslated={handleTranslated}
-              />
-
+            </>
+          ) : (
+            <>
               <div>
                 <Label htmlFor="titleEn" className="text-slate-300">
                   Title
@@ -199,25 +290,25 @@ export const NewsForm = ({ article }: NewsFormProps) => {
                   name="excerptEn"
                   value={excerptEn}
                   onChange={(e) => setExcerptEn(e.target.value)}
-                  rows={2}
+                  rows={4}
                   className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                   placeholder="Short article summary..."
                 />
               </div>
-            </TabsContent>
-          </Tabs>
+            </>
+          )}
 
           <div>
-            <Label htmlFor="slug" className="text-slate-300">
-              Slug *
+            <Label htmlFor="slug" className="text-slate-300 block mb-2">
+              Slug
             </Label>
             <Input
               id="slug"
               name="slug"
               value={slug}
-              onChange={handleSlugChange}
+              readOnly
               required
-              className="mt-1 border-white/10 bg-white/5 text-white"
+              className="border-white/10 bg-slate-900 text-slate-400 cursor-not-allowed opacity-60"
               aria-invalid={!!errors.slug}
               aria-describedby={errors.slug ? "slug-error" : undefined}
             />
@@ -228,40 +319,36 @@ export const NewsForm = ({ article }: NewsFormProps) => {
             )}
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <Label htmlFor="publishedAt" className="text-slate-300">
-                Date de publication *
-              </Label>
-              <Input
-                id="publishedAt"
-                name="publishedAt"
-                type="date"
-                defaultValue={formatDateForInput(article?.publishedAt) || new Date().toISOString().split("T")[0]}
-                required
-                className="mt-1 border-white/10 bg-white/5 text-white"
-                aria-invalid={!!errors.publishedAt}
-                aria-describedby={errors.publishedAt ? "publishedAt-error" : undefined}
-              />
-              {errors.publishedAt && (
-                <p id="publishedAt-error" className="mt-1 text-sm text-red-400">
-                  {errors.publishedAt[0]}
-                </p>
-              )}
-            </div>
+          <div>
+            <Label htmlFor="publishedAt" className="text-slate-300">
+              Date de publication *
+            </Label>
+            <Input
+              id="publishedAt"
+              name="publishedAt"
+              type="date"
+              defaultValue={formatDateForInput(article?.publishedAt) || new Date().toISOString().split("T")[0]}
+              required
+              className="mt-1 border-white/10 bg-white/5 text-white"
+              aria-invalid={!!errors.publishedAt}
+              aria-describedby={errors.publishedAt ? "publishedAt-error" : undefined}
+            />
+            {errors.publishedAt && (
+              <p id="publishedAt-error" className="mt-1 text-sm text-red-400">
+                {errors.publishedAt[0]}
+              </p>
+            )}
+          </div>
 
-            <div>
-              <Label htmlFor="coverImage" className="text-slate-300">
-                Image de couverture
-              </Label>
-              <Input
-                id="coverImage"
-                name="coverImage"
-                defaultValue={article?.coverImage ?? ""}
-                placeholder="https://..."
-                className="mt-1 border-white/10 bg-white/5 text-white placeholder:text-slate-500"
-              />
-            </div>
+          <div>
+            <Label className="text-slate-300 block mb-2">
+              Image de couverture
+            </Label>
+            <ImageUpload
+              value={coverImage}
+              onChange={setCoverImage}
+              preset="cover"
+            />
           </div>
         </CardContent>
       </Card>
@@ -271,75 +358,28 @@ export const NewsForm = ({ article }: NewsFormProps) => {
           <CardTitle className="text-white">Contenu</CardTitle>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="fr">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="fr">Français</TabsTrigger>
-              <TabsTrigger value="en">English</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="fr">
+          {formLocale === "fr" ? (
+            <>
               <TiptapEditor content={contentFr} onChange={setContentFr} />
               {errors.contentFr && (
                 <p className="mt-1 text-sm text-red-400">
                   {errors.contentFr[0]}
                 </p>
               )}
-            </TabsContent>
-
-            <TabsContent value="en">
+            </>
+          ) : (
+            <>
               <TiptapEditor content={contentEn} onChange={setContentEn} />
               {errors.contentEn && (
                 <p className="mt-1 text-sm text-red-400">
                   {errors.contentEn[0]}
                 </p>
               )}
-            </TabsContent>
-          </Tabs>
+            </>
+          )}
         </CardContent>
       </Card>
-
-      <Card className="border-white/10 bg-white/5">
-        <CardHeader>
-          <CardTitle className="text-white">Options</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <label className="flex cursor-pointer items-center justify-between rounded-lg border border-white/10 p-3 transition-colors hover:bg-white/5">
-            <div>
-              <p className="font-medium text-white">Publié</p>
-              <p className="text-sm text-slate-400">
-                Rendre cet article visible sur le site public
-              </p>
-            </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={published}
-              onClick={() => setPublished(!published)}
-              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
-                published ? "bg-amber-500" : "bg-slate-600"
-              }`}
-            >
-              <span
-                className={`pointer-events-none block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform ${
-                  published ? "translate-x-5" : "translate-x-0"
-                }`}
-              />
-            </button>
-          </label>
-        </CardContent>
-      </Card>
-
-      <div className="flex justify-end gap-3">
-        <Link href="/admin/news">
-          <Button type="button" variant="ghost">
-            Annuler
-          </Button>
-        </Link>
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {article ? "Mettre à jour" : "Créer l'article"}
-        </Button>
-      </div>
-    </form>
+      </form>
+    </>
   )
 }

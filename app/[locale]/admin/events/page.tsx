@@ -1,6 +1,3 @@
-import { headers } from "next/headers"
-import { redirect } from "next/navigation"
-import { auth } from "@/lib/auth"
 import { getAdminEvents } from "@/lib/actions/events"
 import { AdminEventsPage } from "@/components/admin/events/admin-events-page"
 
@@ -10,22 +7,44 @@ export const metadata = {
 }
 
 type Props = {
-  searchParams: Promise<{ search?: string }>
+  searchParams: Promise<{
+    search?: string
+    page?: string
+    status?: string
+    department?: string
+    category?: string
+    featured?: string
+  }>
 }
 
 const AdminEventsRoute = async ({ searchParams }: Props) => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
+  const params = await searchParams
+  const page = params.page ? parseInt(params.page, 10) : 1
+  const limit = 25
+
+  const data = await getAdminEvents({
+    search: params.search,
+    page,
+    limit,
+    status: (params.status as "published" | "draft" | "depublished" | "all") || "all",
+    department: params.department,
+    category: params.category,
+    featured: params.featured,
   })
 
-  if (!session) {
-    redirect("/admin/login")
-  }
-
-  const params = await searchParams
-  const events = await getAdminEvents(params.search)
-
-  return <AdminEventsPage events={events} search={params.search} />
+  return (
+    <AdminEventsPage
+      items={data.items}
+      total={data.total}
+      page={data.page}
+      totalPages={data.totalPages}
+      search={params.search}
+      status={params.status}
+      department={params.department}
+      category={params.category}
+      featured={params.featured}
+    />
+  )
 }
 
 export default AdminEventsRoute
