@@ -32,6 +32,12 @@ yarn-error.log*
 .env
 .env*.local
 
+# claude internal files
+.claude/
+
+# local uploads
+public/uploads/
+
 # vercel
 .vercel
 
