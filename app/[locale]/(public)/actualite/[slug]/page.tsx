@@ -19,7 +19,7 @@ export const generateStaticParams = async () => {
     select: { slug: true },
   })
   return locales.flatMap((locale) =>
-    news.map((n) => ({ locale, slug: n.slug }))
+    news.map((n: { slug: string }) => ({ locale, slug: n.slug }))
   )
 }
 
