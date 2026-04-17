@@ -73,7 +73,7 @@ const EventInfo = async ({ event, locale }: EventInfoProps) => {
     if (event.dateEnd) {
       const end = formatEventDate(event.dateEnd, locale)
       if (start === end) return start
-      return `${t("events.date")}: ${start} à ${end}`
+      return `${start} — ${end}`
     }
     return start
   })()
