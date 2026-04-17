@@ -79,14 +79,9 @@ const components: Components = {
   },
   img: ({ src, alt }) => (
     <figure className="my-6">
-      <img
-        src={src}
-        alt={alt ?? ""}
-        width={896}
-        height={504}
-        className="w-full rounded-xl"
-        loading="lazy"
-      />
+      {/* CMS markdown images have unpredictable dimensions — keep native <img> to avoid layout issues */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={src} alt={alt ?? ""} className="w-full rounded-xl" loading="lazy" />
       {alt && (
         <figcaption className="text-muted-foreground mt-2 text-center text-sm">{alt}</figcaption>
       )}

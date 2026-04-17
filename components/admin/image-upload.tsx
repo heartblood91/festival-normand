@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef } from "react"
+import Image from "next/image"
 import { Upload, X } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -117,7 +118,14 @@ export const ImageUpload = ({
           </>
         ) : value ? (
           <>
-            <img src={value} alt="Uploaded" className="max-h-32 max-w-full rounded-lg" />
+            <Image
+              src={value}
+              alt="Uploaded"
+              width={256}
+              height={128}
+              className="max-h-32 max-w-full rounded-lg object-contain"
+              unoptimized
+            />
             <p className="text-xs text-slate-400">Click to change</p>
           </>
         ) : (

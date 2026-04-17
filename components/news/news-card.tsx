@@ -1,4 +1,5 @@
 import { Link } from "@/lib/i18n/routing"
+import Image from "next/image"
 import { getLocale } from "next-intl/server"
 import { Calendar } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -32,14 +33,13 @@ const NewsCard = async ({ article, className, priority = false }: NewsCardProps)
     >
       <div className="from-primary/20 to-primary/5 relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br">
         {article.coverImage && (
-          <img
+          <Image
             src={article.coverImage}
             alt={article.title}
-            width={680}
-            height={383}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            loading={priority ? "eager" : "lazy"}
-            fetchPriority={priority ? "high" : "auto"}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            priority={priority}
           />
         )}
       </div>

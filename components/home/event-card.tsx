@@ -1,4 +1,5 @@
 import { Link } from "@/lib/i18n/routing"
+import Image from "next/image"
 import { getLocale, getTranslations } from "next-intl/server"
 import { MapPin, Calendar } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -25,14 +26,13 @@ const EventCard = async ({ event, className, priority = false }: EventCardProps)
       {/* Cover image or gradient placeholder */}
       <div className="from-primary/20 to-primary/5 relative aspect-[16/10] w-full overflow-hidden bg-gradient-to-br">
         {event.coverImage && (
-          <img
+          <Image
             src={event.coverImage}
             alt={event.title}
-            width={680}
-            height={425}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            loading={priority ? "eager" : "lazy"}
-            fetchPriority={priority ? "high" : "auto"}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            priority={priority}
           />
         )}
         {/* Category badge */}

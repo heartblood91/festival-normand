@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
+import Image from "next/image"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -28,15 +29,14 @@ const PhotoCarousel = ({ images, alt }: PhotoCarouselProps) => {
 
   if (images.length === 1) {
     return (
-      <div className="overflow-hidden rounded-xl">
-        <img
+      <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl">
+        <Image
           src={images[0]}
           alt={alt}
-          width={896}
-          height={504}
-          className="aspect-[16/9] w-full object-cover"
-          loading="eager"
-          fetchPriority="high"
+          fill
+          sizes="(max-width: 1024px) 100vw, 66vw"
+          className="object-cover"
+          priority
         />
       </div>
     )
@@ -51,15 +51,14 @@ const PhotoCarousel = ({ images, alt }: PhotoCarouselProps) => {
     >
       {/* Current image with scroll snap support */}
       <div className="relative aspect-[16/9] w-full snap-center">
-        <img
+        <Image
           src={images[currentIndex]}
           alt={`${alt} - Photo ${currentIndex + 1} sur ${images.length}`}
-          width={896}
-          height={504}
-          className="h-full w-full object-cover"
+          fill
+          sizes="(max-width: 1024px) 100vw, 66vw"
+          className="object-cover"
           key={currentIndex}
-          loading={currentIndex === 0 ? "eager" : "lazy"}
-          fetchPriority={currentIndex === 0 ? "high" : "auto"}
+          priority={currentIndex === 0}
         />
       </div>
 

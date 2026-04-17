@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { Plus, Pencil, Trash2, GripVertical } from "lucide-react"
 import { toast } from "sonner"
 import {
@@ -77,12 +78,14 @@ const SortablePartnerItem = ({
       </button>
 
       {partner.logo && (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white/10">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white/10">
+          <Image
             src={partner.logo}
             alt={`Logo ${partner.nameFr}`}
-            className="h-full w-full object-contain"
+            fill
+            sizes="40px"
+            className="object-contain"
+            unoptimized
           />
         </div>
       )}

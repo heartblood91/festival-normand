@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { getTranslations } from "next-intl/server"
 import type { PartnerItem } from "@/lib/queries/homepage"
 
@@ -35,13 +36,14 @@ const PartnersSection = async ({ partners }: PartnersSectionProps) => {
                 {...(partner.website ? { "aria-label": partner.name } : {})}
               >
                 {partner.logo ? (
-                  <img
+                  <Image
                     src={partner.logo}
                     alt={partner.name}
-                    width={120}
+                    width={200}
                     height={80}
                     className="max-h-full max-w-full object-contain"
                     loading={index < 7 ? "eager" : "lazy"}
+                    unoptimized
                   />
                 ) : (
                   <span className="text-muted-foreground text-xs">{partner.name}</span>

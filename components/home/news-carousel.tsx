@@ -2,6 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl"
 import { Link } from "@/lib/i18n/routing"
+import Image from "next/image"
 import { ArrowRight } from "lucide-react"
 import { useRef } from "react"
 import { Button } from "@/components/ui/button"
@@ -70,14 +71,13 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
             {/* Cover image or gradient placeholder */}
             <div className="from-primary/20 to-primary/5 relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br">
               {article.coverImage && (
-                <img
+                <Image
                   src={article.coverImage}
                   alt={article.title}
-                  width={680}
-                  height={383}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading={index === 0 ? "eager" : "lazy"}
-                  fetchPriority={index === 0 ? "high" : "auto"}
+                  fill
+                  sizes="(max-width: 768px) 280px, 340px"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  priority={index < 3}
                 />
               )}
             </div>

@@ -1,11 +1,12 @@
 import { Link } from "@/lib/i18n/routing"
+import NextImage from "next/image"
 import { getLocale, getTranslations } from "next-intl/server"
 import {
   MapPin,
   Calendar,
   Accessibility,
   Flame,
-  Image,
+  Image as ImageIcon,
   Music,
   MapPin as MapPinIcon,
 } from "lucide-react"
@@ -22,7 +23,7 @@ const CATEGORY_GRADIENTS: Record<string, string> = {
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   ILLUMINATIONS: <Flame className="size-8" />,
-  EXPOSITIONS: <Image className="size-8" />,
+  EXPOSITIONS: <ImageIcon className="size-8" />,
   ANIMATIONS: <Music className="size-8" />,
   VISITES: <MapPinIcon className="size-8" />,
 }
@@ -54,14 +55,13 @@ const EventListCard = async ({ event, className, priority = false }: EventListCa
         )}
       >
         {event.coverImage && (
-          <img
+          <NextImage
             src={event.coverImage}
             alt={event.title}
-            width={680}
-            height={425}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            loading={priority ? "eager" : "lazy"}
-            fetchPriority={priority ? "high" : "auto"}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            priority={priority}
           />
         )}
         {!event.coverImage && (

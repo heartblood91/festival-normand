@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import type { Locale } from "@/lib/i18n/config"
 import { notFound } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { ArrowLeft, Calendar } from "lucide-react"
 import { getTranslations } from "next-intl/server"
 import { getNewsBySlug } from "@/lib/queries/news"
@@ -129,15 +130,14 @@ const NewsDetailPage = async ({ params }: NewsDetailPageProps) => {
 
       {/* Cover image */}
       {article.coverImage && (
-        <div className="from-primary/20 to-primary/5 mb-8 aspect-[16/9] w-full overflow-hidden rounded-xl bg-gradient-to-br">
-          <img
+        <div className="from-primary/20 to-primary/5 relative mb-8 aspect-[16/9] w-full overflow-hidden rounded-xl bg-gradient-to-br">
+          <Image
             src={article.coverImage}
             alt={article.title}
-            width={896}
-            height={504}
-            className="h-full w-full object-cover"
-            loading="eager"
-            fetchPriority="high"
+            fill
+            sizes="(max-width: 1024px) 100vw, 896px"
+            className="object-cover"
+            priority
           />
         </div>
       )}
