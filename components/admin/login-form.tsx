@@ -28,7 +28,7 @@ export const LoginForm = () => {
 
     setIsLoading(true)
     try {
-      const { error } = await authClient.signIn.email({
+      const { data, error } = await authClient.signIn.email({
         email,
         password,
       })
@@ -36,6 +36,11 @@ export const LoginForm = () => {
       if (error) {
         toast.error(error.message || "Email ou mot de passe incorrect.")
         setIsLoading(false)
+        return
+      }
+
+      if ((data as { twoFactorRedirect?: boolean })?.twoFactorRedirect) {
+        window.location.href = `/fr/admin/verify-2fa?callbackUrl=${encodeURIComponent(callbackUrl)}`
         return
       }
 
