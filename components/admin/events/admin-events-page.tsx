@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Plus, Search, Pencil, Trash2, Star, Eye, EyeOff, Accessibility, X } from "lucide-react"
+import { Plus, Search, Pencil, Trash2, Star, Eye, EyeOff, Accessibility } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

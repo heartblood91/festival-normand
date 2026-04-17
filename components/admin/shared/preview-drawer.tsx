@@ -1,6 +1,5 @@
 "use client"
 
-import { X } from "lucide-react"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 
 type PreviewDrawerProps = {

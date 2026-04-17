@@ -1,6 +1,6 @@
 "use client"
 
-import { useRouter, useSearchParams, usePathname } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -8,7 +8,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 
@@ -27,7 +26,6 @@ type AdminFiltersProps = {
 export const AdminFilters = ({ filters, baseUrl, currentValues }: AdminFiltersProps) => {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const pathname = usePathname()
 
   const handleFilterChange = (key: string, value: string, currentValue: string) => {
     const params = new URLSearchParams(searchParams)

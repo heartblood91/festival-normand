@@ -33,7 +33,7 @@ export const NewsForm = ({ article }: NewsFormProps) => {
   const [errors, setErrors] = useState<Record<string, string[]>>({})
   const [formLocale, setFormLocale] = useState<"fr" | "en">("fr")
   const [slug, setSlug] = useState(article?.slug ?? "")
-  const [autoSlug, setAutoSlug] = useState(!article)
+  const [autoSlug] = useState(!article)
   const [contentFr, setContentFr] = useState(article?.contentFr ?? "")
   const [contentEn, setContentEn] = useState(article?.contentEn ?? "")
   const [titleFr, setTitleFr] = useState(article?.titleFr ?? "")
@@ -57,12 +57,6 @@ export const NewsForm = ({ article }: NewsFormProps) => {
   const handleSaveClick = useCallback(() => {
     formRef.current?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }))
   }, [])
-
-  const handleTranslated = (translations: Record<string, string>) => {
-    if (translations.titleEn) setTitleEn(translations.titleEn)
-    if (translations.excerptEn) setExcerptEn(translations.excerptEn)
-    if (translations.contentEn) setContentEn(translations.contentEn)
-  }
 
   const handlePublishClick = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

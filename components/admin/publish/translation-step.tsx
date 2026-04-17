@@ -1,6 +1,6 @@
 "use client"
 
-import { Loader2, Copy, Check } from "lucide-react"
+import { Copy, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -17,7 +17,7 @@ type TranslationStepProps = {
 
 export const TranslationStep = ({
   sourceLocale,
-  targetLocale,
+  targetLocale: _targetLocale,
   sourceFields,
   translatedFields,
   isLoading,

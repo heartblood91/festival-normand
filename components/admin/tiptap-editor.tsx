@@ -23,7 +23,6 @@ import {
   Quote,
   Minus,
   Link as LinkIcon,
-  Image as ImageIcon,
   Youtube as YoutubeIcon,
   Undo,
   Redo,
@@ -36,7 +35,6 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ImageUploadDialog } from "@/components/admin/image-upload-dialog"
-import { useState } from "react"
 
 type TiptapEditorProps = {
   content: string

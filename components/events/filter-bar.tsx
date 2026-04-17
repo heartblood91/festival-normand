@@ -65,7 +65,6 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
 
   const updateUrl = (dept?: string, category?: string, dates?: string[], pmr?: boolean) => {
     const params = new URLSearchParams(searchParams.toString())
-    const search = searchParams.get("search")
 
     if (dept) {
       params.set("dept", dept)

@@ -22,7 +22,7 @@ export const FormActionBar = ({
   previewUrl,
   isPublished,
   onTogglePublish,
-  onTranslate,
+  onTranslate: _onTranslate,
   onSubmit,
   isSubmitting = false,
   saveLabel = "Enregistrer",

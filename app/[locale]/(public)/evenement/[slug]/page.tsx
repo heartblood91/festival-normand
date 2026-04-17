@@ -29,7 +29,6 @@ type EventDetailPageProps = {
 
 export const generateMetadata = async ({ params }: EventDetailPageProps): Promise<Metadata> => {
   const { locale, slug } = (await params) as { locale: Locale; slug: string }
-  const t = await getTranslations()
   const event = await getEventBySlug(slug, locale)
 
   if (!event) {

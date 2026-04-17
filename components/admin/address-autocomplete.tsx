@@ -76,7 +76,7 @@ export const AddressAutocomplete = ({ onSelect, defaultValue = "" }: AddressAuto
       )
       const data = await response.json()
       const features = data.features || []
-      setSuggestions(features.map((f: { properties: any }) => f.properties))
+      setSuggestions(features.map((f: { properties: ApiAddressProperty }) => f.properties))
       setIsOpen(features.length > 0)
       setSelectedIndex(-1)
     } catch {

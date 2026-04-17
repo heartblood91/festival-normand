@@ -2,10 +2,7 @@
 
 import { useState, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
 import { toast } from "sonner"
-import { Button } from "@/components/ui/button"
 import { useLocale } from "next-intl"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -31,7 +28,7 @@ export const PageForm = ({ page }: PageFormProps) => {
   const [errors, setErrors] = useState<Record<string, string[]>>({})
   const [formLocale, setFormLocale] = useState<"fr" | "en">("fr")
   const [slug, setSlug] = useState(page?.slug ?? "")
-  const [autoSlug, setAutoSlug] = useState(!page)
+  const [autoSlug] = useState(!page)
   const [titleFr, setTitleFr] = useState(page?.titleFr ?? "")
   const [titleEn, setTitleEn] = useState(page?.titleEn ?? "")
   const [contentFr, setContentFr] = useState(markdownToHtml(page?.contentFr ?? ""))
@@ -52,11 +49,6 @@ export const PageForm = ({ page }: PageFormProps) => {
   const handleSaveClick = useCallback(() => {
     formRef.current?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }))
   }, [])
-
-  const handleTranslated = (translations: Record<string, string>) => {
-    if (translations.titleEn) setTitleEn(translations.titleEn)
-    if (translations.contentEn) setContentEn(translations.contentEn)
-  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

@@ -1,7 +1,6 @@
 import type { Locale } from "@/lib/i18n/config"
 import { notFound } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
-import { getTranslations } from "next-intl/server"
 import { prisma } from "@/lib/prisma"
 import { localizeEntity } from "@/lib/i18n/db"
 import { PreviewBar } from "@/components/admin/preview-bar"
@@ -13,7 +12,6 @@ type PagePreviewPageProps = {
 
 const PagePreviewPage = async ({ params }: PagePreviewPageProps) => {
   const { locale, id } = (await params) as { locale: Locale; id: string }
-  const t = await getTranslations()
 
   const rawPage = await prisma.page.findUnique({
     where: { id },

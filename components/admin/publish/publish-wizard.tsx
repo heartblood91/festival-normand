@@ -104,7 +104,7 @@ export const PublishWizard = ({
       const results = await checkSEO(title, content, locale)
       setSeoSuggestions(results)
       setSeoDismissed(new Set())
-    } catch (error) {
+    } catch {
       toast.error("Failed to regenerate SEO analysis")
     } finally {
       setIsLoading(false)
@@ -117,7 +117,7 @@ export const PublishWizard = ({
       const results = await checkAccessibility(content)
       setA11ySuggestions(results)
       setA11yDismissed(new Set())
-    } catch (error) {
+    } catch {
       toast.error("Failed to regenerate accessibility check")
     } finally {
       setIsLoading(false)
@@ -130,7 +130,7 @@ export const PublishWizard = ({
       const results = await checkSpelling(content, locale)
       setSpellingCorrections(results)
       setSpellingAccepted(new Set())
-    } catch (error) {
+    } catch {
       toast.error("Failed to regenerate spelling check")
     } finally {
       setIsLoading(false)
@@ -146,7 +146,7 @@ export const PublishWizard = ({
         locale === "fr" ? "en" : "fr"
       )
       setTranslatedFields(results)
-    } catch (error) {
+    } catch {
       toast.error("Failed to regenerate translation")
     } finally {
       setIsLoading(false)

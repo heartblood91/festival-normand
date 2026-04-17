@@ -2,8 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useTranslations } from "next-intl"
-import { Plus, Pencil, Trash2, Shield, Edit2 } from "lucide-react"
+import { Plus, Trash2, Shield, Edit2 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
@@ -34,7 +33,6 @@ type AdminUsersPageProps = {
 
 export const AdminUsersPage = ({ users, currentUserId }: AdminUsersPageProps) => {
   const router = useRouter()
-  const t = useTranslations("admin")
   const [isDeleting, setIsDeleting] = useState<string | null>(null)
   const [isUpdatingRole, setIsUpdatingRole] = useState<string | null>(null)
   const [inviteOpen, setInviteOpen] = useState(false)

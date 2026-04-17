@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache"
 import { Resend } from "resend"
 import { prisma } from "@/lib/prisma"
-import { requireRole, getAuthenticatedUser } from "@/lib/rbac"
+import { requireRole } from "@/lib/rbac"
 import { inviteUserSchema, updateRoleSchema } from "@/lib/schemas/user"
 import type { Role } from "@prisma/client"
 

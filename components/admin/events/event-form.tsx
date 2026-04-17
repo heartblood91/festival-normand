@@ -2,15 +2,11 @@
 
 import { useState, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
-import { Button } from "@/components/ui/button"
 import { useLocale } from "next-intl"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ImageUpload } from "@/components/admin/image-upload"
 import { AddressAutocomplete } from "@/components/admin/address-autocomplete"
 import { PublishWizard } from "@/components/admin/publish/publish-wizard"
@@ -38,7 +34,7 @@ export const EventForm = ({ event }: EventFormProps) => {
   const [errors, setErrors] = useState<Record<string, string[]>>({})
   const [formLocale, setFormLocale] = useState<"fr" | "en">("fr")
   const [slug, setSlug] = useState(event?.slug ?? "")
-  const [autoSlug, setAutoSlug] = useState(!event)
+  const [autoSlug] = useState(!event)
   const [featured, setFeatured] = useState(event?.featured ?? false)
   const [accessible, setAccessible] = useState(event?.accessible ?? false)
   const [published, setPublished] = useState(event?.published ?? false)
@@ -55,7 +51,7 @@ export const EventForm = ({ event }: EventFormProps) => {
   const [latitude, setLatitude] = useState(event?.latitude ?? 0)
   const [longitude, setLongitude] = useState(event?.longitude ?? 0)
   const [showPublishWizard, setShowPublishWizard] = useState(false)
-  const [publishingFields, setPublishingFields] = useState<Record<string, string>>({})
+  const [, setPublishingFields] = useState<Record<string, string>>({})
   const [coverImage, setCoverImage] = useState(event?.coverImage ?? "")
 
   const handleTitleFrChange = useCallback(
@@ -71,12 +67,6 @@ export const EventForm = ({ event }: EventFormProps) => {
   const handleSaveClick = useCallback(() => {
     formRef.current?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }))
   }, [])
-
-  const handleTranslated = (translations: Record<string, string>) => {
-    if (translations.titleEn) setTitleEn(translations.titleEn)
-    if (translations.descriptionEn) setDescriptionEn(translations.descriptionEn)
-    if (translations.pricingEn) setPricingEn(translations.pricingEn)
-  }
 
   const handlePublishClick = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -111,8 +101,8 @@ export const EventForm = ({ event }: EventFormProps) => {
     formData.set("city", city)
     formData.set("postalCode", postalCode)
     formData.set("department", department)
-    formData.set("latitude", latitude != null ? String(latitude) : "")
-    formData.set("longitude", longitude != null ? String(longitude) : "")
+    formData.set("latitude", latitude !== null ? String(latitude) : "")
+    formData.set("longitude", longitude !== null ? String(longitude) : "")
     formData.set("coverImage", coverImage)
     formData.set("featured", String(featured))
     formData.set("accessible", String(accessible))
@@ -188,8 +178,8 @@ export const EventForm = ({ event }: EventFormProps) => {
     formData.set("city", city)
     formData.set("postalCode", postalCode)
     formData.set("department", department)
-    formData.set("latitude", latitude != null ? String(latitude) : "")
-    formData.set("longitude", longitude != null ? String(longitude) : "")
+    formData.set("latitude", latitude !== null ? String(latitude) : "")
+    formData.set("longitude", longitude !== null ? String(longitude) : "")
     formData.set("coverImage", coverImage)
     formData.set("featured", String(featured))
     formData.set("accessible", String(accessible))

@@ -35,7 +35,7 @@ export const TranslateButton = ({
 
       onTranslated(translations)
       toast.success("Translation completed")
-    } catch (err) {
+    } catch {
       toast.error("Translation failed. Check your OpenRouter API key.")
     } finally {
       setIsLoading(false)

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { Mail, Loader2, CheckCircle, LogIn } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -16,7 +16,6 @@ export const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isSent, setIsSent] = useState(false)
   const [mode, setMode] = useState<"password" | "magic-link">("password")
-  const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get("callbackUrl") || "/admin"
 

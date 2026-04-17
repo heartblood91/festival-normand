@@ -1,6 +1,6 @@
 "use client"
 
-import { CheckCircle2, Loader2 } from "lucide-react"
+import { CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { SpellingCorrection } from "@/lib/actions/ai-publish"
 

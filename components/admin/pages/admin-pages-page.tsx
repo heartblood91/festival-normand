@@ -5,8 +5,6 @@ import { Pencil } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { AdminPageListItem } from "@/lib/actions/pages"
 
-const SYSTEM_SLUGS = ["festival", "inscription", "mentions-legales", "accessibilite"]
-
 type AdminPagesPageProps = {
   pages: AdminPageListItem[]
 }
@@ -55,7 +53,6 @@ export const AdminPagesPage = ({ pages }: AdminPagesPageProps) => {
             </thead>
             <tbody>
               {pages.map((page) => {
-                const isSystem = SYSTEM_SLUGS.includes(page.slug)
                 return (
                   <tr
                     key={page.id}

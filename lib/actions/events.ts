@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { eventSchema } from "@/lib/schemas/event"
 import { searchEventIds } from "@/lib/search"
-import type { Category, Department } from "@prisma/client"
+import type { Category, Department, Prisma } from "@prisma/client"
 
 export type EventActionResult = {
   success: boolean
@@ -41,7 +41,7 @@ export const getAdminEvents = async ({
   category,
   featured,
 }: GetAdminEventsParams = {}): Promise<GetAdminEventsResult> => {
-  const where: any = {}
+  const where: Prisma.EventWhereInput = {}
 
   if (search) {
     const matchedIds = await searchEventIds(search)
@@ -60,11 +60,11 @@ export const getAdminEvents = async ({
   }
 
   if (department && department !== "all") {
-    where.department = department
+    where.department = department as Department
   }
 
   if (category && category !== "all") {
-    where.category = category
+    where.category = category as Category
   }
 
   if (featured === "true") {
