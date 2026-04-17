@@ -4,51 +4,43 @@ test.describe("Inscription page", () => {
   test("has correct title", async ({ page }) => {
     await page.goto("/inscription")
 
-    await expect(page).toHaveTitle(/Inscrivez votre événement/)
+    await expect(page).toHaveTitle(/Comment vous inscrire|Inscr/)
   })
 
-  test("displays inscription introduction", async ({ page }) => {
+  test("displays inscription heading", async ({ page }) => {
     await page.goto("/inscription")
 
-    await expect(page.getByText("Vous êtes propriétaire ou gestionnaire")).toBeVisible()
+    await expect(
+      page.getByRole("heading", { name: /Comment vous inscrire/, level: 1 })
+    ).toBeVisible()
   })
 
-  test("renders YouTube video embed", async ({ page }) => {
+  test("displays inscription details", async ({ page }) => {
     await page.goto("/inscription")
 
-    const iframe = page.locator("iframe[src*='youtube-nocookie.com']")
-    await expect(iframe).toBeVisible()
+    await expect(page.getByText(/Vous êtes un particulier/)).toBeVisible()
   })
 
-  test("displays department registration links", async ({ page }) => {
+  test("displays registration opening date", async ({ page }) => {
     await page.goto("/inscription")
 
-    await expect(page.getByRole("link", { name: /Calvados — Formulaire/ })).toBeVisible()
-    await expect(page.getByRole("link", { name: /Eure — Formulaire/ })).toBeVisible()
-    await expect(page.getByRole("link", { name: /Manche — Formulaire/ })).toBeVisible()
-    await expect(page.getByRole("link", { name: /Orne — Formulaire/ })).toBeVisible()
-    await expect(page.getByRole("link", { name: /Seine-Maritime — Formulaire/ })).toBeVisible()
+    await expect(page.getByText(/17 novembre 2025/)).toBeVisible()
   })
 
-  test("department links open in new tab", async ({ page }) => {
+  test("renders tools section", async ({ page }) => {
     await page.goto("/inscription")
 
-    const calvadosLink = page.getByRole("link", { name: /Calvados — Formulaire/ })
-    await expect(calvadosLink).toHaveAttribute("target", "_blank")
-    await expect(calvadosLink).toHaveAttribute("rel", /noopener/)
+    await expect(
+      page.getByRole("heading", { name: /Différents outils pour organiser votre manifestation/ })
+    ).toBeVisible()
   })
 
-  test("displays participation criteria", async ({ page }) => {
+  test("renders inscription section heading", async ({ page }) => {
     await page.goto("/inscription")
 
-    await expect(page.getByRole("heading", { name: /Critères de participation/ })).toBeVisible()
-    await expect(page.getByText("Être un site patrimonial situé en Normandie")).toBeVisible()
-  })
-
-  test("displays registration deadline", async ({ page }) => {
-    await page.goto("/inscription")
-
-    await expect(page.getByText("15 avril 2026")).toBeVisible()
+    await expect(
+      page.getByRole("heading", { name: /Inscrivez-vous/ })
+    ).toBeVisible()
   })
 
   test("page is accessible via header CTA button", async ({ page }) => {

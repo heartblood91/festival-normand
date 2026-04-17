@@ -21,11 +21,11 @@ test.describe("Home page", () => {
     await page.goto("/")
     const discoverBtn = page.getByRole("link", { name: "Découvrir les événements" })
     await expect(discoverBtn).toBeVisible()
-    await expect(discoverBtn).toHaveAttribute("href", "/evenements")
+    await expect(discoverBtn).toHaveAttribute("href", /\/evenements$/)
 
     const registerBtn = page.getByRole("link", { name: "Inscrire un site" })
     await expect(registerBtn).toBeVisible()
-    await expect(registerBtn).toHaveAttribute("href", "/inscription")
+    await expect(registerBtn).toHaveAttribute("href", /\/inscription$/)
   })
 
   test("displays search bar", async ({ page }) => {
@@ -40,7 +40,7 @@ test.describe("Home page", () => {
     await expect(heading).toBeVisible()
 
     const eventsSection = page.locator("section", { has: heading })
-    const eventCards = eventsSection.locator("a[href^='/evenement/']")
+    const eventCards = eventsSection.locator('a[href*="/evenement/"]')
     const count = await eventCards.count()
     expect(count).toBeGreaterThanOrEqual(1)
   })
@@ -59,9 +59,9 @@ test.describe("Home page", () => {
 
   test("event card links navigate to event detail", async ({ page }) => {
     await page.goto("/")
-    const eventCard = page.locator("a[href^='/evenement/']").first()
+    const eventCard = page.locator('a[href*="/evenement/"]').first()
     const href = await eventCard.getAttribute("href")
-    expect(href).toMatch(/^\/evenement\//)
+    expect(href).toMatch(/\/evenement\//)
   })
 
   test("search bar shows autocomplete suggestions", async ({ page }) => {

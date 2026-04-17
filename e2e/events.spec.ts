@@ -11,14 +11,14 @@ test.describe("Events list page", () => {
 
   test("displays event cards in grid", async ({ page }) => {
     await page.goto("/evenements")
-    const cards = page.locator("a[href^='/evenement/']")
+    const cards = page.locator('a[href*="/evenement/"]')
     const count = await cards.count()
     expect(count).toBeGreaterThanOrEqual(1)
   })
 
-  test("event cards show title, date, and location", async ({ page }) => {
+  test("event cards show titles", async ({ page }) => {
     await page.goto("/evenements")
-    const firstCard = page.locator("a[href^='/evenement/']").first()
+    const firstCard = page.locator('a[href*="/evenement/"]').first()
     await expect(firstCard.locator("h3")).toBeVisible()
     await expect(firstCard.locator("h3")).not.toHaveText("")
   })
@@ -46,42 +46,15 @@ test.describe("Events list page", () => {
     expect(page.url()).toContain("search=Caen")
   })
 
-  test("filter modal opens and closes", async ({ page }) => {
+  test("filter bar applies filters via URL", async ({ page }) => {
     await page.goto("/evenements")
-    const filterBtn = page.getByRole("button", {
-      name: /Ouvrir les filtres/i,
-    })
-    await expect(filterBtn).toBeVisible()
-    await filterBtn.click()
+    // Open category dropdown
+    const categoryBtn = page.getByRole("button", { name: "Catégorie" })
+    await categoryBtn.click()
 
-    const modal = page.getByRole("dialog", {
-      name: /Filtrer les événements/i,
-    })
-    await expect(modal).toBeVisible()
-
-    const closeBtn = page.getByRole("button", {
-      name: /Fermer les filtres/i,
-    })
-    await closeBtn.click()
-    await expect(modal).not.toBeVisible()
-  })
-
-  test("filter modal applies filters via URL", async ({ page }) => {
-    await page.goto("/evenements")
-    const filterBtn = page.getByRole("button", {
-      name: /Ouvrir les filtres/i,
-    })
-    await filterBtn.click()
-
-    // Select a category
-    const illuminationsBtn = page.getByRole("radio", {
-      name: "Illuminations",
-    })
-    await illuminationsBtn.click()
-
-    // Apply filters
-    const validateBtn = page.getByRole("button", { name: "Valider" })
-    await validateBtn.click()
+    // Select "Illuminations"
+    const option = page.getByRole("option", { name: /Illuminations/ })
+    await option.click()
 
     await page.waitForURL(/category=illuminations/)
     expect(page.url()).toContain("category=illuminations")
@@ -95,7 +68,7 @@ test.describe("Events list page", () => {
     await expect(filterChip).toBeVisible()
 
     await filterChip.click()
-    await page.waitForURL("/evenements")
+    await page.waitForURL((url) => !url.search.includes("category"))
     expect(page.url()).not.toContain("category")
   })
 
@@ -108,16 +81,16 @@ test.describe("Events list page", () => {
 
   test("event card links navigate to event detail", async ({ page }) => {
     await page.goto("/evenements")
-    const firstCard = page.locator("a[href^='/evenement/']").first()
+    const firstCard = page.locator('a[href*="/evenement/"]').first()
     const href = await firstCard.getAttribute("href")
-    expect(href).toMatch(/^\/evenement\//)
+    expect(href).toMatch(/\/evenement\//)
   })
 
   test("navigates from homepage to events page", async ({ page }) => {
     await page.goto("/")
     const link = page.getByRole("link", { name: "Découvrir les événements" })
     await link.click()
-    await page.waitForURL("/evenements")
+    await page.waitForURL(/\/evenements$/)
     await expect(
       page.getByRole("heading", { name: "Événements", level: 1 })
     ).toBeVisible()

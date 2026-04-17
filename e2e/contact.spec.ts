@@ -17,7 +17,7 @@ test.describe("Contact page", () => {
       page.getByRole("heading", { name: "Nous écrire" })
     ).toBeVisible()
     await expect(
-      page.getByText("Vous avez une question sur le festival")
+      page.getByText("Une question sur le festival").first()
     ).toBeVisible()
   })
 
@@ -26,16 +26,14 @@ test.describe("Contact page", () => {
     await expect(
       main.getByRole("heading", { name: "Inscrivez votre événement" })
     ).toBeVisible()
-    const ctaLink = main.getByRole("link", {
-      name: "Inscrivez votre événement",
-    })
+    const ctaLink = main.getByRole("link", { name: /S'inscrire/ })
     await expect(ctaLink).toBeVisible()
-    await expect(ctaLink).toHaveAttribute("href", "/inscription")
+    await expect(ctaLink).toHaveAttribute("href", /\/inscription$/)
   })
 
   test("renders contact form with all fields", async ({ page }) => {
     await expect(page.getByLabel(/Nom complet/)).toBeVisible()
-    await expect(page.getByLabel(/Adresse email/)).toBeVisible()
+    await expect(page.locator("#email")).toBeVisible()
     await expect(page.getByLabel(/Département/)).toBeVisible()
     await expect(page.getByLabel(/Message/)).toBeVisible()
     await expect(
@@ -69,7 +67,7 @@ test.describe("Contact page", () => {
 
   test("shows email validation error for invalid email", async ({ page }) => {
     await page.getByLabel(/Nom complet/).fill("Jean Dupont")
-    await page.getByLabel(/Adresse email/).fill("not-an-email")
+    await page.locator("#email").fill("not-an-email")
     await page.getByLabel(/Département/).selectOption("CALVADOS")
     await page
       .getByLabel(/Message/)
@@ -83,9 +81,9 @@ test.describe("Contact page", () => {
     })
   })
 
-  test("form submission triggers server action", async ({ page }) => {
+  test("form submission does not crash", async ({ page }) => {
     await page.getByLabel(/Nom complet/).fill("Jean Dupont")
-    await page.getByLabel(/Adresse email/).fill("jean@example.fr")
+    await page.locator("#email").fill("jean@example.fr")
     await page.getByLabel(/Département/).selectOption("CALVADOS")
     await page
       .getByLabel(/Message/)
@@ -94,14 +92,8 @@ test.describe("Contact page", () => {
       )
     await page.getByRole("button", { name: /Envoyer/ }).click()
 
-    // Wait for the button to show loading state or complete
-    // The server action will either succeed or fail depending on RESEND_API_KEY
-    // but the form should respond in some way
-    await page.waitForTimeout(2000)
-
-    // After submission, either a toast appeared or form was reset or an error showed
-    // We just verify the form didn't crash
-    await expect(page.getByLabel(/Nom complet/)).toBeVisible()
+    // Form responds (either success/error toast or stays rendered)
+    await expect(page.getByLabel(/Nom complet/)).toBeVisible({ timeout: 10000 })
   })
 
   test("navigates to contact page from header nav", async ({ page }) => {

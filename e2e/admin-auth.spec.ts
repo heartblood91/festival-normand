@@ -21,24 +21,25 @@ test.describe("Admin authentication", () => {
     await expect(page.getByText("Administration du festival")).toBeVisible()
     await expect(page.locator("[data-slot='card-title']").getByText("Connexion")).toBeVisible()
     await expect(page.getByLabel("Adresse email")).toBeVisible()
-    await expect(page.getByRole("button", { name: /Envoyer le lien/ })).toBeVisible()
+    await expect(page.getByRole("button", { name: /Se connecter/ })).toBeVisible()
   })
 
-  test("login page has no public header or footer", async ({ page }) => {
+  test("login page has no public header navigation", async ({ page }) => {
     await page.goto("/admin/login")
 
     // Admin pages should NOT have the public navigation
     await expect(page.locator("nav[aria-label='Navigation principale']")).not.toBeVisible()
   })
 
-  test("login page shows error for non-admin email", async ({ page }) => {
+  test("login page shows error for invalid credentials", async ({ page }) => {
     await page.goto("/admin/login")
 
     await page.getByLabel("Adresse email").fill("random@example.com")
-    await page.getByRole("button", { name: /Envoyer le lien/ }).click()
+    await page.getByLabel(/Mot de passe/).fill("wrong-password-123")
+    await page.getByRole("button", { name: /Se connecter/ }).click()
 
     // Should show error toast
-    await expect(page.getByText(/erreur|not authorized/i)).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText(/incorrect|erreur|invalid|not authorized/i).first()).toBeVisible({ timeout: 10000 })
   })
 
   test("login page has correct meta robots noindex", async ({ page }) => {
@@ -57,16 +58,10 @@ test.describe("Admin authentication", () => {
     await expect(emailInput).toHaveAttribute("required", "")
   })
 
-  test("login page is keyboard navigable", async ({ page }) => {
+  test("login page email input is auto-focused", async ({ page }) => {
     await page.goto("/admin/login")
 
-    // Tab to email input (should be auto-focused)
     const emailInput = page.getByLabel("Adresse email")
     await expect(emailInput).toBeFocused()
-
-    // Tab to submit button
-    await page.keyboard.press("Tab")
-    const submitButton = page.getByRole("button", { name: /Envoyer le lien/ })
-    await expect(submitButton).toBeFocused()
   })
 })

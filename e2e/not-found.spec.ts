@@ -10,7 +10,7 @@ test.describe("404 Not Found Page", () => {
   test("shows description text", async ({ page }) => {
     await page.goto("/non-existent-page")
     await expect(
-      page.getByText("la page que vous recherchez")
+      page.getByText(/la page que vous recherchez/)
     ).toBeVisible()
   })
 
@@ -19,15 +19,15 @@ test.describe("404 Not Found Page", () => {
     const homeLink = page.getByRole("link", { name: /accueil/i })
     await expect(homeLink).toBeVisible()
     await homeLink.click()
-    await expect(page).toHaveURL("/")
+    await expect(page).toHaveURL(/\/(fr|en)?\/?$/)
   })
 
   test("has link to events page", async ({ page }) => {
     await page.goto("/non-existent-page")
-    const eventsLink = page.getByRole("link", { name: /événements/i })
+    const eventsLink = page.getByRole("link", { name: /Voir les événements/i })
     await expect(eventsLink).toBeVisible()
     await eventsLink.click()
-    await expect(page).toHaveURL("/evenements")
+    await expect(page).toHaveURL(/\/evenements$/)
   })
 
   test("shows 404 for non-existent event slug", async ({ page }) => {
@@ -52,18 +52,16 @@ test.describe("Loading States", () => {
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible()
   })
 
-  test("admin loading shows spinner when not authenticated", async ({
+  test("admin loading redirects to login when unauthenticated", async ({
     page,
   }) => {
     await page.goto("/admin")
-    // Should redirect to login
     await expect(page).toHaveURL(/\/admin\/login/)
   })
 })
 
 test.describe("Error Handling", () => {
   test("homepage handles errors gracefully", async ({ page }) => {
-    // Visit homepage - should load without errors
     const response = await page.goto("/")
     expect(response?.status()).toBeLessThan(500)
   })
