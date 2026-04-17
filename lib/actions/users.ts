@@ -34,8 +34,7 @@ export const getAdminUsers = async () => {
 export type AdminUser = Awaited<ReturnType<typeof getAdminUsers>>[number]
 
 const generateRandomPassword = (): string => {
-  const chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*"
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*"
   let password = ""
   for (let i = 0; i < 16; i++) {
     password += chars.charAt(Math.floor(Math.random() * chars.length))
@@ -44,8 +43,7 @@ const generateRandomPassword = (): string => {
 }
 
 const generateToken = (): string => {
-  return Math.random().toString(36).substring(2, 15) +
-    Math.random().toString(36).substring(2, 15)
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
 }
 
 export const inviteUser = async (formData: FormData): Promise<UserActionResult> => {

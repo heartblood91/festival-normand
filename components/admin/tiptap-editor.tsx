@@ -43,14 +43,24 @@ type TiptapEditorProps = {
   onChange: (content: string) => void
 }
 
-const ToolbarButton = ({ icon: Icon, action, active, label }: { icon: typeof Bold; action: () => void; active: boolean; label: string }) => (
+const ToolbarButton = ({
+  icon: Icon,
+  action,
+  active,
+  label,
+}: {
+  icon: typeof Bold
+  action: () => void
+  active: boolean
+  label: string
+}) => (
   <Button
     type="button"
     variant="ghost"
     size="icon-xs"
     onClick={action}
     data-active={active}
-    className="size-8 rounded-md hover:bg-white/10 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500/50 data-[active=true]:bg-amber-500/20 data-[active=true]:text-amber-400 text-slate-400 hover:text-white"
+    className="size-8 rounded-md text-slate-400 transition-colors hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-amber-500/50 data-[active=true]:bg-amber-500/20 data-[active=true]:text-amber-400"
     aria-label={label}
     aria-pressed={active}
   >
@@ -59,8 +69,6 @@ const ToolbarButton = ({ icon: Icon, action, active, label }: { icon: typeof Bol
 )
 
 const MenuBar = ({ editor }: { editor: Editor | null }) => {
-
-
   if (!editor) return null
 
   const addLink = () => {
@@ -93,7 +101,11 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
 
   return (
     <>
-      <div className="flex flex-wrap gap-0.5 border-b border-white/10 p-2" role="toolbar" aria-label="Barre d'outils de l'éditeur">
+      <div
+        className="flex flex-wrap gap-0.5 border-b border-white/10 p-2"
+        role="toolbar"
+        aria-label="Barre d'outils de l'éditeur"
+      >
         <div className="flex gap-0.5">
           <ToolbarButton
             icon={Bold}
@@ -225,12 +237,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
             label="Lien"
           />
           <ImageUploadDialog onInsert={onImageInsert} />
-          <ToolbarButton
-            icon={YoutubeIcon}
-            action={addYoutube}
-            active={false}
-            label="YouTube"
-          />
+          <ToolbarButton icon={YoutubeIcon} action={addYoutube} active={false} label="YouTube" />
         </div>
 
         <div className="mx-1 h-6 w-px bg-white/10" aria-hidden="true" />

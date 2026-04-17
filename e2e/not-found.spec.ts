@@ -9,9 +9,7 @@ test.describe("404 Not Found Page", () => {
 
   test("shows description text", async ({ page }) => {
     await page.goto("/non-existent-page")
-    await expect(
-      page.getByText(/la page que vous recherchez/)
-    ).toBeVisible()
+    await expect(page.getByText(/la page que vous recherchez/)).toBeVisible()
   })
 
   test("has link back to homepage", async ({ page }) => {
@@ -52,9 +50,7 @@ test.describe("Loading States", () => {
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible()
   })
 
-  test("admin loading redirects to login when unauthenticated", async ({
-    page,
-  }) => {
+  test("admin loading redirects to login when unauthenticated", async ({ page }) => {
     await page.goto("/admin")
     await expect(page).toHaveURL(/\/admin\/login/)
   })

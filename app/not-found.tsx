@@ -11,19 +11,18 @@ const NotFound = () => {
           <div className="mb-4 bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text font-serif text-8xl font-bold text-transparent">
             404
           </div>
-          <h1 className="mb-2 font-serif text-3xl font-bold text-foreground md:text-4xl">
+          <h1 className="text-foreground mb-2 font-serif text-3xl font-bold md:text-4xl">
             Page introuvable
           </h1>
-          <p className="mb-8 text-base text-muted-foreground md:text-lg">
-            Désolé, la page que vous recherchez n&apos;existe pas ou a été
-            déplacée.
+          <p className="text-muted-foreground mb-8 text-base md:text-lg">
+            Désolé, la page que vous recherchez n&apos;existe pas ou a été déplacée.
           </p>
         </div>
 
         <div className="space-y-4">
           <Link
             href="/"
-            className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-6 py-3 font-medium text-foreground backdrop-blur-xl transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+            className="text-foreground focus-visible:ring-primary/50 flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-6 py-3 font-medium backdrop-blur-xl transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:outline-none"
           >
             <Home className="size-5" aria-hidden="true" />
             Retour à l&apos;accueil
@@ -31,7 +30,7 @@ const NotFound = () => {
 
           <Link
             href="/evenements"
-            className="flex w-full items-center justify-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-6 py-3 font-medium text-primary backdrop-blur-xl transition-colors hover:bg-amber-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+            className="text-primary focus-visible:ring-primary/50 flex w-full items-center justify-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-6 py-3 font-medium backdrop-blur-xl transition-colors hover:bg-amber-500/20 focus-visible:ring-2 focus-visible:outline-none"
           >
             <CalendarDays className="size-5" aria-hidden="true" />
             Voir les événements
@@ -39,9 +38,7 @@ const NotFound = () => {
         </div>
 
         <div className="mt-12 border-t border-white/10 pt-8 text-center">
-          <p className="text-xs text-muted-foreground">
-            Erreur 404 — Page non trouvée
-          </p>
+          <p className="text-muted-foreground text-xs">Erreur 404 — Page non trouvée</p>
         </div>
       </div>
     </div>

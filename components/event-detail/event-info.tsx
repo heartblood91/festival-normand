@@ -58,10 +58,10 @@ const InfoRow = ({
   children: React.ReactNode
 }) => (
   <div className="flex items-start gap-3">
-    <Icon className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
+    <Icon className="text-primary mt-0.5 size-5 shrink-0" aria-hidden="true" />
     <div>
-      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</p>
-      <div className="mt-0.5 text-foreground">{children}</div>
+      <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">{label}</p>
+      <div className="text-foreground mt-0.5">{children}</div>
     </div>
   </div>
 )
@@ -87,18 +87,18 @@ const EventInfo = async ({ event, locale }: EventInfoProps) => {
       <div className="flex flex-wrap gap-2">
         <Link
           href={categorySlug ? `/evenements?category=${categorySlug}` : "#"}
-          className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-medium text-primary transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+          className="border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 focus-visible:ring-primary/50 rounded-full border px-3 py-1 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none"
         >
           {t(`categories.${event.category}`) ?? event.category}
         </Link>
         <Link
           href={departmentSlug ? `/evenements?dept=${departmentSlug}` : "#"}
-          className="rounded-full border border-white/20 bg-white/5 px-3 py-1 text-sm font-medium text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+          className="text-muted-foreground hover:text-foreground focus-visible:ring-primary/50 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-sm font-medium transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:outline-none"
         >
           {t(`departments.${event.department}`) ?? event.department}
         </Link>
         {event.accessible && (
-          <span className="flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
+          <span className="border-primary/30 bg-primary/10 text-primary flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium">
             <Accessibility className="size-3.5" aria-hidden="true" />
             {t("events.accessible")}
           </span>
@@ -107,7 +107,7 @@ const EventInfo = async ({ event, locale }: EventInfoProps) => {
 
       {/* Info card */}
       <div className="rounded-xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl md:p-6">
-        <h2 className="mb-4 font-serif text-lg font-bold text-foreground">
+        <h2 className="text-foreground mb-4 font-serif text-lg font-bold">
           {t("events.practicalInfo")}
         </h2>
         <div className="space-y-4">
@@ -126,7 +126,7 @@ const EventInfo = async ({ event, locale }: EventInfoProps) => {
 
           <InfoRow icon={MapPin} label={t("events.venue")}>
             <p>{event.location}</p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               {event.postalCode} {event.city}
             </p>
           </InfoRow>
@@ -148,7 +148,7 @@ const EventInfo = async ({ event, locale }: EventInfoProps) => {
       {/* Contact card */}
       {(event.email || event.phone || event.website) && (
         <div className="rounded-xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl md:p-6">
-          <h2 className="mb-4 font-serif text-lg font-bold text-foreground">
+          <h2 className="text-foreground mb-4 font-serif text-lg font-bold">
             {t("footer.contact")}
           </h2>
           <div className="space-y-4">
@@ -156,7 +156,7 @@ const EventInfo = async ({ event, locale }: EventInfoProps) => {
               <InfoRow icon={Mail} label="Email">
                 <a
                   href={`mailto:${event.email}`}
-                  className="text-primary underline-offset-2 transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 break-all"
+                  className="text-primary focus-visible:ring-primary/50 break-all underline-offset-2 transition-colors hover:underline focus-visible:ring-2 focus-visible:outline-none"
                 >
                   {event.email}
                 </a>
@@ -166,7 +166,7 @@ const EventInfo = async ({ event, locale }: EventInfoProps) => {
               <InfoRow icon={Phone} label={t("events.organizer")}>
                 <a
                   href={`tel:${event.phone}`}
-                  className="text-primary underline-offset-2 transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                  className="text-primary focus-visible:ring-primary/50 underline-offset-2 transition-colors hover:underline focus-visible:ring-2 focus-visible:outline-none"
                 >
                   {event.phone}
                 </a>
@@ -178,7 +178,7 @@ const EventInfo = async ({ event, locale }: EventInfoProps) => {
                   href={event.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary underline-offset-2 transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                  className="text-primary focus-visible:ring-primary/50 underline-offset-2 transition-colors hover:underline focus-visible:ring-2 focus-visible:outline-none"
                 >
                   {event.website}
                 </a>

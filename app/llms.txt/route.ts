@@ -6,7 +6,10 @@ const isProduction = process.env.VERCEL_ENV === "production"
 const EXCERPT_LENGTH = 300
 
 const stripHtml = (html: string): string =>
-  html.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim()
+  html
+    .replace(/<[^>]*>/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
 
 const excerpt = (html: string | null): string => {
   if (!html) return ""
@@ -23,27 +26,50 @@ export const GET = async () => {
   }
 
   const [featuredEvents, upcomingEvents, news, pages] = await Promise.all([
-    prisma.event.findMany({
-      where: { published: true, featured: true },
-      select: { titleFr: true, slug: true, city: true, department: true, dateStart: true, descriptionFr: true },
-      orderBy: { dateStart: "asc" },
-      take: 5,
-    }).catch(() => []),
-    prisma.event.findMany({
-      where: { published: true },
-      select: { titleFr: true, slug: true, city: true, department: true, category: true, dateStart: true, descriptionFr: true },
-      orderBy: { dateStart: "asc" },
-      take: 20,
-    }).catch(() => []),
-    prisma.news.findMany({
-      where: { published: true },
-      select: { titleFr: true, slug: true, publishedAt: true, excerptFr: true, contentFr: true },
-      orderBy: { publishedAt: "desc" },
-      take: 10,
-    }).catch(() => []),
-    prisma.page.findMany({
-      select: { titleFr: true, slug: true },
-    }).catch(() => []),
+    prisma.event
+      .findMany({
+        where: { published: true, featured: true },
+        select: {
+          titleFr: true,
+          slug: true,
+          city: true,
+          department: true,
+          dateStart: true,
+          descriptionFr: true,
+        },
+        orderBy: { dateStart: "asc" },
+        take: 5,
+      })
+      .catch(() => []),
+    prisma.event
+      .findMany({
+        where: { published: true },
+        select: {
+          titleFr: true,
+          slug: true,
+          city: true,
+          department: true,
+          category: true,
+          dateStart: true,
+          descriptionFr: true,
+        },
+        orderBy: { dateStart: "asc" },
+        take: 20,
+      })
+      .catch(() => []),
+    prisma.news
+      .findMany({
+        where: { published: true },
+        select: { titleFr: true, slug: true, publishedAt: true, excerptFr: true, contentFr: true },
+        orderBy: { publishedAt: "desc" },
+        take: 10,
+      })
+      .catch(() => []),
+    prisma.page
+      .findMany({
+        select: { titleFr: true, slug: true },
+      })
+      .catch(() => []),
   ])
 
   const departmentLabels: Record<string, string> = {
@@ -85,8 +111,9 @@ export const GET = async () => {
     "## Prochains événements",
     "",
     ...(upcomingEvents.length > 0
-      ? upcomingEvents.map((e) =>
-          `- [${e.titleFr}](${SITE_URL}/fr/evenement/${e.slug}): ${e.city ? `${e.city}, ` : ""}${departmentLabels[e.department] || e.department} — ${formatDate(e.dateStart)} — ${e.category}`
+      ? upcomingEvents.map(
+          (e) =>
+            `- [${e.titleFr}](${SITE_URL}/fr/evenement/${e.slug}): ${e.city ? `${e.city}, ` : ""}${departmentLabels[e.department] || e.department} — ${formatDate(e.dateStart)} — ${e.category}`
         )
       : ["- Aucun événement à venir"]),
     "",

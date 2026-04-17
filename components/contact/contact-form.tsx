@@ -7,10 +7,7 @@ import { toast } from "sonner"
 import { Send } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { DEPARTMENT_OPTIONS } from "@/lib/contact-schema"
-import {
-  sendContactEmail,
-  type ContactActionResult,
-} from "@/lib/actions/contact"
+import { sendContactEmail, type ContactActionResult } from "@/lib/actions/contact"
 
 const initialState: ContactActionResult = {
   success: false,
@@ -19,10 +16,7 @@ const initialState: ContactActionResult = {
 
 const ContactForm = () => {
   const t = useTranslations()
-  const [state, formAction, isPending] = useActionState(
-    sendContactEmail,
-    initialState
-  )
+  const [state, formAction, isPending] = useActionState(sendContactEmail, initialState)
 
   const formRef = useRef<HTMLFormElement>(null)
 
@@ -37,29 +31,15 @@ const ContactForm = () => {
   }, [state])
 
   return (
-    <form
-      ref={formRef}
-      action={formAction}
-      className="space-y-6"
-      noValidate
-    >
+    <form ref={formRef} action={formAction} className="space-y-6" noValidate>
       {/* Honeypot - hidden from real users */}
       <div className="absolute -left-[9999px]" aria-hidden="true">
         <label htmlFor="honeypot">Ne pas remplir</label>
-        <input
-          type="text"
-          id="honeypot"
-          name="honeypot"
-          tabIndex={-1}
-          autoComplete="off"
-        />
+        <input type="text" id="honeypot" name="honeypot" tabIndex={-1} autoComplete="off" />
       </div>
 
       <div>
-        <label
-          htmlFor="name"
-          className="mb-2 block text-sm font-medium text-white/80"
-        >
+        <label htmlFor="name" className="mb-2 block text-sm font-medium text-white/80">
           {t("contact.name")} <span className="text-amber-500">*</span>
         </label>
         <input
@@ -82,10 +62,7 @@ const ContactForm = () => {
       </div>
 
       <div>
-        <label
-          htmlFor="email"
-          className="mb-2 block text-sm font-medium text-white/80"
-        >
+        <label htmlFor="email" className="mb-2 block text-sm font-medium text-white/80">
           {t("contact.email")} <span className="text-amber-500">*</span>
         </label>
         <input
@@ -99,21 +76,14 @@ const ContactForm = () => {
           aria-invalid={state.errors?.email ? true : undefined}
         />
         {state.errors?.email && (
-          <p
-            id="email-error"
-            className="mt-1 text-sm text-red-400"
-            role="alert"
-          >
+          <p id="email-error" className="mt-1 text-sm text-red-400" role="alert">
             {state.errors.email[0]}
           </p>
         )}
       </div>
 
       <div>
-        <label
-          htmlFor="department"
-          className="mb-2 block text-sm font-medium text-white/80"
-        >
+        <label htmlFor="department" className="mb-2 block text-sm font-medium text-white/80">
           {t("contact.departmentLabel")} <span className="text-amber-500">*</span>
         </label>
         <select
@@ -122,9 +92,7 @@ const ContactForm = () => {
           required
           className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white backdrop-blur-xl focus-visible:border-amber-500/50 focus-visible:ring-2 focus-visible:ring-amber-500/20 focus-visible:outline-none"
           defaultValue=""
-          aria-describedby={
-            state.errors?.department ? "department-error" : undefined
-          }
+          aria-describedby={state.errors?.department ? "department-error" : undefined}
           aria-invalid={state.errors?.department ? true : undefined}
         >
           <option value="" disabled className="bg-slate-900">
@@ -137,21 +105,14 @@ const ContactForm = () => {
           ))}
         </select>
         {state.errors?.department && (
-          <p
-            id="department-error"
-            className="mt-1 text-sm text-red-400"
-            role="alert"
-          >
+          <p id="department-error" className="mt-1 text-sm text-red-400" role="alert">
             {state.errors.department[0]}
           </p>
         )}
       </div>
 
       <div>
-        <label
-          htmlFor="message"
-          className="mb-2 block text-sm font-medium text-white/80"
-        >
+        <label htmlFor="message" className="mb-2 block text-sm font-medium text-white/80">
           {t("contact.message")} <span className="text-amber-500">*</span>
         </label>
         <textarea
@@ -163,17 +124,11 @@ const ContactForm = () => {
           rows={6}
           className="w-full resize-y rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white backdrop-blur-xl placeholder:text-white/40 focus-visible:border-amber-500/50 focus-visible:ring-2 focus-visible:ring-amber-500/20 focus-visible:outline-none"
           placeholder={t("contact.message")}
-          aria-describedby={
-            state.errors?.message ? "message-error" : undefined
-          }
+          aria-describedby={state.errors?.message ? "message-error" : undefined}
           aria-invalid={state.errors?.message ? true : undefined}
         />
         {state.errors?.message && (
-          <p
-            id="message-error"
-            className="mt-1 text-sm text-red-400"
-            role="alert"
-          >
+          <p id="message-error" className="mt-1 text-sm text-red-400" role="alert">
             {state.errors.message[0]}
           </p>
         )}

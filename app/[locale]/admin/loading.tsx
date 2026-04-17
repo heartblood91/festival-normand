@@ -10,9 +10,7 @@ const AdminLoading = () => {
           <div className="absolute inset-0 animate-spin rounded-full bg-gradient-to-r from-amber-400 to-amber-600" />
           <div className="absolute inset-1 rounded-full bg-slate-950" />
         </div>
-        <p className="text-sm font-medium text-slate-400">
-          Chargement en cours...
-        </p>
+        <p className="text-sm font-medium text-slate-400">Chargement en cours...</p>
       </div>
     </div>
   )

@@ -58,19 +58,15 @@ const NearbyButton = () => {
       onClick={handleClick}
       disabled={isLoading}
       className={cn(
-        "min-h-10 min-w-10 inline-flex items-center gap-1.5 rounded-full border px-3 py-2 text-sm font-medium transition-all whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+        "focus-visible:ring-primary/50 inline-flex min-h-10 min-w-10 items-center gap-1.5 rounded-full border px-3 py-2 text-sm font-medium whitespace-nowrap transition-all focus-visible:ring-2 focus-visible:outline-none",
         isActive
           ? "border-primary bg-primary text-primary-foreground"
-          : "border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground",
-        isLoading && "opacity-50 cursor-wait"
+          : "text-muted-foreground hover:text-foreground border-white/10 bg-white/5 hover:bg-white/10",
+        isLoading && "cursor-wait opacity-50"
       )}
       aria-label={t("filters.nearbyLabel")}
     >
-      {isLoading ? (
-        <Loader2 className="size-4 animate-spin" />
-      ) : (
-        <MapPin className="size-4" />
-      )}
+      {isLoading ? <Loader2 className="size-4 animate-spin" /> : <MapPin className="size-4" />}
       <span className="hidden sm:inline">{t("filters.nearby")}</span>
     </button>
   )

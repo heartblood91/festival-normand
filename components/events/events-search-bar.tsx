@@ -22,7 +22,9 @@ const EventsSearchBar = ({ cities }: EventsSearchBarProps) => {
   const filteredCities =
     query.length >= 2
       ? cities
-          .filter((city) => removeAccents(city.toLowerCase()).includes(removeAccents(query.toLowerCase())))
+          .filter((city) =>
+            removeAccents(city.toLowerCase()).includes(removeAccents(query.toLowerCase()))
+          )
           .slice(0, 5)
       : []
 
@@ -52,10 +54,7 @@ const EventsSearchBar = ({ cities }: EventsSearchBarProps) => {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        wrapperRef.current &&
-        !wrapperRef.current.contains(e.target as Node)
-      ) {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
         setShowSuggestions(false)
       }
     }
@@ -74,7 +73,7 @@ const EventsSearchBar = ({ cities }: EventsSearchBarProps) => {
         aria-label={t("search.ariaLabel")}
       >
         <Search
-          className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+          className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2"
           aria-hidden="true"
         />
         <input
@@ -89,7 +88,7 @@ const EventsSearchBar = ({ cities }: EventsSearchBarProps) => {
             if (query.length >= 2) setShowSuggestions(true)
           }}
           placeholder={t("search.placeholder")}
-          className="h-10 w-full rounded-lg border border-white/10 bg-white/5 pl-10 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 md:h-12 md:text-base"
+          className="text-foreground placeholder:text-muted-foreground focus-visible:ring-primary/50 h-10 w-full rounded-lg border border-white/10 bg-white/5 pr-3 pl-10 text-sm focus-visible:ring-2 focus-visible:outline-none md:h-12 md:text-base"
           aria-label={t("search.ariaLabel")}
           aria-autocomplete="list"
           aria-expanded={showSuggestions && filteredCities.length > 0}
@@ -103,7 +102,7 @@ const EventsSearchBar = ({ cities }: EventsSearchBarProps) => {
         <ul
           id="events-city-suggestions"
           role="listbox"
-          className="absolute left-0 right-0 top-full z-10 mt-2 overflow-hidden rounded-xl border border-white/10 bg-background/95 backdrop-blur-xl"
+          className="bg-background/95 absolute top-full right-0 left-0 z-10 mt-2 overflow-hidden rounded-xl border border-white/10 backdrop-blur-xl"
         >
           {filteredCities.map((city) => (
             <li key={city} role="option" aria-selected={false}>
@@ -111,14 +110,11 @@ const EventsSearchBar = ({ cities }: EventsSearchBarProps) => {
                 type="button"
                 onClick={() => handleSelectCity(city)}
                 className={cn(
-                  "flex w-full items-center gap-2 px-4 py-3 text-left text-sm transition-colors hover:bg-white/5 hover:text-primary",
-                  "focus-visible:bg-white/5 focus-visible:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                  "hover:text-primary flex w-full items-center gap-2 px-4 py-3 text-left text-sm transition-colors hover:bg-white/5",
+                  "focus-visible:text-primary focus-visible:ring-primary/50 focus-visible:bg-white/5 focus-visible:ring-2 focus-visible:outline-none"
                 )}
               >
-                <Search
-                  className="size-3.5 text-muted-foreground"
-                  aria-hidden="true"
-                />
+                <Search className="text-muted-foreground size-3.5" aria-hidden="true" />
                 {city}
               </button>
             </li>

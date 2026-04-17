@@ -40,10 +40,7 @@ describe("sendContactEmail", () => {
   })
 
   it("sends email successfully with valid data", async () => {
-    const result = await sendContactEmail(
-      initialState,
-      createFormData(validFormData)
-    )
+    const result = await sendContactEmail(initialState, createFormData(validFormData))
     expect(result.success).toBe(true)
     expect(result.message).toContain("succès")
   })

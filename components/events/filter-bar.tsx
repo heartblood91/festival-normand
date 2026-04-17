@@ -39,34 +39,22 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
   const t = useTranslations()
   const searchParams = useSearchParams()
   const [openDropdown, setOpenDropdown] = useState<DropdownState>(null)
-  const [selectedDept, setSelectedDept] = useState(
-    searchParams.get("dept") ?? ""
-  )
-  const [selectedCategory, setSelectedCategory] = useState(
-    searchParams.get("category") ?? ""
-  )
+  const [selectedDept, setSelectedDept] = useState(searchParams.get("dept") ?? "")
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") ?? "")
   const [selectedDates, setSelectedDates] = useState<string[]>(
     searchParams.get("date") ? [searchParams.get("date")!] : []
   )
-  const [pmrEnabled, setPmrEnabled] = useState(
-    searchParams.get("accessible") === "true"
-  )
+  const [pmrEnabled, setPmrEnabled] = useState(searchParams.get("accessible") === "true")
 
   const deptRef = useRef<HTMLDivElement>(null)
   const categoryRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        deptRef.current &&
-        !deptRef.current.contains(e.target as Node)
-      ) {
+      if (deptRef.current && !deptRef.current.contains(e.target as Node)) {
         if (openDropdown === "dept") setOpenDropdown(null)
       }
-      if (
-        categoryRef.current &&
-        !categoryRef.current.contains(e.target as Node)
-      ) {
+      if (categoryRef.current && !categoryRef.current.contains(e.target as Node)) {
         if (openDropdown === "category") setOpenDropdown(null)
       }
     }
@@ -75,12 +63,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [openDropdown])
 
-  const updateUrl = (
-    dept?: string,
-    category?: string,
-    dates?: string[],
-    pmr?: boolean
-  ) => {
+  const updateUrl = (dept?: string, category?: string, dates?: string[], pmr?: boolean) => {
     const params = new URLSearchParams(searchParams.toString())
     const search = searchParams.get("search")
 
@@ -160,9 +143,13 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
   const getFilterLabel = (type: string, value: string): string => {
     switch (type) {
       case "dept":
-        return t(`departments.${DEPARTMENT_OPTIONS.find((d) => d.value === value)?.labelKey || "CALVADOS"}`)
+        return t(
+          `departments.${DEPARTMENT_OPTIONS.find((d) => d.value === value)?.labelKey || "CALVADOS"}`
+        )
       case "category":
-        return t(`categories.${CATEGORY_OPTIONS.find((c) => c.value === value)?.labelKey || "ILLUMINATIONS"}`)
+        return t(
+          `categories.${CATEGORY_OPTIONS.find((c) => c.value === value)?.labelKey || "ILLUMINATIONS"}`
+        )
       case "date":
         return t(`filters.${DATE_OPTIONS.find((d) => d.value === value)?.labelKey || "date29"}Full`)
       default:
@@ -219,19 +206,17 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
   return (
     <div className="space-y-4">
       {/* Filter controls */}
-      <div className="sticky top-16 z-40 -mx-4 -mb-4 bg-gradient-to-b from-background/95 via-background/90 to-background/80 px-4 py-4 backdrop-blur-lg md:rounded-lg md:border md:border-white/10 md:bg-white/5 md:p-4">
+      <div className="from-background/95 via-background/90 to-background/80 sticky top-16 z-40 -mx-4 -mb-4 bg-gradient-to-b px-4 py-4 backdrop-blur-lg md:rounded-lg md:border md:border-white/10 md:bg-white/5 md:p-4">
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           {/* Department dropdown */}
           <div ref={deptRef} className="relative">
             <button
-              onClick={() =>
-                setOpenDropdown(openDropdown === "dept" ? null : "dept")
-              }
+              onClick={() => setOpenDropdown(openDropdown === "dept" ? null : "dept")}
               className={cn(
-                "min-h-10 min-w-10 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50",
+                "focus:ring-primary/50 flex min-h-10 min-w-10 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus:ring-2 focus:outline-none",
                 selectedDept
                   ? "border-primary/30 bg-primary/10 text-primary"
-                  : "border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
+                  : "text-muted-foreground hover:text-foreground border-white/10 bg-white/5 hover:bg-white/10"
               )}
               aria-label={t("filters.department")}
               aria-expanded={openDropdown === "dept"}
@@ -239,8 +224,12 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
             >
               <span className="truncate">
                 {selectedDept
-                  ? t(`departments.${DEPARTMENT_OPTIONS.find((d) => d.value === selectedDept)
-                      ?.labelKey || "CALVADOS"}`)
+                  ? t(
+                      `departments.${
+                        DEPARTMENT_OPTIONS.find((d) => d.value === selectedDept)?.labelKey ||
+                        "CALVADOS"
+                      }`
+                    )
                   : t("filters.department")}
               </span>
               <ChevronDown
@@ -253,7 +242,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
 
             {openDropdown === "dept" && (
               <div
-                className="absolute left-0 top-full z-50 mt-2 w-48 origin-top-left rounded-lg border border-white/10 bg-background/95 backdrop-blur-xl shadow-lg"
+                className="bg-background/95 absolute top-full left-0 z-50 mt-2 w-48 origin-top-left rounded-lg border border-white/10 shadow-lg backdrop-blur-xl"
                 role="listbox"
               >
                 {DEPARTMENT_OPTIONS.map((option) => {
@@ -274,9 +263,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
                     >
                       <span className="flex items-center justify-between gap-2">
                         <span>{t(`departments.${option.labelKey}`)}</span>
-                        <span className="text-xs font-medium text-muted-foreground">
-                          ({count})
-                        </span>
+                        <span className="text-muted-foreground text-xs font-medium">({count})</span>
                       </span>
                     </button>
                   )
@@ -288,14 +275,12 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
           {/* Category dropdown */}
           <div ref={categoryRef} className="relative">
             <button
-              onClick={() =>
-                setOpenDropdown(openDropdown === "category" ? null : "category")
-              }
+              onClick={() => setOpenDropdown(openDropdown === "category" ? null : "category")}
               className={cn(
-                "min-h-10 min-w-10 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50",
+                "focus:ring-primary/50 flex min-h-10 min-w-10 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus:ring-2 focus:outline-none",
                 selectedCategory
                   ? "border-primary/30 bg-primary/10 text-primary"
-                  : "border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
+                  : "text-muted-foreground hover:text-foreground border-white/10 bg-white/5 hover:bg-white/10"
               )}
               aria-label={t("filters.category")}
               aria-expanded={openDropdown === "category"}
@@ -303,8 +288,12 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
             >
               <span className="truncate">
                 {selectedCategory
-                  ? t(`categories.${CATEGORY_OPTIONS.find((c) => c.value === selectedCategory)
-                      ?.labelKey || "ILLUMINATIONS"}`)
+                  ? t(
+                      `categories.${
+                        CATEGORY_OPTIONS.find((c) => c.value === selectedCategory)?.labelKey ||
+                        "ILLUMINATIONS"
+                      }`
+                    )
                   : t("filters.category")}
               </span>
               <ChevronDown
@@ -317,7 +306,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
 
             {openDropdown === "category" && (
               <div
-                className="absolute left-0 top-full z-50 mt-2 w-48 origin-top-left rounded-lg border border-white/10 bg-background/95 backdrop-blur-xl shadow-lg"
+                className="bg-background/95 absolute top-full left-0 z-50 mt-2 w-48 origin-top-left rounded-lg border border-white/10 shadow-lg backdrop-blur-xl"
                 role="listbox"
               >
                 {CATEGORY_OPTIONS.map((option) => {
@@ -338,9 +327,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
                     >
                       <span className="flex items-center justify-between gap-2">
                         <span>{t(`categories.${option.labelKey}`)}</span>
-                        <span className="text-xs font-medium text-muted-foreground">
-                          ({count})
-                        </span>
+                        <span className="text-muted-foreground text-xs font-medium">({count})</span>
                       </span>
                     </button>
                   )
@@ -356,10 +343,10 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
                 key={option.value}
                 onClick={() => handleDateToggle(option.value)}
                 className={cn(
-                  "min-h-10 min-w-10 rounded-full border px-3 py-2 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 sm:text-sm",
+                  "focus:ring-primary/50 min-h-10 min-w-10 rounded-full border px-3 py-2 text-xs font-medium transition-colors focus:ring-2 focus:outline-none sm:text-sm",
                   selectedDates.includes(option.value)
                     ? "border-primary/30 bg-primary/10 text-primary"
-                    : "border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
+                    : "text-muted-foreground hover:text-foreground border-white/10 bg-white/5 hover:bg-white/10"
                 )}
                 aria-pressed={selectedDates.includes(option.value)}
                 aria-label={`${t("filters.removeFilter", { filter: t(`filters.${option.labelKey}`) })}`}
@@ -373,10 +360,10 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
           <button
             onClick={handlePmrToggle}
             className={cn(
-              "min-h-10 min-w-10 flex items-center justify-center gap-2 rounded-lg border px-3 py-2 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50",
+              "focus:ring-primary/50 flex min-h-10 min-w-10 items-center justify-center gap-2 rounded-lg border px-3 py-2 transition-colors focus:ring-2 focus:outline-none",
               pmrEnabled
                 ? "border-primary/30 bg-primary/10 text-primary"
-                : "border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
+                : "text-muted-foreground hover:text-foreground border-white/10 bg-white/5 hover:bg-white/10"
             )}
             title={t("filters.pmr")}
             aria-pressed={pmrEnabled}
@@ -388,7 +375,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
 
           {/* Result counter */}
           <div
-            className="ml-auto text-xs font-medium text-muted-foreground sm:text-sm"
+            className="text-muted-foreground ml-auto text-xs font-medium sm:text-sm"
             aria-live="polite"
             aria-atomic="true"
           >
@@ -403,7 +390,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
               <button
                 key={filter.key}
                 onClick={() => removeFilter(filter.type, filter.key.split("-")[1])}
-                className="min-h-9 flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary/50 sm:text-sm"
+                className="border-primary/20 bg-primary/10 text-primary hover:bg-primary/20 focus:ring-primary/50 flex min-h-9 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors focus:ring-2 focus:outline-none sm:text-sm"
                 aria-label={t("filters.removeFilter", { filter: filter.label })}
               >
                 {filter.label}
@@ -412,7 +399,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
             ))}
             <button
               onClick={clearAll}
-              className="min-h-9 text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline focus:outline-none focus:ring-2 focus:ring-primary/50 rounded-sm sm:text-sm"
+              className="text-muted-foreground hover:text-foreground focus:ring-primary/50 min-h-9 rounded-sm text-xs underline-offset-2 hover:underline focus:ring-2 focus:outline-none sm:text-sm"
               aria-label={t("filters.clearAll")}
             >
               {t("filters.clearAll")}

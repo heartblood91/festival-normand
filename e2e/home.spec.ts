@@ -9,9 +9,7 @@ test.describe("Home page", () => {
 
   test("displays the hero section with dates and tagline", async ({ page }) => {
     await page.goto("/")
-    await expect(
-      page.getByText("29, 30 & 31 mai 2026", { exact: true }).first()
-    ).toBeVisible()
+    await expect(page.getByText("29, 30 & 31 mai 2026", { exact: true }).first()).toBeVisible()
     await expect(
       page.getByText("Découvrez la magie du patrimoine normand en nocturne", { exact: true })
     ).toBeVisible()

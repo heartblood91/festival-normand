@@ -10,17 +10,14 @@ export const eventSchema = z.object({
     .string()
     .min(3, "Le slug doit contenir au moins 3 caractères")
     .max(200, "Le slug ne peut pas dépasser 200 caractères")
-    .regex(/^[a-z0-9-]+$/, "Le slug ne peut contenir que des lettres minuscules, chiffres et tirets"),
-  descriptionFr: z
-    .string()
-    .min(10, "La description doit contenir au moins 10 caractères"),
+    .regex(
+      /^[a-z0-9-]+$/,
+      "Le slug ne peut contenir que des lettres minuscules, chiffres et tirets"
+    ),
+  descriptionFr: z.string().min(10, "La description doit contenir au moins 10 caractères"),
   descriptionEn: z.string().optional().or(z.literal("")),
-  location: z
-    .string()
-    .min(2, "Le lieu doit contenir au moins 2 caractères"),
-  city: z
-    .string()
-    .min(2, "La ville doit contenir au moins 2 caractères"),
+  location: z.string().min(2, "Le lieu doit contenir au moins 2 caractères"),
+  city: z.string().min(2, "La ville doit contenir au moins 2 caractères"),
   postalCode: z
     .string()
     .min(4, "Le code postal doit contenir au moins 4 caractères")
@@ -41,8 +38,18 @@ export const eventSchema = z.object({
   email: z.string().email("Email invalide").optional().or(z.literal("")),
   phone: z.string().optional().or(z.literal("")),
   website: z.string().url("URL invalide").optional().or(z.literal("")),
-  latitude: z.coerce.number().min(-90).max(90).optional().or(z.literal("").transform(() => undefined)),
-  longitude: z.coerce.number().min(-180).max(180).optional().or(z.literal("").transform(() => undefined)),
+  latitude: z.coerce
+    .number()
+    .min(-90)
+    .max(90)
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
+  longitude: z.coerce
+    .number()
+    .min(-180)
+    .max(180)
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
   coverImage: z.string().optional().or(z.literal("")),
   featured: z.boolean().default(false),
   accessible: z.boolean().default(false),

@@ -48,7 +48,7 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
         lastModified: new Date(),
         changeFrequency: "monthly",
         priority: 0.5,
-      },
+      }
     )
 
     for (const page of pages) {

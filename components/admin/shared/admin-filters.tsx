@@ -24,11 +24,7 @@ type AdminFiltersProps = {
   currentValues: Record<string, string>
 }
 
-export const AdminFilters = ({
-  filters,
-  baseUrl,
-  currentValues,
-}: AdminFiltersProps) => {
+export const AdminFilters = ({ filters, baseUrl, currentValues }: AdminFiltersProps) => {
   const router = useRouter()
   const searchParams = useSearchParams()
   const pathname = usePathname()
@@ -92,12 +88,16 @@ export const AdminFilters = ({
             <div key={filter.key} className="flex items-center gap-1">
               <Select
                 value={(currentValue === "all" ? "" : currentValue) ?? ""}
-                onValueChange={(value) => handleFilterChange(filter.key, value ?? "", currentValue ?? "")}
+                onValueChange={(value) =>
+                  handleFilterChange(filter.key, value ?? "", currentValue ?? "")
+                }
               >
-                <SelectTrigger className={cn(
-                  "border-white/10 bg-white/5",
-                  isActive && "border-amber-500/30 bg-amber-500/10 text-amber-400"
-                )}>
+                <SelectTrigger
+                  className={cn(
+                    "border-white/10 bg-white/5",
+                    isActive && "border-amber-500/30 bg-amber-500/10 text-amber-400"
+                  )}
+                >
                   <span className="truncate">{getDisplayLabel(filter, currentValue ?? "")}</span>
                 </SelectTrigger>
                 <SelectContent>

@@ -50,10 +50,12 @@ describe("auth admin restriction hook", () => {
   it("blocks sign-in for non-registered emails", async () => {
     prismaMock.user.findUnique.mockResolvedValue(null)
 
-    const response = await auth.api.signInMagicLink({
-      body: { email: "hacker@evil.com" },
-      headers: new Headers(),
-    }).catch((e: Error) => e)
+    const response = await auth.api
+      .signInMagicLink({
+        body: { email: "hacker@evil.com" },
+        headers: new Headers(),
+      })
+      .catch((e: Error) => e)
 
     expect(response).toBeInstanceOf(Error)
     expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
@@ -67,10 +69,12 @@ describe("auth admin restriction hook", () => {
       role: "ADMIN",
     })
 
-    const response = await auth.api.signInMagicLink({
-      body: { email: "admin@pierresenlumieres.fr" },
-      headers: new Headers(),
-    }).catch((e: Error) => e)
+    const response = await auth.api
+      .signInMagicLink({
+        body: { email: "admin@pierresenlumieres.fr" },
+        headers: new Headers(),
+      })
+      .catch((e: Error) => e)
 
     expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
       where: { email: "admin@pierresenlumieres.fr" },

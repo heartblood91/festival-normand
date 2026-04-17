@@ -17,12 +17,18 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.
 
 export const revalidate = 300
 
-export const generateMetadata = async ({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> => {
-  const { locale } = await params as { locale: Locale }
+export const generateMetadata = async ({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> => {
+  const { locale } = (await params) as { locale: Locale }
   const frenchTitle = "Événements"
   const englishTitle = "Events"
-  const frenchDesc = "Découvrez tous les événements du festival Pierres en Lumières en Normandie. Illuminations, expositions, animations et visites nocturnes du patrimoine normand."
-  const englishDesc = "Discover all the events of the Pierres en Lumières festival in Normandy. Illuminations, exhibitions, animations and night tours of Norman heritage."
+  const frenchDesc =
+    "Découvrez tous les événements du festival Pierres en Lumières en Normandie. Illuminations, expositions, animations et visites nocturnes du patrimoine normand."
+  const englishDesc =
+    "Discover all the events of the Pierres en Lumières festival in Normandy. Illuminations, exhibitions, animations and night tours of Norman heritage."
 
   const title = locale === "en" ? englishTitle : frenchTitle
   const description = locale === "en" ? englishDesc : frenchDesc
@@ -72,7 +78,7 @@ const parseSearchParams = (params: Record<string, string | string[] | undefined>
 }
 
 const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
-  const { locale } = await params as { locale: Locale }
+  const { locale } = (await params) as { locale: Locale }
   const searchParamsData = await searchParams
   const filters = parseSearchParams(searchParamsData)
   const view = (searchParamsData.view as string | undefined) ?? "grid"
@@ -89,10 +95,10 @@ const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
     <div className="mx-auto max-w-7xl px-4 py-8 md:py-12 lg:py-16">
       {/* Page header */}
       <div className="mb-8 md:mb-10">
-        <h1 className="font-serif text-3xl font-bold text-foreground md:text-4xl lg:text-5xl">
+        <h1 className="text-foreground font-serif text-3xl font-bold md:text-4xl lg:text-5xl">
           {t("events.title")}
         </h1>
-        <p className="mt-2 text-muted-foreground md:text-lg">
+        <p className="text-muted-foreground mt-2 md:text-lg">
           {t("events.subtitle", { count: total })}
         </p>
       </div>
@@ -134,7 +140,7 @@ const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
                   <div
                     key={event.id}
                     className="h-full"
-                    style={{ '--stagger-index': index } as React.CSSProperties}
+                    style={{ "--stagger-index": index } as React.CSSProperties}
                   >
                     <EventListCard
                       event={event}
@@ -148,10 +154,7 @@ const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
               {/* Pagination */}
               <div className="mt-10">
                 <Suspense>
-                  <Pagination
-                    currentPage={page}
-                    totalPages={totalPages}
-                  />
+                  <Pagination currentPage={page} totalPages={totalPages} />
                 </Suspense>
               </div>
             </>
@@ -159,12 +162,8 @@ const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
         </>
       ) : (
         <div className="flex flex-col items-center justify-center rounded-xl border border-white/10 bg-white/5 px-6 py-16 text-center">
-          <p className="font-serif text-xl font-bold text-foreground">
-            {t("events.noResults")}
-          </p>
-          <p className="mt-2 text-muted-foreground">
-            {t("events.noResultsHint")}
-          </p>
+          <p className="text-foreground font-serif text-xl font-bold">{t("events.noResults")}</p>
+          <p className="text-muted-foreground mt-2">{t("events.noResultsHint")}</p>
         </div>
       )}
     </div>

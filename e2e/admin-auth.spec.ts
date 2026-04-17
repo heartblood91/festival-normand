@@ -39,7 +39,9 @@ test.describe("Admin authentication", () => {
     await page.getByRole("button", { name: /Se connecter/ }).click()
 
     // Should show error toast
-    await expect(page.getByText(/incorrect|erreur|invalid|not authorized/i).first()).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText(/incorrect|erreur|invalid|not authorized/i).first()).toBeVisible({
+      timeout: 10000,
+    })
   })
 
   test("login page has correct meta robots noindex", async ({ page }) => {

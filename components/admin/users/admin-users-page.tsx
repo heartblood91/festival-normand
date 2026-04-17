@@ -32,10 +32,7 @@ type AdminUsersPageProps = {
   currentUserId: string
 }
 
-export const AdminUsersPage = ({
-  users,
-  currentUserId,
-}: AdminUsersPageProps) => {
+export const AdminUsersPage = ({ users, currentUserId }: AdminUsersPageProps) => {
   const router = useRouter()
   const t = useTranslations("admin")
   const [isDeleting, setIsDeleting] = useState<string | null>(null)
@@ -53,9 +50,7 @@ export const AdminUsersPage = ({
     const isSoleAdminUser = user.role === "ADMIN" && isSoleAdmin
 
     if (isSoleAdminUser) {
-      toast.error(
-        "Impossible de supprimer le dernier administrateur."
-      )
+      toast.error("Impossible de supprimer le dernier administrateur.")
       return
     }
 
@@ -81,9 +76,7 @@ export const AdminUsersPage = ({
     const isSoleAdminUser = user.role === "ADMIN" && isSoleAdmin && newRole === "EDITOR"
 
     if (isSoleAdminUser) {
-      toast.error(
-        "Impossible de rétrograder le dernier administrateur."
-      )
+      toast.error("Impossible de rétrograder le dernier administrateur.")
       return
     }
 
@@ -115,10 +108,10 @@ export const AdminUsersPage = ({
     <div className="mx-auto w-full max-w-6xl p-4 md:p-8">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
-          <h1 className="font-serif text-2xl font-bold text-amber-500">
-            Utilisateurs
-          </h1>
-          <p className="mt-1 text-sm text-slate-400">{users.length} résultat{users.length !== 1 ? "s" : ""}</p>
+          <h1 className="font-serif text-2xl font-bold text-amber-500">Utilisateurs</h1>
+          <p className="mt-1 text-sm text-slate-400">
+            {users.length} résultat{users.length !== 1 ? "s" : ""}
+          </p>
         </div>
         {isUserAdmin && (
           <Button onClick={() => setInviteOpen(true)} className="w-full md:w-auto">
@@ -139,21 +132,15 @@ export const AdminUsersPage = ({
           <table className="w-full text-sm" role="table">
             <thead>
               <tr className="border-b border-white/10 bg-white/5">
-                <th className="px-4 py-3 text-left font-medium text-slate-300">
-                  Nom
-                </th>
+                <th className="px-4 py-3 text-left font-medium text-slate-300">Nom</th>
                 <th className="hidden px-4 py-3 text-left font-medium text-slate-300 md:table-cell">
                   Email
                 </th>
-                <th className="px-4 py-3 text-left font-medium text-slate-300">
-                  Rôle
-                </th>
+                <th className="px-4 py-3 text-left font-medium text-slate-300">Rôle</th>
                 <th className="hidden px-4 py-3 text-left font-medium text-slate-300 lg:table-cell">
                   Créé le
                 </th>
-                <th className="px-4 py-3 text-right font-medium text-slate-300">
-                  Actions
-                </th>
+                <th className="px-4 py-3 text-right font-medium text-slate-300">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -170,9 +157,7 @@ export const AdminUsersPage = ({
                       )}
                     </div>
                   </td>
-                  <td className="hidden px-4 py-3 text-slate-400 md:table-cell">
-                    {user.email}
-                  </td>
+                  <td className="hidden px-4 py-3 text-slate-400 md:table-cell">{user.email}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       {user.role === "ADMIN" ? (
@@ -196,12 +181,9 @@ export const AdminUsersPage = ({
                       <div className="flex items-center justify-end gap-2">
                         <Select
                           value={user.role}
-                          onValueChange={(newRole) =>
-                            newRole && handleRoleChange(user.id, newRole)
-                          }
+                          onValueChange={(newRole) => newRole && handleRoleChange(user.id, newRole)}
                           disabled={
-                            isUpdatingRole === user.id ||
-                            (user.role === "ADMIN" && isSoleAdmin)
+                            isUpdatingRole === user.id || (user.role === "ADMIN" && isSoleAdmin)
                           }
                         >
                           <SelectTrigger className="w-24 border-white/10 bg-white/5 text-white">
@@ -229,12 +211,10 @@ export const AdminUsersPage = ({
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Supprimer l&apos;utilisateur
-                              </AlertDialogTitle>
+                              <AlertDialogTitle>Supprimer l&apos;utilisateur</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Êtes-vous sûr de vouloir supprimer &quot;{user.name}&quot; ?
-                                Cette action est irréversible.
+                                Êtes-vous sûr de vouloir supprimer &quot;{user.name}&quot; ? Cette
+                                action est irréversible.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>

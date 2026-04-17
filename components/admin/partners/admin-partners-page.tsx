@@ -3,12 +3,7 @@
 import { useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import {
-  Plus,
-  Pencil,
-  Trash2,
-  GripVertical,
-} from "lucide-react"
+import { Plus, Pencil, Trash2, GripVertical } from "lucide-react"
 import { toast } from "sonner"
 import {
   DndContext,
@@ -38,11 +33,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import {
-  deletePartner,
-  reorderPartners,
-  type AdminPartnerListItem,
-} from "@/lib/actions/partners"
+import { deletePartner, reorderPartners, type AdminPartnerListItem } from "@/lib/actions/partners"
 
 type AdminPartnersPageProps = {
   partners: AdminPartnerListItem[]
@@ -59,14 +50,9 @@ const SortablePartnerItem = ({
   onDelete: (id: string) => void
   isDeletingId: string | null
 }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: partner.id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: partner.id,
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -103,22 +89,14 @@ const SortablePartnerItem = ({
 
       <div className="flex-1">
         <p className="font-medium text-white">{partner.nameFr}</p>
-        {partner.website && (
-          <p className="truncate text-xs text-slate-500">{partner.website}</p>
-        )}
+        {partner.website && <p className="truncate text-xs text-slate-500">{partner.website}</p>}
       </div>
 
-      <span className="hidden text-xs text-slate-600 md:inline">
-        #{index + 1}
-      </span>
+      <span className="hidden text-xs text-slate-600 md:inline">#{index + 1}</span>
 
       <div className="flex items-center gap-1">
         <Link href={`/admin/partners/${partner.id}/edit`}>
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            aria-label={`Modifier ${partner.nameFr}`}
-          >
+          <Button variant="ghost" size="icon-sm" aria-label={`Modifier ${partner.nameFr}`}>
             <Pencil className="h-3.5 w-3.5" />
           </Button>
         </Link>
@@ -139,8 +117,8 @@ const SortablePartnerItem = ({
             <AlertDialogHeader>
               <AlertDialogTitle>Supprimer le partenaire</AlertDialogTitle>
               <AlertDialogDescription>
-                Êtes-vous sûr de vouloir supprimer &quot;{partner.nameFr}&quot; ?
-                Cette action est irréversible.
+                Êtes-vous sûr de vouloir supprimer &quot;{partner.nameFr}&quot; ? Cette action est
+                irréversible.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -214,9 +192,7 @@ export const AdminPartnersPage = ({ partners: initialPartners }: AdminPartnersPa
     <div className="mx-auto w-full max-w-6xl p-4 md:p-8">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-3">
-          <h1 className="font-serif text-2xl font-bold text-amber-500">
-            Partenaires
-          </h1>
+          <h1 className="font-serif text-2xl font-bold text-amber-500">Partenaires</h1>
           <span className="text-sm text-slate-400">
             ({partners.length} partenaire{partners.length !== 1 ? "s" : ""})
           </span>
@@ -231,20 +207,11 @@ export const AdminPartnersPage = ({ partners: initialPartners }: AdminPartnersPa
 
       {partners.length === 0 ? (
         <div className="rounded-xl border border-white/10 bg-white/5 p-12 text-center">
-          <p className="text-slate-400">
-            Aucun partenaire pour le moment.
-          </p>
+          <p className="text-slate-400">Aucun partenaire pour le moment.</p>
         </div>
       ) : (
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext
-            items={partnerIds}
-            strategy={verticalListSortingStrategy}
-          >
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={partnerIds} strategy={verticalListSortingStrategy}>
             <div className="space-y-2">
               {partners.map((partner, index) => (
                 <SortablePartnerItem

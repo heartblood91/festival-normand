@@ -72,17 +72,16 @@ export const PublishWizard = ({
       try {
         setSourceFields({ title, description: content })
 
-        const [seoResults, a11yResults, spellingResults, translationResults] =
-          await Promise.all([
-            checkSEO(title, content, locale),
-            checkAccessibility(content),
-            checkSpelling(content, locale),
-            translateMultipleFields(
-              { title, description: content },
-              locale,
-              locale === "fr" ? "en" : "fr"
-            ),
-          ])
+        const [seoResults, a11yResults, spellingResults, translationResults] = await Promise.all([
+          checkSEO(title, content, locale),
+          checkAccessibility(content),
+          checkSpelling(content, locale),
+          translateMultipleFields(
+            { title, description: content },
+            locale,
+            locale === "fr" ? "en" : "fr"
+          ),
+        ])
 
         setSeoSuggestions(seoResults)
         setA11ySuggestions(a11yResults)
@@ -174,9 +173,7 @@ export const PublishWizard = ({
     }
   }
 
-  const canGoNext =
-    currentStep !== "confirmation" &&
-    !isLoading
+  const canGoNext = currentStep !== "confirmation" && !isLoading
 
   const currentStepIndex = STEPS.indexOf(currentStep)
   const isFirstStep = currentStepIndex === 0
@@ -195,7 +192,7 @@ export const PublishWizard = ({
                 key={step}
                 onClick={() => setCurrentStep(step)}
                 disabled={isLoading || isPublishing}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                   currentStep === step
                     ? "bg-amber-500 text-white"
                     : "bg-white/10 text-slate-400 hover:bg-white/20 disabled:opacity-50"
@@ -337,7 +334,7 @@ export const PublishWizard = ({
                 type="button"
                 onClick={handlePublish}
                 disabled={isPublishing || isLoading}
-                className="bg-green-600 hover:bg-green-700 gap-1.5"
+                className="gap-1.5 bg-green-600 hover:bg-green-700"
               >
                 {isPublishing && <Loader2 className="h-4 w-4 animate-spin" />}
                 Publish Now

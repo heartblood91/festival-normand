@@ -3,15 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import {
-  Plus,
-  Search,
-  Pencil,
-  Trash2,
-  Eye,
-  EyeOff,
-  X,
-} from "lucide-react"
+import { Plus, Search, Pencil, Trash2, Eye, EyeOff, X } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -136,10 +128,10 @@ export const AdminNewsPage = ({
     <div className="mx-auto w-full max-w-6xl p-4 md:p-8">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
-          <h1 className="font-serif text-2xl font-bold text-amber-500">
-            Actualités
-          </h1>
-          <p className="mt-1 text-sm text-slate-400">{total} article{total !== 1 ? "s" : ""}</p>
+          <h1 className="font-serif text-2xl font-bold text-amber-500">Actualités</h1>
+          <p className="mt-1 text-sm text-slate-400">
+            {total} article{total !== 1 ? "s" : ""}
+          </p>
         </div>
         <Link href="/admin/news/new">
           <Button className="w-full md:w-auto">
@@ -151,7 +143,7 @@ export const AdminNewsPage = ({
 
       <form onSubmit={handleSearch} className="mb-6">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <Input
             type="search"
             placeholder="Rechercher par titre..."
@@ -165,7 +157,7 @@ export const AdminNewsPage = ({
                 router.push(`/admin/news${params.toString() ? `?${params}` : ""}`)
               }
             }}
-            className="border-white/10 bg-white/5 pl-10 pr-10 text-white placeholder:text-slate-500"
+            className="border-white/10 bg-white/5 pr-10 pl-10 text-white placeholder:text-slate-500"
             aria-label="Rechercher des articles"
           />
           {searchQuery && (
@@ -178,7 +170,7 @@ export const AdminNewsPage = ({
                 params.set("page", "1")
                 router.push(`/admin/news${params.toString() ? `?${params}` : ""}`)
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 hover:text-slate-200"
               aria-label="Effacer la recherche"
             >
               ×
@@ -204,119 +196,121 @@ export const AdminNewsPage = ({
       ) : (
         <>
           <div className="overflow-x-auto rounded-xl border border-white/10">
-          <table className="w-full text-sm" role="table">
-            <thead>
-              <tr className="border-b border-white/10 bg-white/5">
-                <th className="w-10 px-4 py-3">
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.size === items.length && items.length > 0}
-                    onChange={(e) => handleSelectAll(e.target.checked)}
-                    className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
-                    aria-label="Sélectionner tous les articles"
-                  />
-                </th>
-                <th className="px-4 py-3 text-left font-medium text-slate-300">
-                  Titre
-                </th>
-                <th className="hidden px-4 py-3 text-left font-medium text-slate-300 md:table-cell">
-                  Date de publication
-                </th>
-                <th className="px-4 py-3 text-center font-medium text-slate-300">
-                  Statut
-                </th>
-                <th className="px-4 py-3 text-right font-medium text-slate-300">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((article) => (
-                <tr
-                  key={article.id}
-                  className={`border-b border-white/5 transition-colors ${selectedIds.has(article.id) ? "bg-amber-500/10" : "hover:bg-white/5"}`}
-                >
-                  <td className="w-10 px-4 py-3">
+            <table className="w-full text-sm" role="table">
+              <thead>
+                <tr className="border-b border-white/10 bg-white/5">
+                  <th className="w-10 px-4 py-3">
                     <input
                       type="checkbox"
-                      checked={selectedIds.has(article.id)}
-                      onChange={() => handleToggleSelect(article.id)}
+                      checked={selectedIds.size === items.length && items.length > 0}
+                      onChange={(e) => handleSelectAll(e.target.checked)}
                       className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
-                      aria-label={`Sélectionner ${article.titleFr}`}
+                      aria-label="Sélectionner tous les articles"
                     />
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="font-medium text-white">{article.titleFr}</span>
-                    {article.excerptFr && (
-                      <p className="mt-0.5 line-clamp-1 text-xs text-slate-500">{article.excerptFr}</p>
-                    )}
-                  </td>
-                  <td className="hidden px-4 py-3 text-slate-400 md:table-cell">
-                    {article.publishedAt ? formatDate(article.publishedAt) : "—"}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    {article.published ? (
-                      <span className="inline-flex items-center gap-1 text-emerald-400" aria-label="Publié">
-                        <Eye className="h-3.5 w-3.5" />
-                        <span className="hidden md:inline">Publié</span>
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-slate-500" aria-label="Brouillon">
-                        <EyeOff className="h-3.5 w-3.5" />
-                        <span className="hidden md:inline">Brouillon</span>
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Link href={`/admin/news/${article.id}/edit`}>
-                        <Button
-                          variant="ghost"
-                          size="icon-sm"
-                          aria-label={`Modifier ${article.titleFr}`}
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
-                      </Link>
-                      <AlertDialog>
-                        <AlertDialogTrigger
-                          render={
-                            <Button
-                              variant="ghost"
-                              size="icon-sm"
-                              className="text-red-400 hover:text-red-300"
-                              aria-label={`Supprimer ${article.titleFr}`}
-                            />
-                          }
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Supprimer l&apos;article</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Êtes-vous sûr de vouloir supprimer &quot;{article.titleFr}&quot; ?
-                              Cette action est irréversible.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Annuler</AlertDialogCancel>
-                            <AlertDialogAction
-                              variant="destructive"
-                              onClick={() => handleDelete(article.id)}
-                              disabled={isDeleting === article.id}
-                            >
-                              {isDeleting === article.id ? "Suppression..." : "Supprimer"}
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  </td>
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-slate-300">Titre</th>
+                  <th className="hidden px-4 py-3 text-left font-medium text-slate-300 md:table-cell">
+                    Date de publication
+                  </th>
+                  <th className="px-4 py-3 text-center font-medium text-slate-300">Statut</th>
+                  <th className="px-4 py-3 text-right font-medium text-slate-300">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {items.map((article) => (
+                  <tr
+                    key={article.id}
+                    className={`border-b border-white/5 transition-colors ${selectedIds.has(article.id) ? "bg-amber-500/10" : "hover:bg-white/5"}`}
+                  >
+                    <td className="w-10 px-4 py-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(article.id)}
+                        onChange={() => handleToggleSelect(article.id)}
+                        className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
+                        aria-label={`Sélectionner ${article.titleFr}`}
+                      />
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="font-medium text-white">{article.titleFr}</span>
+                      {article.excerptFr && (
+                        <p className="mt-0.5 line-clamp-1 text-xs text-slate-500">
+                          {article.excerptFr}
+                        </p>
+                      )}
+                    </td>
+                    <td className="hidden px-4 py-3 text-slate-400 md:table-cell">
+                      {article.publishedAt ? formatDate(article.publishedAt) : "—"}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {article.published ? (
+                        <span
+                          className="inline-flex items-center gap-1 text-emerald-400"
+                          aria-label="Publié"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          <span className="hidden md:inline">Publié</span>
+                        </span>
+                      ) : (
+                        <span
+                          className="inline-flex items-center gap-1 text-slate-500"
+                          aria-label="Brouillon"
+                        >
+                          <EyeOff className="h-3.5 w-3.5" />
+                          <span className="hidden md:inline">Brouillon</span>
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <Link href={`/admin/news/${article.id}/edit`}>
+                          <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            aria-label={`Modifier ${article.titleFr}`}
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Button>
+                        </Link>
+                        <AlertDialog>
+                          <AlertDialogTrigger
+                            render={
+                              <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                className="text-red-400 hover:text-red-300"
+                                aria-label={`Supprimer ${article.titleFr}`}
+                              />
+                            }
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Supprimer l&apos;article</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Êtes-vous sûr de vouloir supprimer &quot;{article.titleFr}&quot; ?
+                                Cette action est irréversible.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Annuler</AlertDialogCancel>
+                              <AlertDialogAction
+                                variant="destructive"
+                                onClick={() => handleDelete(article.id)}
+                                disabled={isDeleting === article.id}
+                              >
+                                {isDeleting === article.id ? "Suppression..." : "Supprimer"}
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
           <AdminPagination
@@ -332,7 +326,7 @@ export const AdminNewsPage = ({
       )}
 
       {selectedIds.size > 0 && (
-        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 flex items-center justify-between gap-6 rounded-xl border border-white/10 bg-slate-900/95 px-6 py-3 shadow-2xl backdrop-blur-xl">
+        <div className="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center justify-between gap-6 rounded-xl border border-white/10 bg-slate-900/95 px-6 py-3 shadow-2xl backdrop-blur-xl">
           <span className="text-sm font-medium text-white">
             {selectedIds.size} sélectionné{selectedIds.size > 1 ? "s" : ""}
           </span>
@@ -349,7 +343,7 @@ export const AdminNewsPage = ({
             </Button>
             <AlertDialog>
               <AlertDialogTrigger
-                className="inline-flex h-7 items-center gap-1.5 rounded-md bg-destructive px-2.5 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50"
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90 inline-flex h-7 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium disabled:opacity-50"
                 disabled={isBulkDeleting}
               >
                 <Trash2 className="size-3.5" />
@@ -359,7 +353,8 @@ export const AdminNewsPage = ({
                 <AlertDialogHeader>
                   <AlertDialogTitle>Supprimer les articles</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Êtes-vous sûr de vouloir supprimer {selectedIds.size} article{selectedIds.size > 1 ? "s" : ""} ? Cette action est irréversible.
+                    Êtes-vous sûr de vouloir supprimer {selectedIds.size} article
+                    {selectedIds.size > 1 ? "s" : ""} ? Cette action est irréversible.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

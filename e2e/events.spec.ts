@@ -4,9 +4,7 @@ test.describe("Events list page", () => {
   test("loads and displays the events page title", async ({ page }) => {
     await page.goto("/evenements")
     await expect(page).toHaveTitle(/Événements/)
-    await expect(
-      page.getByRole("heading", { name: "Événements", level: 1 })
-    ).toBeVisible()
+    await expect(page.getByRole("heading", { name: "Événements", level: 1 })).toBeVisible()
   })
 
   test("displays event cards in grid", async ({ page }) => {
@@ -74,9 +72,7 @@ test.describe("Events list page", () => {
 
   test("empty state shown when no results", async ({ page }) => {
     await page.goto("/evenements?search=xyznonexistent123")
-    await expect(
-      page.getByText("Aucun événement trouvé")
-    ).toBeVisible()
+    await expect(page.getByText("Aucun événement trouvé")).toBeVisible()
   })
 
   test("event card links navigate to event detail", async ({ page }) => {
@@ -91,8 +87,6 @@ test.describe("Events list page", () => {
     const link = page.getByRole("link", { name: "Découvrir les événements" })
     await link.click()
     await page.waitForURL(/\/evenements$/)
-    await expect(
-      page.getByRole("heading", { name: "Événements", level: 1 })
-    ).toBeVisible()
+    await expect(page.getByRole("heading", { name: "Événements", level: 1 })).toBeVisible()
   })
 })

@@ -18,13 +18,7 @@ const { mockPrisma } = vi.hoisted(() => ({
 vi.mock("@/lib/prisma", () => ({ prisma: mockPrisma }))
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
 
-import {
-  createNews,
-  updateNews,
-  deleteNews,
-  getAdminNews,
-  getAdminNewsById,
-} from "./news"
+import { createNews, updateNews, deleteNews, getAdminNews, getAdminNewsById } from "./news"
 
 const createFormData = (data: Record<string, string>): FormData => {
   const formData = new FormData()

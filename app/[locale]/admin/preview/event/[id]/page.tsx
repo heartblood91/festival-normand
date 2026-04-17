@@ -13,7 +13,7 @@ type EventPreviewPageProps = {
 }
 
 const EventPreviewPage = async ({ params }: EventPreviewPageProps) => {
-  const { locale, id } = await params as { locale: Locale; id: string }
+  const { locale, id } = (await params) as { locale: Locale; id: string }
   const t = await getTranslations()
 
   const rawEvent = await prisma.event.findUnique({
@@ -32,22 +32,19 @@ const EventPreviewPage = async ({ params }: EventPreviewPageProps) => {
     updatedAt: rawEvent.updatedAt.toISOString(),
   }
 
-  const allImages = [
-    ...(event.coverImage ? [event.coverImage] : []),
-    ...event.images,
-  ]
+  const allImages = [...(event.coverImage ? [event.coverImage] : []), ...event.images]
 
   return (
     <>
       <PreviewBar backUrl={`/admin/events/${id}/edit`} />
       <article className="mx-auto max-w-7xl px-4 py-8 md:py-12 lg:py-16">
         {/* Title */}
-        <h1 className="mb-2 font-serif text-3xl font-bold text-foreground md:text-4xl lg:text-5xl">
+        <h1 className="text-foreground mb-2 font-serif text-3xl font-bold md:text-4xl lg:text-5xl">
           {event.title}
         </h1>
 
         {/* Location badge */}
-        <p className="mb-8 text-sm font-medium uppercase tracking-wider text-primary">
+        <p className="text-primary mb-8 text-sm font-medium tracking-wider uppercase">
           {event.location} — {event.city}
         </p>
 
@@ -55,16 +52,14 @@ const EventPreviewPage = async ({ params }: EventPreviewPageProps) => {
           {/* Main content — left column */}
           <div className="space-y-8 lg:col-span-2">
             {/* Photo carousel */}
-            {allImages.length > 0 && (
-              <PhotoCarousel images={allImages} alt={event.title} />
-            )}
+            {allImages.length > 0 && <PhotoCarousel images={allImages} alt={event.title} />}
 
             {/* Description */}
             <section>
-              <h2 className="mb-4 font-serif text-xl font-bold text-foreground md:text-2xl">
+              <h2 className="text-foreground mb-4 font-serif text-xl font-bold md:text-2xl">
                 {t("events.description")}
               </h2>
-              <div className="prose prose-invert max-w-none text-muted-foreground">
+              <div className="prose prose-invert text-muted-foreground max-w-none">
                 {event.description.split("\n").map((paragraph, i) => (
                   <p key={i}>{paragraph}</p>
                 ))}
@@ -74,7 +69,7 @@ const EventPreviewPage = async ({ params }: EventPreviewPageProps) => {
             {/* Map */}
             {event.latitude && event.longitude && (
               <section>
-                <h2 className="mb-4 font-serif text-xl font-bold text-foreground md:text-2xl">
+                <h2 className="text-foreground mb-4 font-serif text-xl font-bold md:text-2xl">
                   {t("events.location")}
                 </h2>
                 <EventMapWrapper

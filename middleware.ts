@@ -27,8 +27,7 @@ export const middleware = (request: NextRequest) => {
   const response = intlMiddleware(request)
 
   // After i18n redirect, check admin auth
-  const resolvedPathname = response.headers.get("x-middleware-rewrite")
-    || request.nextUrl.pathname
+  const resolvedPathname = response.headers.get("x-middleware-rewrite") || request.nextUrl.pathname
 
   // Extract locale-prefixed admin path
   const adminMatch = resolvedPathname.match(/^\/(fr|en)\/admin/)

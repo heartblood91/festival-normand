@@ -10,7 +10,9 @@ test.describe("Festival page", () => {
   test("displays festival introduction", async ({ page }) => {
     await page.goto("/festival")
 
-    await expect(page.getByText("Le festival Pierres en lumières est né dans l'Orne en 2009")).toBeVisible()
+    await expect(
+      page.getByText("Le festival Pierres en lumières est né dans l'Orne en 2009")
+    ).toBeVisible()
   })
 
   test("renders all five department sections", async ({ page }) => {
@@ -51,7 +53,9 @@ test.describe("Festival page", () => {
   test("page is accessible via header navigation", async ({ page }) => {
     await page.goto("/")
 
-    const festivalLink = page.getByLabel("Navigation principale").getByRole("link", { name: "Le Festival" })
+    const festivalLink = page
+      .getByLabel("Navigation principale")
+      .getByRole("link", { name: "Le Festival" })
     await festivalLink.click()
 
     await expect(page).toHaveURL(/\/festival/)

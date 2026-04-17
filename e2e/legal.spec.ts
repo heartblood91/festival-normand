@@ -24,9 +24,7 @@ test.describe("Mentions legales page", () => {
   test("displays intellectual property section", async ({ page }) => {
     await page.goto("/mentions-legales")
 
-    await expect(
-      page.getByRole("heading", { name: /propriété intellectuelle/i })
-    ).toBeVisible()
+    await expect(page.getByRole("heading", { name: /propriété intellectuelle/i })).toBeVisible()
   })
 
   test("displays RGPD / personal data section", async ({ page }) => {

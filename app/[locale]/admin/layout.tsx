@@ -10,11 +10,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
 
   // No session → minimal wrapper (login page, or middleware will redirect)
   if (!session) {
-    return (
-      <div className="flex min-h-dvh flex-col bg-slate-950">
-        {children}
-      </div>
-    )
+    return <div className="flex min-h-dvh flex-col bg-slate-950">{children}</div>
   }
 
   const user = await prisma.user.findUnique({
@@ -23,11 +19,13 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   })
 
   return (
-    <AdminShell user={{
-      name: session.user.name ?? "",
-      email: session.user.email,
-      role: user?.role ?? "EDITOR",
-    }}>
+    <AdminShell
+      user={{
+        name: session.user.name ?? "",
+        email: session.user.email,
+        role: user?.role ?? "EDITOR",
+      }}
+    >
       {children}
     </AdminShell>
   )

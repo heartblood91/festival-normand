@@ -68,7 +68,7 @@ const ActiveFilters = () => {
         <button
           key={filter.key}
           onClick={() => removeFilter(filter.key)}
-          className="flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+          className="border-primary/20 bg-primary/10 text-primary hover:bg-primary/20 focus-visible:ring-primary/50 flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none"
           aria-label={`Retirer le filtre ${filter.label}`}
         >
           {filter.label}
@@ -78,7 +78,7 @@ const ActiveFilters = () => {
       {activeFilters.length > 1 && (
         <button
           onClick={clearAll}
-          className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+          className="text-muted-foreground hover:text-foreground focus-visible:ring-primary/50 text-xs underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:outline-none"
         >
           Tout effacer
         </button>

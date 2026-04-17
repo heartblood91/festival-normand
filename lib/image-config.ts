@@ -8,4 +8,4 @@ export const IMAGE_PRESETS = {
 export type ImagePreset = keyof typeof IMAGE_PRESETS
 
 export const MAX_FILE_SIZE = 10 * 1024 * 1024
-export const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+export const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"]

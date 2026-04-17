@@ -6,7 +6,11 @@ import { ContactForm } from "@/components/contact/contact-form"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
-export const generateMetadata = async ({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> => {
+export const generateMetadata = async ({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> => {
   const { locale } = await params
   const t = await getTranslations({ locale })
 
@@ -50,9 +54,7 @@ const ContactPage = async ({ params }: ContactPageProps) => {
                 {t("contact.formTitle")}
               </h2>
             </div>
-            <p className="leading-relaxed text-white/70">
-              {t("contact.subtitle")}
-            </p>
+            <p className="leading-relaxed text-white/70">{t("contact.subtitle")}</p>
           </div>
 
           <div className="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl md:p-8">
@@ -62,12 +64,10 @@ const ContactPage = async ({ params }: ContactPageProps) => {
                 {t("contact.registerTitle")}
               </h2>
             </div>
-            <p className="mb-4 leading-relaxed text-white/70">
-              {t("contact.registerDescription")}
-            </p>
+            <p className="mb-4 leading-relaxed text-white/70">{t("contact.registerDescription")}</p>
             <Link
               href={`/${locale}/inscription`}
-              className="inline-flex min-h-[44px] items-center rounded-lg border border-amber-500/30 bg-amber-500/10 px-6 py-3 font-medium text-amber-400 transition-colors hover:bg-amber-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+              className="focus-visible:ring-primary/50 inline-flex min-h-[44px] items-center rounded-lg border border-amber-500/30 bg-amber-500/10 px-6 py-3 font-medium text-amber-400 transition-colors hover:bg-amber-500/20 focus-visible:ring-2 focus-visible:outline-none"
             >
               {t("contact.registerCta")}
             </Link>

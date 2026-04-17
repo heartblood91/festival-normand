@@ -45,9 +45,7 @@ test.describe("Event detail page", () => {
 
   test("shows description section", async ({ page }) => {
     await openFirstEvent(page)
-    await expect(
-      page.getByRole("heading", { name: "Description" })
-    ).toBeVisible()
+    await expect(page.getByRole("heading", { name: "Description" })).toBeVisible()
   })
 
   test("has back link that returns to events list", async ({ page }) => {

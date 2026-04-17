@@ -8,11 +8,9 @@ const PublicLoading = () => {
       <div className="flex flex-col items-center gap-4">
         <div className="relative size-12">
           <div className="absolute inset-0 animate-spin rounded-full bg-gradient-to-r from-amber-400 to-amber-600" />
-          <div className="absolute inset-1 rounded-full bg-background" />
+          <div className="bg-background absolute inset-1 rounded-full" />
         </div>
-        <p className="text-sm font-medium text-muted-foreground">
-          Chargement en cours...
-        </p>
+        <p className="text-muted-foreground text-sm font-medium">Chargement en cours...</p>
       </div>
     </div>
   )

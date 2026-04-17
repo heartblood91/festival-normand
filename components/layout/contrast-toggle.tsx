@@ -31,10 +31,10 @@ const ContrastToggle = () => {
       type="button"
       onClick={toggle}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+        "focus-visible:ring-primary/50 inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none",
         highContrast
           ? "bg-primary text-primary-foreground"
-          : "border border-white/10 text-muted-foreground hover:bg-white/5 hover:text-foreground"
+          : "text-muted-foreground hover:text-foreground border border-white/10 hover:bg-white/5"
       )}
       aria-pressed={highContrast}
     >

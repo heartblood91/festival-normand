@@ -94,7 +94,7 @@ const FilterModal = () => {
         <SlidersHorizontal className="size-4" />
         <span>Filtres</span>
         {activeFilterCount > 0 && (
-          <span className="flex size-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+          <span className="bg-primary text-primary-foreground flex size-5 items-center justify-center rounded-full text-xs font-bold">
             {activeFilterCount}
           </span>
         )}
@@ -115,15 +115,15 @@ const FilterModal = () => {
           />
 
           {/* Modal content */}
-          <div className="relative w-full max-w-lg rounded-t-2xl border border-white/10 bg-background p-6 md:rounded-2xl">
+          <div className="bg-background relative w-full max-w-lg rounded-t-2xl border border-white/10 p-6 md:rounded-2xl">
             {/* Header */}
             <div className="mb-6 flex items-center justify-between">
-              <h2 className="font-serif text-xl font-bold text-foreground">
+              <h2 className="text-foreground font-serif text-xl font-bold">
                 Filtrer les événements
               </h2>
               <button
                 onClick={() => setIsOpen(false)}
-                className="flex size-10 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                className="text-muted-foreground hover:text-foreground focus-visible:ring-primary/50 flex size-10 items-center justify-center rounded-lg transition-colors hover:bg-white/5 focus-visible:ring-2 focus-visible:outline-none"
                 aria-label="Fermer les filtres"
               >
                 <X className="size-5" />
@@ -184,14 +184,12 @@ const FilterModal = () => {
             {/* Accessibility toggle */}
             <div className="mb-6">
               <button
-                onClick={() =>
-                  setFilters((f) => ({ ...f, accessible: !f.accessible }))
-                }
+                onClick={() => setFilters((f) => ({ ...f, accessible: !f.accessible }))}
                 className={cn(
-                  "flex w-full items-center justify-between rounded-xl border p-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+                  "focus-visible:ring-primary/50 flex w-full items-center justify-between rounded-xl border p-4 text-left transition-colors focus-visible:ring-2 focus-visible:outline-none",
                   filters.accessible
                     ? "border-primary/30 bg-primary/10 text-foreground"
-                    : "border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10"
+                    : "text-muted-foreground border-white/10 bg-white/5 hover:bg-white/10"
                 )}
                 role="switch"
                 aria-checked={filters.accessible}
@@ -206,7 +204,7 @@ const FilterModal = () => {
                 >
                   <span
                     className={cn(
-                      "absolute left-0.5 top-0.5 size-5 rounded-full bg-white transition-transform",
+                      "absolute top-0.5 left-0.5 size-5 rounded-full bg-white transition-transform",
                       filters.accessible && "translate-x-5"
                     )}
                   />
@@ -216,19 +214,10 @@ const FilterModal = () => {
 
             {/* Actions */}
             <div className="flex gap-3">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={handleClearAll}
-                className="flex-1"
-              >
+              <Button type="button" variant="ghost" onClick={handleClearAll} className="flex-1">
                 Tout effacer
               </Button>
-              <Button
-                type="button"
-                onClick={handleApply}
-                className="flex-1"
-              >
+              <Button type="button" onClick={handleApply} className="flex-1">
                 Valider
               </Button>
             </div>
@@ -246,9 +235,7 @@ type FilterGroupProps = {
 
 const FilterGroup = ({ label, children }: FilterGroupProps) => (
   <fieldset className="mb-5">
-    <legend className="mb-2.5 text-sm font-medium text-muted-foreground">
-      {label}
-    </legend>
+    <legend className="text-muted-foreground mb-2.5 text-sm font-medium">{label}</legend>
     <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={label}>
       {children}
     </div>
@@ -268,10 +255,10 @@ const RadioOption = ({ label, selected, onClick }: RadioOptionProps) => (
     aria-checked={selected}
     onClick={onClick}
     className={cn(
-      "rounded-full border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+      "focus-visible:ring-primary/50 rounded-full border px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none",
       selected
         ? "border-primary/30 bg-primary/10 text-primary"
-        : "border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
+        : "text-muted-foreground hover:text-foreground border-white/10 bg-white/5 hover:bg-white/10"
     )}
   >
     {label}

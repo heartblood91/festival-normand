@@ -38,7 +38,7 @@ export const TranslationStep = ({
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="font-semibold text-white mb-2">Review Translation</h3>
+        <h3 className="mb-2 font-semibold text-white">Review Translation</h3>
         <p className="text-sm text-slate-400">
           {sourceLocale === "fr" ? "French → English" : "English → French"}
         </p>
@@ -50,29 +50,27 @@ export const TranslationStep = ({
           <p className="mt-2 text-sm text-slate-400">Translating content...</p>
         </div>
       ) : (
-        <div className="space-y-4 max-h-[400px] overflow-y-auto">
+        <div className="max-h-[400px] space-y-4 overflow-y-auto">
           {entries.map(([key, sourceValue]) => (
             <div key={key} className="rounded-lg border border-white/10 bg-white/5 p-4">
-              <p className="text-xs uppercase tracking-wide text-amber-400 font-semibold mb-2">
+              <p className="mb-2 text-xs font-semibold tracking-wide text-amber-400 uppercase">
                 {key}
               </p>
 
-              <div className="grid gap-4 md:grid-cols-2 mb-3">
+              <div className="mb-3 grid gap-4 md:grid-cols-2">
                 <div>
-                  <p className="text-xs text-slate-400 mb-1">Source</p>
-                  <div className="p-3 rounded bg-slate-900/50 border border-white/5">
-                    <p className="text-sm text-slate-200 whitespace-pre-wrap">
-                      {sourceValue}
-                    </p>
+                  <p className="mb-1 text-xs text-slate-400">Source</p>
+                  <div className="rounded border border-white/5 bg-slate-900/50 p-3">
+                    <p className="text-sm whitespace-pre-wrap text-slate-200">{sourceValue}</p>
                   </div>
                 </div>
 
                 <div>
-                  <p className="text-xs text-slate-400 mb-1">Translation</p>
+                  <p className="mb-1 text-xs text-slate-400">Translation</p>
                   <textarea
                     value={translatedFields[key] || ""}
                     onChange={(e) => onEdit(key, e.target.value)}
-                    className="w-full p-3 rounded bg-slate-900/50 border border-amber-500/20 text-sm text-slate-200 placeholder:text-slate-500 focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20 resize-none"
+                    className="w-full resize-none rounded border border-amber-500/20 bg-slate-900/50 p-3 text-sm text-slate-200 placeholder:text-slate-500 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
                     rows={3}
                   />
                 </div>
@@ -87,12 +85,12 @@ export const TranslationStep = ({
               >
                 {copied === key ? (
                   <>
-                    <Check className="h-3.5 w-3.5 mr-1.5" />
+                    <Check className="mr-1.5 h-3.5 w-3.5" />
                     Copied
                   </>
                 ) : (
                   <>
-                    <Copy className="h-3.5 w-3.5 mr-1.5" />
+                    <Copy className="mr-1.5 h-3.5 w-3.5" />
                     Copy
                   </>
                 )}

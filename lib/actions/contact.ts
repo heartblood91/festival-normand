@@ -56,8 +56,7 @@ export const sendContactEmail = async (
     if (isRateLimited(email)) {
       return {
         success: false,
-        message:
-          "Veuillez patienter une minute avant d'envoyer un nouveau message.",
+        message: "Veuillez patienter une minute avant d'envoyer un nouveau message.",
       }
     }
 
@@ -87,8 +86,7 @@ export const sendContactEmail = async (
   } catch {
     return {
       success: false,
-      message:
-        "Une erreur est survenue lors de l'envoi du message. Veuillez réessayer.",
+      message: "Une erreur est survenue lors de l'envoi du message. Veuillez réessayer.",
     }
   }
 }

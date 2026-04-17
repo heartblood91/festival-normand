@@ -35,14 +35,14 @@ const Pagination = ({ currentPage, totalPages }: PaginationProps) => {
           {currentPage > 1 ? (
             <Link
               href={buildHref(currentPage - 1)}
-              className="flex size-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 md:size-11"
+              className="text-muted-foreground hover:text-foreground focus-visible:ring-primary/50 flex size-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:outline-none md:size-11"
               aria-label="Page précédente"
             >
               <ChevronLeft className="size-4" />
             </Link>
           ) : (
             <span
-              className="flex size-10 items-center justify-center rounded-lg border border-white/5 text-muted-foreground/30 md:size-11"
+              className="text-muted-foreground/30 flex size-10 items-center justify-center rounded-lg border border-white/5 md:size-11"
               aria-disabled="true"
             >
               <ChevronLeft className="size-4" />
@@ -53,7 +53,7 @@ const Pagination = ({ currentPage, totalPages }: PaginationProps) => {
         {pages.map((p, i) =>
           p === "..." ? (
             <li key={`ellipsis-${i}`}>
-              <span className="flex size-10 items-center justify-center text-muted-foreground md:size-11">
+              <span className="text-muted-foreground flex size-10 items-center justify-center md:size-11">
                 …
               </span>
             </li>
@@ -62,10 +62,10 @@ const Pagination = ({ currentPage, totalPages }: PaginationProps) => {
               <Link
                 href={buildHref(p as number)}
                 className={cn(
-                  "flex size-10 items-center justify-center rounded-lg border text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 md:size-11",
+                  "focus-visible:ring-primary/50 flex size-10 items-center justify-center rounded-lg border text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none md:size-11",
                   p === currentPage
                     ? "border-primary/30 bg-primary/10 text-primary"
-                    : "border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
+                    : "text-muted-foreground hover:text-foreground border-white/10 bg-white/5 hover:bg-white/10"
                 )}
                 aria-label={`Page ${p}`}
                 aria-current={p === currentPage ? "page" : undefined}
@@ -80,14 +80,14 @@ const Pagination = ({ currentPage, totalPages }: PaginationProps) => {
           {currentPage < totalPages ? (
             <Link
               href={buildHref(currentPage + 1)}
-              className="flex size-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 md:size-11"
+              className="text-muted-foreground hover:text-foreground focus-visible:ring-primary/50 flex size-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:outline-none md:size-11"
               aria-label="Page suivante"
             >
               <ChevronRight className="size-4" />
             </Link>
           ) : (
             <span
-              className="flex size-10 items-center justify-center rounded-lg border border-white/5 text-muted-foreground/30 md:size-11"
+              className="text-muted-foreground/30 flex size-10 items-center justify-center rounded-lg border border-white/5 md:size-11"
               aria-disabled="true"
             >
               <ChevronRight className="size-4" />

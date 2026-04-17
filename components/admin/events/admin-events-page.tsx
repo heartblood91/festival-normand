@@ -3,17 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import {
-  Plus,
-  Search,
-  Pencil,
-  Trash2,
-  Star,
-  Eye,
-  EyeOff,
-  Accessibility,
-  X,
-} from "lucide-react"
+import { Plus, Search, Pencil, Trash2, Star, Eye, EyeOff, Accessibility, X } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -198,7 +188,9 @@ export const AdminEventsPage = ({
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
           <h1 className="font-serif text-2xl font-bold text-amber-500">Événements</h1>
-          <p className="mt-1 text-sm text-slate-400">{total} résultat{total !== 1 ? "s" : ""}</p>
+          <p className="mt-1 text-sm text-slate-400">
+            {total} résultat{total !== 1 ? "s" : ""}
+          </p>
         </div>
         <Link href="/admin/events/new">
           <Button className="w-full md:w-auto">
@@ -210,7 +202,7 @@ export const AdminEventsPage = ({
 
       <form onSubmit={handleSearch} className="mb-6">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <Input
             type="search"
             placeholder="Rechercher par titre, ville ou lieu..."
@@ -226,7 +218,7 @@ export const AdminEventsPage = ({
                 router.push(`/admin/events${params.toString() ? `?${params}` : ""}`)
               }
             }}
-            className="border-white/10 bg-white/5 pl-10 pr-10 text-white placeholder:text-slate-500"
+            className="border-white/10 bg-white/5 pr-10 pl-10 text-white placeholder:text-slate-500"
             aria-label="Rechercher des événements"
           />
           {searchQuery && (
@@ -241,7 +233,7 @@ export const AdminEventsPage = ({
                 params.set("page", "1")
                 router.push(`/admin/events${params.toString() ? `?${params}` : ""}`)
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 hover:text-slate-200"
               aria-label="Effacer la recherche"
             >
               ×
@@ -267,153 +259,159 @@ export const AdminEventsPage = ({
       ) : (
         <>
           <div className="overflow-x-auto rounded-xl border border-white/10">
-          <table className="w-full text-sm" role="table">
-            <thead>
-              <tr className="border-b border-white/10 bg-white/5">
-                <th className="w-10 px-4 py-3">
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.size === items.length && items.length > 0}
-                    onChange={(e) => handleSelectAll(e.target.checked)}
-                    className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
-                    aria-label="Sélectionner tous les événements"
-                  />
-                </th>
-                <th className="px-4 py-3 text-left font-medium text-slate-300">
-                  Titre
-                </th>
-                <th className="hidden px-4 py-3 text-left font-medium text-slate-300 md:table-cell">
-                  Ville
-                </th>
-                <th className="hidden px-4 py-3 text-left font-medium text-slate-300 lg:table-cell">
-                  Département
-                </th>
-                <th className="hidden px-4 py-3 text-left font-medium text-slate-300 md:table-cell">
-                  Catégorie
-                </th>
-                <th className="hidden px-4 py-3 text-left font-medium text-slate-300 lg:table-cell">
-                  Date
-                </th>
-                <th className="px-4 py-3 text-center font-medium text-slate-300">
-                  Statut
-                </th>
-                <th className="px-4 py-3 text-right font-medium text-slate-300">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((event) => (
-                <tr
-                  key={event.id}
-                  className={`border-b border-white/5 transition-colors ${selectedIds.has(event.id) ? "bg-amber-500/10" : "hover:bg-white/5"}`}
-                >
-                  <td className="w-10 px-4 py-3">
+            <table className="w-full text-sm" role="table">
+              <thead>
+                <tr className="border-b border-white/10 bg-white/5">
+                  <th className="w-10 px-4 py-3">
                     <input
                       type="checkbox"
-                      checked={selectedIds.has(event.id)}
-                      onChange={() => handleToggleSelect(event.id)}
+                      checked={selectedIds.size === items.length && items.length > 0}
+                      onChange={(e) => handleSelectAll(e.target.checked)}
                       className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
-                      aria-label={`Sélectionner ${event.titleFr}`}
+                      aria-label="Sélectionner tous les événements"
                     />
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-medium text-white">{event.titleFr}</span>
-                      {event.featured && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-400" aria-label="À la une">
-                          <Star className="size-3 fill-amber-400" aria-hidden="true" />
-                          À la une
-                        </span>
-                      )}
-                      {event.accessible && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/20 px-2 py-0.5 text-xs font-medium text-blue-400" aria-label="Accessible PMR">
-                          <Accessibility className="size-3" aria-hidden="true" />
-                          PMR
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="hidden px-4 py-3 text-slate-400 md:table-cell">
-                    {event.city}
-                  </td>
-                  <td className="hidden px-4 py-3 text-slate-400 lg:table-cell">
-                    {DEPARTMENT_LABELS[event.department] || event.department}
-                  </td>
-                  <td className="hidden px-4 py-3 text-slate-400 md:table-cell">
-                    {CATEGORY_LABELS[event.category] || event.category}
-                  </td>
-                  <td className="hidden px-4 py-3 text-slate-400 lg:table-cell">
-                    {formatDate(event.dateStart)}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    {event.published ? (
-                      <span className="inline-flex items-center gap-1 text-emerald-400" aria-label="Publié">
-                        <Eye className="h-3.5 w-3.5" />
-                        <span className="hidden md:inline">Publié</span>
-                      </span>
-                    ) : event.unpublishedAt ? (
-                      <span className="inline-flex items-center gap-1 text-orange-400" aria-label="Dépublié">
-                        <EyeOff className="h-3.5 w-3.5" />
-                        <span className="hidden md:inline">Dépublié</span>
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-slate-500" aria-label="Brouillon">
-                        <EyeOff className="h-3.5 w-3.5" />
-                        <span className="hidden md:inline">Brouillon</span>
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Link href={`/admin/events/${event.id}/edit`}>
-                        <Button
-                          variant="ghost"
-                          size="icon-sm"
-                          aria-label={`Modifier ${event.titleFr}`}
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
-                      </Link>
-                      <AlertDialog>
-                        <AlertDialogTrigger
-                          render={
-                            <Button
-                              variant="ghost"
-                              size="icon-sm"
-                              className="text-red-400 hover:text-red-300"
-                              aria-label={`Supprimer ${event.titleFr}`}
-                            />
-                          }
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Supprimer l&apos;événement</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Êtes-vous sûr de vouloir supprimer &quot;{event.titleFr}&quot; ?
-                              Cette action est irréversible.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Annuler</AlertDialogCancel>
-                            <AlertDialogAction
-                              variant="destructive"
-                              onClick={() => handleDelete(event.id)}
-                              disabled={isDeleting === event.id}
-                            >
-                              {isDeleting === event.id ? "Suppression..." : "Supprimer"}
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  </td>
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-slate-300">Titre</th>
+                  <th className="hidden px-4 py-3 text-left font-medium text-slate-300 md:table-cell">
+                    Ville
+                  </th>
+                  <th className="hidden px-4 py-3 text-left font-medium text-slate-300 lg:table-cell">
+                    Département
+                  </th>
+                  <th className="hidden px-4 py-3 text-left font-medium text-slate-300 md:table-cell">
+                    Catégorie
+                  </th>
+                  <th className="hidden px-4 py-3 text-left font-medium text-slate-300 lg:table-cell">
+                    Date
+                  </th>
+                  <th className="px-4 py-3 text-center font-medium text-slate-300">Statut</th>
+                  <th className="px-4 py-3 text-right font-medium text-slate-300">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {items.map((event) => (
+                  <tr
+                    key={event.id}
+                    className={`border-b border-white/5 transition-colors ${selectedIds.has(event.id) ? "bg-amber-500/10" : "hover:bg-white/5"}`}
+                  >
+                    <td className="w-10 px-4 py-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(event.id)}
+                        onChange={() => handleToggleSelect(event.id)}
+                        className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
+                        aria-label={`Sélectionner ${event.titleFr}`}
+                      />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-medium text-white">{event.titleFr}</span>
+                        {event.featured && (
+                          <span
+                            className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-400"
+                            aria-label="À la une"
+                          >
+                            <Star className="size-3 fill-amber-400" aria-hidden="true" />À la une
+                          </span>
+                        )}
+                        {event.accessible && (
+                          <span
+                            className="inline-flex items-center gap-1 rounded-full bg-blue-500/20 px-2 py-0.5 text-xs font-medium text-blue-400"
+                            aria-label="Accessible PMR"
+                          >
+                            <Accessibility className="size-3" aria-hidden="true" />
+                            PMR
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="hidden px-4 py-3 text-slate-400 md:table-cell">{event.city}</td>
+                    <td className="hidden px-4 py-3 text-slate-400 lg:table-cell">
+                      {DEPARTMENT_LABELS[event.department] || event.department}
+                    </td>
+                    <td className="hidden px-4 py-3 text-slate-400 md:table-cell">
+                      {CATEGORY_LABELS[event.category] || event.category}
+                    </td>
+                    <td className="hidden px-4 py-3 text-slate-400 lg:table-cell">
+                      {formatDate(event.dateStart)}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {event.published ? (
+                        <span
+                          className="inline-flex items-center gap-1 text-emerald-400"
+                          aria-label="Publié"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          <span className="hidden md:inline">Publié</span>
+                        </span>
+                      ) : event.unpublishedAt ? (
+                        <span
+                          className="inline-flex items-center gap-1 text-orange-400"
+                          aria-label="Dépublié"
+                        >
+                          <EyeOff className="h-3.5 w-3.5" />
+                          <span className="hidden md:inline">Dépublié</span>
+                        </span>
+                      ) : (
+                        <span
+                          className="inline-flex items-center gap-1 text-slate-500"
+                          aria-label="Brouillon"
+                        >
+                          <EyeOff className="h-3.5 w-3.5" />
+                          <span className="hidden md:inline">Brouillon</span>
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <Link href={`/admin/events/${event.id}/edit`}>
+                          <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            aria-label={`Modifier ${event.titleFr}`}
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Button>
+                        </Link>
+                        <AlertDialog>
+                          <AlertDialogTrigger
+                            render={
+                              <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                className="text-red-400 hover:text-red-300"
+                                aria-label={`Supprimer ${event.titleFr}`}
+                              />
+                            }
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Supprimer l&apos;événement</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Êtes-vous sûr de vouloir supprimer &quot;{event.titleFr}&quot; ?
+                                Cette action est irréversible.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Annuler</AlertDialogCancel>
+                              <AlertDialogAction
+                                variant="destructive"
+                                onClick={() => handleDelete(event.id)}
+                                disabled={isDeleting === event.id}
+                              >
+                                {isDeleting === event.id ? "Suppression..." : "Supprimer"}
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
           <AdminPagination
@@ -447,7 +445,7 @@ export const AdminEventsPage = ({
             </Button>
             <AlertDialog>
               <AlertDialogTrigger
-                className="inline-flex h-7 items-center gap-1.5 rounded-md bg-destructive px-2.5 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50"
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90 inline-flex h-7 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium disabled:opacity-50"
                 disabled={isBulkDeleting}
               >
                 <Trash2 className="size-3.5" />
@@ -457,7 +455,8 @@ export const AdminEventsPage = ({
                 <AlertDialogHeader>
                   <AlertDialogTitle>Supprimer les événements</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Êtes-vous sûr de vouloir supprimer {selectedIds.size} événement{selectedIds.size > 1 ? "s" : ""} ? Cette action est irréversible.
+                    Êtes-vous sûr de vouloir supprimer {selectedIds.size} événement
+                    {selectedIds.size > 1 ? "s" : ""} ? Cette action est irréversible.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

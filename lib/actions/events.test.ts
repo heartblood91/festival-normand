@@ -21,13 +21,7 @@ vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
 }))
 
-import {
-  createEvent,
-  updateEvent,
-  deleteEvent,
-  getAdminEvents,
-  getAdminEventById,
-} from "./events"
+import { createEvent, updateEvent, deleteEvent, getAdminEvents, getAdminEventById } from "./events"
 
 const createFormData = (data: Record<string, string>): FormData => {
   const formData = new FormData()
@@ -159,10 +153,7 @@ describe("updateEvent", () => {
   })
 
   it("returns validation errors for invalid data", async () => {
-    const result = await updateEvent(
-      "test-id",
-      createFormData({ ...validEventData, city: "" })
-    )
+    const result = await updateEvent("test-id", createFormData({ ...validEventData, city: "" }))
 
     expect(result.success).toBe(false)
     expect(result.errors?.city).toBeDefined()

@@ -150,9 +150,7 @@ describe("getEvents", () => {
     )
     const call = prismaMock.event.findMany.mock.calls[0][0]
     expect(call.where.AND).toBeDefined()
-    const idFilter = call.where.AND.find(
-      (c: Record<string, unknown>) => c.id
-    )
+    const idFilter = call.where.AND.find((c: Record<string, unknown>) => c.id)
     expect(idFilter.id.in).toEqual(["match-1"])
   })
 
@@ -171,12 +169,15 @@ describe("getEvents", () => {
     prismaMock.event.findMany.mockResolvedValue([])
     prismaMock.event.count.mockResolvedValue(0)
 
-    await getEvents({
-      category: "VISITES" as never,
-      department: "ORNE" as never,
-      accessible: true,
-      search: "Alençon",
-    }, "fr")
+    await getEvents(
+      {
+        category: "VISITES" as never,
+        department: "ORNE" as never,
+        accessible: true,
+        search: "Alençon",
+      },
+      "fr"
+    )
 
     const call = prismaMock.event.findMany.mock.calls[0][0]
     expect(call.where.category).toBe("VISITES")

@@ -163,7 +163,8 @@ const EventsMap = ({ events }: EventsMapProps) => {
           className: "pel-popup",
         })
           .setLngLat(coords)
-          .setHTML(`
+          .setHTML(
+            `
             <div style="background:#1e293b;border-radius:8px;overflow:hidden;color:#e2e8f0;font-family:Inter,sans-serif;">
               ${imageHtml}
               <div style="padding:12px;">
@@ -178,15 +179,24 @@ const EventsMap = ({ events }: EventsMapProps) => {
                 </a>
               </div>
             </div>
-          `)
+          `
+          )
           .addTo(map)
       })
 
       // Cursor pointer on hover
-      map.on("mouseenter", "clusters", () => { map.getCanvas().style.cursor = "pointer" })
-      map.on("mouseleave", "clusters", () => { map.getCanvas().style.cursor = "" })
-      map.on("mouseenter", "unclustered-point", () => { map.getCanvas().style.cursor = "pointer" })
-      map.on("mouseleave", "unclustered-point", () => { map.getCanvas().style.cursor = "" })
+      map.on("mouseenter", "clusters", () => {
+        map.getCanvas().style.cursor = "pointer"
+      })
+      map.on("mouseleave", "clusters", () => {
+        map.getCanvas().style.cursor = ""
+      })
+      map.on("mouseenter", "unclustered-point", () => {
+        map.getCanvas().style.cursor = "pointer"
+      })
+      map.on("mouseleave", "unclustered-point", () => {
+        map.getCanvas().style.cursor = ""
+      })
     })
 
     mapRef.current = map
@@ -218,9 +228,7 @@ const EventsMap = ({ events }: EventsMapProps) => {
         role="img"
         aria-label={t("a11y.mapDescription")}
       />
-      <p className="sr-only">
-        {t("a11y.mapSrOnly")}
-      </p>
+      <p className="sr-only">{t("a11y.mapSrOnly")}</p>
     </>
   )
 }

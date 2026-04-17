@@ -71,33 +71,18 @@ export const FormActionBar = ({
             Traduire
           </Button>
 
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleSeo}
-          >
+          <Button type="button" variant="outline" size="sm" onClick={handleSeo}>
             <Search className="mr-2 h-4 w-4" />
             SEO
           </Button>
 
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleRgaa}
-          >
+          <Button type="button" variant="outline" size="sm" onClick={handleRgaa}>
             <AccessibilityIcon className="mr-2 h-4 w-4" />
             RGAA
           </Button>
 
           {previewUrl && (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setPreviewOpen(true)}
-            >
+            <Button type="button" variant="outline" size="sm" onClick={() => setPreviewOpen(true)}>
               <Eye className="mr-2 h-4 w-4" />
               Aperçu
             </Button>
@@ -111,20 +96,17 @@ export const FormActionBar = ({
               // Auto-submit after state update so the change persists
               requestAnimationFrame(() => onSubmit?.())
             }}
-            className={isPublished
-              ? "border-orange-500/30 bg-orange-500/10 text-orange-400 hover:bg-orange-500/20"
-              : "border-blue-500/30 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20"
+            className={
+              isPublished
+                ? "border-orange-500/30 bg-orange-500/10 text-orange-400 hover:bg-orange-500/20"
+                : "border-blue-500/30 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20"
             }
           >
             {isPublished ? "Dépublier" : "Publier"}
           </Button>
 
           {onSubmit && (
-            <Button
-              type="button"
-              onClick={onSubmit}
-              disabled={isSubmitting}
-            >
+            <Button type="button" onClick={onSubmit} disabled={isSubmitting}>
               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {saveLabel}
             </Button>
@@ -133,11 +115,7 @@ export const FormActionBar = ({
       </div>
 
       {previewUrl && (
-        <PreviewDrawer
-          url={previewUrl}
-          open={previewOpen}
-          onClose={() => setPreviewOpen(false)}
-        />
+        <PreviewDrawer url={previewUrl} open={previewOpen} onClose={() => setPreviewOpen(false)} />
       )}
     </>
   )

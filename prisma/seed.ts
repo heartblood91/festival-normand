@@ -1,9 +1,9 @@
-import 'dotenv/config'
-import { PrismaClient, Department, Category } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+import "dotenv/config"
+import { PrismaClient, Department, Category } from "@prisma/client"
+import { PrismaPg } from "@prisma/adapter-pg"
 
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
-const prisma = new PrismaClient({ adapter });
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+const prisma = new PrismaClient({ adapter })
 
 const clearDatabase = async () => {
   await prisma.$executeRawUnsafe(`
@@ -15,9 +15,9 @@ const clearDatabase = async () => {
         EXECUTE 'TRUNCATE TABLE "' || r.tablename || '" CASCADE';
       END LOOP;
     END $$;
-  `);
-  console.log("Database cleared.");
-};
+  `)
+  console.log("Database cleared.")
+}
 
 const seedEvents = async () => {
   const events = [
@@ -25,7 +25,8 @@ const seedEvents = async () => {
     {
       titleFr: "Illumination de l'Abbaye aux Hommes",
       slug: "illumination-abbaye-aux-hommes",
-      descriptionFr: "Découvrez l'Abbaye aux Hommes de Caen sous un éclairage spectaculaire mettant en valeur son architecture romane et gothique. Un parcours lumineux vous guidera à travers les jardins et les cloîtres.",
+      descriptionFr:
+        "Découvrez l'Abbaye aux Hommes de Caen sous un éclairage spectaculaire mettant en valeur son architecture romane et gothique. Un parcours lumineux vous guidera à travers les jardins et les cloîtres.",
       location: "Abbaye aux Hommes",
       city: "Caen",
       postalCode: "14000",
@@ -47,7 +48,8 @@ const seedEvents = async () => {
     {
       titleFr: "Visite nocturne du Château de Falaise",
       slug: "visite-nocturne-chateau-falaise",
-      descriptionFr: "Visitez le château natal de Guillaume le Conquérant à la lueur des torches. Des guides costumés vous raconteront l'histoire fascinante de cette forteresse médiévale.",
+      descriptionFr:
+        "Visitez le château natal de Guillaume le Conquérant à la lueur des torches. Des guides costumés vous raconteront l'histoire fascinante de cette forteresse médiévale.",
       location: "Château Guillaume-le-Conquérant",
       city: "Falaise",
       postalCode: "14700",
@@ -68,7 +70,8 @@ const seedEvents = async () => {
     {
       titleFr: "Exposition 'Lumières sur le Bessin'",
       slug: "exposition-lumieres-bessin",
-      descriptionFr: "Exposition photographique en plein air sur le patrimoine du Bessin, installée sur les remparts de la cathédrale de Bayeux.",
+      descriptionFr:
+        "Exposition photographique en plein air sur le patrimoine du Bessin, installée sur les remparts de la cathédrale de Bayeux.",
       location: "Cathédrale Notre-Dame de Bayeux",
       city: "Bayeux",
       postalCode: "14400",
@@ -90,7 +93,8 @@ const seedEvents = async () => {
     {
       titleFr: "Son et Lumière au Château Gaillard",
       slug: "son-lumiere-chateau-gaillard",
-      descriptionFr: "Spectacle son et lumière projeté sur les ruines du Château Gaillard, forteresse construite par Richard Cœur de Lion. Une plongée dans l'histoire médiévale normande.",
+      descriptionFr:
+        "Spectacle son et lumière projeté sur les ruines du Château Gaillard, forteresse construite par Richard Cœur de Lion. Une plongée dans l'histoire médiévale normande.",
       location: "Château Gaillard",
       city: "Les Andelys",
       postalCode: "27700",
@@ -112,7 +116,8 @@ const seedEvents = async () => {
     {
       titleFr: "Animations médiévales à l'Abbaye du Bec-Hellouin",
       slug: "animations-medievales-bec-hellouin",
-      descriptionFr: "Reconstitutions historiques, ateliers d'enluminure et de calligraphie dans le cadre exceptionnel de l'abbaye bénédictine du Bec-Hellouin.",
+      descriptionFr:
+        "Reconstitutions historiques, ateliers d'enluminure et de calligraphie dans le cadre exceptionnel de l'abbaye bénédictine du Bec-Hellouin.",
       location: "Abbaye du Bec-Hellouin",
       city: "Le Bec-Hellouin",
       postalCode: "27800",
@@ -131,7 +136,8 @@ const seedEvents = async () => {
     {
       titleFr: "Visite guidée du Moulin d'Andé",
       slug: "visite-guidee-moulin-ande",
-      descriptionFr: "Découverte du moulin historique d'Andé, lieu de création artistique et cinématographique depuis les années 60.",
+      descriptionFr:
+        "Découverte du moulin historique d'Andé, lieu de création artistique et cinématographique depuis les années 60.",
       location: "Moulin d'Andé",
       city: "Andé",
       postalCode: "27430",
@@ -152,7 +158,8 @@ const seedEvents = async () => {
     {
       titleFr: "Illumination du Mont-Saint-Michel",
       slug: "illumination-mont-saint-michel",
-      descriptionFr: "Le Mont-Saint-Michel s'illumine pour Pierres en Lumières. Un spectacle féerique sur la merveille de l'Occident avec mapping vidéo sur la façade de l'abbatiale.",
+      descriptionFr:
+        "Le Mont-Saint-Michel s'illumine pour Pierres en Lumières. Un spectacle féerique sur la merveille de l'Occident avec mapping vidéo sur la façade de l'abbatiale.",
       location: "Abbaye du Mont-Saint-Michel",
       city: "Le Mont-Saint-Michel",
       postalCode: "50170",
@@ -174,7 +181,8 @@ const seedEvents = async () => {
     {
       titleFr: "Exposition 'Patrimoine Maritime' à Cherbourg",
       slug: "exposition-patrimoine-maritime-cherbourg",
-      descriptionFr: "Exposition immersive sur le patrimoine maritime du Cotentin à la Cité de la Mer. Maquettes, objets historiques et témoignages de marins.",
+      descriptionFr:
+        "Exposition immersive sur le patrimoine maritime du Cotentin à la Cité de la Mer. Maquettes, objets historiques et témoignages de marins.",
       location: "Cité de la Mer",
       city: "Cherbourg-en-Cotentin",
       postalCode: "50100",
@@ -194,7 +202,8 @@ const seedEvents = async () => {
     {
       titleFr: "Animations au Château de Pirou",
       slug: "animations-chateau-pirou",
-      descriptionFr: "Animations familiales au château fort de Pirou : tir à l'arc, forge, contes et légendes normandes autour du feu.",
+      descriptionFr:
+        "Animations familiales au château fort de Pirou : tir à l'arc, forge, contes et légendes normandes autour du feu.",
       location: "Château de Pirou",
       city: "Pirou",
       postalCode: "50770",
@@ -215,7 +224,8 @@ const seedEvents = async () => {
     {
       titleFr: "Illumination du Haras du Pin",
       slug: "illumination-haras-du-pin",
-      descriptionFr: "Le 'Versailles du cheval' s'illumine. Parcours lumineux dans les écuries royales et spectacle équestre nocturne dans la cour d'honneur.",
+      descriptionFr:
+        "Le 'Versailles du cheval' s'illumine. Parcours lumineux dans les écuries royales et spectacle équestre nocturne dans la cour d'honneur.",
       location: "Haras national du Pin",
       city: "Le Pin-au-Haras",
       postalCode: "61310",
@@ -237,7 +247,8 @@ const seedEvents = async () => {
     {
       titleFr: "Visite de la Maison d'Oze à Alençon",
       slug: "visite-maison-oze-alencon",
-      descriptionFr: "Visite commentée de la Maison d'Ozé, joyau de l'architecture Renaissance alençonnaise, avec démonstration de dentelle au point d'Alençon.",
+      descriptionFr:
+        "Visite commentée de la Maison d'Ozé, joyau de l'architecture Renaissance alençonnaise, avec démonstration de dentelle au point d'Alençon.",
       location: "Maison d'Ozé",
       city: "Alençon",
       postalCode: "61000",
@@ -256,7 +267,8 @@ const seedEvents = async () => {
     {
       titleFr: "Exposition d'art sacré à Sées",
       slug: "exposition-art-sacre-sees",
-      descriptionFr: "Exposition d'art sacré dans la cathédrale de Sées mettant en lumière les trésors de l'art religieux ornais du Moyen Âge au XIXe siècle.",
+      descriptionFr:
+        "Exposition d'art sacré dans la cathédrale de Sées mettant en lumière les trésors de l'art religieux ornais du Moyen Âge au XIXe siècle.",
       location: "Cathédrale Notre-Dame de Sées",
       city: "Sées",
       postalCode: "61500",
@@ -278,7 +290,8 @@ const seedEvents = async () => {
     {
       titleFr: "Illumination de l'Abbatiale de Fécamp",
       slug: "illumination-abbatiale-fecamp",
-      descriptionFr: "L'abbatiale de la Trinité de Fécamp, l'une des plus grandes églises de France, se pare de lumières. Mapping vidéo sur la façade et concert de carillons.",
+      descriptionFr:
+        "L'abbatiale de la Trinité de Fécamp, l'une des plus grandes églises de France, se pare de lumières. Mapping vidéo sur la façade et concert de carillons.",
       location: "Abbatiale de la Trinité",
       city: "Fécamp",
       postalCode: "76400",
@@ -300,7 +313,8 @@ const seedEvents = async () => {
     {
       titleFr: "Visite nocturne de la Cathédrale de Rouen",
       slug: "visite-nocturne-cathedrale-rouen",
-      descriptionFr: "Visite exceptionnelle de la cathédrale Notre-Dame de Rouen de nuit, avec accès aux parties habituellement fermées au public et projection lumineuse intérieure.",
+      descriptionFr:
+        "Visite exceptionnelle de la cathédrale Notre-Dame de Rouen de nuit, avec accès aux parties habituellement fermées au public et projection lumineuse intérieure.",
       location: "Cathédrale Notre-Dame de Rouen",
       city: "Rouen",
       postalCode: "76000",
@@ -321,7 +335,8 @@ const seedEvents = async () => {
     {
       titleFr: "Animations au Château de Dieppe",
       slug: "animations-chateau-dieppe",
-      descriptionFr: "Le château-musée de Dieppe propose des animations pour toute la famille : ateliers de sculpture sur ivoire, contes de pirates et dégustations de produits locaux.",
+      descriptionFr:
+        "Le château-musée de Dieppe propose des animations pour toute la famille : ateliers de sculpture sur ivoire, contes de pirates et dégustations de produits locaux.",
       location: "Château-Musée de Dieppe",
       city: "Dieppe",
       postalCode: "76200",
@@ -340,7 +355,8 @@ const seedEvents = async () => {
     {
       titleFr: "Exposition 'Impressionnisme et Patrimoine' à Étretat",
       slug: "exposition-impressionnisme-patrimoine-etretat",
-      descriptionFr: "Exposition en plein air reproduisant les tableaux impressionnistes sur les lieux mêmes où ils furent peints. Un dialogue entre art et paysage.",
+      descriptionFr:
+        "Exposition en plein air reproduisant les tableaux impressionnistes sur les lieux mêmes où ils furent peints. Un dialogue entre art et paysage.",
       location: "Jardins d'Étretat",
       city: "Étretat",
       postalCode: "76790",
@@ -357,20 +373,21 @@ const seedEvents = async () => {
       longitude: 0.2042,
       accessible: true,
     },
-  ];
+  ]
 
   for (const event of events) {
-    await prisma.event.create({ data: event });
+    await prisma.event.create({ data: event })
   }
-  console.log(`${events.length} events seeded.`);
-};
+  console.log(`${events.length} events seeded.`)
+}
 
 const seedNews = async () => {
   const articles = [
     {
       titleFr: "Pierres en Lumières 2026 : le programme dévoilé",
       slug: "programme-2026-devoile",
-      excerptFr: "Découvrez le programme complet de l'édition 2026 du festival Pierres en Lumières qui se tiendra les 29, 30 et 31 mai.",
+      excerptFr:
+        "Découvrez le programme complet de l'édition 2026 du festival Pierres en Lumières qui se tiendra les 29, 30 et 31 mai.",
       contentFr: `# Pierres en Lumières 2026 : un programme exceptionnel
 
 L'édition 2026 du festival **Pierres en Lumières** promet d'être la plus ambitieuse jamais organisée en Normandie.
@@ -417,7 +434,8 @@ Les inscriptions pour les bénévoles de l'édition 2026 sont ouvertes. [Inscriv
     {
       titleFr: "Accessibilité : un festival pour tous",
       slug: "accessibilite-festival-pour-tous",
-      excerptFr: "Le festival renforce son engagement en faveur de l'accessibilité avec de nouvelles initiatives pour l'édition 2026.",
+      excerptFr:
+        "Le festival renforce son engagement en faveur de l'accessibilité avec de nouvelles initiatives pour l'édition 2026.",
       contentFr: `# Un festival accessible à tous
 
 Pierres en Lumières 2026 renforce son engagement pour l'**accessibilité universelle**.
@@ -438,29 +456,59 @@ Consultez la liste complète des sites accessibles sur notre [page événements]
       coverImage: "/images/seed/news-accessibilite.jpg",
       publishedAt: new Date("2026-03-10T09:00:00"),
     },
-  ];
+  ]
 
   for (const article of articles) {
-    await prisma.news.create({ data: article });
+    await prisma.news.create({ data: article })
   }
-  console.log(`${articles.length} news articles seeded.`);
-};
+  console.log(`${articles.length} news articles seeded.`)
+}
 
 const seedPartners = async () => {
   const partners = [
-    { nameFr: "Région Normandie", logo: "/images/seed/logo-region-normandie.png", website: "https://www.normandie.fr", order: 1 },
-    { nameFr: "Fondation du Patrimoine", logo: "/images/seed/logo-fondation-patrimoine.png", website: "https://www.fondation-patrimoine.org", order: 2 },
-    { nameFr: "Département du Calvados", logo: "/images/seed/logo-calvados.png", website: "https://www.calvados.fr", order: 3 },
-    { nameFr: "Département de l'Eure", logo: "/images/seed/logo-eure.png", website: "https://www.eure.fr", order: 4 },
-    { nameFr: "Département de la Manche", logo: "/images/seed/logo-manche.png", website: "https://www.manche.fr", order: 5 },
-    { nameFr: "Département de l'Orne", logo: "/images/seed/logo-orne.png", website: "https://www.orne.fr", order: 6 },
-  ];
+    {
+      nameFr: "Région Normandie",
+      logo: "/images/seed/logo-region-normandie.png",
+      website: "https://www.normandie.fr",
+      order: 1,
+    },
+    {
+      nameFr: "Fondation du Patrimoine",
+      logo: "/images/seed/logo-fondation-patrimoine.png",
+      website: "https://www.fondation-patrimoine.org",
+      order: 2,
+    },
+    {
+      nameFr: "Département du Calvados",
+      logo: "/images/seed/logo-calvados.png",
+      website: "https://www.calvados.fr",
+      order: 3,
+    },
+    {
+      nameFr: "Département de l'Eure",
+      logo: "/images/seed/logo-eure.png",
+      website: "https://www.eure.fr",
+      order: 4,
+    },
+    {
+      nameFr: "Département de la Manche",
+      logo: "/images/seed/logo-manche.png",
+      website: "https://www.manche.fr",
+      order: 5,
+    },
+    {
+      nameFr: "Département de l'Orne",
+      logo: "/images/seed/logo-orne.png",
+      website: "https://www.orne.fr",
+      order: 6,
+    },
+  ]
 
   for (const partner of partners) {
-    await prisma.partner.create({ data: partner });
+    await prisma.partner.create({ data: partner })
   }
-  console.log(`${partners.length} partners seeded.`);
-};
+  console.log(`${partners.length} partners seeded.`)
+}
 
 const seedPages = async () => {
   const pages = [
@@ -598,22 +646,22 @@ Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de
 
 Ce site utilise des cookies techniques nécessaires à son fonctionnement. Aucun cookie publicitaire n'est utilisé.`,
     },
-  ];
+  ]
 
   for (const page of pages) {
-    await prisma.page.create({ data: page });
+    await prisma.page.create({ data: page })
   }
-  console.log(`${pages.length} pages seeded.`);
-};
+  console.log(`${pages.length} pages seeded.`)
+}
 
 const seedAdminUser = async () => {
-  const adminEmail = "admin@pierresenlumieres.fr";
-  const adminName = "Admin Pierres en Lumières";
+  const adminEmail = "admin@pierresenlumieres.fr"
+  const adminName = "Admin Pierres en Lumières"
 
   // Create admin whitelist entry
   await prisma.adminUser.create({
     data: { email: adminEmail, name: adminName },
-  });
+  })
 
   // Create corresponding Better Auth user for magic link login
   await prisma.user.create({
@@ -622,27 +670,27 @@ const seedAdminUser = async () => {
       name: adminName,
       emailVerified: true,
     },
-  });
+  })
 
-  console.log("Admin user seeded.");
-};
+  console.log("Admin user seeded.")
+}
 
 const main = async () => {
-  console.log("Starting seed...");
-  await clearDatabase();
-  await seedEvents();
-  await seedNews();
-  await seedPartners();
-  await seedPages();
-  await seedAdminUser();
-  console.log("Seed complete.");
-};
+  console.log("Starting seed...")
+  await clearDatabase()
+  await seedEvents()
+  await seedNews()
+  await seedPartners()
+  await seedPages()
+  await seedAdminUser()
+  console.log("Seed complete.")
+}
 
 main()
   .catch((e) => {
-    console.error("Seed failed:", e);
-    process.exit(1);
+    console.error("Seed failed:", e)
+    process.exit(1)
   })
   .finally(async () => {
-    await prisma.$disconnect();
-  });
+    await prisma.$disconnect()
+  })

@@ -19,11 +19,10 @@ const SearchBar = ({ cities }: SearchBarProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
 
-  const filteredCities = query.length >= 2
-    ? cities.filter((city) =>
-        city.toLowerCase().includes(query.toLowerCase())
-      ).slice(0, 5)
-    : []
+  const filteredCities =
+    query.length >= 2
+      ? cities.filter((city) => city.toLowerCase().includes(query.toLowerCase())).slice(0, 5)
+      : []
 
   const handleSubmit = (searchQuery?: string) => {
     const q = searchQuery ?? query
@@ -65,7 +64,10 @@ const SearchBar = ({ cities }: SearchBarProps) => {
           aria-label={t("search.ariaLabel")}
         >
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+            <Search
+              className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2"
+              aria-hidden="true"
+            />
             <input
               ref={inputRef}
               type="search"
@@ -78,7 +80,7 @@ const SearchBar = ({ cities }: SearchBarProps) => {
                 if (query.length >= 2) setShowSuggestions(true)
               }}
               placeholder={t("search.placeholder")}
-              className="h-10 w-full rounded-lg bg-white/5 pl-10 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 md:h-12 md:text-base"
+              className="text-foreground placeholder:text-muted-foreground focus-visible:ring-primary/50 h-10 w-full rounded-lg bg-white/5 pr-3 pl-10 text-sm focus-visible:ring-2 focus-visible:outline-none md:h-12 md:text-base"
               aria-label={t("search.ariaLabel")}
               aria-autocomplete="list"
               aria-expanded={showSuggestions && filteredCities.length > 0}
@@ -88,11 +90,7 @@ const SearchBar = ({ cities }: SearchBarProps) => {
             />
           </div>
 
-          <Button
-            type="submit"
-            size="lg"
-            className="hidden h-10 px-6 sm:flex md:h-12"
-          >
+          <Button type="submit" size="lg" className="hidden h-10 px-6 sm:flex md:h-12">
             {t("search.submit")}
           </Button>
         </form>
@@ -102,7 +100,7 @@ const SearchBar = ({ cities }: SearchBarProps) => {
           <ul
             id="city-suggestions"
             role="listbox"
-            className="absolute left-0 right-0 top-full z-20 mt-2 overflow-hidden rounded-xl border border-white/10 bg-background/95 backdrop-blur-xl"
+            className="bg-background/95 absolute top-full right-0 left-0 z-20 mt-2 overflow-hidden rounded-xl border border-white/10 backdrop-blur-xl"
           >
             {filteredCities.map((city) => (
               <li key={city} role="option" aria-selected={false}>
@@ -110,11 +108,11 @@ const SearchBar = ({ cities }: SearchBarProps) => {
                   type="button"
                   onClick={() => handleSelectCity(city)}
                   className={cn(
-                    "flex w-full items-center gap-2 px-4 py-3 text-left text-sm transition-colors hover:bg-white/5 hover:text-primary",
-                    "focus-visible:bg-white/5 focus-visible:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                    "hover:text-primary flex w-full items-center gap-2 px-4 py-3 text-left text-sm transition-colors hover:bg-white/5",
+                    "focus-visible:text-primary focus-visible:ring-primary/50 focus-visible:bg-white/5 focus-visible:ring-2 focus-visible:outline-none"
                   )}
                 >
-                  <Search className="size-3.5 text-muted-foreground" aria-hidden="true" />
+                  <Search className="text-muted-foreground size-3.5" aria-hidden="true" />
                   {city}
                 </button>
               </li>

@@ -32,13 +32,15 @@ const EventMap = ({ latitude, longitude, title }: EventMapProps) => {
 
     // Custom amber marker
     const markerEl = document.createElement("div")
-    markerEl.style.cssText = "width:28px;height:28px;background:#f59e0b;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 12px rgba(0,0,0,0.4);cursor:pointer;"
+    markerEl.style.cssText =
+      "width:28px;height:28px;background:#f59e0b;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 12px rgba(0,0,0,0.4);cursor:pointer;"
 
     new mapboxgl.Marker({ element: markerEl })
       .setLngLat([longitude, latitude])
       .setPopup(
-        new mapboxgl.Popup({ offset: 20, closeButton: false })
-          .setHTML(`<p style="font-weight:600;margin:0;padding:4px 8px;">${title}</p>`)
+        new mapboxgl.Popup({ offset: 20, closeButton: false }).setHTML(
+          `<p style="font-weight:600;margin:0;padding:4px 8px;">${title}</p>`
+        )
       )
       .addTo(map)
 

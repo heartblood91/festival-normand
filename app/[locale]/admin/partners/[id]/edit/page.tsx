@@ -31,9 +31,7 @@ const EditPartnerRoute = async ({ params }: Props) => {
 
   return (
     <div className="mx-auto w-full max-w-4xl p-4 md:p-8">
-      <h1 className="mb-6 font-serif text-2xl font-bold text-amber-500">
-        Modifier le partenaire
-      </h1>
+      <h1 className="mb-6 font-serif text-2xl font-bold text-amber-500">Modifier le partenaire</h1>
       <PartnerForm partner={partner} />
     </div>
   )

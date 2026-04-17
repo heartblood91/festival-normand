@@ -80,10 +80,7 @@ export const createPage = async (formData: FormData): Promise<PageActionResult> 
   }
 }
 
-export const updatePage = async (
-  id: string,
-  formData: FormData
-): Promise<PageActionResult> => {
+export const updatePage = async (id: string, formData: FormData): Promise<PageActionResult> => {
   try {
     const raw = extractPageFormData(formData)
     const result = pageSchema.safeParse(raw)

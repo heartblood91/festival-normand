@@ -97,12 +97,8 @@ describe("sitemap", () => {
   })
 
   it("sets correct priorities", async () => {
-    prismaMock.event.findMany.mockResolvedValue([
-      { slug: "test-event", updatedAt: new Date() },
-    ])
-    prismaMock.news.findMany.mockResolvedValue([
-      { slug: "test-news", updatedAt: new Date() },
-    ])
+    prismaMock.event.findMany.mockResolvedValue([{ slug: "test-event", updatedAt: new Date() }])
+    prismaMock.news.findMany.mockResolvedValue([{ slug: "test-news", updatedAt: new Date() }])
     prismaMock.page.findMany.mockResolvedValue([])
 
     const result = await sitemap()

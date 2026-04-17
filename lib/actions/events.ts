@@ -101,7 +101,6 @@ export const getAdminEvents = async ({
   return { items, total, page, totalPages }
 }
 
-
 export const getAdminEventById = async (id: string) => {
   return prisma.event.findUnique({ where: { id } })
 }
@@ -180,10 +179,7 @@ export const createEvent = async (formData: FormData): Promise<EventActionResult
   }
 }
 
-export const updateEvent = async (
-  id: string,
-  formData: FormData
-): Promise<EventActionResult> => {
+export const updateEvent = async (id: string, formData: FormData): Promise<EventActionResult> => {
   try {
     const raw = extractFormData(formData)
     const result = eventSchema.safeParse(raw)

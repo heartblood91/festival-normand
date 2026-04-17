@@ -1,6 +1,14 @@
 import Link from "next/link"
 import { getLocale, getTranslations } from "next-intl/server"
-import { MapPin, Calendar, Accessibility, Flame, Image, Music, MapPin as MapPinIcon } from "lucide-react"
+import {
+  MapPin,
+  Calendar,
+  Accessibility,
+  Flame,
+  Image,
+  Music,
+  MapPin as MapPinIcon,
+} from "lucide-react"
 import { cn } from "@/lib/utils"
 import { formatEventDate, formatTime } from "@/lib/utils/format-date"
 import type { EventListItem } from "@/lib/queries/events"
@@ -32,17 +40,19 @@ const EventListCard = async ({ event, className, priority = false }: EventListCa
     <Link
       href={`/evenement/${event.slug}`}
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all hover:border-primary/30 hover:bg-white/10 hover:shadow-lg hover:shadow-primary/5 hover:shadow-[0_0_30px_rgba(245,158,11,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 animate-fade-in-up",
+        "group hover:border-primary/30 hover:shadow-primary/5 focus-visible:ring-primary/50 animate-fade-in-up relative flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all hover:bg-white/10 hover:shadow-[0_0_30px_rgba(245,158,11,0.15)] hover:shadow-lg focus-visible:ring-2 focus-visible:outline-none",
         className
       )}
     >
       {/* Cover image or gradient placeholder */}
-      <div className={cn(
-        "relative aspect-[16/10] w-full overflow-hidden flex items-center justify-center",
-        event.coverImage
-          ? "bg-gradient-to-br from-primary/20 to-primary/5"
-          : `bg-gradient-to-br ${CATEGORY_GRADIENTS[event.category] || "from-primary/20 to-primary/5"}`
-      )}>
+      <div
+        className={cn(
+          "relative flex aspect-[16/10] w-full items-center justify-center overflow-hidden",
+          event.coverImage
+            ? "from-primary/20 to-primary/5 bg-gradient-to-br"
+            : `bg-gradient-to-br ${CATEGORY_GRADIENTS[event.category] || "from-primary/20 to-primary/5"}`
+        )}
+      >
         {event.coverImage && (
           <img
             src={event.coverImage}
@@ -55,33 +65,33 @@ const EventListCard = async ({ event, className, priority = false }: EventListCa
           />
         )}
         {!event.coverImage && (
-          <div className="flex items-center justify-center text-primary/60">
+          <div className="text-primary/60 flex items-center justify-center">
             {CATEGORY_ICONS[event.category]}
           </div>
         )}
         {/* Category badge */}
-        <span className="absolute left-3 top-3 rounded-full border border-primary/30 bg-background/80 px-2.5 py-1 text-xs font-medium text-primary backdrop-blur-sm">
+        <span className="border-primary/30 bg-background/80 text-primary absolute top-3 left-3 rounded-full border px-2.5 py-1 text-xs font-medium backdrop-blur-sm">
           {t(`categories.${event.category}`) ?? event.category}
         </span>
         {/* Accessibility badge */}
         {event.accessible && (
           <span
-            className="absolute right-3 top-3 flex size-7 items-center justify-center rounded-full border border-white/20 bg-background/80 backdrop-blur-sm"
+            className="bg-background/80 absolute top-3 right-3 flex size-7 items-center justify-center rounded-full border border-white/20 backdrop-blur-sm"
             title={t("filters.accessible")}
             aria-label={t("filters.accessible")}
           >
-            <Accessibility className="size-3.5 text-primary" />
+            <Accessibility className="text-primary size-3.5" />
           </span>
         )}
       </div>
 
       {/* Content */}
       <div className="flex flex-1 flex-col p-4">
-        <h3 className="line-clamp-2 font-serif text-lg font-bold leading-snug text-foreground transition-colors group-hover:text-primary">
+        <h3 className="text-foreground group-hover:text-primary line-clamp-2 font-serif text-lg leading-snug font-bold transition-colors">
           {event.title}
         </h3>
 
-        <div className="mt-auto flex flex-col gap-1.5 pt-3 text-sm text-muted-foreground">
+        <div className="text-muted-foreground mt-auto flex flex-col gap-1.5 pt-3 text-sm">
           <div className="flex items-center gap-1.5">
             <Calendar className="size-3.5 shrink-0" aria-hidden="true" />
             <span>{formatEventDate(event.dateStart, locale)}</span>

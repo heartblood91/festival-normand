@@ -125,9 +125,7 @@ export const deletePartner = async (id: string): Promise<PartnerActionResult> =>
   }
 }
 
-export const reorderPartners = async (
-  orderedIds: string[]
-): Promise<PartnerActionResult> => {
+export const reorderPartners = async (orderedIds: string[]): Promise<PartnerActionResult> => {
   try {
     await prisma.$transaction(
       orderedIds.map((id, index) =>

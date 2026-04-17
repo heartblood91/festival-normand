@@ -112,9 +112,7 @@ test.describe("Accessibility: Keyboard navigation", () => {
     await page.goto("/")
 
     // Skip-nav link + logo + nav items should all be focusable
-    const focusableInHeader = page.locator(
-      "header a, header button"
-    )
+    const focusableInHeader = page.locator("header a, header button")
     const count = await focusableInHeader.count()
     expect(count).toBeGreaterThan(5)
   })

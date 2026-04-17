@@ -14,21 +14,23 @@ const NewsCard = async ({ article, className, priority = false }: NewsCardProps)
   const locale = await getLocale()
   const dateLocale = locale === "en" ? "en-GB" : "fr-FR"
 
-  const formattedDate = article.publishedAt ? new Intl.DateTimeFormat(dateLocale, {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date(article.publishedAt)) : ""
+  const formattedDate = article.publishedAt
+    ? new Intl.DateTimeFormat(dateLocale, {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }).format(new Date(article.publishedAt))
+    : ""
 
   return (
     <Link
       href={`/${locale}/actualite/${article.slug}`}
       className={cn(
-        "group flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all hover:border-primary/30 hover:bg-white/10 hover:shadow-lg hover:shadow-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+        "group hover:border-primary/30 hover:shadow-primary/5 focus-visible:ring-primary/50 flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all hover:bg-white/10 hover:shadow-lg focus-visible:ring-2 focus-visible:outline-none",
         className
       )}
     >
-      <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br from-primary/20 to-primary/5">
+      <div className="from-primary/20 to-primary/5 relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br">
         {article.coverImage && (
           <img
             src={article.coverImage}
@@ -43,19 +45,19 @@ const NewsCard = async ({ article, className, priority = false }: NewsCardProps)
       </div>
 
       <div className="flex flex-1 flex-col p-4">
-        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+        <div className="text-muted-foreground flex items-center gap-1.5 text-sm">
           <Calendar className="size-3.5 shrink-0" aria-hidden="true" />
           <time dateTime={article.publishedAt ? new Date(article.publishedAt).toISOString() : ""}>
             {formattedDate}
           </time>
         </div>
 
-        <h2 className="mt-2 line-clamp-2 font-serif text-lg font-bold leading-snug text-foreground transition-colors group-hover:text-primary md:text-xl">
+        <h2 className="text-foreground group-hover:text-primary mt-2 line-clamp-2 font-serif text-lg leading-snug font-bold transition-colors md:text-xl">
           {article.title}
         </h2>
 
         {article.excerpt && (
-          <p className="mt-auto line-clamp-2 pt-2 text-sm text-muted-foreground">
+          <p className="text-muted-foreground mt-auto line-clamp-2 pt-2 text-sm">
             {article.excerpt}
           </p>
         )}

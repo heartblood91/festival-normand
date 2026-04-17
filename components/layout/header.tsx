@@ -21,12 +21,12 @@ const Header = () => {
   const locale = pathname.split("/")[1]
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-background/80 backdrop-blur-xl">
+    <header className="bg-background/80 sticky top-0 z-50 w-full border-b border-white/10 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:h-20 md:px-6">
         {/* Logo */}
         <Link
           href={`/${locale}`}
-          className="flex items-center gap-2 text-lg font-serif font-bold text-foreground transition-colors hover:text-primary md:text-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
+          className="text-foreground hover:text-primary focus-visible:ring-primary/50 flex items-center gap-2 rounded-sm font-serif text-lg font-bold transition-colors focus-visible:ring-2 focus-visible:outline-none md:text-xl"
           aria-label={`${t("meta.festivalName")} - ${t("a11y.backToHome")}`}
         >
           <SparkleIcon className="size-5" />
@@ -44,7 +44,7 @@ const Header = () => {
                 key={item.href}
                 href={fullHref}
                 className={cn(
-                  "rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-white/5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+                  "hover:text-primary focus-visible:ring-primary/50 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-white/5 focus-visible:ring-2 focus-visible:outline-none",
                   isActive ? "text-primary" : "text-muted-foreground"
                 )}
                 aria-current={isActive ? "page" : undefined}
@@ -64,7 +64,7 @@ const Header = () => {
               href={SOCIAL_LINKS.facebook}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-white/5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+              className="text-muted-foreground hover:text-primary focus-visible:ring-primary/50 inline-flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-white/5 focus-visible:ring-2 focus-visible:outline-none"
               aria-label="Facebook"
             >
               <Facebook className="size-4" />
@@ -73,7 +73,7 @@ const Header = () => {
               href={SOCIAL_LINKS.instagram}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-white/5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+              className="text-muted-foreground hover:text-primary focus-visible:ring-primary/50 inline-flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-white/5 focus-visible:ring-2 focus-visible:outline-none"
               aria-label="Instagram"
             >
               <Instagram className="size-4" />
@@ -81,9 +81,7 @@ const Header = () => {
           </div>
 
           <Button asChild size="lg">
-            <Link href={`/${locale}${CTA_HREF}`}>
-              {t("nav.register")}
-            </Link>
+            <Link href={`/${locale}${CTA_HREF}`}>{t("nav.register")}</Link>
           </Button>
         </div>
 
@@ -102,11 +100,7 @@ const Header = () => {
       </div>
 
       {/* Mobile Navigation */}
-      <MobileNav
-        open={mobileOpen}
-        onOpenChange={setMobileOpen}
-        pathname={pathname}
-      />
+      <MobileNav open={mobileOpen} onOpenChange={setMobileOpen} pathname={pathname} />
     </header>
   )
 }

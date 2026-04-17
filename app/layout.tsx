@@ -23,8 +23,7 @@ export const metadata: Metadata = {
     default: "Pierres en Lumières - Festival du Patrimoine Normand",
     template: "%s | Pierres en Lumières",
   },
-  description:
-    "Découvrez la magie du patrimoine normand en nocturne. 29, 30 & 31 mai 2026.",
+  description: "Découvrez la magie du patrimoine normand en nocturne. 29, 30 & 31 mai 2026.",
   openGraph: {
     type: "website",
     siteName: "Pierres en Lumières",
@@ -44,7 +43,12 @@ export const metadata: Metadata = {
 }
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => (
-  <html lang="fr" dir="ltr" suppressHydrationWarning className={cn(inter.variable, playfair.variable)}>
+  <html
+    lang="fr"
+    dir="ltr"
+    suppressHydrationWarning
+    className={cn(inter.variable, playfair.variable)}
+  >
     <head>
       <link rel="preconnect" href="https://pierresenlumieres.fr" />
       <link rel="dns-prefetch" href="https://pierresenlumieres.fr" />

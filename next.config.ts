@@ -6,8 +6,8 @@ const withNextIntl = createNextIntlPlugin("./lib/i18n/request.ts")
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
-      { hostname: '*.public.blob.vercel-storage.com' },
-      { hostname: 'pierresenlumieres.fr' },
+      { hostname: "*.public.blob.vercel-storage.com" },
+      { hostname: "pierresenlumieres.fr" },
     ],
   },
 }

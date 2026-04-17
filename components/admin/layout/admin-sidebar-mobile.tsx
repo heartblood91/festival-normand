@@ -14,12 +14,7 @@ import {
 } from "lucide-react"
 import { signOut } from "@/lib/auth-client"
 import { Button } from "@/components/ui/button"
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTrigger,
-} from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "@/components/ui/sheet"
 import { Dialog as SheetPrimitive } from "@base-ui/react/dialog"
 import { SparkleIcon } from "@/components/ui/sparkle-icon"
 import { ContrastToggle } from "@/components/layout/contrast-toggle"
@@ -92,7 +87,7 @@ const AdminSidebarMobile = ({ user, pathname }: AdminSidebarMobileProps) => {
   return (
     <Sheet>
       <SheetTrigger
-        className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-sm font-medium hover:bg-white/5 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+        className="hover:text-foreground focus-visible:ring-ring/50 inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-sm font-medium hover:bg-white/5 focus-visible:ring-2 focus-visible:outline-none"
         aria-label={tA11y("openMenu")}
       >
         <Menu className="size-5" />
@@ -127,8 +122,8 @@ const AdminSidebarMobile = ({ user, pathname }: AdminSidebarMobileProps) => {
           <Button
             variant="ghost"
             asChild
-            className="w-full justify-start gap-3 min-h-11 px-3 py-2.5 text-sm font-medium text-slate-400 hover:bg-white/5"
-            onClick={() => window.location.href = `/${locale}`}
+            className="min-h-11 w-full justify-start gap-3 px-3 py-2.5 text-sm font-medium text-slate-400 hover:bg-white/5"
+            onClick={() => (window.location.href = `/${locale}`)}
           >
             <a href={`/${locale}`}>
               <ArrowLeft className="size-4 flex-shrink-0" />
@@ -138,12 +133,9 @@ const AdminSidebarMobile = ({ user, pathname }: AdminSidebarMobileProps) => {
         </div>
 
         {/* Navigation */}
-        <nav
-          className="flex-1 space-y-1 overflow-y-auto px-3 py-4"
-          aria-label={tA11y("mainNav")}
-        >
+        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4" aria-label={tA11y("mainNav")}>
           {navItems.map((item) => (
-            <div key={item.href} onClick={() => window.location.href = item.href}>
+            <div key={item.href} onClick={() => (window.location.href = item.href)}>
               <SidebarNavItem
                 href={item.href}
                 icon={item.icon}
@@ -155,14 +147,10 @@ const AdminSidebarMobile = ({ user, pathname }: AdminSidebarMobileProps) => {
         </nav>
 
         {/* User info */}
-        <div className="border-t border-white/10 space-y-3 px-3 py-4">
+        <div className="space-y-3 border-t border-white/10 px-3 py-4">
           <div className="rounded-lg bg-white/5 px-3 py-3">
-            <p className="truncate text-sm font-medium text-white">
-              {user.name}
-            </p>
-            <p className="truncate text-xs text-slate-400">
-              {truncateEmail(user.email)}
-            </p>
+            <p className="truncate text-sm font-medium text-white">{user.name}</p>
+            <p className="truncate text-xs text-slate-400">{truncateEmail(user.email)}</p>
             <div className="mt-2 inline-block rounded bg-amber-500/20 px-2 py-1 text-xs font-medium text-amber-300">
               {t("common.admin")}
             </div>

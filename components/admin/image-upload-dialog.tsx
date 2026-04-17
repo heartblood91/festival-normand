@@ -1,10 +1,10 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import { ImageIcon } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { ImageUpload } from '@/components/admin/image-upload'
+import { useState } from "react"
+import { ImageIcon } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { ImageUpload } from "@/components/admin/image-upload"
 
 type ImageUploadDialogProps = {
   onInsert: (url: string) => void
@@ -12,12 +12,12 @@ type ImageUploadDialogProps = {
 
 export const ImageUploadDialog = ({ onInsert }: ImageUploadDialogProps) => {
   const [open, setOpen] = useState(false)
-  const [imageUrl, setImageUrl] = useState('')
+  const [imageUrl, setImageUrl] = useState("")
 
   const handleInsert = () => {
     if (imageUrl) {
       onInsert(imageUrl)
-      setImageUrl('')
+      setImageUrl("")
       setOpen(false)
     }
   }
@@ -41,11 +41,7 @@ export const ImageUploadDialog = ({ onInsert }: ImageUploadDialogProps) => {
         </DialogHeader>
 
         <div className="space-y-4">
-          <ImageUpload
-            value={imageUrl}
-            onChange={setImageUrl}
-            preset="content"
-          />
+          <ImageUpload value={imageUrl} onChange={setImageUrl} preset="content" />
 
           <Button
             onClick={handleInsert}

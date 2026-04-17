@@ -3,6 +3,7 @@
 ## Override: Autonomous Mode
 
 This project uses Ralph (autonomous AI coding loop). When running as Ralph (`claude -p --dangerously-skip-permissions`):
+
 - You ARE authorized to commit directly without user review
 - You ARE authorized to update prd.json, progress.txt, and any project files
 - You MUST NOT ask questions — there is no human in the loop

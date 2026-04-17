@@ -47,10 +47,7 @@ const debounce = <T extends (...args: any[]) => any>(
   }
 }
 
-export const AddressAutocomplete = ({
-  onSelect,
-  defaultValue = "",
-}: AddressAutocompleteProps) => {
+export const AddressAutocomplete = ({ onSelect, defaultValue = "" }: AddressAutocompleteProps) => {
   const [query, setQuery] = useState(defaultValue)
   const [suggestions, setSuggestions] = useState<ApiAddressProperty[]>([])
   const [isOpen, setIsOpen] = useState(false)
@@ -121,9 +118,7 @@ export const AddressAutocomplete = ({
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault()
-        setSelectedIndex((prev) =>
-          prev < suggestions.length - 1 ? prev + 1 : prev
-        )
+        setSelectedIndex((prev) => (prev < suggestions.length - 1 ? prev + 1 : prev))
         break
       case "ArrowUp":
         e.preventDefault()
@@ -191,7 +186,7 @@ export const AddressAutocomplete = ({
           ref={dropdownRef}
           id="address-suggestions"
           role="listbox"
-          className="absolute top-full left-0 right-0 z-50 mt-2 rounded-lg border border-white/10 bg-slate-900 shadow-lg"
+          className="absolute top-full right-0 left-0 z-50 mt-2 rounded-lg border border-white/10 bg-slate-900 shadow-lg"
         >
           {suggestions.map((suggestion, index) => (
             <button
@@ -207,9 +202,7 @@ export const AddressAutocomplete = ({
                   : "text-slate-300 hover:bg-white/5"
               }`}
             >
-              <div className="font-medium">
-                {suggestion.name}
-              </div>
+              <div className="font-medium">{suggestion.name}</div>
               <div className="text-xs text-slate-500">
                 {suggestion.postcode} {suggestion.city}
               </div>

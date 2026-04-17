@@ -96,7 +96,7 @@ const AdminSidebar = ({ user, pathname }: AdminSidebarProps) => {
       <div className="border-b border-white/10 px-3 py-2">
         <Link
           href={`/${locale}`}
-          className="flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 transition-all hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50"
+          className="flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 transition-all hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-amber-500/50 focus-visible:outline-none"
         >
           <ArrowLeft className="size-4 flex-shrink-0" />
           <span>{t("backToSite")}</span>
@@ -119,16 +119,18 @@ const AdminSidebar = ({ user, pathname }: AdminSidebarProps) => {
       </nav>
 
       {/* User info */}
-      <div className="border-t border-white/10 space-y-3 px-3 py-4">
+      <div className="space-y-3 border-t border-white/10 px-3 py-4">
         <div className="rounded-lg bg-white/5 px-3 py-3">
           <p className="truncate text-sm font-medium text-white">{user.name}</p>
-          <p className="truncate text-xs text-slate-400">
-            {user.email}
-          </p>
-          <div className={cn(
-            "mt-2 inline-block rounded px-2 py-1 text-xs font-medium",
-            user.role === "ADMIN" ? "bg-amber-500/20 text-amber-300" : "bg-blue-500/20 text-blue-300"
-          )}>
+          <p className="truncate text-xs text-slate-400">{user.email}</p>
+          <div
+            className={cn(
+              "mt-2 inline-block rounded px-2 py-1 text-xs font-medium",
+              user.role === "ADMIN"
+                ? "bg-amber-500/20 text-amber-300"
+                : "bg-blue-500/20 text-blue-300"
+            )}
+          >
             {user.role === "ADMIN" ? t("common.admin") : t("common.editor")}
           </div>
         </div>

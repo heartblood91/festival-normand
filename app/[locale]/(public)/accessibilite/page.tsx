@@ -10,13 +10,19 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.
 
 export const revalidate = 86400
 
-export const generateMetadata = async ({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> => {
-  const { locale } = await params as { locale: Locale }
+export const generateMetadata = async ({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> => {
+  const { locale } = (await params) as { locale: Locale }
   const page = await getPageBySlug("accessibilite", locale)
-  const title = page?.title ?? (locale === "en" ? "Accessibility Statement" : "Déclaration d'accessibilité")
-  const description = locale === "en"
-    ? "Accessibility statement for the Pierres en Lumières website in accordance with RGAA 4.1."
-    : "Déclaration d'accessibilité du site Pierres en Lumières conformément au RGAA 4.1."
+  const title =
+    page?.title ?? (locale === "en" ? "Accessibility Statement" : "Déclaration d'accessibilité")
+  const description =
+    locale === "en"
+      ? "Accessibility statement for the Pierres en Lumières website in accordance with RGAA 4.1."
+      : "Déclaration d'accessibilité du site Pierres en Lumières conformément au RGAA 4.1."
 
   return {
     title,
@@ -39,7 +45,7 @@ type AccessibilitePageProps = {
 }
 
 const AccessibilitePage = async ({ params }: AccessibilitePageProps) => {
-  const { locale } = await params as { locale: Locale }
+  const { locale } = (await params) as { locale: Locale }
   const page = await getPageBySlug("accessibilite", locale)
   const t = await getTranslations()
 
@@ -51,12 +57,9 @@ const AccessibilitePage = async ({ params }: AccessibilitePageProps) => {
     <article className="mx-auto max-w-4xl px-4 py-8 md:py-12 lg:py-16">
       <Breadcrumb
         ariaLabel={t("a11y.breadcrumb")}
-        items={[
-          { label: t("nav.home"), href: `/${locale}` },
-          { label: page.title },
-        ]}
+        items={[{ label: t("nav.home"), href: `/${locale}` }, { label: page.title }]}
       />
-      <h1 className="mb-8 font-serif text-3xl font-bold text-foreground md:text-4xl lg:text-5xl">
+      <h1 className="text-foreground mb-8 font-serif text-3xl font-bold md:text-4xl lg:text-5xl">
         {page.title}
       </h1>
       <MarkdownContent content={page.content} />

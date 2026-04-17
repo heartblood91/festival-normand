@@ -27,10 +27,7 @@ type InviteUserDialogProps = {
   onOpenChange: (open: boolean) => void
 }
 
-export const InviteUserDialog = ({
-  open,
-  onOpenChange,
-}: InviteUserDialogProps) => {
+export const InviteUserDialog = ({ open, onOpenChange }: InviteUserDialogProps) => {
   const router = useRouter()
   const [email, setEmail] = useState("")
   const [role, setRole] = useState("EDITOR")
@@ -73,17 +70,14 @@ export const InviteUserDialog = ({
         <DialogHeader>
           <DialogTitle>Inviter un utilisateur</DialogTitle>
           <DialogDescription>
-            Invitez un nouvel utilisateur à rejoindre l&apos;administration. Un
-            email de confirmation sera envoyé.
+            Invitez un nouvel utilisateur à rejoindre l&apos;administration. Un email de
+            confirmation sera envoyé.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-slate-200"
-            >
+            <label htmlFor="email" className="block text-sm font-medium text-slate-200">
               Email
             </label>
             <Input
@@ -99,10 +93,7 @@ export const InviteUserDialog = ({
           </div>
 
           <div className="space-y-2">
-            <label
-              htmlFor="role"
-              className="block text-sm font-medium text-slate-200"
-            >
+            <label htmlFor="role" className="block text-sm font-medium text-slate-200">
               Rôle
             </label>
             <Select
@@ -130,11 +121,7 @@ export const InviteUserDialog = ({
             >
               Annuler
             </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1"
-            >
+            <Button type="submit" disabled={isSubmitting} className="flex-1">
               {isSubmitting ? "Envoi en cours..." : "Inviter"}
             </Button>
           </div>

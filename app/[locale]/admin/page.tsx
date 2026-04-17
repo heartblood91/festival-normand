@@ -14,9 +14,14 @@ const AdminPage = async () => {
   }
 
   const [
-    eventCount, newsCount, partnerCount, pageCount,
-    draftEventCount, draftNewsCount,
-    depublishedEventCount, depublishedNewsCount,
+    eventCount,
+    newsCount,
+    partnerCount,
+    pageCount,
+    draftEventCount,
+    draftNewsCount,
+    depublishedEventCount,
+    depublishedNewsCount,
   ] = await Promise.all([
     prisma.event.count({ where: { published: true } }),
     prisma.news.count({ where: { published: true } }),

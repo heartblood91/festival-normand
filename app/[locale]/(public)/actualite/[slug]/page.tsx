@@ -18,9 +18,7 @@ export const generateStaticParams = async () => {
     where: { published: true },
     select: { slug: true },
   })
-  return locales.flatMap((locale) =>
-    news.map((n: { slug: string }) => ({ locale, slug: n.slug }))
-  )
+  return locales.flatMap((locale) => news.map((n: { slug: string }) => ({ locale, slug: n.slug })))
 }
 
 type NewsDetailPageProps = {
@@ -38,7 +36,7 @@ const formatNewsDate = (date: Date | string, locale: string): string => {
 }
 
 export const generateMetadata = async ({ params }: NewsDetailPageProps): Promise<Metadata> => {
-  const { locale, slug } = await params as { locale: Locale; slug: string }
+  const { locale, slug } = (await params) as { locale: Locale; slug: string }
   const article = await getNewsBySlug(slug, locale)
 
   if (!article) {
@@ -65,7 +63,7 @@ export const generateMetadata = async ({ params }: NewsDetailPageProps): Promise
 }
 
 const NewsDetailPage = async ({ params }: NewsDetailPageProps) => {
-  const { locale, slug } = await params as { locale: Locale; slug: string }
+  const { locale, slug } = (await params) as { locale: Locale; slug: string }
   const t = await getTranslations()
   const article = await getNewsBySlug(slug, locale)
 
@@ -77,33 +75,39 @@ const NewsDetailPage = async ({ params }: NewsDetailPageProps) => {
     <article className="mx-auto max-w-4xl px-4 py-8 md:py-12 lg:py-16">
       {/* Breadcrumb */}
       <nav aria-label="Fil d'Ariane" className="mb-6">
-        <ol className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+        <ol className="text-muted-foreground flex flex-wrap items-center gap-2 text-sm">
           <li>
             <Link
               href={`/${locale}`}
-              className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
+              className="hover:text-foreground focus-visible:ring-primary/50 rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
             >
               {t("news.breadcrumbHome")}
             </Link>
           </li>
-          <li aria-hidden="true" className="text-muted-foreground/50">/</li>
+          <li aria-hidden="true" className="text-muted-foreground/50">
+            /
+          </li>
           <li>
             <Link
               href={`/${locale}/actualites`}
-              className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
+              className="hover:text-foreground focus-visible:ring-primary/50 rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
             >
               {t("news.breadcrumbNews")}
             </Link>
           </li>
-          <li aria-hidden="true" className="text-muted-foreground/50">/</li>
-          <li aria-current="page" className="text-foreground font-medium">{article.title}</li>
+          <li aria-hidden="true" className="text-muted-foreground/50">
+            /
+          </li>
+          <li aria-current="page" className="text-foreground font-medium">
+            {article.title}
+          </li>
         </ol>
       </nav>
 
       {/* Back link */}
       <Link
         href={`/${locale}/actualites`}
-        className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:rounded-sm"
+        className="text-muted-foreground hover:text-foreground focus-visible:ring-primary/50 mb-6 inline-flex items-center gap-2 text-sm transition-colors focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none"
       >
         <ArrowLeft className="size-4" aria-hidden="true" />
         {t("news.backToNews")}
@@ -111,11 +115,11 @@ const NewsDetailPage = async ({ params }: NewsDetailPageProps) => {
 
       {/* Header */}
       <header className="mb-8">
-        <h1 className="font-serif text-3xl font-bold text-foreground md:text-4xl lg:text-5xl">
+        <h1 className="text-foreground font-serif text-3xl font-bold md:text-4xl lg:text-5xl">
           {article.title}
         </h1>
 
-        <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="text-muted-foreground mt-4 flex items-center gap-2 text-sm">
           <Calendar className="size-4 shrink-0" aria-hidden="true" />
           <time dateTime={article.publishedAt ?? ""}>
             {article.publishedAt ? formatNewsDate(article.publishedAt, locale) : ""}
@@ -125,7 +129,7 @@ const NewsDetailPage = async ({ params }: NewsDetailPageProps) => {
 
       {/* Cover image */}
       {article.coverImage && (
-        <div className="mb-8 aspect-[16/9] w-full overflow-hidden rounded-xl bg-gradient-to-br from-primary/20 to-primary/5">
+        <div className="from-primary/20 to-primary/5 mb-8 aspect-[16/9] w-full overflow-hidden rounded-xl bg-gradient-to-br">
           <img
             src={article.coverImage}
             alt={article.title}

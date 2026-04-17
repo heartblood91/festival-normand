@@ -14,10 +14,7 @@ export const pickLocale = <T extends Record<string, unknown>>(
   return (item[frField] as string) ?? ""
 }
 
-export const localizeEntity = <
-  T extends Record<string, unknown>,
-  F extends string,
->(
+export const localizeEntity = <T extends Record<string, unknown>, F extends string>(
   item: T,
   locale: Locale,
   fields: readonly F[]

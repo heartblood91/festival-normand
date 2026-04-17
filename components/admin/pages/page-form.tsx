@@ -50,9 +50,7 @@ export const PageForm = ({ page }: PageFormProps) => {
   )
 
   const handleSaveClick = useCallback(() => {
-    formRef.current?.dispatchEvent(
-      new Event("submit", { bubbles: true, cancelable: true })
-    )
+    formRef.current?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }))
   }, [])
 
   const handleTranslated = (translations: Record<string, string>) => {
@@ -72,9 +70,7 @@ export const PageForm = ({ page }: PageFormProps) => {
     formData.set("contentFr", htmlToMarkdown(contentFr))
     formData.set("contentEn", htmlToMarkdown(contentEn))
 
-    const result = page
-      ? await updatePage(page.id, formData)
-      : await createPage(formData)
+    const result = page ? await updatePage(page.id, formData) : await createPage(formData)
 
     setIsSubmitting(false)
 
@@ -110,7 +106,7 @@ export const PageForm = ({ page }: PageFormProps) => {
               <button
                 type="button"
                 onClick={() => setFormLocale("fr")}
-                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                className={`rounded px-3 py-1 text-sm font-medium transition-colors ${
                   formLocale === "fr"
                     ? "bg-amber-500 text-white"
                     : "text-slate-400 hover:text-slate-300"
@@ -121,7 +117,7 @@ export const PageForm = ({ page }: PageFormProps) => {
               <button
                 type="button"
                 onClick={() => setFormLocale("en")}
-                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                className={`rounded px-3 py-1 text-sm font-medium transition-colors ${
                   formLocale === "en"
                     ? "bg-amber-500 text-white"
                     : "text-slate-400 hover:text-slate-300"
@@ -178,7 +174,7 @@ export const PageForm = ({ page }: PageFormProps) => {
           )}
 
           <div>
-            <Label htmlFor="slug" className="text-slate-300 block mb-2">
+            <Label htmlFor="slug" className="mb-2 block text-slate-300">
               Slug
             </Label>
             <Input
@@ -187,7 +183,7 @@ export const PageForm = ({ page }: PageFormProps) => {
               value={slug}
               readOnly
               required
-              className="border-white/10 bg-slate-900 text-slate-400 cursor-not-allowed opacity-60"
+              className="cursor-not-allowed border-white/10 bg-slate-900 text-slate-400 opacity-60"
               aria-invalid={!!errors.slug}
               aria-describedby={errors.slug ? "slug-error" : undefined}
             />
@@ -209,18 +205,14 @@ export const PageForm = ({ page }: PageFormProps) => {
             <>
               <TiptapEditor content={contentFr} onChange={setContentFr} />
               {errors.contentFr && (
-                <p className="mt-1 text-sm text-red-400">
-                  {errors.contentFr[0]}
-                </p>
+                <p className="mt-1 text-sm text-red-400">{errors.contentFr[0]}</p>
               )}
             </>
           ) : (
             <>
               <TiptapEditor content={contentEn} onChange={setContentEn} />
               {errors.contentEn && (
-                <p className="mt-1 text-sm text-red-400">
-                  {errors.contentEn[0]}
-                </p>
+                <p className="mt-1 text-sm text-red-400">{errors.contentEn[0]}</p>
               )}
             </>
           )}

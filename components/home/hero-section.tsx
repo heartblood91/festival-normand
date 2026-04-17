@@ -13,28 +13,31 @@ const HeroSection = async () => {
       aria-label={t("hero.badge")}
     >
       <HeroVideo />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background/80 via-background/60 to-background" aria-hidden="true" />
-
-      {/* Decorative ambient glow */}
       <div
-        className="absolute left-1/2 top-1/3 -z-10 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[120px]"
+        className="from-background/80 via-background/60 to-background absolute inset-0 -z-10 bg-gradient-to-b"
         aria-hidden="true"
       />
 
-      <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary md:text-base">
+      {/* Decorative ambient glow */}
+      <div
+        className="bg-primary/10 absolute top-1/3 left-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[120px]"
+        aria-hidden="true"
+      />
+
+      <p className="border-primary/30 bg-primary/10 text-primary mb-4 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium md:text-base">
         <SparkleIcon className="size-4" />
         {t("hero.badge")}
       </p>
 
-      <h1 className="font-serif text-4xl font-bold leading-tight text-foreground md:text-6xl lg:text-7xl">
+      <h1 className="text-foreground font-serif text-4xl leading-tight font-bold md:text-6xl lg:text-7xl">
         {t("hero.title")}
       </h1>
 
-      <p className="mt-4 max-w-2xl text-base text-muted-foreground md:text-xl lg:text-2xl">
+      <p className="text-muted-foreground mt-4 max-w-2xl text-base md:text-xl lg:text-2xl">
         {t("hero.subtitle")}
       </p>
 
-      <p className="mt-3 text-lg font-semibold text-primary md:text-2xl lg:text-3xl">
+      <p className="text-primary mt-3 text-lg font-semibold md:text-2xl lg:text-3xl">
         {t("meta.festivalDates")}
       </p>
 

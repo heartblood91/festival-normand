@@ -94,7 +94,10 @@ export const LoginForm = () => {
             <Button
               variant="ghost"
               className="text-amber-500 hover:text-amber-400"
-              onClick={() => { setIsSent(false); setEmail("") }}
+              onClick={() => {
+                setIsSent(false)
+                setEmail("")
+              }}
             >
               Utiliser une autre adresse
             </Button>
@@ -115,9 +118,14 @@ export const LoginForm = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={mode === "password" ? handlePasswordLogin : handleMagicLink} className="space-y-4">
+        <form
+          onSubmit={mode === "password" ? handlePasswordLogin : handleMagicLink}
+          className="space-y-4"
+        >
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-slate-300">Adresse email</Label>
+            <Label htmlFor="email" className="text-slate-300">
+              Adresse email
+            </Label>
             <Input
               id="email"
               name="email"
@@ -134,7 +142,9 @@ export const LoginForm = () => {
 
           {mode === "password" && (
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-slate-300">Mot de passe</Label>
+              <Label htmlFor="password" className="text-slate-300">
+                Mot de passe
+              </Label>
               <Input
                 id="password"
                 name="password"
@@ -155,11 +165,20 @@ export const LoginForm = () => {
             className="w-full bg-amber-500 text-slate-950 hover:bg-amber-400"
           >
             {isLoading ? (
-              <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Connexion...</>
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Connexion...
+              </>
             ) : mode === "password" ? (
-              <><LogIn className="mr-2 h-4 w-4" />Se connecter</>
+              <>
+                <LogIn className="mr-2 h-4 w-4" />
+                Se connecter
+              </>
             ) : (
-              <><Mail className="mr-2 h-4 w-4" />Envoyer le lien</>
+              <>
+                <Mail className="mr-2 h-4 w-4" />
+                Envoyer le lien
+              </>
             )}
           </Button>
         </form>
@@ -167,7 +186,7 @@ export const LoginForm = () => {
         <div className="mt-4 text-center">
           <button
             type="button"
-            className="text-sm text-slate-400 hover:text-amber-500 transition-colors"
+            className="text-sm text-slate-400 transition-colors hover:text-amber-500"
             onClick={() => setMode(mode === "password" ? "magic-link" : "password")}
           >
             {mode === "password" ? "Utiliser un lien magique" : "Se connecter avec un mot de passe"}

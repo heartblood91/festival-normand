@@ -26,9 +26,11 @@ export type EventFilters = {
 
 const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
   const R = 6371
-  const dLat = (lat2 - lat1) * Math.PI / 180
-  const dLon = (lon2 - lon1) * Math.PI / 180
-  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2
+  const dLat = ((lat2 - lat1) * Math.PI) / 180
+  const dLon = ((lon2 - lon1) * Math.PI) / 180
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
 
@@ -57,12 +59,18 @@ const buildFilterWhere = async (
   const { search, date, accessible } = filters
   const where: Prisma.EventWhereInput = { published: true }
 
-  const dept = overrides?.key === "dept"
-    ? overrides.value
-    : (overrides?.key !== "dept" ? filters.department : undefined)
-  const cat = overrides?.key === "category"
-    ? overrides.value
-    : (overrides?.key !== "category" ? filters.category : undefined)
+  const dept =
+    overrides?.key === "dept"
+      ? overrides.value
+      : overrides?.key !== "dept"
+        ? filters.department
+        : undefined
+  const cat =
+    overrides?.key === "category"
+      ? overrides.value
+      : overrides?.key !== "category"
+        ? filters.category
+        : undefined
 
   if (cat) where.category = cat as Category
   if (dept) where.department = dept as Department
@@ -74,10 +82,7 @@ const buildFilterWhere = async (
       const dayStart = new Date(`${dateStr}T00:00:00`)
       const dayEnd = new Date(`${dateStr}T23:59:59`)
       where.dateStart = { lte: dayEnd }
-      where.OR = [
-        { dateEnd: { gte: dayStart } },
-        { dateEnd: null, dateStart: { gte: dayStart } },
-      ]
+      where.OR = [{ dateEnd: { gte: dayStart } }, { dateEnd: null, dateStart: { gte: dayStart } }]
     }
   }
 
@@ -116,9 +121,10 @@ export const getEvents = async (filters: EventFilters = {}, locale: Locale = "fr
         ? rawEvents
             .map((e) => ({
               ...e,
-              distance: e.latitude && e.longitude
-                ? haversineDistance(lat, lng, e.latitude, e.longitude)
-                : Infinity,
+              distance:
+                e.latitude && e.longitude
+                  ? haversineDistance(lat, lng, e.latitude, e.longitude)
+                  : Infinity,
             }))
             .sort((a, b) => a.distance - b.distance)
             .slice(skip, skip + ITEMS_PER_PAGE)
@@ -157,18 +163,33 @@ export const getEventBySlug = async (slug: string, locale: Locale = "fr") =>
 
 export type EventDetail = NonNullable<Awaited<ReturnType<typeof getEventBySlug>>>
 
-export const getAllFilteredEventsForMap = async (filters: EventFilters = {}, locale: Locale = "fr") => {
+export const getAllFilteredEventsForMap = async (
+  filters: EventFilters = {},
+  locale: Locale = "fr"
+) => {
   const cacheKey = JSON.stringify(filters)
 
   return cachedQuery(
     async () => {
       const events = await prisma.event.findMany({
-        where: { ...(await buildFilterWhere(filters)), latitude: { not: 0 }, longitude: { not: 0 } },
+        where: {
+          ...(await buildFilterWhere(filters)),
+          latitude: { not: 0 },
+          longitude: { not: 0 },
+        },
         orderBy: { dateStart: "asc" },
         select: {
-          id: true, titleFr: true, titleEn: true, slug: true, category: true,
-          latitude: true, longitude: true, dateStart: true,
-          timeStart: true, city: true, coverImage: true,
+          id: true,
+          titleFr: true,
+          titleEn: true,
+          slug: true,
+          category: true,
+          latitude: true,
+          longitude: true,
+          dateStart: true,
+          timeStart: true,
+          city: true,
+          coverImage: true,
         },
       })
       return events.map((e) => ({
@@ -192,14 +213,30 @@ export const getFilterCounts = async (filters: EventFilters = {}) => {
       const catValues = ["ILLUMINATIONS", "EXPOSITIONS", "ANIMATIONS", "VISITES"]
 
       const [deptCounts, catCounts] = await Promise.all([
-        Promise.all(deptValues.map(async (d) => prisma.event.count({ where: await buildFilterWhere(filters, { key: "dept", value: d }) }))),
-        Promise.all(catValues.map(async (c) => prisma.event.count({ where: await buildFilterWhere(filters, { key: "category", value: c }) }))),
+        Promise.all(
+          deptValues.map(async (d) =>
+            prisma.event.count({
+              where: await buildFilterWhere(filters, { key: "dept", value: d }),
+            })
+          )
+        ),
+        Promise.all(
+          catValues.map(async (c) =>
+            prisma.event.count({
+              where: await buildFilterWhere(filters, { key: "category", value: c }),
+            })
+          )
+        ),
       ])
 
       const departments: Record<string, number> = {}
       const categories: Record<string, number> = {}
-      deptValues.forEach((d, i) => { departments[d] = deptCounts[i] })
-      catValues.forEach((c, i) => { categories[c] = catCounts[i] })
+      deptValues.forEach((d, i) => {
+        departments[d] = deptCounts[i]
+      })
+      catValues.forEach((c, i) => {
+        categories[c] = catCounts[i]
+      })
 
       return { departments, categories }
     },

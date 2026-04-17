@@ -66,7 +66,7 @@ const PhotoCarousel = ({ images, alt }: PhotoCarouselProps) => {
       {/* Previous button */}
       <button
         onClick={goPrev}
-        className="absolute left-3 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-background/80 backdrop-blur-sm transition-colors hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+        className="bg-background/80 hover:bg-background focus-visible:ring-primary/50 absolute top-1/2 left-3 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 backdrop-blur-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
         aria-label="Photo précédente"
       >
         <ChevronLeft className="size-5" aria-hidden="true" />
@@ -75,7 +75,7 @@ const PhotoCarousel = ({ images, alt }: PhotoCarouselProps) => {
       {/* Next button */}
       <button
         onClick={goNext}
-        className="absolute right-3 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-background/80 backdrop-blur-sm transition-colors hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+        className="bg-background/80 hover:bg-background focus-visible:ring-primary/50 absolute top-1/2 right-3 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 backdrop-blur-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
         aria-label="Photo suivante"
       >
         <ChevronRight className="size-5" aria-hidden="true" />
@@ -91,10 +91,10 @@ const PhotoCarousel = ({ images, alt }: PhotoCarouselProps) => {
             aria-selected={index === currentIndex}
             aria-label={`Photo ${index + 1}`}
             className={cn(
-              "size-6 rounded-full transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 flex items-center justify-center",
+              "focus-visible:ring-primary/50 flex size-6 items-center justify-center rounded-full transition-all focus-visible:ring-2 focus-visible:outline-none",
               "before:block before:size-2.5 before:rounded-full before:transition-all",
               index === currentIndex
-                ? "before:scale-110 before:bg-primary"
+                ? "before:bg-primary before:scale-110"
                 : "before:bg-white/40 hover:before:bg-white/60"
             )}
           />

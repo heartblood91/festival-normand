@@ -20,9 +20,7 @@ export const generateStaticParams = async () => {
     where: { published: true },
     select: { slug: true },
   })
-  return locales.flatMap((locale) =>
-    events.map((e) => ({ locale, slug: e.slug }))
-  )
+  return locales.flatMap((locale) => events.map((e) => ({ locale, slug: e.slug })))
 }
 
 type EventDetailPageProps = {
@@ -30,7 +28,7 @@ type EventDetailPageProps = {
 }
 
 export const generateMetadata = async ({ params }: EventDetailPageProps): Promise<Metadata> => {
-  const { locale, slug } = await params as { locale: Locale; slug: string }
+  const { locale, slug } = (await params) as { locale: Locale; slug: string }
   const t = await getTranslations()
   const event = await getEventBySlug(slug, locale)
 
@@ -57,7 +55,7 @@ export const generateMetadata = async ({ params }: EventDetailPageProps): Promis
 }
 
 const EventDetailPage = async ({ params }: EventDetailPageProps) => {
-  const { locale, slug } = await params as { locale: Locale; slug: string }
+  const { locale, slug } = (await params) as { locale: Locale; slug: string }
   const t = await getTranslations()
   const event = await getEventBySlug(slug, locale)
 
@@ -65,54 +63,57 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
     notFound()
   }
 
-  const allImages = [
-    ...(event.coverImage ? [event.coverImage] : []),
-    ...event.images,
-  ]
+  const allImages = [...(event.coverImage ? [event.coverImage] : []), ...event.images]
 
   return (
     <article className="mx-auto max-w-7xl px-4 py-8 md:py-12 lg:py-16">
       {/* Breadcrumb */}
       <nav aria-label={t("a11y.breadcrumb")} className="mb-6">
-        <ol className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+        <ol className="text-muted-foreground flex flex-wrap items-center gap-2 text-sm">
           <li>
             <Link
               href={`/${locale}`}
-              className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
+              className="hover:text-foreground focus-visible:ring-primary/50 rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
             >
               {t("events.breadcrumbHome")}
             </Link>
           </li>
-          <li aria-hidden="true" className="text-muted-foreground/50">/</li>
+          <li aria-hidden="true" className="text-muted-foreground/50">
+            /
+          </li>
           <li>
             <Link
               href={`/${locale}/evenements`}
-              className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm"
+              className="hover:text-foreground focus-visible:ring-primary/50 rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
             >
               {t("events.breadcrumbEvents")}
             </Link>
           </li>
-          <li aria-hidden="true" className="text-muted-foreground/50">/</li>
-          <li aria-current="page" className="text-foreground font-medium">{event.title}</li>
+          <li aria-hidden="true" className="text-muted-foreground/50">
+            /
+          </li>
+          <li aria-current="page" className="text-foreground font-medium">
+            {event.title}
+          </li>
         </ol>
       </nav>
 
       {/* Back link */}
       <Link
         href={`/${locale}/evenements`}
-        className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:rounded-sm"
+        className="text-muted-foreground hover:text-foreground focus-visible:ring-primary/50 mb-6 inline-flex items-center gap-2 text-sm transition-colors focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none"
       >
         <ArrowLeft className="size-4" aria-hidden="true" />
         {t("events.backToEvents")}
       </Link>
 
       {/* Title */}
-      <h1 className="mb-2 font-serif text-3xl font-bold text-foreground md:text-4xl lg:text-5xl">
+      <h1 className="text-foreground mb-2 font-serif text-3xl font-bold md:text-4xl lg:text-5xl">
         {event.title}
       </h1>
 
       {/* Location badge */}
-      <p className="mb-8 text-sm font-medium uppercase tracking-wider text-primary">
+      <p className="text-primary mb-8 text-sm font-medium tracking-wider uppercase">
         {event.location} — {event.city}
       </p>
 
@@ -120,16 +121,14 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
         {/* Main content — left column */}
         <div className="space-y-8 lg:col-span-2">
           {/* Photo carousel */}
-          {allImages.length > 0 && (
-            <PhotoCarousel images={allImages} alt={event.title} />
-          )}
+          {allImages.length > 0 && <PhotoCarousel images={allImages} alt={event.title} />}
 
           {/* Description */}
           <section>
-            <h2 className="mb-4 font-serif text-xl font-bold text-foreground md:text-2xl">
+            <h2 className="text-foreground mb-4 font-serif text-xl font-bold md:text-2xl">
               {t("events.description")}
             </h2>
-            <div className="prose prose-invert max-w-none text-muted-foreground">
+            <div className="prose prose-invert text-muted-foreground max-w-none">
               {event.description.split("\n").map((paragraph, i) => (
                 <p key={i}>{paragraph}</p>
               ))}
@@ -139,7 +138,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
           {/* Map */}
           {event.latitude && event.longitude && (
             <section>
-              <h2 className="mb-4 font-serif text-xl font-bold text-foreground md:text-2xl">
+              <h2 className="text-foreground mb-4 font-serif text-xl font-bold md:text-2xl">
                 {t("events.location")}
               </h2>
               <EventMapWrapper

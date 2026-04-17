@@ -23,8 +23,34 @@ beforeEach(() => {
 describe("getFeaturedEvents", () => {
   it("returns featured published events ordered by dateStart", async () => {
     const mockEvents = [
-      { id: "1", titleFr: "Event 1", titleEn: null, slug: "event-1", location: "Caen", city: "Caen", department: "CALVADOS", category: "ILLUMINATIONS", dateStart: new Date("2026-05-29"), timeStart: null, timeEnd: null, coverImage: null },
-      { id: "2", titleFr: "Event 2", titleEn: null, slug: "event-2", location: "Rouen", city: "Rouen", department: "SEINE_MARITIME", category: "EXPOSITIONS", dateStart: new Date("2026-05-30"), timeStart: null, timeEnd: null, coverImage: null },
+      {
+        id: "1",
+        titleFr: "Event 1",
+        titleEn: null,
+        slug: "event-1",
+        location: "Caen",
+        city: "Caen",
+        department: "CALVADOS",
+        category: "ILLUMINATIONS",
+        dateStart: new Date("2026-05-29"),
+        timeStart: null,
+        timeEnd: null,
+        coverImage: null,
+      },
+      {
+        id: "2",
+        titleFr: "Event 2",
+        titleEn: null,
+        slug: "event-2",
+        location: "Rouen",
+        city: "Rouen",
+        department: "SEINE_MARITIME",
+        category: "EXPOSITIONS",
+        dateStart: new Date("2026-05-30"),
+        timeStart: null,
+        timeEnd: null,
+        coverImage: null,
+      },
     ]
     prismaMock.event.findMany.mockResolvedValue(mockEvents)
 
@@ -57,7 +83,16 @@ describe("getFeaturedEvents", () => {
 describe("getLatestNews", () => {
   it("returns published news ordered by date desc", async () => {
     const mockNews = [
-      { id: "1", titleFr: "News 1", titleEn: null, slug: "news-1", excerptFr: "Excerpt 1", excerptEn: null, coverImage: null, publishedAt: new Date() },
+      {
+        id: "1",
+        titleFr: "News 1",
+        titleEn: null,
+        slug: "news-1",
+        excerptFr: "Excerpt 1",
+        excerptEn: null,
+        coverImage: null,
+        publishedAt: new Date(),
+      },
     ]
     prismaMock.news.findMany.mockResolvedValue(mockNews)
 
@@ -116,11 +151,7 @@ describe("getPartners", () => {
 
 describe("getEventCities", () => {
   it("returns distinct city names from published events", async () => {
-    const mockCities = [
-      { city: "Caen" },
-      { city: "Rouen" },
-      { city: "Bayeux" },
-    ]
+    const mockCities = [{ city: "Caen" }, { city: "Rouen" }, { city: "Bayeux" }]
     prismaMock.event.findMany.mockResolvedValue(mockCities)
 
     const result = await getEventCities()

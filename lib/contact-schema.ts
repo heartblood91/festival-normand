@@ -22,10 +22,9 @@ export const contactSchema = z.object({
     .min(2, "Le nom doit contenir au moins 2 caractères")
     .max(100, "Le nom ne doit pas dépasser 100 caractères"),
   email: z.string().email("Adresse email invalide"),
-  department: z.enum(
-    ["CALVADOS", "EURE", "MANCHE", "ORNE", "SEINE_MARITIME"],
-    { message: "Veuillez sélectionner un département" }
-  ),
+  department: z.enum(["CALVADOS", "EURE", "MANCHE", "ORNE", "SEINE_MARITIME"], {
+    message: "Veuillez sélectionner un département",
+  }),
   message: z
     .string()
     .min(10, "Le message doit contenir au moins 10 caractères")

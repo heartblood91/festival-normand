@@ -7,25 +7,17 @@ test.describe("Contact page", () => {
 
   test("renders page with correct title", async ({ page }) => {
     await expect(page).toHaveTitle(/Contact/)
-    await expect(
-      page.getByRole("heading", { name: "Contactez-nous", level: 1 })
-    ).toBeVisible()
+    await expect(page.getByRole("heading", { name: "Contactez-nous", level: 1 })).toBeVisible()
   })
 
   test("renders info section with description", async ({ page }) => {
-    await expect(
-      page.getByRole("heading", { name: "Nous écrire" })
-    ).toBeVisible()
-    await expect(
-      page.getByText("Une question sur le festival").first()
-    ).toBeVisible()
+    await expect(page.getByRole("heading", { name: "Nous écrire" })).toBeVisible()
+    await expect(page.getByText("Une question sur le festival").first()).toBeVisible()
   })
 
   test("renders inscription CTA link in main content", async ({ page }) => {
     const main = page.locator("main")
-    await expect(
-      main.getByRole("heading", { name: "Inscrivez votre événement" })
-    ).toBeVisible()
+    await expect(main.getByRole("heading", { name: "Inscrivez votre événement" })).toBeVisible()
     const ctaLink = main.getByRole("link", { name: /S'inscrire/ })
     await expect(ctaLink).toBeVisible()
     await expect(ctaLink).toHaveAttribute("href", /\/inscription$/)
@@ -36,25 +28,17 @@ test.describe("Contact page", () => {
     await expect(page.locator("#email")).toBeVisible()
     await expect(page.getByLabel(/Département/)).toBeVisible()
     await expect(page.getByLabel(/Message/)).toBeVisible()
-    await expect(
-      page.getByRole("button", { name: /Envoyer/ })
-    ).toBeVisible()
+    await expect(page.getByRole("button", { name: /Envoyer/ })).toBeVisible()
   })
 
   test("department select has all 5 departments", async ({ page }) => {
     const select = page.getByLabel(/Département/)
     await expect(select.locator("option")).toHaveCount(6) // 5 + placeholder
-    await expect(
-      select.locator("option", { hasText: "Calvados" })
-    ).toBeAttached()
-    await expect(
-      select.locator("option", { hasText: "Seine-Maritime" })
-    ).toBeAttached()
+    await expect(select.locator("option", { hasText: "Calvados" })).toBeAttached()
+    await expect(select.locator("option", { hasText: "Seine-Maritime" })).toBeAttached()
   })
 
-  test("shows validation errors when submitting empty form", async ({
-    page,
-  }) => {
+  test("shows validation errors when submitting empty form", async ({ page }) => {
     // Fill only name with too-short value to trigger validation
     await page.getByLabel(/Nom complet/).fill("J")
     await page.getByRole("button", { name: /Envoyer/ }).click()
@@ -71,9 +55,7 @@ test.describe("Contact page", () => {
     await page.getByLabel(/Département/).selectOption("CALVADOS")
     await page
       .getByLabel(/Message/)
-      .fill(
-        "Ceci est un message de test pour le formulaire de contact."
-      )
+      .fill("Ceci est un message de test pour le formulaire de contact.")
     await page.getByRole("button", { name: /Envoyer/ }).click()
 
     await expect(page.getByText(/email invalide/i)).toBeVisible({
@@ -87,9 +69,7 @@ test.describe("Contact page", () => {
     await page.getByLabel(/Département/).selectOption("CALVADOS")
     await page
       .getByLabel(/Message/)
-      .fill(
-        "Ceci est un message de test pour le formulaire de contact."
-      )
+      .fill("Ceci est un message de test pour le formulaire de contact.")
     await page.getByRole("button", { name: /Envoyer/ }).click()
 
     // Form responds (either success/error toast or stays rendered)
@@ -98,9 +78,7 @@ test.describe("Contact page", () => {
 
   test("navigates to contact page from header nav", async ({ page }) => {
     await page.goto("/")
-    const navLink = page
-      .getByLabel("Navigation principale")
-      .getByRole("link", { name: "Contact" })
+    const navLink = page.getByLabel("Navigation principale").getByRole("link", { name: "Contact" })
     await navLink.click()
     await expect(page).toHaveURL(/\/contact/)
   })

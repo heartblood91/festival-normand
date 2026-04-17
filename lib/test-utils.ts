@@ -1,4 +1,4 @@
-import { vi } from "vitest";
+import { vi } from "vitest"
 
 const mockMethods = () => ({
   findMany: vi.fn(),
@@ -10,7 +10,7 @@ const mockMethods = () => ({
   deleteMany: vi.fn(),
   count: vi.fn(),
   upsert: vi.fn(),
-});
+})
 
 export const prismaMock = {
   event: mockMethods(),
@@ -26,4 +26,4 @@ export const prismaMock = {
   $disconnect: vi.fn(),
   $transaction: vi.fn(),
   $queryRawUnsafe: vi.fn().mockResolvedValue([]),
-};
+}

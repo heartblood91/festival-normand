@@ -39,7 +39,7 @@ export const A11yCheckStep = ({
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="font-semibold text-white mb-2">Accessibility Check</h3>
+        <h3 className="mb-2 font-semibold text-white">Accessibility Check</h3>
         <p className="text-sm text-slate-400">
           {active.length === 0
             ? "Content is accessible. WCAG 2.1 compliant."
@@ -53,7 +53,7 @@ export const A11yCheckStep = ({
           <p className="mt-2 text-sm text-slate-400">Checking accessibility...</p>
         </div>
       ) : active.length === 0 ? (
-        <div className="rounded-lg border border-green-500/20 bg-green-500/10 p-4 text-green-400 flex items-center gap-2">
+        <div className="flex items-center gap-2 rounded-lg border border-green-500/20 bg-green-500/10 p-4 text-green-400">
           <CheckCircle2 className="h-5 w-5 shrink-0" />
           <span className="text-sm">WCAG 2.1 Level AA compliant!</span>
         </div>
@@ -63,21 +63,16 @@ export const A11yCheckStep = ({
             const config = severityConfig[suggestion.severity]
             const IconComponent = config.icon
             return (
-              <div
-                key={i}
-                className={`rounded-lg border ${config.border} ${config.bg} p-4`}
-              >
+              <div key={i} className={`rounded-lg border ${config.border} ${config.bg} p-4`}>
                 <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-start gap-3 flex-1">
-                    <IconComponent className={`h-5 w-5 shrink-0 mt-0.5 ${config.color}`} />
+                  <div className="flex flex-1 items-start gap-3">
+                    <IconComponent className={`mt-0.5 h-5 w-5 shrink-0 ${config.color}`} />
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-semibold uppercase tracking-wide text-slate-300">
+                      <div className="mb-1 flex items-center gap-2">
+                        <span className="text-xs font-semibold tracking-wide text-slate-300 uppercase">
                           {suggestion.type}
                         </span>
-                        <span
-                          className={`text-xs font-bold uppercase ${config.color}`}
-                        >
+                        <span className={`text-xs font-bold uppercase ${config.color}`}>
                           {suggestion.severity}
                         </span>
                       </div>

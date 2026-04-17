@@ -11,10 +11,7 @@ type SetupAccountFormProps = {
   email?: string
 }
 
-export const SetupAccountForm = ({
-  token,
-  email,
-}: SetupAccountFormProps) => {
+export const SetupAccountForm = ({ token, email }: SetupAccountFormProps) => {
   const router = useRouter()
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -61,35 +58,28 @@ export const SetupAccountForm = ({
 
   if (!token || !email) {
     return (
-      <div className="rounded-xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl max-w-md w-full">
-        <h1 className="font-serif text-2xl font-bold text-amber-500 mb-4">
-          Lien invalide
-        </h1>
-        <p className="text-slate-400">
-          Ce lien d&apos;invitation est invalide ou a expiré.
-        </p>
+      <div className="w-full max-w-md rounded-xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
+        <h1 className="mb-4 font-serif text-2xl font-bold text-amber-500">Lien invalide</h1>
+        <p className="text-slate-400">Ce lien d&apos;invitation est invalide ou a expiré.</p>
       </div>
     )
   }
 
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl max-w-md w-full">
+    <div className="w-full max-w-md rounded-xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
       <div className="mb-8">
-        <h1 className="font-serif text-2xl font-bold text-amber-500 mb-2">
+        <h1 className="mb-2 font-serif text-2xl font-bold text-amber-500">
           Configurer votre compte
         </h1>
         <p className="text-sm text-slate-400">
           Créez un mot de passe pour accéder à l&apos;administration.
         </p>
-        <p className="text-sm text-slate-500 mt-1">{email}</p>
+        <p className="mt-1 text-sm text-slate-500">{email}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-slate-200"
-          >
+          <label htmlFor="password" className="block text-sm font-medium text-slate-200">
             Mot de passe
           </label>
           <Input
@@ -106,10 +96,7 @@ export const SetupAccountForm = ({
         </div>
 
         <div className="space-y-2">
-          <label
-            htmlFor="confirmPassword"
-            className="block text-sm font-medium text-slate-200"
-          >
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-200">
             Confirmer le mot de passe
           </label>
           <Input
@@ -125,16 +112,12 @@ export const SetupAccountForm = ({
           />
         </div>
 
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full mt-6"
-        >
+        <Button type="submit" disabled={isSubmitting} className="mt-6 w-full">
           {isSubmitting ? "Configuration..." : "Créer mon compte"}
         </Button>
       </form>
 
-      <p className="text-xs text-slate-500 text-center mt-6">
+      <p className="mt-6 text-center text-xs text-slate-500">
         Cette page est sécurisée et utilise le chiffrement SSL.
       </p>
     </div>

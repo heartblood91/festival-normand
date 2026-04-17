@@ -77,7 +77,11 @@ describe("eventSchema", () => {
   })
 
   it("accepts valid numeric string latitude/longitude", () => {
-    const result = eventSchema.safeParse({ ...validData, latitude: "49.1844", longitude: "-0.3706" })
+    const result = eventSchema.safeParse({
+      ...validData,
+      latitude: "49.1844",
+      longitude: "-0.3706",
+    })
     expect(result.success).toBe(true)
     if (result.success) {
       expect(result.data.latitude).toBe(49.1844)
@@ -86,7 +90,11 @@ describe("eventSchema", () => {
   })
 
   it("rejects string 'undefined' for latitude/longitude", () => {
-    const result = eventSchema.safeParse({ ...validData, latitude: "undefined", longitude: "undefined" })
+    const result = eventSchema.safeParse({
+      ...validData,
+      latitude: "undefined",
+      longitude: "undefined",
+    })
     expect(result.success).toBe(false)
   })
 

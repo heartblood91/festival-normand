@@ -1,5 +1,4 @@
-const getDateLocale = (locale: string): string =>
-  locale === "en" ? "en-US" : "fr-FR"
+const getDateLocale = (locale: string): string => (locale === "en" ? "en-US" : "fr-FR")
 
 export const formatEventDate = (date: Date | string, locale: string): string =>
   new Intl.DateTimeFormat(getDateLocale(locale), {

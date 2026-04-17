@@ -5,12 +5,7 @@ import { Facebook, Instagram } from "lucide-react"
 import { useTranslations, useLocale } from "next-intl"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { NAV_ITEMS, CTA_HREF, SOCIAL_LINKS } from "@/lib/navigation"
 import { isNavActive } from "@/lib/utils/nav"
 import { SparkleIcon } from "@/components/ui/sparkle-icon"
@@ -31,12 +26,12 @@ const MobileNav = ({ open, onOpenChange, pathname }: MobileNavProps) => {
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-full border-white/10 bg-background/95 backdrop-blur-xl sm:max-w-sm"
+        className="bg-background/95 w-full border-white/10 backdrop-blur-xl sm:max-w-sm"
         id="mobile-nav"
       >
         <SheetHeader className="border-b border-white/10 pb-4">
-          <SheetTitle className="font-serif text-lg text-foreground">
-            <SparkleIcon className="size-5 inline-block" /> {t("meta.festivalName")}
+          <SheetTitle className="text-foreground font-serif text-lg">
+            <SparkleIcon className="inline-block size-5" /> {t("meta.festivalName")}
           </SheetTitle>
         </SheetHeader>
 
@@ -51,8 +46,8 @@ const MobileNav = ({ open, onOpenChange, pathname }: MobileNavProps) => {
                 href={href}
                 onClick={() => onOpenChange(false)}
                 className={cn(
-                  "rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
-                  isActive ? "bg-white/5 text-primary" : "text-muted-foreground"
+                  "hover:text-primary focus-visible:ring-primary/50 rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 focus-visible:ring-2 focus-visible:outline-none",
+                  isActive ? "text-primary bg-white/5" : "text-muted-foreground"
                 )}
                 aria-current={isActive ? "page" : undefined}
               >
@@ -79,7 +74,7 @@ const MobileNav = ({ open, onOpenChange, pathname }: MobileNavProps) => {
               href={SOCIAL_LINKS.facebook}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex size-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-white/5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+              className="text-muted-foreground hover:text-primary focus-visible:ring-primary/50 inline-flex size-11 items-center justify-center rounded-lg transition-colors hover:bg-white/5 focus-visible:ring-2 focus-visible:outline-none"
               aria-label="Facebook"
             >
               <Facebook className="size-5" />
@@ -88,7 +83,7 @@ const MobileNav = ({ open, onOpenChange, pathname }: MobileNavProps) => {
               href={SOCIAL_LINKS.instagram}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex size-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-white/5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+              className="text-muted-foreground hover:text-primary focus-visible:ring-primary/50 inline-flex size-11 items-center justify-center rounded-lg transition-colors hover:bg-white/5 focus-visible:ring-2 focus-visible:outline-none"
               aria-label="Instagram"
             >
               <Instagram className="size-5" />

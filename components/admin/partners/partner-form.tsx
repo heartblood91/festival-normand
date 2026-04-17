@@ -83,7 +83,7 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
               <button
                 type="button"
                 onClick={() => setFormLocale("fr")}
-                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                className={`rounded px-3 py-1 text-sm font-medium transition-colors ${
                   formLocale === "fr"
                     ? "bg-amber-500 text-white"
                     : "text-slate-400 hover:text-slate-300"
@@ -94,7 +94,7 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
               <button
                 type="button"
                 onClick={() => setFormLocale("en")}
-                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                className={`rounded px-3 py-1 text-sm font-medium transition-colors ${
                   formLocale === "en"
                     ? "bg-amber-500 text-white"
                     : "text-slate-400 hover:text-slate-300"
@@ -130,7 +130,7 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
           ) : (
             <>
               <div className="flex items-center justify-between">
-                <span className="text-slate-300 text-sm">Traduction automatique</span>
+                <span className="text-sm text-slate-300">Traduction automatique</span>
                 <TranslateButton
                   sourceFields={{
                     nameFr,
@@ -161,14 +161,8 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
           )}
 
           <div>
-            <Label className="text-slate-300 block mb-2">
-              Logo
-            </Label>
-            <ImageUpload
-              value={logo}
-              onChange={setLogo}
-              preset="logo"
-            />
+            <Label className="mb-2 block text-slate-300">Logo</Label>
+            <ImageUpload value={logo} onChange={setLogo} preset="logo" />
           </div>
 
           <div>

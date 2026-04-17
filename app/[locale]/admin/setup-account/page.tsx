@@ -16,7 +16,7 @@ const SetupAccountRoute = async ({ searchParams }: Props) => {
   const email = params.email as string
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-4">
       <Suspense fallback={<div>Chargement...</div>}>
         <SetupAccountForm token={token} email={email} />
       </Suspense>

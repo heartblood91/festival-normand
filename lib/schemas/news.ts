@@ -10,10 +10,11 @@ export const newsSchema = z.object({
     .string()
     .min(3, "Le slug doit contenir au moins 3 caractères")
     .max(200, "Le slug ne peut pas dépasser 200 caractères")
-    .regex(/^[a-z0-9-]+$/, "Le slug ne peut contenir que des lettres minuscules, chiffres et tirets"),
-  contentFr: z
-    .string()
-    .min(10, "Le contenu doit contenir au moins 10 caractères"),
+    .regex(
+      /^[a-z0-9-]+$/,
+      "Le slug ne peut contenir que des lettres minuscules, chiffres et tirets"
+    ),
+  contentFr: z.string().min(10, "Le contenu doit contenir au moins 10 caractères"),
   contentEn: z.string().optional().or(z.literal("")),
   excerptFr: z.string().optional().or(z.literal("")),
   excerptEn: z.string().optional().or(z.literal("")),

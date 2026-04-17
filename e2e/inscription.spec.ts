@@ -38,9 +38,7 @@ test.describe("Inscription page", () => {
   test("renders inscription section heading", async ({ page }) => {
     await page.goto("/inscription")
 
-    await expect(
-      page.getByRole("heading", { name: /Inscrivez-vous/ })
-    ).toBeVisible()
+    await expect(page.getByRole("heading", { name: /Inscrivez-vous/ })).toBeVisible()
   })
 
   test("page is accessible via header CTA button", async ({ page }) => {

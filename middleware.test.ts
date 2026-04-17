@@ -24,8 +24,7 @@ import { NextRequest } from "next/server"
 
 const mockGetSessionCookie = vi.mocked(getSessionCookie)
 
-const createRequest = (path: string) =>
-  new NextRequest(new URL(path, "http://localhost:3010"))
+const createRequest = (path: string) => new NextRequest(new URL(path, "http://localhost:3010"))
 
 describe("admin route middleware", () => {
   beforeEach(() => {

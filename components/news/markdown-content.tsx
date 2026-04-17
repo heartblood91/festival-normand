@@ -15,55 +15,40 @@ const extractYouTubeId = (url: string): string | null => {
 const components: Components = {
   // Page already has an h1, so markdown headings start at h2
   h1: ({ children }) => (
-    <h2 className="mb-6 font-serif text-2xl font-bold text-foreground md:text-3xl">
-      {children}
-    </h2>
+    <h2 className="text-foreground mb-6 font-serif text-2xl font-bold md:text-3xl">{children}</h2>
   ),
   h2: ({ children }) => (
     <>
       <hr className="my-8 border-white/10" aria-hidden="true" />
-      <h2 className="mb-4 font-serif text-xl font-bold text-foreground md:text-2xl">
-        {children}
-      </h2>
+      <h2 className="text-foreground mb-4 font-serif text-xl font-bold md:text-2xl">{children}</h2>
     </>
   ),
   h3: ({ children }) => (
-    <h3 className="mb-3 mt-8 border-l-2 border-primary/50 pl-4 font-serif text-lg font-bold text-foreground md:text-xl">
+    <h3 className="border-primary/50 text-foreground mt-8 mb-3 border-l-2 pl-4 font-serif text-lg font-bold md:text-xl">
       {children}
     </h3>
   ),
   p: ({ children, node }) => {
     const hasBlockChildren = node?.children?.some(
       (child: { type?: string; tagName?: string; properties?: { href?: string } }) =>
-        child.type === 'element' && (['img'].includes(child.tagName ?? '') ||
-        (child.tagName === 'a' && child.properties?.href && YOUTUBE_REGEX.test(child.properties.href)))
+        child.type === "element" &&
+        (["img"].includes(child.tagName ?? "") ||
+          (child.tagName === "a" &&
+            child.properties?.href &&
+            YOUTUBE_REGEX.test(child.properties.href)))
     )
-    const Tag = hasBlockChildren ? 'div' : 'p'
-    return (
-      <Tag className="mb-4 leading-relaxed text-muted-foreground">
-        {children}
-      </Tag>
-    )
+    const Tag = hasBlockChildren ? "div" : "p"
+    return <Tag className="text-muted-foreground mb-4 leading-relaxed">{children}</Tag>
   },
   ul: ({ children }) => (
-    <ul className="mb-4 ml-6 list-disc space-y-1 text-muted-foreground">
-      {children}
-    </ul>
+    <ul className="text-muted-foreground mb-4 ml-6 list-disc space-y-1">{children}</ul>
   ),
   ol: ({ children }) => (
-    <ol className="mb-4 ml-6 list-decimal space-y-1 text-muted-foreground">
-      {children}
-    </ol>
+    <ol className="text-muted-foreground mb-4 ml-6 list-decimal space-y-1">{children}</ol>
   ),
-  li: ({ children }) => (
-    <li className="leading-relaxed">{children}</li>
-  ),
-  strong: ({ children }) => (
-    <strong className="font-semibold text-foreground">{children}</strong>
-  ),
-  em: ({ children }) => (
-    <em className="italic">{children}</em>
-  ),
+  li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+  strong: ({ children }) => <strong className="text-foreground font-semibold">{children}</strong>,
+  em: ({ children }) => <em className="italic">{children}</em>,
   a: ({ href, children }) => {
     if (href) {
       const youtubeId = extractYouTubeId(href)
@@ -85,7 +70,7 @@ const components: Components = {
     return (
       <a
         href={href}
-        className="text-primary underline underline-offset-4 transition-colors hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:rounded-sm"
+        className="text-primary hover:text-primary/80 focus-visible:ring-primary/50 underline underline-offset-4 transition-colors focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none"
         {...(href?.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       >
         {children}
@@ -103,14 +88,12 @@ const components: Components = {
         loading="lazy"
       />
       {alt && (
-        <figcaption className="mt-2 text-center text-sm text-muted-foreground">
-          {alt}
-        </figcaption>
+        <figcaption className="text-muted-foreground mt-2 text-center text-sm">{alt}</figcaption>
       )}
     </figure>
   ),
   blockquote: ({ children }) => (
-    <blockquote className="my-4 border-l-4 border-primary/50 pl-4 italic text-muted-foreground">
+    <blockquote className="border-primary/50 text-muted-foreground my-4 border-l-4 pl-4 italic">
       {children}
     </blockquote>
   ),

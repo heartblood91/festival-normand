@@ -12,7 +12,7 @@ type PagePreviewPageProps = {
 }
 
 const PagePreviewPage = async ({ params }: PagePreviewPageProps) => {
-  const { locale, id } = await params as { locale: Locale; id: string }
+  const { locale, id } = (await params) as { locale: Locale; id: string }
   const t = await getTranslations()
 
   const rawPage = await prisma.page.findUnique({
@@ -28,18 +28,18 @@ const PagePreviewPage = async ({ params }: PagePreviewPageProps) => {
   return (
     <>
       <PreviewBar backUrl={`/admin/pages/${id}/edit`} />
-      <article className="mx-auto max-w-4xl px-4 py-8 md:py-12 lg:py-16 pt-20">
+      <article className="mx-auto max-w-4xl px-4 py-8 pt-20 md:py-12 lg:py-16">
         {/* Back link */}
         <a
           href={`/admin/pages/${id}/edit`}
-          className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:rounded-sm"
+          className="text-muted-foreground hover:text-foreground focus-visible:ring-primary/50 mb-6 inline-flex items-center gap-2 text-sm transition-colors focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none"
         >
           <ArrowLeft className="size-4" aria-hidden="true" />
           Back
         </a>
 
         {/* Title */}
-        <h1 className="mb-8 font-serif text-3xl font-bold text-foreground md:text-4xl lg:text-5xl">
+        <h1 className="text-foreground mb-8 font-serif text-3xl font-bold md:text-4xl lg:text-5xl">
           {page.title}
         </h1>
 

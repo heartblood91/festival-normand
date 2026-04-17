@@ -18,12 +18,12 @@ const EventCard = async ({ event, className, priority = false }: EventCardProps)
     <Link
       href={`/${locale}/evenement/${event.slug}`}
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all hover:border-primary/30 hover:bg-white/10 hover:shadow-lg hover:shadow-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+        "group hover:border-primary/30 hover:shadow-primary/5 focus-visible:ring-primary/50 relative flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all hover:bg-white/10 hover:shadow-lg focus-visible:ring-2 focus-visible:outline-none",
         className
       )}
     >
       {/* Cover image or gradient placeholder */}
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-gradient-to-br from-primary/20 to-primary/5">
+      <div className="from-primary/20 to-primary/5 relative aspect-[16/10] w-full overflow-hidden bg-gradient-to-br">
         {event.coverImage && (
           <img
             src={event.coverImage}
@@ -36,18 +36,18 @@ const EventCard = async ({ event, className, priority = false }: EventCardProps)
           />
         )}
         {/* Category badge */}
-        <span className="absolute left-3 top-3 rounded-full border border-primary/30 bg-background/80 px-2.5 py-1 text-xs font-medium text-primary backdrop-blur-sm">
+        <span className="border-primary/30 bg-background/80 text-primary absolute top-3 left-3 rounded-full border px-2.5 py-1 text-xs font-medium backdrop-blur-sm">
           {t(`categories.${event.category}`) ?? event.category}
         </span>
       </div>
 
       {/* Content */}
       <div className="flex flex-1 flex-col p-4">
-        <h3 className="line-clamp-2 font-serif text-lg font-bold leading-snug text-foreground group-hover:text-primary transition-colors">
+        <h3 className="text-foreground group-hover:text-primary line-clamp-2 font-serif text-lg leading-snug font-bold transition-colors">
           {event.title}
         </h3>
 
-        <div className="mt-auto flex flex-col gap-1.5 pt-3 text-sm text-muted-foreground">
+        <div className="text-muted-foreground mt-auto flex flex-col gap-1.5 pt-3 text-sm">
           <div className="flex items-center gap-1.5">
             <Calendar className="size-3.5 shrink-0" aria-hidden="true" />
             <span>{formatEventDate(event.dateStart, locale)}</span>

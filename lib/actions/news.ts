@@ -136,10 +136,7 @@ export const createNews = async (formData: FormData): Promise<NewsActionResult> 
   }
 }
 
-export const updateNews = async (
-  id: string,
-  formData: FormData
-): Promise<NewsActionResult> => {
+export const updateNews = async (id: string, formData: FormData): Promise<NewsActionResult> => {
   try {
     const raw = extractNewsFormData(formData)
     const result = newsSchema.safeParse(raw)

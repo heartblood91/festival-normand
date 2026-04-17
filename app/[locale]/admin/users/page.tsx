@@ -8,17 +8,9 @@ export const metadata = {
 }
 
 const AdminUsersRoute = async () => {
-  const [users, currentUser] = await Promise.all([
-    getAdminUsers(),
-    getAuthenticatedUser(),
-  ])
+  const [users, currentUser] = await Promise.all([getAdminUsers(), getAuthenticatedUser()])
 
-  return (
-    <AdminUsersPage
-      users={users}
-      currentUserId={currentUser?.id || ""}
-    />
-  )
+  return <AdminUsersPage users={users} currentUserId={currentUser?.id || ""} />
 }
 
 export default AdminUsersRoute

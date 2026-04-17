@@ -16,7 +16,9 @@ test.describe("Admin Events CRUD", () => {
     await expect(page).toHaveURL(/\/admin\/login/)
   })
 
-  test("events list page loads when visiting /admin/events directly (auth required)", async ({ page }) => {
+  test("events list page loads when visiting /admin/events directly (auth required)", async ({
+    page,
+  }) => {
     // Verify the route exists and redirects to login
     await page.goto("/admin/events")
     await expect(page).toHaveURL(/\/admin\/login/)

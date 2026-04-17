@@ -26,16 +26,21 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
           <div>
             <h2
               id="news-heading"
-              className="font-serif text-2xl font-bold text-foreground md:text-3xl lg:text-4xl"
+              className="text-foreground font-serif text-2xl font-bold md:text-3xl lg:text-4xl"
             >
               {t("newsSection.title")}
             </h2>
-            <p className="mt-2 text-sm text-muted-foreground md:text-base">
+            <p className="text-muted-foreground mt-2 text-sm md:text-base">
               {t("newsSection.subtitle")}
             </p>
           </div>
           <div className="hidden items-center gap-2 sm:inline-flex">
-            <Button asChild variant="ghost" className="inline-flex items-center gap-1 text-primary" aria-label={t("newsSection.viewAllLabel")}>
+            <Button
+              asChild
+              variant="ghost"
+              className="text-primary inline-flex items-center gap-1"
+              aria-label={t("newsSection.viewAllLabel")}
+            >
               <Link href={`/${locale}/actualites`}>
                 {t("newsSection.viewAll")}
                 <ArrowRight className="size-4" aria-hidden="true" />
@@ -48,7 +53,7 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
       {/* Horizontal scroll container */}
       <div
         ref={scrollRef}
-        className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 scrollbar-hide md:gap-6 md:px-[max(1rem,calc((100vw-80rem)/2+1rem))]"
+        className="scrollbar-hide flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 md:gap-6 md:px-[max(1rem,calc((100vw-80rem)/2+1rem))]"
         role="region"
         aria-label={t("a11y.carousel")}
         tabIndex={0}
@@ -57,13 +62,13 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
           <Link
             key={article.id}
             href={`/${locale}/actualite/${article.slug}`}
-            className="group flex w-[280px] shrink-0 snap-start flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all hover:border-primary/30 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 md:w-[340px]"
+            className="group hover:border-primary/30 focus-visible:ring-primary/50 flex w-[280px] shrink-0 snap-start flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all hover:bg-white/10 focus-visible:ring-2 focus-visible:outline-none md:w-[340px]"
             role="group"
             aria-roledescription={locale === "en" ? "slide" : "diapositive"}
             aria-label={t("a11y.slide", { current: index + 1, total: news.length })}
           >
             {/* Cover image or gradient placeholder */}
-            <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br from-primary/20 to-primary/5">
+            <div className="from-primary/20 to-primary/5 relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br">
               {article.coverImage && (
                 <img
                   src={article.coverImage}
@@ -80,15 +85,15 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
             <div className="flex flex-1 flex-col p-4">
               <time
                 dateTime={article.publishedAt ? new Date(article.publishedAt).toISOString() : ""}
-                className="text-xs text-muted-foreground"
+                className="text-muted-foreground text-xs"
               >
                 {article.publishedAt ? formatNewsDate(article.publishedAt, locale) : ""}
               </time>
-              <h3 className="mt-1.5 line-clamp-2 font-serif text-base font-bold leading-snug text-foreground group-hover:text-primary transition-colors md:text-lg">
+              <h3 className="text-foreground group-hover:text-primary mt-1.5 line-clamp-2 font-serif text-base leading-snug font-bold transition-colors md:text-lg">
                 {article.title}
               </h3>
               {article.excerpt && (
-                <p className="mt-auto line-clamp-2 pt-2 text-sm text-muted-foreground">
+                <p className="text-muted-foreground mt-auto line-clamp-2 pt-2 text-sm">
                   {article.excerpt}
                 </p>
               )}
@@ -98,7 +103,12 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
       </div>
 
       <div className="mt-6 text-center sm:hidden">
-        <Button asChild variant="outline" className="gap-1" aria-label={t("newsSection.viewAllLabel")}>
+        <Button
+          asChild
+          variant="outline"
+          className="gap-1"
+          aria-label={t("newsSection.viewAllLabel")}
+        >
           <Link href={`/${locale}/actualites`}>
             {t("newsSection.viewAll")}
             <ArrowRight className="size-4" aria-hidden="true" />
