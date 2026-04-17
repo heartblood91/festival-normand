@@ -1,7 +1,16 @@
 import createMiddleware from "next-intl/middleware"
 import { NextRequest, NextResponse } from "next/server"
-import { getSessionCookie } from "better-auth/cookies"
-import { locales, defaultLocale } from "@/lib/i18n/config"
+
+const locales = ["fr", "en"] as const
+const defaultLocale = "fr"
+
+const SESSION_COOKIE_NAMES = [
+  "better-auth.session_token",
+  "__Secure-better-auth.session_token",
+]
+
+const hasSessionCookie = (request: NextRequest): boolean =>
+  SESSION_COOKIE_NAMES.some((name) => request.cookies.has(name))
 
 const intlMiddleware = createMiddleware({
   locales,
@@ -36,8 +45,7 @@ export const middleware = (request: NextRequest) => {
     const isLoginPage = resolvedPathname === `/${locale}/admin/login`
 
     if (!isLoginPage) {
-      const sessionCookie = getSessionCookie(request)
-      if (!sessionCookie) {
+      if (!hasSessionCookie(request)) {
         const loginUrl = new URL(`/${locale}/admin/login`, request.url)
         loginUrl.searchParams.set("callbackUrl", pathname)
         return NextResponse.redirect(loginUrl)
