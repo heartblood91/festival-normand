@@ -134,8 +134,24 @@ model User {
 
   sessions      Session[]
   accounts      Account[]
+  twoFactors    TwoFactor[]
 
   @@map("auth_users")
+}
+
+model TwoFactor {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  secret      String
+  backupCodes String   @map("backup_codes")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([secret])
+  @@map("auth_two_factors")
 }
 
 model Session {

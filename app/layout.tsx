@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
 import { Inter, Playfair_Display } from "next/font/google"
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/react"
 import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/sonner"
 import "./globals.css"
@@ -56,6 +58,8 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => (
     <body className="flex min-h-dvh flex-col font-sans antialiased">
       {children}
       <Toaster />
+      <SpeedInsights />
+      <Analytics />
     </body>
   </html>
 )

@@ -1,11 +1,18 @@
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
+import { prisma } from "@/lib/prisma"
 import { ChangePasswordForm } from "@/components/admin/settings/change-password-form"
+import { TwoFactorSection } from "@/components/admin/settings/two-factor-section"
 
 const SettingsPage = async () => {
   const session = await auth.api.getSession({ headers: await headers() })
   if (!session) redirect("/fr/admin/login")
+
+  const fullUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { twoFactorEnabled: true },
+  })
 
   return (
     <div className="space-y-8 p-6 md:p-8">
@@ -24,6 +31,16 @@ const SettingsPage = async () => {
           Changer votre mot de passe déconnectera toutes vos autres sessions actives.
         </p>
         <ChangePasswordForm />
+      </section>
+
+      <section className="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl md:p-8">
+        <h2 className="mb-1 font-serif text-xl font-bold text-foreground">
+          Authentification à deux facteurs
+        </h2>
+        <p className="text-muted-foreground mb-6 text-sm">
+          Ajoute une couche de sécurité supplémentaire lors de la connexion.
+        </p>
+        <TwoFactorSection initialEnabled={fullUser?.twoFactorEnabled ?? false} />
       </section>
     </div>
   )
