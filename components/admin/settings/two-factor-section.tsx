@@ -21,13 +21,13 @@ export const TwoFactorSection = ({ initialEnabled }: Props) => {
   const [loading, setLoading] = useState(false)
   const [disablePassword, setDisablePassword] = useState("")
 
+  const totpURI = state.step === "verify" ? state.totpURI : null
   useEffect(() => {
-    if (state.step === "verify") {
-      QRCode.toDataURL(state.totpURI, { width: 220 }).then((qrDataUrl) => {
-        setState((s) => (s.step === "verify" ? { ...s, qrDataUrl } : s))
-      })
-    }
-  }, [state])
+    if (!totpURI) return
+    QRCode.toDataURL(totpURI, { width: 220 }).then((qrDataUrl) => {
+      setState((s) => (s.step === "verify" && !s.qrDataUrl ? { ...s, qrDataUrl } : s))
+    })
+  }, [totpURI])
 
   const handleEnable = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -103,7 +103,7 @@ export const TwoFactorSection = ({ initialEnabled }: Props) => {
 
   if (state.step === "idle") {
     return (
-      <div className="max-w-md space-y-4">
+      <div className="space-y-4">
         <p className="text-muted-foreground text-sm">
           Renforcez la sécurité de votre compte en ajoutant un code à usage unique via une
           application d&apos;authentification (Google Authenticator, 1Password, Authy…).
@@ -139,13 +139,32 @@ export const TwoFactorSection = ({ initialEnabled }: Props) => {
     )
   }
 
+  const secret = (() => {
+    try {
+      return new URL(state.totpURI).searchParams.get("secret") ?? ""
+    } catch {
+      return ""
+    }
+  })()
+
+  const copySecret = async () => {
+    try {
+      await navigator.clipboard.writeText(secret)
+      toast.success("Clé copiée dans le presse-papier")
+    } catch {
+      toast.error("Impossible de copier la clé")
+    }
+  }
+
   return (
     <form onSubmit={handleVerify} className="max-w-md space-y-4">
       <div className="space-y-3">
         <p className="text-sm">
-          Scannez ce QR code avec votre application d&apos;authentification :
+          Scannez ce QR code ou saisissez la clé manuellement dans votre application d&apos;authentification :
         </p>
         {state.qrDataUrl ? (
+          // Data URL QR code — next/image is overkill for a dynamic base64 string
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={state.qrDataUrl}
             alt="QR code pour l'application d'authentification"
@@ -156,6 +175,19 @@ export const TwoFactorSection = ({ initialEnabled }: Props) => {
         ) : (
           <div className="size-[220px] animate-pulse rounded-lg bg-white/10" />
         )}
+        <div className="space-y-1">
+          <p className="text-muted-foreground text-xs font-medium uppercase tracking-wider">
+            Clé de configuration
+          </p>
+          <div className="flex items-center gap-2">
+            <code className="flex-1 rounded-lg border border-white/10 bg-black/30 p-2 font-mono text-xs break-all select-all">
+              {secret}
+            </code>
+            <Button type="button" variant="outline" size="sm" onClick={copySecret}>
+              Copier
+            </Button>
+          </div>
+        </div>
       </div>
 
       <div className="space-y-2">

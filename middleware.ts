@@ -42,9 +42,14 @@ export const middleware = (request: NextRequest) => {
   const adminMatch = resolvedPathname.match(/^\/(fr|en)\/admin/)
   if (adminMatch) {
     const locale = adminMatch[1]
-    const isLoginPage = resolvedPathname === `/${locale}/admin/login`
+    const publicAdminPaths = [
+      `/${locale}/admin/login`,
+      `/${locale}/admin/verify-2fa`,
+      `/${locale}/admin/setup-account`,
+    ]
+    const isPublicAdminPage = publicAdminPaths.some((p) => resolvedPathname === p)
 
-    if (!isLoginPage) {
+    if (!isPublicAdminPage) {
       if (!hasSessionCookie(request)) {
         const loginUrl = new URL(`/${locale}/admin/login`, request.url)
         loginUrl.searchParams.set("callbackUrl", pathname)
