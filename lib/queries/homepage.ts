@@ -85,8 +85,8 @@ export const getPartners = async (locale: Locale = "fr") => {
         website: p.website,
       }))
     },
-    ["partners", locale],
-    { revalidate: 86400, tags: ["partners"] }
+    ["partners", locale, "v2"],
+    { revalidate: 300, tags: ["partners"] }
   )()
 }
 

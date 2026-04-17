@@ -468,37 +468,37 @@ const seedPartners = async () => {
   const partners = [
     {
       nameFr: "Région Normandie",
-      logo: "/images/seed/logo-region-normandie.png",
+      logo: "/images/partners/normandie.png",
       website: "https://www.normandie.fr",
       order: 1,
     },
     {
       nameFr: "Fondation du Patrimoine",
-      logo: "/images/seed/logo-fondation-patrimoine.png",
+      logo: "/images/partners/fondation-patrimoine.png",
       website: "https://www.fondation-patrimoine.org",
       order: 2,
     },
     {
       nameFr: "Département du Calvados",
-      logo: "/images/seed/logo-calvados.png",
+      logo: "/images/partners/calvados.png",
       website: "https://www.calvados.fr",
       order: 3,
     },
     {
       nameFr: "Département de l'Eure",
-      logo: "/images/seed/logo-eure.png",
+      logo: "/images/partners/eure.png",
       website: "https://www.eure.fr",
       order: 4,
     },
     {
       nameFr: "Département de la Manche",
-      logo: "/images/seed/logo-manche.png",
+      logo: "/images/partners/manche.png",
       website: "https://www.manche.fr",
       order: 5,
     },
     {
       nameFr: "Département de l'Orne",
-      logo: "/images/seed/logo-orne.png",
+      logo: "/images/partners/orne.png",
       website: "https://www.orne.fr",
       order: 6,
     },
