@@ -35,21 +35,24 @@ const main = async () => {
       where: { email },
       data: { name, role, emailVerified: true },
     })
-    await prisma.account.upsert({
-      where: {
-        id: `cred-${existing.id}`,
-      },
-      create: {
-        id: `cred-${existing.id}`,
-        userId: existing.id,
-        accountId: existing.id,
-        providerId: "credential",
-        password: hash,
-      },
-      update: {
-        password: hash,
-      },
+    const credentialAccount = await prisma.account.findFirst({
+      where: { userId: existing.id, providerId: "credential" },
     })
+    if (credentialAccount) {
+      await prisma.account.update({
+        where: { id: credentialAccount.id },
+        data: { password: hash },
+      })
+    } else {
+      await prisma.account.create({
+        data: {
+          userId: existing.id,
+          accountId: existing.id,
+          providerId: "credential",
+          password: hash,
+        },
+      })
+    }
     console.log(`Updated: ${email} as ${role}`)
     return
   }

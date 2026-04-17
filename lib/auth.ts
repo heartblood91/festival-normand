@@ -42,8 +42,10 @@ export const auth = betterAuth({
     magicLink({
       expiresIn: 600,
       sendMagicLink: async ({ email, url }) => {
+        const fromAddress =
+          process.env.RESEND_FROM_EMAIL || "Pierres en Lumières <onboarding@resend.dev>"
         await resend.emails.send({
-          from: "Pierres en Lumières <noreply@pierresenlumieres.fr>",
+          from: fromAddress,
           to: email,
           subject: "Connexion à l'administration Pierres en Lumières",
           html: `

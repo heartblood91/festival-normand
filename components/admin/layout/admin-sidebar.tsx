@@ -9,6 +9,7 @@ import {
   Handshake,
   FileText,
   Users,
+  Settings,
   LogOut,
   ArrowLeft,
 } from "lucide-react"
@@ -73,6 +74,11 @@ const AdminSidebar = ({ user, pathname }: AdminSidebarProps) => {
       href: `/${locale}/admin/users`,
       icon: Users,
       labelKey: "sidebar.users",
+    },
+    {
+      href: `/${locale}/admin/settings`,
+      icon: Settings,
+      labelKey: "sidebar.settings",
     },
   ]
 

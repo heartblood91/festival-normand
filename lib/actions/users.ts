@@ -117,8 +117,10 @@ export const inviteUser = async (formData: FormData): Promise<UserActionResult> 
     // Send invitation email
     const setupUrl = `${baseUrl}/fr/admin/setup-account?token=${token}&email=${encodeURIComponent(data.email)}`
 
+    const fromAddress =
+      process.env.RESEND_FROM_EMAIL || "Pierres en Lumières <onboarding@resend.dev>"
     await resend.emails.send({
-      from: "Pierres en Lumières <noreply@pierresenlumieres.fr>",
+      from: fromAddress,
       to: data.email,
       subject: "Invitation - Accès administrateur Pierres en Lumières",
       html: `
