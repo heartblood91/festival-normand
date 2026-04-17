@@ -1,4 +1,4 @@
-import Link from "next/link"
+import { Link } from "@/lib/i18n/routing"
 import { getLocale, getTranslations } from "next-intl/server"
 import { MapPin, Calendar } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -16,7 +16,7 @@ const EventCard = async ({ event, className, priority = false }: EventCardProps)
   const locale = await getLocale()
   return (
     <Link
-      href={`/${locale}/evenement/${event.slug}`}
+      href={`/evenement/${event.slug}`}
       className={cn(
         "group hover:border-primary/30 hover:shadow-primary/5 focus-visible:ring-primary/50 relative flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all hover:bg-white/10 hover:shadow-lg focus-visible:ring-2 focus-visible:outline-none",
         className

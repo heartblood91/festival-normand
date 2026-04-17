@@ -1,8 +1,8 @@
 "use client"
 
-import Link from "next/link"
 import { Facebook, Instagram } from "lucide-react"
 import { useTranslations, useLocale } from "next-intl"
+import { Link } from "@/lib/i18n/routing"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
@@ -37,13 +37,12 @@ const MobileNav = ({ open, onOpenChange, pathname }: MobileNavProps) => {
 
         <nav className="flex flex-col gap-1 p-4" aria-label={t("a11y.mainNav")}>
           {NAV_ITEMS.map((item) => {
-            const href = `/${locale}${item.href}`
             const pathWithoutLocale = pathname.replace(`/${locale}`, "") || "/"
             const isActive = isNavActive(item.href, pathWithoutLocale)
             return (
               <Link
                 key={item.key}
-                href={href}
+                href={item.href}
                 onClick={() => onOpenChange(false)}
                 className={cn(
                   "hover:text-primary focus-visible:ring-primary/50 rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 focus-visible:ring-2 focus-visible:outline-none",
@@ -64,7 +63,7 @@ const MobileNav = ({ open, onOpenChange, pathname }: MobileNavProps) => {
           </div>
 
           <Button asChild size="lg" className="w-full">
-            <Link href={`/${locale}${CTA_HREF}`} onClick={() => onOpenChange(false)}>
+            <Link href={CTA_HREF} onClick={() => onOpenChange(false)}>
               {t("nav.register")}
             </Link>
           </Button>

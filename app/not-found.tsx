@@ -21,7 +21,7 @@ const NotFound = () => {
 
         <div className="space-y-4">
           <Link
-            href="/"
+            href="/fr"
             className="text-foreground focus-visible:ring-primary/50 flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-6 py-3 font-medium backdrop-blur-xl transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:outline-none"
           >
             <Home className="size-5" aria-hidden="true" />
@@ -29,7 +29,7 @@ const NotFound = () => {
           </Link>
 
           <Link
-            href="/evenements"
+            href="/fr/evenements"
             className="text-primary focus-visible:ring-primary/50 flex w-full items-center justify-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-6 py-3 font-medium backdrop-blur-xl transition-colors hover:bg-amber-500/20 focus-visible:ring-2 focus-visible:outline-none"
           >
             <CalendarDays className="size-5" aria-hidden="true" />

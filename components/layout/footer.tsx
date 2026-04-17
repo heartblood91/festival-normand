@@ -1,12 +1,11 @@
-import Link from "next/link"
-import { getTranslations, getLocale } from "next-intl/server"
+import { Link } from "@/lib/i18n/routing"
+import { getTranslations } from "next-intl/server"
 import { Facebook, Instagram } from "lucide-react"
 import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/navigation"
 import { SparkleIcon } from "@/components/ui/sparkle-icon"
 
 const Footer = async () => {
   const t = await getTranslations()
-  const locale = await getLocale()
   const year = new Date().getFullYear()
   return (
     <footer className="bg-background/50 border-t border-white/10" role="contentinfo">
@@ -15,7 +14,7 @@ const Footer = async () => {
           {/* Brand */}
           <div className="flex flex-col gap-4">
             <Link
-              href={`/${locale}`}
+              href="/"
               className="text-foreground hover:text-primary focus-visible:ring-primary/50 inline-flex items-center gap-2 rounded-sm font-serif text-lg font-bold transition-colors focus-visible:ring-2 focus-visible:outline-none"
               aria-label={`${t("meta.festivalName")} - ${t("a11y.backToHome")}`}
             >
@@ -59,7 +58,7 @@ const Footer = async () => {
                 {NAV_ITEMS.map((item) => (
                   <li key={item.href}>
                     <Link
-                      href={`/${locale}${item.href}`}
+                      href={item.href}
                       className="text-muted-foreground hover:text-primary focus-visible:ring-primary/50 rounded-sm text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
                     >
                       {t(`nav.${item.key}`)}
@@ -68,7 +67,7 @@ const Footer = async () => {
                 ))}
                 <li>
                   <Link
-                    href={`/${locale}/mentions-legales`}
+                    href="/mentions-legales"
                     className="text-muted-foreground hover:text-primary focus-visible:ring-primary/50 rounded-sm text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
                   >
                     {t("nav.legalNotice")}
@@ -76,7 +75,7 @@ const Footer = async () => {
                 </li>
                 <li>
                   <Link
-                    href={`/${locale}/accessibilite`}
+                    href="/accessibilite"
                     className="text-muted-foreground hover:text-primary focus-visible:ring-primary/50 rounded-sm text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
                   >
                     {t("nav.accessibility")}
@@ -93,7 +92,7 @@ const Footer = async () => {
             </h2>
             <p className="text-muted-foreground text-sm">{t("footer.contactQuestion")}</p>
             <Link
-              href={`/${locale}/contact`}
+              href="/contact"
               className="text-primary hover:text-primary/80 focus-visible:ring-primary/50 mt-3 inline-flex items-center gap-1 rounded-sm text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none"
             >
               {t("footer.contactCta")}

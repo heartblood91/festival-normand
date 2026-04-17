@@ -1,5 +1,5 @@
-import Link from "next/link"
-import { getTranslations, getLocale } from "next-intl/server"
+import { Link } from "@/lib/i18n/routing"
+import { getTranslations } from "next-intl/server"
 import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { EventCard } from "@/components/home/event-card"
@@ -11,7 +11,6 @@ type FeaturedEventsProps = {
 
 const FeaturedEvents = async ({ events }: FeaturedEventsProps) => {
   const t = await getTranslations()
-  const locale = await getLocale()
   if (events.length === 0) return null
 
   return (
@@ -37,7 +36,7 @@ const FeaturedEvents = async ({ events }: FeaturedEventsProps) => {
           className="text-primary hidden items-center gap-1 sm:inline-flex"
           aria-label={t("featured.viewAllLabel")}
         >
-          <Link href={`/${locale}/evenements`}>
+          <Link href="/evenements">
             {t("featured.viewAll")}
             <ArrowRight className="size-4" aria-hidden="true" />
           </Link>
@@ -52,7 +51,7 @@ const FeaturedEvents = async ({ events }: FeaturedEventsProps) => {
 
       <div className="mt-8 text-center sm:hidden">
         <Button asChild variant="outline" className="gap-1" aria-label={t("featured.viewAllLabel")}>
-          <Link href={`/${locale}/evenements`}>
+          <Link href="/evenements">
             {t("featured.viewAll")}
             <ArrowRight className="size-4" aria-hidden="true" />
           </Link>

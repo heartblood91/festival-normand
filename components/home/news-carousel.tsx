@@ -1,7 +1,7 @@
 "use client"
 
-import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
+import { Link } from "@/lib/i18n/routing"
 import { ArrowRight } from "lucide-react"
 import { useRef } from "react"
 import { Button } from "@/components/ui/button"
@@ -41,7 +41,7 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
               className="text-primary inline-flex items-center gap-1"
               aria-label={t("newsSection.viewAllLabel")}
             >
-              <Link href={`/${locale}/actualites`}>
+              <Link href="/actualites">
                 {t("newsSection.viewAll")}
                 <ArrowRight className="size-4" aria-hidden="true" />
               </Link>
@@ -61,7 +61,7 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
         {news.map((article, index) => (
           <Link
             key={article.id}
-            href={`/${locale}/actualite/${article.slug}`}
+            href={`/actualite/${article.slug}`}
             className="group hover:border-primary/30 focus-visible:ring-primary/50 flex w-[280px] shrink-0 snap-start flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all hover:bg-white/10 focus-visible:ring-2 focus-visible:outline-none md:w-[340px]"
             role="group"
             aria-roledescription={locale === "en" ? "slide" : "diapositive"}
@@ -109,7 +109,7 @@ const NewsCarousel = ({ news }: NewsCarouselProps) => {
           className="gap-1"
           aria-label={t("newsSection.viewAllLabel")}
         >
-          <Link href={`/${locale}/actualites`}>
+          <Link href="/actualites">
             {t("newsSection.viewAll")}
             <ArrowRight className="size-4" aria-hidden="true" />
           </Link>
