@@ -1,8 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { setupAccount } from "@/lib/actions/users"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
@@ -13,6 +14,8 @@ type SetupAccountFormProps = {
 
 export const SetupAccountForm = ({ token, email }: SetupAccountFormProps) => {
   const router = useRouter()
+  const pathname = usePathname()
+  const locale = pathname?.split("/")[1] === "en" ? "en" : "fr"
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -43,12 +46,17 @@ export const SetupAccountForm = ({ token, email }: SetupAccountFormProps) => {
     setIsSubmitting(true)
 
     try {
-      // TODO: Integrate with Better Auth to set password
-      // For now, show a placeholder message
-      toast.success("Compte configuré avec succès. Redirection...")
+      const result = await setupAccount({ token, email, password })
+
+      if (!result.success) {
+        toast.error(result.message)
+        return
+      }
+
+      toast.success("Compte configuré. Redirection vers la connexion...")
       setTimeout(() => {
-        router.push("/admin")
-      }, 2000)
+        router.push(`/${locale}/admin/login`)
+      }, 1500)
     } catch {
       toast.error("Une erreur est survenue lors de la configuration du compte.")
     } finally {
@@ -85,6 +93,7 @@ export const SetupAccountForm = ({ token, email }: SetupAccountFormProps) => {
           <Input
             id="password"
             type="password"
+            autoComplete="new-password"
             placeholder="Au moins 8 caractères"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -102,6 +111,7 @@ export const SetupAccountForm = ({ token, email }: SetupAccountFormProps) => {
           <Input
             id="confirmPassword"
             type="password"
+            autoComplete="new-password"
             placeholder="Confirmez votre mot de passe"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
