@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache"
 import { Resend } from "resend"
 import { hashPassword } from "better-auth/crypto"
 import { prisma } from "@/lib/prisma"
+import { isEmailEnabled } from "@/lib/email"
 import { requireRole } from "@/lib/rbac"
 import { inviteUserSchema, setupAccountSchema, updateRoleSchema } from "@/lib/schemas/user"
 import type { Role } from "@prisma/client"
@@ -15,6 +16,8 @@ export type UserActionResult = {
   message: string
   errors?: Record<string, string[]>
   userId?: string
+  /** Populated when emails are disabled — the admin must share this URL manually. */
+  setupUrl?: string
 }
 
 export const getAdminUsers = async () => {
@@ -99,8 +102,21 @@ export const inviteUser = async (formData: FormData): Promise<UserActionResult> 
       },
     })
 
-    // Send invitation email
     const setupUrl = `${baseUrl}/fr/admin/setup-account?token=${token}&email=${encodeURIComponent(data.email)}`
+
+    revalidatePath("/admin/users")
+
+    // When email delivery is not configured (local dev, preprod without Resend),
+    // skip the send and surface the setup URL so the admin can share it manually.
+    if (!isEmailEnabled()) {
+      return {
+        success: true,
+        message:
+          "Utilisateur créé. L'envoi d'email est désactivé sur cet environnement — partagez le lien ci-dessous manuellement.",
+        userId: user.id,
+        setupUrl,
+      }
+    }
 
     const fromAddress =
       process.env.RESEND_FROM_EMAIL || "Pierres en Lumières <onboarding@resend.dev>"
@@ -122,8 +138,6 @@ export const inviteUser = async (formData: FormData): Promise<UserActionResult> 
         </div>
       `,
     })
-
-    revalidatePath("/admin/users")
 
     return {
       success: true,

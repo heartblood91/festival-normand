@@ -29,9 +29,10 @@ import { InviteUserDialog } from "./invite-user-dialog"
 type AdminUsersPageProps = {
   users: AdminUser[]
   currentUserId: string
+  emailEnabled: boolean
 }
 
-export const AdminUsersPage = ({ users, currentUserId }: AdminUsersPageProps) => {
+export const AdminUsersPage = ({ users, currentUserId, emailEnabled }: AdminUsersPageProps) => {
   const router = useRouter()
   const [isDeleting, setIsDeleting] = useState<string | null>(null)
   const [isUpdatingRole, setIsUpdatingRole] = useState<string | null>(null)
@@ -119,7 +120,11 @@ export const AdminUsersPage = ({ users, currentUserId }: AdminUsersPageProps) =>
         )}
       </div>
 
-      <InviteUserDialog open={inviteOpen} onOpenChange={setInviteOpen} />
+      <InviteUserDialog
+        open={inviteOpen}
+        onOpenChange={setInviteOpen}
+        emailEnabled={emailEnabled}
+      />
 
       {users.length === 0 ? (
         <div className="rounded-xl border border-white/10 bg-white/5 p-12 text-center">
