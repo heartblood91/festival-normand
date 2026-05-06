@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { Mail, Loader2, CheckCircle, LogIn } from "lucide-react"
@@ -11,7 +12,11 @@ import { PasswordInput } from "@/components/ui/password-input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { authClient } from "@/lib/auth-client"
 
-export const LoginForm = () => {
+type LoginFormProps = {
+  emailEnabled: boolean
+}
+
+export const LoginForm = ({ emailEnabled }: LoginFormProps) => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -190,12 +195,43 @@ export const LoginForm = () => {
         <div className="mt-4 text-center">
           <button
             type="button"
-            className="text-sm text-slate-400 transition-colors hover:text-amber-500"
+            disabled={mode === "password" && !emailEnabled}
+            title={
+              mode === "password" && !emailEnabled
+                ? "Envoi d'email désactivé sur cet environnement"
+                : undefined
+            }
+            className="text-sm text-slate-400 transition-colors hover:text-amber-500 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-slate-400"
             onClick={() => setMode(mode === "password" ? "magic-link" : "password")}
           >
             {mode === "password" ? "Utiliser un lien magique" : "Se connecter avec un mot de passe"}
           </button>
+          {mode === "password" && !emailEnabled && (
+            <p className="mt-1 text-xs text-slate-500">
+              L&apos;envoi d&apos;email est désactivé sur cet environnement.
+            </p>
+          )}
         </div>
+
+        {mode === "password" && (
+          <div className="mt-2 text-center">
+            {emailEnabled ? (
+              <Link
+                href="/admin/forgot-password"
+                className="text-xs text-slate-400 underline-offset-2 transition-colors hover:text-amber-500 hover:underline"
+              >
+                Mot de passe oublié ?
+              </Link>
+            ) : (
+              <span
+                className="cursor-not-allowed text-xs text-slate-600"
+                title="Envoi d'email désactivé sur cet environnement"
+              >
+                Mot de passe oublié ?
+              </span>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   )

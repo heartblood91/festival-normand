@@ -4,8 +4,12 @@ import { magicLink, twoFactor } from "better-auth/plugins"
 import { createAuthMiddleware, APIError } from "better-auth/api"
 import { Resend } from "resend"
 import { prisma } from "@/lib/prisma"
+import { isEmailEnabled } from "@/lib/email"
 
 const resend = new Resend(process.env.RESEND_API_KEY)
+
+const fromAddress = () =>
+  process.env.RESEND_FROM_EMAIL || "Pierres en Lumières <onboarding@resend.dev>"
 
 export const auth = betterAuth({
   basePath: "/api/auth",
@@ -17,6 +21,32 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 8,
+    sendResetPassword: async ({ user, url }) => {
+      if (!isEmailEnabled()) {
+        // Surface a clear server error so the client can grey out the form upstream.
+        throw new APIError("SERVICE_UNAVAILABLE", {
+          message: "L'envoi d'email est désactivé sur cet environnement.",
+        })
+      }
+      await resend.emails.send({
+        from: fromAddress(),
+        to: user.email,
+        subject: "Réinitialisation du mot de passe — Pierres en Lumières",
+        html: `
+          <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
+            <h1 style="color: #f59e0b; font-size: 24px;">Pierres en Lumières</h1>
+            <p>Vous avez demandé la réinitialisation de votre mot de passe.</p>
+            <p>Cliquez sur le lien ci-dessous pour définir un nouveau mot de passe :</p>
+            <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #f59e0b; color: #0f172a; text-decoration: none; border-radius: 6px; font-weight: bold;">
+              Réinitialiser mon mot de passe
+            </a>
+            <p style="color: #666; font-size: 12px; margin-top: 20px;">
+              Ce lien expire dans une heure. Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.
+            </p>
+          </div>
+        `,
+      })
+    },
   },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
@@ -42,10 +72,13 @@ export const auth = betterAuth({
     magicLink({
       expiresIn: 600,
       sendMagicLink: async ({ email, url }) => {
-        const fromAddress =
-          process.env.RESEND_FROM_EMAIL || "Pierres en Lumières <onboarding@resend.dev>"
+        if (!isEmailEnabled()) {
+          throw new APIError("SERVICE_UNAVAILABLE", {
+            message: "L'envoi d'email est désactivé sur cet environnement.",
+          })
+        }
         await resend.emails.send({
-          from: fromAddress,
+          from: fromAddress(),
           to: email,
           subject: "Connexion à l'administration Pierres en Lumières",
           html: `
