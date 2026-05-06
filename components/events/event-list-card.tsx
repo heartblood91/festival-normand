@@ -11,7 +11,7 @@ import {
   MapPin as MapPinIcon,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { formatEventDate, formatTime } from "@/lib/utils/format-date"
+import { formatEventDateRange, formatTime } from "@/lib/utils/format-date"
 import type { EventListItem } from "@/lib/queries/events"
 
 const CATEGORY_GRADIENTS: Record<string, string> = {
@@ -94,7 +94,7 @@ const EventListCard = async ({ event, className, priority = false }: EventListCa
         <div className="text-muted-foreground mt-auto flex flex-col gap-1.5 pt-3 text-sm">
           <div className="flex items-center gap-1.5">
             <Calendar className="size-3.5 shrink-0" aria-hidden="true" />
-            <span>{formatEventDate(event.dateStart, locale)}</span>
+            <span>{formatEventDateRange(event.dateStart, event.dateEnd, locale)}</span>
             {event.timeStart && (
               <span>
                 · {formatTime(event.timeStart)}

@@ -23,6 +23,7 @@ export const getFeaturedEvents = async (locale: Locale = "fr") => {
           department: true,
           category: true,
           dateStart: true,
+          dateEnd: true,
           timeStart: true,
           timeEnd: true,
           coverImage: true,
@@ -31,6 +32,7 @@ export const getFeaturedEvents = async (locale: Locale = "fr") => {
       return events.map((e) => ({
         ...localizeEntity(e, locale, ["title"]),
         dateStart: e.dateStart?.toISOString() ?? null,
+        dateEnd: e.dateEnd?.toISOString() ?? null,
       }))
     },
     ["featured-events", locale],

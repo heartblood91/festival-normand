@@ -7,6 +7,9 @@ import type { Department, Category, Prisma } from "@prisma/client"
 
 const ITEMS_PER_PAGE = 12
 
+/** Within this distance from the user, "Près de moi" is a strict filter. */
+export const NEARBY_RADIUS_KM = 50
+
 const FESTIVAL_DATES: Record<string, string> = {
   "29": "2026-05-29",
   "30": "2026-05-30",
@@ -44,6 +47,7 @@ const EVENT_LIST_SELECT = {
   department: true,
   category: true,
   dateStart: true,
+  dateEnd: true,
   timeStart: true,
   timeEnd: true,
   coverImage: true,
@@ -117,25 +121,46 @@ export const getEvents = async (filters: EventFilters = {}, locale: Locale = "fr
         prisma.event.count({ where }),
       ])
 
+      let nearestDistanceKm: number | null = null
       const events = isNearby
-        ? rawEvents
-            .map((e) => ({
-              ...e,
-              distance:
-                e.latitude && e.longitude
-                  ? haversineDistance(lat, lng, e.latitude, e.longitude)
-                  : Infinity,
-            }))
-            .sort((a, b) => a.distance - b.distance)
-            .slice(skip, skip + ITEMS_PER_PAGE)
+        ? (() => {
+            const withDistance = rawEvents
+              .map((e) => ({
+                ...e,
+                distance:
+                  e.latitude && e.longitude
+                    ? haversineDistance(lat, lng, e.latitude, e.longitude)
+                    : Infinity,
+              }))
+              .sort((a, b) => a.distance - b.distance)
+            nearestDistanceKm = withDistance[0]?.distance ?? null
+            return withDistance.slice(skip, skip + ITEMS_PER_PAGE)
+          })()
         : rawEvents
 
       const serialized = events.map((e) => ({
         ...localizeEntity(e, locale, ["title"]),
         dateStart: e.dateStart?.toISOString() ?? null,
+        dateEnd: e.dateEnd?.toISOString() ?? null,
       }))
 
-      return { events: serialized, total, page, totalPages: Math.ceil(total / ITEMS_PER_PAGE) }
+      const outsideRadius =
+        isNearby &&
+        nearestDistanceKm !== null &&
+        Number.isFinite(nearestDistanceKm) &&
+        nearestDistanceKm > NEARBY_RADIUS_KM
+
+      return {
+        events: serialized,
+        total,
+        page,
+        totalPages: Math.ceil(total / ITEMS_PER_PAGE),
+        outsideRadius,
+        nearestDistanceKm:
+          nearestDistanceKm !== null && Number.isFinite(nearestDistanceKm)
+            ? Math.round(nearestDistanceKm)
+            : null,
+      }
     },
     ["events-list", locale, cacheKey],
     { revalidate: 300, tags: ["events"] }
@@ -187,6 +212,7 @@ export const getAllFilteredEventsForMap = async (
           latitude: true,
           longitude: true,
           dateStart: true,
+          dateEnd: true,
           timeStart: true,
           city: true,
           coverImage: true,
@@ -195,6 +221,7 @@ export const getAllFilteredEventsForMap = async (
       return events.map((e) => ({
         ...localizeEntity(e, locale, ["title"]),
         dateStart: e.dateStart?.toISOString() ?? null,
+        dateEnd: e.dateEnd?.toISOString() ?? null,
       }))
     },
     ["events-map", locale, cacheKey],

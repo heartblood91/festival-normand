@@ -84,7 +84,12 @@ const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
   const view = (searchParamsData.view as string | undefined) ?? "grid"
 
   const t = await getTranslations()
-  const [{ events, total, page, totalPages }, cities, counts, mapEvents] = await Promise.all([
+  const [
+    { events, total, page, totalPages, outsideRadius, nearestDistanceKm },
+    cities,
+    counts,
+    mapEvents,
+  ] = await Promise.all([
     getEvents(filters, locale),
     getEventCities(),
     getFilterCounts(filters),
@@ -124,6 +129,21 @@ const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
         </Suspense>
         <ViewToggle />
       </div>
+
+      {outsideRadius && nearestDistanceKm !== null && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="mb-6 flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-100"
+        >
+          <span className="mt-0.5 text-base" aria-hidden>
+            📍
+          </span>
+          <p className="leading-snug">
+            {t("events.nearbyFallback", { distance: nearestDistanceKm })}
+          </p>
+        </div>
+      )}
 
       {/* Content based on view */}
       <h2 className="sr-only">{t("events.results")}</h2>

@@ -137,6 +137,108 @@ describe("getEvents", () => {
     expect(call.where.OR).toBeDefined()
   })
 
+  it.each([
+    ["29", new Date("2026-05-29T20:00:00")],
+    ["30", new Date("2026-05-30T20:00:00")],
+    ["31", new Date("2026-05-31T20:00:00")],
+  ])(
+    "filter day %s brackets the same calendar day (multi-day events match all 3)",
+    async (filterDay, sample) => {
+      prismaMock.event.findMany.mockResolvedValue([])
+      prismaMock.event.count.mockResolvedValue(0)
+
+      await getEvents({ date: filterDay }, "fr")
+
+      const where = prismaMock.event.findMany.mock.calls[0][0].where as {
+        dateStart: { lte: Date }
+        OR: Array<{ dateEnd?: { gte: Date }; dateStart?: { gte: Date } }>
+      }
+
+      // Bounds must bracket a single calendar day (~24h apart, sample inside)
+      const dayEnd = where.dateStart.lte
+      const dayStart = (where.OR.find((c) => c.dateEnd?.gte)?.dateEnd?.gte ??
+        where.OR.find((c) => c.dateStart?.gte)?.dateStart?.gte) as Date
+      const spanMs = dayEnd.getTime() - dayStart.getTime()
+      expect(spanMs).toBeGreaterThan(23 * 60 * 60 * 1000 - 1000)
+      expect(spanMs).toBeLessThan(24 * 60 * 60 * 1000)
+
+      // A multi-day event spanning 29-31 (sample at 20:00 of the queried day)
+      // must satisfy: dateStart <= dayEnd AND dateEnd >= dayStart.
+      const multiDayStart = new Date("2026-05-29T20:00:00")
+      const multiDayEnd = new Date("2026-05-31T22:00:00")
+      expect(multiDayStart.getTime()).toBeLessThanOrEqual(dayEnd.getTime())
+      expect(multiDayEnd.getTime()).toBeGreaterThanOrEqual(dayStart.getTime())
+      // And the queried day's sample falls inside the bracket
+      expect(sample.getTime()).toBeGreaterThan(dayStart.getTime())
+      expect(sample.getTime()).toBeLessThan(dayEnd.getTime())
+    }
+  )
+
+  it("selects dateEnd so cards can render the full range", async () => {
+    prismaMock.event.findMany.mockResolvedValue([])
+    prismaMock.event.count.mockResolvedValue(0)
+
+    await getEvents({}, "fr")
+
+    const select = prismaMock.event.findMany.mock.calls[0][0].select
+    expect(select.dateEnd).toBe(true)
+  })
+
+  describe("proximity fallback", () => {
+    // Caen ~ 49.18, -0.37 ; Paris ~ 48.86, 2.35 ; both > 50km from each other
+    const caenEvent = {
+      id: "caen",
+      titleFr: "Caen",
+      titleEn: null,
+      slug: "caen",
+      location: "Caen",
+      city: "Caen",
+      department: "CALVADOS",
+      category: "ILLUMINATIONS",
+      dateStart: new Date("2026-05-29"),
+      dateEnd: null,
+      timeStart: null,
+      timeEnd: null,
+      coverImage: null,
+      accessible: false,
+      latitude: 49.18,
+      longitude: -0.37,
+    }
+
+    it("flags outsideRadius=true when the closest event is beyond 50 km", async () => {
+      prismaMock.event.findMany.mockResolvedValue([caenEvent])
+      prismaMock.event.count.mockResolvedValue(1)
+
+      // User in Paris, ~230 km from Caen
+      const result = await getEvents({ lat: 48.86, lng: 2.35 }, "fr")
+
+      expect(result.outsideRadius).toBe(true)
+      expect(result.nearestDistanceKm).toBeGreaterThan(150)
+      expect(result.events.length).toBe(1) // events still returned, just sorted by distance
+    })
+
+    it("flags outsideRadius=false when the closest event is within 50 km", async () => {
+      prismaMock.event.findMany.mockResolvedValue([caenEvent])
+      prismaMock.event.count.mockResolvedValue(1)
+
+      // User just outside Caen, ~5 km away
+      const result = await getEvents({ lat: 49.22, lng: -0.42 }, "fr")
+
+      expect(result.outsideRadius).toBe(false)
+      expect(result.nearestDistanceKm).toBeLessThan(50)
+    })
+
+    it("does not flag outsideRadius when user has not opted into geolocation", async () => {
+      prismaMock.event.findMany.mockResolvedValue([caenEvent])
+      prismaMock.event.count.mockResolvedValue(1)
+
+      const result = await getEvents({}, "fr")
+
+      expect(result.outsideRadius).toBe(false)
+      expect(result.nearestDistanceKm).toBeNull()
+    })
+  })
+
   it("applies search filter via unaccent raw query", async () => {
     prismaMock.event.findMany.mockResolvedValue([])
     prismaMock.event.count.mockResolvedValue(0)
