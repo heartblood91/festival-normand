@@ -13,3 +13,11 @@ export const updateRoleSchema = z.object({
 })
 
 export type UpdateRoleInput = z.infer<typeof updateRoleSchema>
+
+export const setupAccountSchema = z.object({
+  token: z.string().min(1, "Token manquant"),
+  email: z.string().email("Email invalide"),
+  password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères"),
+})
+
+export type SetupAccountInput = z.infer<typeof setupAccountSchema>

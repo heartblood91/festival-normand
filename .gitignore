@@ -48,6 +48,12 @@ next-env.d.ts
 # prisma
 prisma/*.db
 
+# certify reports
+.certify/
+
+# throwaway scripts (prefixed with underscore)
+scripts/_*.ts
+
 # playwright
 /test-results/
 /playwright-report/

@@ -2,9 +2,10 @@
 
 import { revalidatePath } from "next/cache"
 import { Resend } from "resend"
+import { hashPassword } from "better-auth/crypto"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
-import { inviteUserSchema, updateRoleSchema } from "@/lib/schemas/user"
+import { inviteUserSchema, setupAccountSchema, updateRoleSchema } from "@/lib/schemas/user"
 import type { Role } from "@prisma/client"
 
 const resend = new Resend(process.env.RESEND_API_KEY)
@@ -32,15 +33,6 @@ export const getAdminUsers = async () => {
 }
 
 export type AdminUser = Awaited<ReturnType<typeof getAdminUsers>>[number]
-
-const generateRandomPassword = (): string => {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*"
-  let password = ""
-  for (let i = 0; i < 16; i++) {
-    password += chars.charAt(Math.floor(Math.random() * chars.length))
-  }
-  return password
-}
 
 const generateToken = (): string => {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
@@ -80,27 +72,20 @@ export const inviteUser = async (formData: FormData): Promise<UserActionResult> 
       }
     }
 
-    // Generate password and token
-    const password = generateRandomPassword()
+    // Generate invite token only — password is set later via /admin/setup-account
     const token = generateToken()
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3010"
+    const baseUrl =
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      process.env.NEXT_PUBLIC_BASE_URL ||
+      "http://localhost:3010"
 
-    // Create user
+    // Create user without a credential account: it is created when the invitee
+    // submits a password through /admin/setup-account.
     const user = await prisma.user.create({
       data: {
         name: data.email.split("@")[0],
         email: data.email,
         role: data.role as Role,
-      },
-    })
-
-    // Create account with password
-    await prisma.account.create({
-      data: {
-        userId: user.id,
-        accountId: user.id,
-        providerId: "credential",
-        password,
       },
     })
 
@@ -151,6 +136,103 @@ export const inviteUser = async (formData: FormData): Promise<UserActionResult> 
       success: false,
       message: "Une erreur est survenue lors de l'invitation.",
     }
+  }
+}
+
+type ResolvedInvite =
+  | { ok: true; userId: string; verificationId: string }
+  | { ok: false; result: UserActionResult }
+
+const resolveInviteToken = async (email: string, token: string): Promise<ResolvedInvite> => {
+  const invalid: UserActionResult = {
+    success: false,
+    message: "Lien d'invitation invalide ou expiré.",
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  })
+  if (!user) return { ok: false, result: invalid }
+
+  const verification = await prisma.verification.findFirst({
+    where: { identifier: `invite-${user.id}`, value: token },
+    select: { id: true, expiresAt: true },
+  })
+  if (!verification) return { ok: false, result: invalid }
+
+  if (verification.expiresAt.getTime() < Date.now()) {
+    await prisma.verification.delete({ where: { id: verification.id } })
+    return { ok: false, result: { success: false, message: "Lien d'invitation expiré." } }
+  }
+
+  return { ok: true, userId: user.id, verificationId: verification.id }
+}
+
+const persistCredentialPassword = async (params: {
+  userId: string
+  verificationId: string
+  hashedPassword: string
+}) => {
+  const { userId, verificationId, hashedPassword } = params
+
+  await prisma.$transaction(async (tx) => {
+    const existingAccount = await tx.account.findFirst({
+      where: { userId, providerId: "credential" },
+      select: { id: true },
+    })
+
+    if (existingAccount) {
+      await tx.account.update({
+        where: { id: existingAccount.id },
+        data: { password: hashedPassword },
+      })
+    } else {
+      await tx.account.create({
+        data: {
+          userId,
+          accountId: userId,
+          providerId: "credential",
+          password: hashedPassword,
+        },
+      })
+    }
+
+    await tx.user.update({ where: { id: userId }, data: { emailVerified: true } })
+    await tx.verification.delete({ where: { id: verificationId } })
+  })
+}
+
+export const setupAccount = async (input: {
+  token: string
+  email: string
+  password: string
+}): Promise<UserActionResult> => {
+  try {
+    const result = setupAccountSchema.safeParse(input)
+    if (!result.success) {
+      return {
+        success: false,
+        message: "Lien invalide ou mot de passe trop court.",
+        errors: result.error.flatten().fieldErrors as Record<string, string[]>,
+      }
+    }
+
+    const { token, email, password } = result.data
+    const invite = await resolveInviteToken(email, token)
+    if (!invite.ok) return invite.result
+
+    const hashedPassword = await hashPassword(password)
+    await persistCredentialPassword({
+      userId: invite.userId,
+      verificationId: invite.verificationId,
+      hashedPassword,
+    })
+
+    return { success: true, message: "Mot de passe défini. Vous pouvez vous connecter." }
+  } catch (error) {
+    console.error("Setup account error:", error)
+    return { success: false, message: "Une erreur est survenue lors de la configuration du compte." }
   }
 }
 
