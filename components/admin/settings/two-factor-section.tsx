@@ -7,6 +7,7 @@ import { authClient } from "@/lib/auth-client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { PasswordInput } from "@/components/ui/password-input"
 
 type Props = { initialEnabled: boolean }
 
@@ -85,9 +86,8 @@ export const TwoFactorSection = ({ initialEnabled }: Props) => {
         </p>
         <div className="space-y-2">
           <Label htmlFor="disable-password">Mot de passe</Label>
-          <Input
+          <PasswordInput
             id="disable-password"
-            type="password"
             required
             autoComplete="current-password"
             value={disablePassword}
@@ -118,9 +118,8 @@ export const TwoFactorSection = ({ initialEnabled }: Props) => {
       <form onSubmit={handleEnable} className="max-w-md space-y-4">
         <div className="space-y-2">
           <Label htmlFor="enable-password">Mot de passe actuel</Label>
-          <Input
+          <PasswordInput
             id="enable-password"
-            type="password"
             required
             autoComplete="current-password"
             value={state.password}

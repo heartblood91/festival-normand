@@ -105,8 +105,11 @@
     "nearby": "Près de moi",
     "nearbyLabel": "Trouver les événements près de moi",
     "geoNotSupported": "La géolocalisation n'est pas supportée par votre navigateur.",
-    "geoDenied": "Veuillez autoriser la géolocalisation dans votre navigateur.",
-    "geoError": "Impossible de déterminer votre position."
+    "geoDenied": "Vous avez refusé la géolocalisation. Autorisez-la dans les paramètres de votre navigateur, puis réessayez.",
+    "geoUnavailable": "Votre position n'a pas pu être déterminée (GPS ou Wi-Fi indisponibles). Réessayez dans quelques instants.",
+    "geoTimeout": "La localisation a pris trop de temps. Vérifiez votre connexion et réessayez.",
+    "geoError": "Impossible de vous localiser. Réessayez dans quelques instants.",
+    "dismissError": "Fermer le message d'erreur"
   },
   "categories": {
     "ILLUMINATIONS": "Illuminations",
