@@ -4,8 +4,8 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { authClient } from "@/lib/auth-client"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { PasswordInput } from "@/components/ui/password-input"
 
 export const ChangePasswordForm = () => {
   const [currentPassword, setCurrentPassword] = useState("")
@@ -47,9 +47,8 @@ export const ChangePasswordForm = () => {
     <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
       <div className="space-y-2">
         <Label htmlFor="current-password">Mot de passe actuel</Label>
-        <Input
+        <PasswordInput
           id="current-password"
-          type="password"
           required
           autoComplete="current-password"
           value={currentPassword}
@@ -58,9 +57,8 @@ export const ChangePasswordForm = () => {
       </div>
       <div className="space-y-2">
         <Label htmlFor="new-password">Nouveau mot de passe</Label>
-        <Input
+        <PasswordInput
           id="new-password"
-          type="password"
           required
           minLength={8}
           autoComplete="new-password"
@@ -71,9 +69,8 @@ export const ChangePasswordForm = () => {
       </div>
       <div className="space-y-2">
         <Label htmlFor="confirm-password">Confirmer le nouveau mot de passe</Label>
-        <Input
+        <PasswordInput
           id="confirm-password"
-          type="password"
           required
           minLength={8}
           autoComplete="new-password"

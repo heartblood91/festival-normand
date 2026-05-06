@@ -105,8 +105,11 @@
     "nearby": "Near me",
     "nearbyLabel": "Find events near me",
     "geoNotSupported": "Geolocation is not supported by your browser.",
-    "geoDenied": "Please allow geolocation in your browser settings.",
-    "geoError": "Unable to determine your position."
+    "geoDenied": "Geolocation was denied. Allow it in your browser settings and try again.",
+    "geoUnavailable": "Your location could not be determined (GPS or Wi-Fi unavailable). Please try again in a moment.",
+    "geoTimeout": "Locating took too long. Check your connection and try again.",
+    "geoError": "Unable to locate you. Please try again in a moment.",
+    "dismissError": "Dismiss error message"
   },
   "categories": {
     "ILLUMINATIONS": "Light shows",

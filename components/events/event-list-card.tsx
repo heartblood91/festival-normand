@@ -77,8 +77,8 @@ const EventListCard = async ({ event, className, priority = false }: EventListCa
         {event.accessible && (
           <span
             className="bg-background/80 absolute top-3 right-3 flex size-7 items-center justify-center rounded-full border border-white/20 backdrop-blur-sm"
-            title={t("filters.accessible")}
-            aria-label={t("filters.accessible")}
+            title={t("events.accessible")}
+            aria-label={t("events.accessible")}
           >
             <Accessibility className="text-primary size-3.5" />
           </span>

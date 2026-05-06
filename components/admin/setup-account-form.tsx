@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { setupAccount } from "@/lib/actions/users"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { PasswordInput } from "@/components/ui/password-input"
 
 type SetupAccountFormProps = {
   token?: string
@@ -90,9 +90,8 @@ export const SetupAccountForm = ({ token, email }: SetupAccountFormProps) => {
           <label htmlFor="password" className="block text-sm font-medium text-slate-200">
             Mot de passe
           </label>
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             autoComplete="new-password"
             placeholder="Au moins 8 caractères"
             value={password}
@@ -108,9 +107,8 @@ export const SetupAccountForm = ({ token, email }: SetupAccountFormProps) => {
           <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-200">
             Confirmer le mot de passe
           </label>
-          <Input
+          <PasswordInput
             id="confirmPassword"
-            type="password"
             autoComplete="new-password"
             placeholder="Confirmez votre mot de passe"
             value={confirmPassword}
