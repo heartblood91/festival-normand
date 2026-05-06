@@ -46,6 +46,8 @@ export const middleware = (request: NextRequest) => {
       `/${locale}/admin/login`,
       `/${locale}/admin/verify-2fa`,
       `/${locale}/admin/setup-account`,
+      `/${locale}/admin/forgot-password`,
+      `/${locale}/admin/reset-password`,
     ]
     const isPublicAdminPage = publicAdminPaths.some((p) => resolvedPathname === p)
 

@@ -1,31 +1,34 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
-const { mockPrisma, mockHashPassword, mockRequireRole, mockSend } = vi.hoisted(() => ({
-  mockPrisma: {
-    user: {
-      findUnique: vi.fn(),
-      create: vi.fn(),
-      update: vi.fn(),
+const { mockPrisma, mockHashPassword, mockRequireRole, mockSend, mockIsEmailEnabled } =
+  vi.hoisted(() => ({
+    mockPrisma: {
+      user: {
+        findUnique: vi.fn(),
+        create: vi.fn(),
+        update: vi.fn(),
+      },
+      account: {
+        findFirst: vi.fn(),
+        create: vi.fn(),
+        update: vi.fn(),
+      },
+      verification: {
+        findFirst: vi.fn(),
+        create: vi.fn(),
+        delete: vi.fn(),
+      },
+      $transaction: vi.fn(),
     },
-    account: {
-      findFirst: vi.fn(),
-      create: vi.fn(),
-      update: vi.fn(),
-    },
-    verification: {
-      findFirst: vi.fn(),
-      create: vi.fn(),
-      delete: vi.fn(),
-    },
-    $transaction: vi.fn(),
-  },
-  mockHashPassword: vi.fn(),
-  mockRequireRole: vi.fn(),
-  mockSend: vi.fn().mockResolvedValue({ id: "email-id" }),
-}))
+    mockHashPassword: vi.fn(),
+    mockRequireRole: vi.fn(),
+    mockSend: vi.fn().mockResolvedValue({ id: "email-id" }),
+    mockIsEmailEnabled: vi.fn(() => true),
+  }))
 
 vi.mock("@/lib/prisma", () => ({ prisma: mockPrisma }))
 vi.mock("@/lib/rbac", () => ({ requireRole: mockRequireRole }))
+vi.mock("@/lib/email", () => ({ isEmailEnabled: mockIsEmailEnabled }))
 vi.mock("better-auth/crypto", () => ({ hashPassword: mockHashPassword }))
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
 vi.mock("resend", () => ({
@@ -49,6 +52,7 @@ describe("inviteUser", () => {
     vi.clearAllMocks()
     mockRequireRole.mockResolvedValue({ id: "admin-id" })
     mockPrisma.$transaction.mockImplementation(async (cb: (tx: typeof mockPrisma) => unknown) => cb(mockPrisma))
+    mockIsEmailEnabled.mockReturnValue(true)
   })
 
   it("creates user without a credential account so password is set later via setup-account", async () => {
@@ -68,6 +72,38 @@ describe("inviteUser", () => {
         data: expect.objectContaining({ identifier: "invite-user-1" }),
       })
     )
+  })
+
+  it("sends an invitation email when email is enabled", async () => {
+    mockPrisma.user.findUnique.mockResolvedValue(null)
+    mockPrisma.user.create.mockResolvedValue({ id: "user-1", email: "new@example.com" })
+    mockPrisma.verification.create.mockResolvedValue({ id: "verif-1" })
+
+    const result = await inviteUser(
+      createFormData({ email: "new@example.com", role: "EDITOR" })
+    )
+
+    expect(result.success).toBe(true)
+    expect(result.setupUrl).toBeUndefined()
+    expect(mockSend).toHaveBeenCalledTimes(1)
+    expect(mockSend).toHaveBeenCalledWith(
+      expect.objectContaining({ to: "new@example.com" })
+    )
+  })
+
+  it("returns the setup URL and skips email when email delivery is disabled", async () => {
+    mockIsEmailEnabled.mockReturnValue(false)
+    mockPrisma.user.findUnique.mockResolvedValue(null)
+    mockPrisma.user.create.mockResolvedValue({ id: "user-1", email: "new@example.com" })
+    mockPrisma.verification.create.mockResolvedValue({ id: "verif-1" })
+
+    const result = await inviteUser(
+      createFormData({ email: "new@example.com", role: "EDITOR" })
+    )
+
+    expect(result.success).toBe(true)
+    expect(result.setupUrl).toMatch(/\/admin\/setup-account\?token=.+&email=new%40example\.com$/)
+    expect(mockSend).not.toHaveBeenCalled()
   })
 })
 
