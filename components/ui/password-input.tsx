@@ -32,7 +32,7 @@ const PasswordInput = ({
       <Input
         {...props}
         type={revealed ? "text" : "password"}
-        className={cn("flex-1", className)}
+        className={cn("h-10 flex-1", className)}
       />
       <button
         type="button"
@@ -41,13 +41,11 @@ const PasswordInput = ({
         aria-label={revealed ? hideLabel : showLabel}
         title={revealed ? hideLabel : showLabel}
         className={cn(
-          "inline-flex shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white/5",
-          "px-2.5 text-slate-200 transition-colors",
-          "hover:border-white/25 hover:bg-white/10 hover:text-white",
+          "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5",
+          "text-slate-200 transition-colors",
+          "hover:border-white/20 hover:bg-white/10 hover:text-white",
           "focus-visible:border-amber-400 focus-visible:ring-2 focus-visible:ring-amber-400/40 focus-visible:outline-none",
-          "disabled:pointer-events-none disabled:opacity-50",
-          // Native :has() selector keeps min height aligned with the input above
-          "min-h-10"
+          "disabled:pointer-events-none disabled:opacity-50"
         )}
       >
         <Icon className="size-4" aria-hidden />
