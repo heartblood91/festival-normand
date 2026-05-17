@@ -1,7 +1,7 @@
 import { Link } from "@/lib/i18n/routing"
 import Image from "next/image"
 import { getLocale, getTranslations } from "next-intl/server"
-import { MapPin, Calendar } from "lucide-react"
+import { MapPin, Calendar, Clock } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { formatEventDateRange, formatTime } from "@/lib/utils/format-date"
 import type { FeaturedEvent } from "@/lib/queries/homepage"
@@ -51,13 +51,16 @@ const EventCard = async ({ event, className, priority = false }: EventCardProps)
           <div className="flex items-center gap-1.5">
             <Calendar className="size-3.5 shrink-0" aria-hidden="true" />
             <span>{formatEventDateRange(event.dateStart, event.dateEnd, locale)}</span>
-            {event.timeStart && (
-              <span>
-                · {formatTime(event.timeStart)}
-                {event.timeEnd ? ` - ${formatTime(event.timeEnd)}` : ""}
-              </span>
-            )}
           </div>
+          {event.timeStart && (
+            <div className="flex items-center gap-1.5">
+              <Clock className="size-3.5 shrink-0" aria-hidden="true" />
+              <span>
+                {formatTime(event.timeStart)}
+                {event.timeEnd ? ` – ${formatTime(event.timeEnd)}` : ""}
+              </span>
+            </div>
+          )}
           {event.city && (
             <div className="flex items-center gap-1.5">
               <MapPin className="size-3.5 shrink-0" aria-hidden="true" />

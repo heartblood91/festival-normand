@@ -4,6 +4,7 @@ import { getLocale, getTranslations } from "next-intl/server"
 import {
   MapPin,
   Calendar,
+  Clock,
   Accessibility,
   Flame,
   Image as ImageIcon,
@@ -95,13 +96,16 @@ const EventListCard = async ({ event, className, priority = false }: EventListCa
           <div className="flex items-center gap-1.5">
             <Calendar className="size-3.5 shrink-0" aria-hidden="true" />
             <span>{formatEventDateRange(event.dateStart, event.dateEnd, locale)}</span>
-            {event.timeStart && (
-              <span>
-                · {formatTime(event.timeStart)}
-                {event.timeEnd ? ` - ${formatTime(event.timeEnd)}` : ""}
-              </span>
-            )}
           </div>
+          {event.timeStart && (
+            <div className="flex items-center gap-1.5">
+              <Clock className="size-3.5 shrink-0" aria-hidden="true" />
+              <span>
+                {formatTime(event.timeStart)}
+                {event.timeEnd ? ` – ${formatTime(event.timeEnd)}` : ""}
+              </span>
+            </div>
+          )}
           {event.city && (
             <div className="flex items-center gap-1.5">
               <MapPin className="size-3.5 shrink-0" aria-hidden="true" />
