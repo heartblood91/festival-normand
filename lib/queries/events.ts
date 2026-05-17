@@ -169,6 +169,60 @@ export const getEvents = async (filters: EventFilters = {}, locale: Locale = "fr
 
 export type EventListItem = Awaited<ReturnType<typeof getEvents>>["events"][number]
 
+/** Closest other events around a given lat/lng, sorted by distance. */
+export const getNeighbourEvents = async (
+  excludeSlug: string,
+  lat: number,
+  lng: number,
+  locale: Locale = "fr",
+  limit = 8
+) =>
+  cachedQuery(
+    async () => {
+      const candidates = await prisma.event.findMany({
+        where: {
+          published: true,
+          slug: { not: excludeSlug },
+          latitude: { not: 0 },
+          longitude: { not: 0 },
+          NOT: [{ latitude: null }, { longitude: null }],
+        },
+        select: {
+          slug: true,
+          titleFr: true,
+          titleEn: true,
+          latitude: true,
+          longitude: true,
+          city: true,
+          category: true,
+        },
+      })
+
+      return candidates
+        .map((e) => ({
+          ...localizeEntity(e, locale, ["title"]),
+          distance:
+            e.latitude && e.longitude ? haversineDistance(lat, lng, e.latitude, e.longitude) : Infinity,
+        }))
+        .filter((e) => Number.isFinite(e.distance))
+        .sort((a, b) => a.distance - b.distance)
+        .slice(0, limit)
+        .map((e) => ({
+          slug: e.slug,
+          title: e.title,
+          latitude: e.latitude as number,
+          longitude: e.longitude as number,
+          city: e.city,
+          category: e.category,
+          distanceKm: Math.round(e.distance * 10) / 10,
+        }))
+    },
+    ["event-neighbours", excludeSlug, locale, String(limit)],
+    { revalidate: 1800, tags: ["events"] }
+  )()
+
+export type NeighbourEvent = Awaited<ReturnType<typeof getNeighbourEvents>>[number]
+
 export const getEventBySlug = async (slug: string, locale: Locale = "fr") =>
   cachedQuery(
     async () => {

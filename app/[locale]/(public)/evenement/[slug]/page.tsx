@@ -4,7 +4,7 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { getTranslations } from "next-intl/server"
-import { getEventBySlug } from "@/lib/queries/events"
+import { getEventBySlug, getNeighbourEvents } from "@/lib/queries/events"
 import { EventInfo } from "@/components/event-detail/event-info"
 import { PhotoCarousel } from "@/components/event-detail/photo-carousel"
 import { EventMapWrapper } from "@/components/event-detail/event-map-wrapper"
@@ -61,6 +61,11 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
   if (!event) {
     notFound()
   }
+
+  const neighbours =
+    event.latitude && event.longitude
+      ? await getNeighbourEvents(slug, event.latitude, event.longitude, locale)
+      : []
 
   const allImages = [...(event.coverImage ? [event.coverImage] : []), ...event.images]
 
@@ -144,16 +149,19 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
                 latitude={event.latitude}
                 longitude={event.longitude}
                 title={event.title}
+                locale={locale}
+                neighbours={neighbours}
               />
             </section>
           )}
         </div>
 
-        {/* Sidebar — right column */}
+        {/* Sidebar — right column. Intentionally NOT sticky: a sticky aside
+            against a long main column gives users the impression that the
+            two halves scroll independently, which our test users found
+            confusing. Let the whole page scroll as one block. */}
         <aside className="lg:col-span-1">
-          <div className="lg:sticky lg:top-24">
-            <EventInfo event={event} locale={locale} />
-          </div>
+          <EventInfo event={event} locale={locale} />
         </aside>
       </div>
     </article>

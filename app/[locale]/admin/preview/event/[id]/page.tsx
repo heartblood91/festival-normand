@@ -76,6 +76,8 @@ const EventPreviewPage = async ({ params }: EventPreviewPageProps) => {
                   latitude={event.latitude}
                   longitude={event.longitude}
                   title={event.title}
+                  locale={locale}
+                  neighbours={[]}
                 />
               </section>
             )}
