@@ -169,6 +169,64 @@ export const getEvents = async (filters: EventFilters = {}, locale: Locale = "fr
 
 export type EventListItem = Awaited<ReturnType<typeof getEvents>>["events"][number]
 
+/** Other published events with valid coordinates, sorted by distance.
+ *  No cap by default — show all so the map paints a regional picture of the
+ *  festival. Pass a limit only when you really need a top-N. */
+export const getNeighbourEvents = async (
+  excludeSlug: string,
+  lat: number,
+  lng: number,
+  locale: Locale = "fr",
+  limit?: number
+) =>
+  cachedQuery(
+    async () => {
+      const candidates = await prisma.event.findMany({
+        where: {
+          published: true,
+          slug: { not: excludeSlug },
+          latitude: { not: 0 },
+          longitude: { not: 0 },
+          NOT: [{ latitude: null }, { longitude: null }],
+        },
+        select: {
+          slug: true,
+          titleFr: true,
+          titleEn: true,
+          latitude: true,
+          longitude: true,
+          city: true,
+          category: true,
+        },
+      })
+
+      const sorted = candidates
+        .map((e) => ({
+          ...localizeEntity(e, locale, ["title"]),
+          distance:
+            e.latitude && e.longitude ? haversineDistance(lat, lng, e.latitude, e.longitude) : Infinity,
+        }))
+        .filter((e) => Number.isFinite(e.distance))
+        .sort((a, b) => a.distance - b.distance)
+
+      const capped = typeof limit === "number" ? sorted.slice(0, limit) : sorted
+
+      return capped.map((e) => ({
+        slug: e.slug,
+        title: e.title,
+        latitude: e.latitude as number,
+        longitude: e.longitude as number,
+        city: e.city,
+        category: e.category,
+        distanceKm: Math.round(e.distance * 10) / 10,
+      }))
+    },
+    ["event-neighbours", excludeSlug, locale, limit === undefined ? "all" : String(limit)],
+    { revalidate: 1800, tags: ["events"] }
+  )()
+
+export type NeighbourEvent = Awaited<ReturnType<typeof getNeighbourEvents>>[number]
+
 export const getEventBySlug = async (slug: string, locale: Locale = "fr") =>
   cachedQuery(
     async () => {

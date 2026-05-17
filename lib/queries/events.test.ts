@@ -9,7 +9,7 @@ vi.mock("@/lib/prisma", () => ({
   prisma: prismaMock,
 }))
 
-import { getEvents, getEventBySlug } from "@/lib/queries/events"
+import { getEvents, getEventBySlug, getNeighbourEvents } from "@/lib/queries/events"
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -351,5 +351,75 @@ describe("getEventBySlug", () => {
     expect(prismaMock.event.findUnique).toHaveBeenCalledWith({
       where: { slug: "unpublished-event", published: true },
     })
+  })
+})
+
+describe("getNeighbourEvents", () => {
+  const caenLat = 49.18
+  const caenLng = -0.37
+
+  const makeEvent = (slug: string, lat: number, lng: number, city = "Ville") => ({
+    slug,
+    titleFr: `Title ${slug}`,
+    titleEn: null,
+    latitude: lat,
+    longitude: lng,
+    city,
+    category: "ILLUMINATIONS",
+  })
+
+  it("excludes the current event from neighbours and sorts by distance", async () => {
+    prismaMock.event.findMany.mockResolvedValue([
+      makeEvent("far", 48.86, 2.35), // Paris, ~230km
+      makeEvent("close", 49.2, -0.4), // 5km from Caen
+      makeEvent("medium", 49.5, 0.1), // ~50km from Caen
+    ])
+
+    const result = await getNeighbourEvents("current", caenLat, caenLng, "fr")
+
+    expect(result.map((n) => n.slug)).toEqual(["close", "medium", "far"])
+    expect(result[0].distanceKm).toBeLessThan(result[1].distanceKm)
+    // The DB query must exclude the current slug
+    expect(prismaMock.event.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          published: true,
+          slug: { not: "current" },
+        }),
+      })
+    )
+  })
+
+  it("returns all events by default (no cap)", async () => {
+    const many = Array.from({ length: 15 }, (_, i) =>
+      makeEvent(`e${i}`, caenLat + i * 0.01, caenLng + i * 0.01)
+    )
+    prismaMock.event.findMany.mockResolvedValue(many)
+
+    const result = await getNeighbourEvents("current", caenLat, caenLng, "fr")
+
+    expect(result.length).toBe(15)
+  })
+
+  it("caps results when an explicit limit is provided", async () => {
+    const many = Array.from({ length: 15 }, (_, i) =>
+      makeEvent(`e${i}`, caenLat + i * 0.01, caenLng + i * 0.01)
+    )
+    prismaMock.event.findMany.mockResolvedValue(many)
+
+    const result = await getNeighbourEvents("current", caenLat, caenLng, "fr", 5)
+
+    expect(result.length).toBe(5)
+  })
+
+  it("filters out events with null coordinates", async () => {
+    prismaMock.event.findMany.mockResolvedValue([
+      { ...makeEvent("ok", 49.2, -0.4) },
+      { ...makeEvent("nocoord", 49.2, -0.4), latitude: null, longitude: null },
+    ])
+
+    const result = await getNeighbourEvents("current", caenLat, caenLng, "fr")
+
+    expect(result.map((n) => n.slug)).toEqual(["ok"])
   })
 })
