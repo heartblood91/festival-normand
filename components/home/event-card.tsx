@@ -1,9 +1,9 @@
 import { Link } from "@/lib/i18n/routing"
 import Image from "next/image"
 import { getLocale, getTranslations } from "next-intl/server"
-import { MapPin, Calendar } from "lucide-react"
+import { MapPin, Calendar, Clock } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { formatEventDate, formatTime } from "@/lib/utils/format-date"
+import { formatEventDateRange, formatTime } from "@/lib/utils/format-date"
 import type { FeaturedEvent } from "@/lib/queries/homepage"
 
 type EventCardProps = {
@@ -50,14 +50,17 @@ const EventCard = async ({ event, className, priority = false }: EventCardProps)
         <div className="text-muted-foreground mt-auto flex flex-col gap-1.5 pt-3 text-sm">
           <div className="flex items-center gap-1.5">
             <Calendar className="size-3.5 shrink-0" aria-hidden="true" />
-            <span>{formatEventDate(event.dateStart, locale)}</span>
-            {event.timeStart && (
-              <span>
-                · {formatTime(event.timeStart)}
-                {event.timeEnd ? ` - ${formatTime(event.timeEnd)}` : ""}
-              </span>
-            )}
+            <span>{formatEventDateRange(event.dateStart, event.dateEnd, locale)}</span>
           </div>
+          {event.timeStart && (
+            <div className="flex items-center gap-1.5">
+              <Clock className="size-3.5 shrink-0" aria-hidden="true" />
+              <span>
+                {formatTime(event.timeStart)}
+                {event.timeEnd ? ` – ${formatTime(event.timeEnd)}` : ""}
+              </span>
+            </div>
+          )}
           {event.city && (
             <div className="flex items-center gap-1.5">
               <MapPin className="size-3.5 shrink-0" aria-hidden="true" />

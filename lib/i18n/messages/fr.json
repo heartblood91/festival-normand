@@ -85,7 +85,8 @@
     "pricing": "Tarification",
     "organizer": "Organisateur",
     "free": "Gratuit",
-    "accessible": "Accessible PMR"
+    "accessible": "Accessible PMR",
+    "nearbyFallback": "Aucun événement à moins de 50 km de votre position. Voici les événements les plus proches, à environ {distance} km."
   },
   "filters": {
     "department": "Département",

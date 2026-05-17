@@ -85,7 +85,8 @@
     "pricing": "Pricing",
     "organizer": "Organizer",
     "free": "Free",
-    "accessible": "Wheelchair accessible"
+    "accessible": "Wheelchair accessible",
+    "nearbyFallback": "No events within 50 km of your location. Here are the closest events, around {distance} km away."
   },
   "filters": {
     "department": "Department",
