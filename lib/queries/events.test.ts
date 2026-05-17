@@ -390,7 +390,7 @@ describe("getNeighbourEvents", () => {
     )
   })
 
-  it("caps results at the limit (default 8)", async () => {
+  it("returns all events by default (no cap)", async () => {
     const many = Array.from({ length: 15 }, (_, i) =>
       makeEvent(`e${i}`, caenLat + i * 0.01, caenLng + i * 0.01)
     )
@@ -398,7 +398,18 @@ describe("getNeighbourEvents", () => {
 
     const result = await getNeighbourEvents("current", caenLat, caenLng, "fr")
 
-    expect(result.length).toBe(8)
+    expect(result.length).toBe(15)
+  })
+
+  it("caps results when an explicit limit is provided", async () => {
+    const many = Array.from({ length: 15 }, (_, i) =>
+      makeEvent(`e${i}`, caenLat + i * 0.01, caenLng + i * 0.01)
+    )
+    prismaMock.event.findMany.mockResolvedValue(many)
+
+    const result = await getNeighbourEvents("current", caenLat, caenLng, "fr", 5)
+
+    expect(result.length).toBe(5)
   })
 
   it("filters out events with null coordinates", async () => {

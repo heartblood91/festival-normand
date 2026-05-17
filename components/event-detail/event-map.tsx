@@ -23,9 +23,11 @@ type EventMapProps = {
 
 const popupHtml = (title: string, body: string, href?: string) => {
   const link = href
-    ? `<a href="${href}" style="display:block;color:#f59e0b;text-decoration:none;margin-top:6px;font-weight:600;">${body} →</a>`
-    : `<p style="margin:0;color:#475569;">${body}</p>`
-  return `<div style="font-family:sans-serif;min-width:160px;padding:4px 8px;"><p style="font-weight:600;margin:0 0 4px;color:#0f172a;">${title}</p>${link}</div>`
+    ? `<a href="${href}" style="display:block;margin-top:6px;color:#f59e0b;font-weight:600;text-decoration:none;">${body} →</a>`
+    : `<p style="margin:0;color:#94a3b8;font-size:12px;">${body}</p>`
+  // Self-contained dark background to match the rest of the site;
+  // globals.css forces .mapboxgl-popup-content to bg-transparent.
+  return `<div style="background:#1e293b;border-radius:8px;padding:10px 12px;min-width:180px;font-family:Inter,sans-serif;color:#e2e8f0;"><p style="margin:0 0 4px;font-size:14px;font-weight:700;line-height:1.3;">${title}</p>${link}</div>`
 }
 
 const buildMarker = (color: string, size: number, ring: string) => {
