@@ -125,6 +125,11 @@
     "ORNE": "Orne",
     "SEINE_MARITIME": "Seine-Maritime"
   },
+  "registration": {
+    "byDepartmentTitle": "Inscrivez votre événement",
+    "byDepartmentIntro": "Sélectionnez votre département pour accéder au formulaire d'inscription.",
+    "cta": "S'inscrire"
+  },
   "news": {
     "title": "Actualités",
     "subtitle": "Les dernières nouvelles du festival Pierres en Lumières",
@@ -196,7 +201,8 @@
       "partners": "Partenaires",
       "pages": "Pages",
       "users": "Utilisateurs",
-      "settings": "Paramètres"
+      "settings": "Paramètres",
+      "registrationLinks": "Inscriptions"
     },
     "dashboard": {
       "title": "Tableau de bord",

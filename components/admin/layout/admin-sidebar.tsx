@@ -8,6 +8,7 @@ import {
   Newspaper,
   Handshake,
   FileText,
+  UserPlus,
   Users,
   Settings,
   LogOut,
@@ -69,6 +70,11 @@ const AdminSidebar = ({ user, pathname }: AdminSidebarProps) => {
       href: `/${locale}/admin/pages`,
       icon: FileText,
       labelKey: "sidebar.pages",
+    },
+    {
+      href: `/${locale}/admin/inscription`,
+      icon: UserPlus,
+      labelKey: "sidebar.registrationLinks",
     },
     {
       href: `/${locale}/admin/users`,

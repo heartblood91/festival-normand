@@ -4,6 +4,7 @@ import { notFound } from "next/navigation"
 import { getPageBySlug } from "@/lib/queries/pages"
 import { getTranslations } from "next-intl/server"
 import { MarkdownContent } from "@/components/news/markdown-content"
+import { DepartmentRegistrationLinks } from "@/components/inscription/department-registration-links"
 import { Breadcrumb } from "@/components/ui/breadcrumb"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
@@ -62,6 +63,7 @@ const InscriptionPage = async ({ params }: InscriptionPageProps) => {
         {page.title}
       </h1>
       <MarkdownContent content={page.content} />
+      <DepartmentRegistrationLinks />
     </article>
   )
 }
