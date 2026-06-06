@@ -125,6 +125,11 @@
     "ORNE": "Orne",
     "SEINE_MARITIME": "Seine-Maritime"
   },
+  "registration": {
+    "byDepartmentTitle": "Register your event",
+    "byDepartmentIntro": "Select your department to access the registration form.",
+    "cta": "Register"
+  },
   "news": {
     "title": "News",
     "subtitle": "Latest news from the Pierres en Lumières festival",
@@ -196,7 +201,8 @@
       "partners": "Partners",
       "pages": "Pages",
       "users": "Users",
-      "settings": "Settings"
+      "settings": "Settings",
+      "registrationLinks": "Registrations"
     },
     "dashboard": {
       "title": "Dashboard",
