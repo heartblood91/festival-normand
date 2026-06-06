@@ -638,6 +638,45 @@ const seedPartners = async () => {
   console.log(`${partners.length} partners seeded.`)
 }
 
+const seedRegistrationLinks = async () => {
+  const links = [
+    {
+      department: Department.CALVADOS,
+      url: "https://www.calvados.fr/inscriptions-pierres-en-lumieres-2026",
+      order: 0,
+    },
+    {
+      department: Department.MANCHE,
+      url: "https://cdt50.tourinsoft.com/questionnaire-web/f99a548f-d81d-4b85-88d7-19bb1890be46/880db0de-035c-4a72-b624-3c59583d89b5/add.aspx",
+      order: 1,
+    },
+    {
+      department: Department.SEINE_MARITIME,
+      url: "https://cdt76.tourinsoft.com/questionnaire-web/5a3bd788-7a26-4c5d-a43b-84aa0601d079/dc7d0f12-6c3d-40f5-a3ea-99ba805917e0/add.aspx",
+      order: 2,
+    },
+    {
+      department: Department.EURE,
+      url: "https://cdt27.tourinsoft.com/questionnaire-web/1e94fd18-0214-4957-a60c-774f4fd8b96a/9f4c8742-a231-4367-9df5-4393cc3cbfc8/add.aspx",
+      order: 3,
+    },
+    {
+      department: Department.ORNE,
+      url: "https://cdt61.tourinsoft.com/questionnaire-web/5f158b44-ccd9-47a4-8417-69b46f0c9ee4/619e59cb-85a0-4a35-8736-f09a9f7bbc5e/add.aspx",
+      order: 4,
+    },
+  ]
+
+  for (const link of links) {
+    await prisma.registrationLink.upsert({
+      where: { department: link.department },
+      update: { url: link.url, order: link.order },
+      create: link,
+    })
+  }
+  console.log(`${links.length} registration links seeded.`)
+}
+
 const seedPages = async () => {
   const pages = [
     {
@@ -934,6 +973,7 @@ const main = async () => {
   await seedEvents()
   await seedNews()
   await seedPartners()
+  await seedRegistrationLinks()
   await seedPages()
   await seedAdminUser()
   console.log("Seed complete.")

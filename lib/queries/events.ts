@@ -230,7 +230,15 @@ export type NeighbourEvent = Awaited<ReturnType<typeof getNeighbourEvents>>[numb
 export const getEventBySlug = async (slug: string, locale: Locale = "fr") =>
   cachedQuery(
     async () => {
-      const event = await prisma.event.findUnique({ where: { slug, published: true } })
+      const event = await prisma.event.findUnique({
+        where: { slug, published: true },
+        include: {
+          photos: {
+            orderBy: { order: "asc" },
+            select: { url: true, credit: true, title: true, order: true },
+          },
+        },
+      })
       if (!event) return null
       return {
         ...localizeEntity(event, locale, ["title", "description", "pricing"]),

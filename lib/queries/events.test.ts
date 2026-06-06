@@ -331,6 +331,12 @@ describe("getEventBySlug", () => {
     expect(result).not.toBeNull()
     expect(prismaMock.event.findUnique).toHaveBeenCalledWith({
       where: { slug: "illumination-abbaye", published: true },
+      include: {
+        photos: {
+          orderBy: { order: "asc" },
+          select: { url: true, credit: true, title: true, order: true },
+        },
+      },
     })
   })
 
@@ -350,6 +356,12 @@ describe("getEventBySlug", () => {
     expect(result).toBeNull()
     expect(prismaMock.event.findUnique).toHaveBeenCalledWith({
       where: { slug: "unpublished-event", published: true },
+      include: {
+        photos: {
+          orderBy: { order: "asc" },
+          select: { url: true, credit: true, title: true, order: true },
+        },
+      },
     })
   })
 })
