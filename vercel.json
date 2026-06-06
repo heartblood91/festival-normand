@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/sync-tourinsoft",
+      "schedule": "7 4 * * *"
+    }
+  ]
+}

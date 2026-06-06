@@ -31,6 +31,21 @@ const compressImage = async (buffer: Buffer, preset: ImagePreset): Promise<Buffe
     .toBuffer()
 }
 
+const persistImage = async (buffer: Buffer, filename: string): Promise<string> => {
+  if (process.env.NODE_ENV === "development") {
+    const uploadsDir = join(process.cwd(), "public", "uploads")
+    await mkdir(uploadsDir, { recursive: true })
+    await writeFile(join(uploadsDir, filename), buffer)
+    return `/uploads/${filename}`
+  }
+
+  const blob = await put(filename, buffer, {
+    access: "public",
+    contentType: "image/webp",
+  })
+  return blob.url
+}
+
 export const uploadImage = async (file: File, preset: ImagePreset = "content"): Promise<string> => {
   const validationError = validateFile(file)
   if (validationError) {
@@ -39,19 +54,21 @@ export const uploadImage = async (file: File, preset: ImagePreset = "content"): 
 
   const buffer = await file.arrayBuffer()
   const compressedBuffer = await compressImage(Buffer.from(buffer), preset)
-  const filename = generateFilename(file.name, preset)
+  return persistImage(compressedBuffer, generateFilename(file.name, preset))
+}
 
-  if (process.env.NODE_ENV === "development") {
-    const uploadsDir = join(process.cwd(), "public", "uploads")
-    await mkdir(uploadsDir, { recursive: true })
-    const filePath = join(uploadsDir, filename)
-    await writeFile(filePath, compressedBuffer)
-    return `/uploads/${filename}`
+// Download a remote image (e.g. Tourinsoft media) and persist it as WebP on our
+// own storage, so we no longer depend on the external host's availability.
+export const uploadImageFromUrl = async (
+  url: string,
+  preset: ImagePreset = "content"
+): Promise<string> => {
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error(`Failed to fetch image (${response.status}): ${url}`)
   }
 
-  const blob = await put(filename, compressedBuffer, {
-    access: "public",
-    contentType: "image/webp",
-  })
-  return blob.url
+  const buffer = Buffer.from(await response.arrayBuffer())
+  const compressedBuffer = await compressImage(buffer, preset)
+  return persistImage(compressedBuffer, generateFilename(url, preset))
 }

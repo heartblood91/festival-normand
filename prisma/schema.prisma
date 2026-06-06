@@ -47,6 +47,10 @@ model Event {
   longitude     Float?
   coverImage    String?    @map("cover_image")
   images        String[]   @default([])
+  photos        Photo[]
+  tourinsoftId         String?   @unique @map("tourinsoft_id")
+  tourinsoftCategories String?   @map("tourinsoft_categories")
+  tourinsoftUpdatedAt  DateTime? @map("tourinsoft_updated_at")
   featured      Boolean    @default(false)
   accessible    Boolean    @default(false)
   published     Boolean    @default(false)
@@ -56,6 +60,20 @@ model Event {
   updatedAt     DateTime   @updatedAt @map("updated_at")
 
   @@map("events")
+}
+
+model Photo {
+  id        String   @id @default(cuid())
+  url       String
+  credit    String?
+  title     String?
+  order     Int      @default(0)
+  eventId   String   @map("event_id")
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([eventId])
+  @@map("photos")
 }
 
 model News {
@@ -88,6 +106,16 @@ model Partner {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("partners")
+}
+
+model RegistrationLink {
+  id         String     @id @default(cuid())
+  department Department @unique
+  url        String
+  order      Int        @default(0)
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+
+  @@map("registration_links")
 }
 
 model Page {

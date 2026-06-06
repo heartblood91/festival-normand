@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma"
 import { localizeEntity } from "@/lib/i18n/db"
 import { PreviewBar } from "@/components/admin/preview-bar"
 import { EventInfo } from "@/components/event-detail/event-info"
-import { PhotoCarousel } from "@/components/event-detail/photo-carousel"
+import { PhotoCarousel, type CarouselPhoto } from "@/components/event-detail/photo-carousel"
 import { EventMapWrapper } from "@/components/event-detail/event-map-wrapper"
 
 type EventPreviewPageProps = {
@@ -18,6 +18,12 @@ const EventPreviewPage = async ({ params }: EventPreviewPageProps) => {
 
   const rawEvent = await prisma.event.findUnique({
     where: { id },
+    include: {
+      photos: {
+        orderBy: { order: "asc" },
+        select: { url: true, credit: true, title: true, order: true },
+      },
+    },
   })
 
   if (!rawEvent) {
@@ -32,7 +38,13 @@ const EventPreviewPage = async ({ params }: EventPreviewPageProps) => {
     updatedAt: rawEvent.updatedAt.toISOString(),
   }
 
-  const allImages = [...(event.coverImage ? [event.coverImage] : []), ...event.images]
+  const photos: CarouselPhoto[] =
+    event.photos.length > 0
+      ? event.photos.map((photo) => ({ url: photo.url, credit: photo.credit, title: photo.title }))
+      : [
+          ...(event.coverImage ? [{ url: event.coverImage }] : []),
+          ...event.images.map((url) => ({ url })),
+        ]
 
   return (
     <>
@@ -52,7 +64,7 @@ const EventPreviewPage = async ({ params }: EventPreviewPageProps) => {
           {/* Main content — left column */}
           <div className="space-y-8 lg:col-span-2">
             {/* Photo carousel */}
-            {allImages.length > 0 && <PhotoCarousel images={allImages} alt={event.title} />}
+            {photos.length > 0 && <PhotoCarousel photos={photos} alt={event.title} />}
 
             {/* Description */}
             <section>

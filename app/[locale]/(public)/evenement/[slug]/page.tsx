@@ -6,7 +6,7 @@ import { ArrowLeft } from "lucide-react"
 import { getTranslations } from "next-intl/server"
 import { getEventBySlug, getNeighbourEvents } from "@/lib/queries/events"
 import { EventInfo } from "@/components/event-detail/event-info"
-import { PhotoCarousel } from "@/components/event-detail/photo-carousel"
+import { PhotoCarousel, type CarouselPhoto } from "@/components/event-detail/photo-carousel"
 import { EventMapWrapper } from "@/components/event-detail/event-map-wrapper"
 import { prisma } from "@/lib/prisma"
 import { locales } from "@/lib/i18n/config"
@@ -67,7 +67,15 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
       ? await getNeighbourEvents(slug, event.latitude, event.longitude, locale)
       : []
 
-  const allImages = [...(event.coverImage ? [event.coverImage] : []), ...event.images]
+  // Prefer the relational photos (with credit); fall back to coverImage/images
+  // for legacy/seed events that predate the Tourinsoft import.
+  const photos: CarouselPhoto[] =
+    event.photos.length > 0
+      ? event.photos.map((photo) => ({ url: photo.url, credit: photo.credit, title: photo.title }))
+      : [
+          ...(event.coverImage ? [{ url: event.coverImage }] : []),
+          ...event.images.map((url) => ({ url })),
+        ]
 
   return (
     <article className="mx-auto max-w-7xl px-4 py-8 md:py-12 lg:py-16">
@@ -125,7 +133,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
         {/* Main content — left column */}
         <div className="space-y-8 lg:col-span-2">
           {/* Photo carousel */}
-          {allImages.length > 0 && <PhotoCarousel images={allImages} alt={event.title} />}
+          {photos.length > 0 && <PhotoCarousel photos={photos} alt={event.title} />}
 
           {/* Description */}
           <section>
