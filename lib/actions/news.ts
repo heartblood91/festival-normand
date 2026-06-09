@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache"
 import { prisma } from "@/lib/prisma"
+import { requireRole } from "@/lib/rbac"
 import { newsSchema } from "@/lib/schemas/news"
 import { searchNewsIds } from "@/lib/search"
 
@@ -34,6 +35,8 @@ export const getAdminNews = async ({
   limit = 25,
   status = "all",
 }: GetAdminNewsParams = {}): Promise<GetAdminNewsResult> => {
+  await requireRole("EDITOR")
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {}
 
@@ -77,11 +80,13 @@ export const getAdminNews = async ({
 }
 
 export const getAdminNewsById = async (id: string) => {
+  await requireRole("EDITOR")
   return prisma.news.findUnique({ where: { id } })
 }
 
 export const createNews = async (formData: FormData): Promise<NewsActionResult> => {
   try {
+    await requireRole("EDITOR")
     const raw = extractNewsFormData(formData)
     const result = newsSchema.safeParse(raw)
 
@@ -138,6 +143,7 @@ export const createNews = async (formData: FormData): Promise<NewsActionResult> 
 
 export const updateNews = async (id: string, formData: FormData): Promise<NewsActionResult> => {
   try {
+    await requireRole("EDITOR")
     const raw = extractNewsFormData(formData)
     const result = newsSchema.safeParse(raw)
 
@@ -197,6 +203,7 @@ export const updateNews = async (id: string, formData: FormData): Promise<NewsAc
 
 export const deleteNews = async (id: string): Promise<NewsActionResult> => {
   try {
+    await requireRole("EDITOR")
     const news = await prisma.news.delete({ where: { id } })
 
     revalidatePath("/actualites")
@@ -217,6 +224,7 @@ export const deleteNews = async (id: string): Promise<NewsActionResult> => {
 
 export const bulkDeleteNews = async (ids: string[]): Promise<NewsActionResult> => {
   try {
+    await requireRole("EDITOR")
     if (!ids.length) {
       return {
         success: false,

@@ -1,9 +1,17 @@
 import { uploadImage } from "@/lib/storage"
 import { IMAGE_PRESETS } from "@/lib/image-config"
 import type { ImagePreset } from "@/lib/image-config"
+import { getAuthenticatedUser } from "@/lib/rbac"
 
 export const POST = async (request: Request) => {
   try {
+    // Only authenticated admin users (EDITOR or ADMIN) may upload to storage.
+    // Without this, the endpoint lets anyone push files to the blob bucket.
+    const user = await getAuthenticatedUser()
+    if (!user) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
     const formData = await request.formData()
     const file = formData.get("file") as File | null
     const preset = (formData.get("preset") as string) || "content"

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
-const { mockPrisma } = vi.hoisted(() => ({
+const { mockPrisma, mockRequireRole } = vi.hoisted(() => ({
   mockPrisma: {
     event: {
       findMany: vi.fn(),
@@ -13,9 +13,14 @@ const { mockPrisma } = vi.hoisted(() => ({
     },
     $queryRawUnsafe: vi.fn().mockResolvedValue([]),
   },
+  mockRequireRole: vi.fn(),
 }))
 
+// Default: an authenticated EDITOR. Implementation survives clearAllMocks.
+mockRequireRole.mockResolvedValue({ id: "admin-1", name: "Admin", email: "admin@test.fr", role: "ADMIN" })
+
 vi.mock("@/lib/prisma", () => ({ prisma: mockPrisma }))
+vi.mock("@/lib/rbac", () => ({ requireRole: mockRequireRole, getAuthenticatedUser: mockRequireRole }))
 
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
@@ -262,5 +267,37 @@ describe("getAdminEventById", () => {
     const result = await getAdminEventById("non-existent")
 
     expect(result).toBeNull()
+  })
+})
+
+describe("auth guards", () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockRequireRole.mockResolvedValue({ id: "admin-1", name: "Admin", email: "admin@test.fr", role: "ADMIN" })
+  })
+
+  it("createEvent does not touch the DB when the caller is unauthenticated", async () => {
+    mockRequireRole.mockRejectedValueOnce(new Error("Unauthorized: not authenticated"))
+
+    const result = await createEvent(createFormData(validEventData))
+
+    expect(result.success).toBe(false)
+    expect(mockPrisma.event.create).not.toHaveBeenCalled()
+  })
+
+  it("deleteEvent does not touch the DB when the caller is unauthenticated", async () => {
+    mockRequireRole.mockRejectedValueOnce(new Error("Unauthorized: not authenticated"))
+
+    const result = await deleteEvent("any-id")
+
+    expect(result.success).toBe(false)
+    expect(mockPrisma.event.delete).not.toHaveBeenCalled()
+  })
+
+  it("getAdminEvents throws when the caller is unauthenticated", async () => {
+    mockRequireRole.mockRejectedValueOnce(new Error("Unauthorized: not authenticated"))
+
+    await expect(getAdminEvents()).rejects.toThrow("Unauthorized")
+    expect(mockPrisma.event.findMany).not.toHaveBeenCalled()
   })
 })

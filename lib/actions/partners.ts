@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache"
 import { prisma } from "@/lib/prisma"
+import { requireRole } from "@/lib/rbac"
 import { partnerSchema } from "@/lib/schemas/partner"
 
 export type PartnerActionResult = {
@@ -12,6 +13,7 @@ export type PartnerActionResult = {
 }
 
 export const getAdminPartners = async () => {
+  await requireRole("EDITOR")
   return prisma.partner.findMany({
     orderBy: { order: "asc" },
   })
@@ -20,11 +22,13 @@ export const getAdminPartners = async () => {
 export type AdminPartnerListItem = Awaited<ReturnType<typeof getAdminPartners>>[number]
 
 export const getAdminPartnerById = async (id: string) => {
+  await requireRole("EDITOR")
   return prisma.partner.findUnique({ where: { id } })
 }
 
 export const createPartner = async (formData: FormData): Promise<PartnerActionResult> => {
   try {
+    await requireRole("EDITOR")
     const raw = extractPartnerFormData(formData)
     const result = partnerSchema.safeParse(raw)
 
@@ -68,6 +72,7 @@ export const updatePartner = async (
   formData: FormData
 ): Promise<PartnerActionResult> => {
   try {
+    await requireRole("EDITOR")
     const raw = extractPartnerFormData(formData)
     const result = partnerSchema.safeParse(raw)
 
@@ -109,6 +114,7 @@ export const updatePartner = async (
 
 export const deletePartner = async (id: string): Promise<PartnerActionResult> => {
   try {
+    await requireRole("EDITOR")
     await prisma.partner.delete({ where: { id } })
 
     revalidatePath("/")
@@ -127,6 +133,7 @@ export const deletePartner = async (id: string): Promise<PartnerActionResult> =>
 
 export const reorderPartners = async (orderedIds: string[]): Promise<PartnerActionResult> => {
   try {
+    await requireRole("EDITOR")
     await prisma.$transaction(
       orderedIds.map((id, index) =>
         prisma.partner.update({
