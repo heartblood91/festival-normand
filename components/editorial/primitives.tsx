@@ -1,15 +1,19 @@
-import type { ReactNode } from "react"
+import type { ElementType, ReactNode } from "react"
 import { cn } from "@/lib/utils"
 
 // ¶ editorial label — the signature paragraph marker used across all sections.
+// `as` lets a section label render as a real heading (h2) when it titles a
+// standalone section, without changing the visual style (Tailwind preflight
+// resets heading font-size/weight/margin to inherit).
 type MarkerProps = {
   children: ReactNode
   index?: string
   className?: string
+  as?: ElementType
 }
 
-const Marker = ({ children, index, className }: MarkerProps) => (
-  <p
+const Marker = ({ children, index, className, as: Tag = "p" }: MarkerProps) => (
+  <Tag
     className={cn(
       "text-primary font-mono text-[11px] tracking-[0.22em] uppercase",
       className
@@ -18,7 +22,7 @@ const Marker = ({ children, index, className }: MarkerProps) => (
     <span aria-hidden="true">¶</span>{" "}
     {index ? <>{index} — </> : null}
     {children}
-  </p>
+  </Tag>
 )
 
 // Decorative centered rule: line · dot · line.

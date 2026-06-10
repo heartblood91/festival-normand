@@ -1,8 +1,8 @@
 import { Link } from "@/lib/i18n/routing"
 import Image from "next/image"
 import { getLocale } from "next-intl/server"
-import { Calendar } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { formatNewsDate } from "@/lib/utils/format-date"
 import type { NewsListItem } from "@/lib/queries/news"
 
 type NewsCardProps = {
@@ -13,54 +13,53 @@ type NewsCardProps = {
 
 const NewsCard = async ({ article, className, priority = false }: NewsCardProps) => {
   const locale = await getLocale()
-  const dateLocale = locale === "en" ? "en-GB" : "fr-FR"
-
-  const formattedDate = article.publishedAt
-    ? new Intl.DateTimeFormat(dateLocale, {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      }).format(new Date(article.publishedAt))
-    : ""
 
   return (
     <Link
       href={`/actualite/${article.slug}`}
       className={cn(
-        "group hover:border-primary/30 hover:shadow-primary/5 focus-visible:ring-primary/50 flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all hover:bg-white/10 hover:shadow-lg focus-visible:ring-2 focus-visible:outline-none",
+        "group bg-ed-bg-soft border-primary/20 hover:border-primary/50 focus-visible:ring-primary/50 flex flex-col border transition-colors focus-visible:ring-2 focus-visible:outline-none",
         className
       )}
     >
-      <div className="from-primary/20 to-primary/5 relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br">
-        {article.coverImage && (
+      <div className="bg-ed-bg-deep relative aspect-[16/10] w-full overflow-hidden">
+        {article.coverImage ? (
           <Image
             src={article.coverImage}
             alt={article.title}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover"
             priority={priority}
           />
-        )}
+        ) : null}
       </div>
 
-      <div className="flex flex-1 flex-col p-4">
-        <div className="text-muted-foreground flex items-center gap-1.5 text-sm">
-          <Calendar className="size-3.5 shrink-0" aria-hidden="true" />
-          <time dateTime={article.publishedAt ? new Date(article.publishedAt).toISOString() : ""}>
-            {formattedDate}
+      <div className="flex flex-1 flex-col gap-3 p-6">
+        {article.publishedAt ? (
+          <time
+            dateTime={new Date(article.publishedAt).toISOString()}
+            className="text-primary font-mono text-[10px] tracking-[0.18em] uppercase opacity-85"
+          >
+            {formatNewsDate(article.publishedAt, locale)}
           </time>
-        </div>
-
-        <h2 className="text-foreground group-hover:text-primary mt-2 line-clamp-2 font-serif text-lg leading-snug font-bold transition-colors md:text-xl">
+        ) : null}
+        <h2 className="text-foreground group-hover:text-primary font-display text-xl leading-tight font-normal tracking-tight italic transition-colors">
           {article.title}
         </h2>
-
-        {article.excerpt && (
-          <p className="text-muted-foreground mt-auto line-clamp-2 pt-2 text-sm">
+        {article.excerpt ? (
+          <p className="text-ed-bone line-clamp-3 font-serif text-base font-light">
             {article.excerpt}
           </p>
-        )}
+        ) : null}
+        <span className="border-primary/20 text-primary mt-auto flex items-center justify-between border-t pt-3 font-sans text-[11px] tracking-[0.16em] uppercase">
+          <span className="group-hover:text-ed-amber-soft transition-colors">
+            {locale === "en" ? "Read" : "Lire"}
+          </span>
+          <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
+            →
+          </span>
+        </span>
       </div>
     </Link>
   )

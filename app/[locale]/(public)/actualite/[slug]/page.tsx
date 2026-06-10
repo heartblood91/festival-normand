@@ -1,12 +1,13 @@
 import type { Metadata } from "next"
 import type { Locale } from "@/lib/i18n/config"
 import { notFound } from "next/navigation"
-import Link from "next/link"
 import Image from "next/image"
-import { ArrowLeft, Calendar } from "lucide-react"
+import { Link } from "@/lib/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { getNewsBySlug } from "@/lib/queries/news"
 import { MarkdownContent } from "@/components/news/markdown-content"
+import { Marker } from "@/components/editorial/primitives"
+import { formatFullDate } from "@/lib/utils/format-date"
 import { prisma } from "@/lib/prisma"
 import { locales } from "@/lib/i18n/config"
 
@@ -27,16 +28,6 @@ export const generateStaticParams = async () => {
 
 type NewsDetailPageProps = {
   params: Promise<{ locale: string; slug: string }>
-}
-
-const formatNewsDate = (date: Date | string, locale: string): string => {
-  const localeStr = locale === "en" ? "en-US" : "fr-FR"
-  return new Intl.DateTimeFormat(localeStr, {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date(date))
 }
 
 export const generateMetadata = async ({ params }: NewsDetailPageProps): Promise<Metadata> => {
@@ -77,77 +68,66 @@ const NewsDetailPage = async ({ params }: NewsDetailPageProps) => {
   }
 
   return (
-    <article className="mx-auto max-w-4xl px-4 py-8 md:py-12 lg:py-16">
+    <article>
       {/* Breadcrumb */}
-      <nav aria-label="Fil d'Ariane" className="mb-6">
-        <ol className="text-muted-foreground flex flex-wrap items-center gap-2 text-sm">
+      <nav
+        aria-label={t("a11y.breadcrumb")}
+        className="border-primary/15 bg-background border-b px-4 py-4 md:px-6"
+      >
+        <ol className="text-ed-mute mx-auto flex max-w-3xl flex-wrap items-center gap-2.5 font-mono text-[10.5px] tracking-[0.16em] uppercase">
           <li>
-            <Link
-              href={`/${locale}`}
-              className="hover:text-foreground focus-visible:ring-primary/50 rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
-            >
+            <Link href="/" className="hover:text-primary transition-colors">
               {t("news.breadcrumbHome")}
             </Link>
           </li>
-          <li aria-hidden="true" className="text-muted-foreground/50">
-            /
+          <li aria-hidden="true" className="text-primary/50">
+            ›
           </li>
           <li>
-            <Link
-              href={`/${locale}/actualites`}
-              className="hover:text-foreground focus-visible:ring-primary/50 rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
-            >
+            <Link href="/actualites" className="hover:text-primary transition-colors">
               {t("news.breadcrumbNews")}
             </Link>
           </li>
-          <li aria-hidden="true" className="text-muted-foreground/50">
-            /
+          <li aria-hidden="true" className="text-primary/50">
+            ›
           </li>
-          <li aria-current="page" className="text-foreground font-medium">
+          <li aria-current="page" className="text-primary truncate">
             {article.title}
           </li>
         </ol>
       </nav>
 
-      {/* Back link */}
-      <Link
-        href={`/${locale}/actualites`}
-        className="text-muted-foreground hover:text-foreground focus-visible:ring-primary/50 mb-6 inline-flex items-center gap-2 text-sm transition-colors focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none"
-      >
-        <ArrowLeft className="size-4" aria-hidden="true" />
-        {t("news.backToNews")}
-      </Link>
+      <div className="mx-auto max-w-3xl px-4 py-12 md:px-6 md:py-16">
+        <header className="mb-10">
+          <Marker className="mb-5">{t("news.title")}</Marker>
+          <h1 className="text-foreground font-display text-[clamp(2.25rem,6vw,4.5rem)] leading-[1.0] font-normal tracking-[-0.025em] italic">
+            {article.title}
+          </h1>
+          {article.publishedAt ? (
+            <time
+              dateTime={article.publishedAt}
+              className="text-ed-mute mt-6 block font-mono text-[11px] tracking-[0.18em] uppercase"
+            >
+              {formatFullDate(article.publishedAt, locale)}
+            </time>
+          ) : null}
+        </header>
 
-      {/* Header */}
-      <header className="mb-8">
-        <h1 className="text-foreground font-serif text-3xl font-bold md:text-4xl lg:text-5xl">
-          {article.title}
-        </h1>
+        {article.coverImage ? (
+          <div className="border-primary/20 relative mb-10 aspect-[16/9] w-full overflow-hidden border">
+            <Image
+              src={article.coverImage}
+              alt={article.title}
+              fill
+              sizes="(max-width: 1024px) 100vw, 768px"
+              className="object-cover"
+              priority
+            />
+          </div>
+        ) : null}
 
-        <div className="text-muted-foreground mt-4 flex items-center gap-2 text-sm">
-          <Calendar className="size-4 shrink-0" aria-hidden="true" />
-          <time dateTime={article.publishedAt ?? ""}>
-            {article.publishedAt ? formatNewsDate(article.publishedAt, locale) : ""}
-          </time>
-        </div>
-      </header>
-
-      {/* Cover image */}
-      {article.coverImage && (
-        <div className="from-primary/20 to-primary/5 relative mb-8 aspect-[16/9] w-full overflow-hidden rounded-xl bg-gradient-to-br">
-          <Image
-            src={article.coverImage}
-            alt={article.title}
-            fill
-            sizes="(max-width: 1024px) 100vw, 896px"
-            className="object-cover"
-            priority
-          />
-        </div>
-      )}
-
-      {/* Article content */}
-      <MarkdownContent content={article.content} />
+        <MarkdownContent content={article.content} />
+      </div>
     </article>
   )
 }
