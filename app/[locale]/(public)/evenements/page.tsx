@@ -10,7 +10,9 @@ import { EventsSearchBar } from "@/components/events/events-search-bar"
 import { ViewToggle } from "@/components/events/view-toggle"
 import { EventsMapWrapper } from "@/components/events/events-map-wrapper"
 import { NearbyButton } from "@/components/events/nearby-button"
+import { Marker } from "@/components/editorial/primitives"
 import { getTranslations } from "next-intl/server"
+import { MapPin } from "lucide-react"
 import type { Category, Department } from "@prisma/client"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
@@ -97,95 +99,100 @@ const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
   ])
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 md:py-12 lg:py-16">
+    <div>
       {/* Page header */}
-      <div className="mb-8 md:mb-10">
-        <h1 className="text-foreground font-serif text-3xl font-bold md:text-4xl lg:text-5xl">
+      <div className="bg-ed-bg-deep border-primary/25 border-b px-4 py-14 text-center md:px-6 md:py-16">
+        <Marker className="mb-4 inline-block">
+          {t("nav.events")} — {t("filters.eventCount", { count: total })}
+        </Marker>
+        <h1 className="text-foreground font-display mx-auto max-w-4xl text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.98] font-normal tracking-[-0.025em] italic">
           {t("events.title")}
         </h1>
-        <p className="text-muted-foreground mt-2 md:text-lg">
+        <p className="text-ed-bone mx-auto mt-5 max-w-2xl font-serif text-lg font-light italic md:text-xl">
           {t("events.subtitle", { count: total })}
         </p>
       </div>
 
-      {/* Search bar */}
-      <div className="mb-6">
-        <Suspense>
-          <EventsSearchBar cities={cities} />
-        </Suspense>
-      </div>
-
-      {/* Filter bar */}
-      <div className="mb-6">
-        <Suspense>
-          <FilterBar total={total} counts={counts} />
-        </Suspense>
-      </div>
-
-      {/* View toggle + nearby */}
-      <div className="mb-6 flex items-center justify-between">
-        <Suspense>
-          <NearbyButton />
-        </Suspense>
-        <ViewToggle />
-      </div>
-
-      {outsideRadius && nearestDistanceKm !== null && (
-        <div
-          role="status"
-          aria-live="polite"
-          className="mb-6 flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-100"
-        >
-          <span className="mt-0.5 text-base" aria-hidden>
-            📍
-          </span>
-          <p className="leading-snug">
-            {t("events.nearbyFallback", { distance: nearestDistanceKm })}
-          </p>
+      <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
+        {/* Search bar */}
+        <div className="mb-6">
+          <Suspense>
+            <EventsSearchBar cities={cities} />
+          </Suspense>
         </div>
-      )}
 
-      {/* Content based on view */}
-      <h2 className="sr-only">{t("events.results")}</h2>
-      {events.length > 0 ? (
-        <>
-          {view === "map" ? (
-            <div className="mb-10">
-              <EventsMapWrapper events={mapEvents} />
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
-                {events.map((event, index) => (
-                  <div
-                    key={event.id}
-                    className="h-full"
-                    style={{ "--stagger-index": index } as React.CSSProperties}
-                  >
-                    <EventListCard
-                      event={event}
-                      priority={index < 4}
-                      className="h-full [animation-delay:calc(var(--stagger-index)*50ms)]"
-                    />
-                  </div>
-                ))}
-              </div>
-
-              {/* Pagination */}
-              <div className="mt-10">
-                <Suspense>
-                  <Pagination currentPage={page} totalPages={totalPages} />
-                </Suspense>
-              </div>
-            </>
-          )}
-        </>
-      ) : (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-white/10 bg-white/5 px-6 py-16 text-center">
-          <p className="text-foreground font-serif text-xl font-bold">{t("events.noResults")}</p>
-          <p className="text-muted-foreground mt-2">{t("events.noResultsHint")}</p>
+        {/* Filter bar */}
+        <div className="mb-6">
+          <Suspense>
+            <FilterBar total={total} counts={counts} />
+          </Suspense>
         </div>
-      )}
+
+        {/* View toggle + nearby */}
+        <div className="mb-8 flex items-center justify-between">
+          <Suspense>
+            <NearbyButton />
+          </Suspense>
+          <ViewToggle />
+        </div>
+
+        {outsideRadius && nearestDistanceKm !== null && (
+          <div
+            role="status"
+            aria-live="polite"
+            className="border-primary/30 bg-primary/10 text-ed-bone mb-8 flex items-start gap-3 border p-4 font-serif text-sm"
+          >
+            <MapPin className="text-primary mt-0.5 size-4 shrink-0" aria-hidden />
+            <p className="leading-snug">
+              {t("events.nearbyFallback", { distance: nearestDistanceKm })}
+            </p>
+          </div>
+        )}
+
+        {/* Content based on view */}
+        <h2 className="sr-only">{t("events.results")}</h2>
+        {events.length > 0 ? (
+          <>
+            {view === "map" ? (
+              <div className="mb-10">
+                <EventsMapWrapper events={mapEvents} />
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {events.map((event, index) => (
+                    <div
+                      key={event.id}
+                      className="h-full"
+                      style={{ "--stagger-index": index } as React.CSSProperties}
+                    >
+                      <EventListCard
+                        event={event}
+                        priority={index < 3}
+                        className="h-full [animation-delay:calc(var(--stagger-index)*50ms)]"
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                <div className="mt-12">
+                  <Suspense>
+                    <Pagination currentPage={page} totalPages={totalPages} />
+                  </Suspense>
+                </div>
+              </>
+            )}
+          </>
+        ) : (
+          <div className="border-primary/20 bg-ed-bg-soft flex flex-col items-center justify-center border px-6 py-20 text-center">
+            <p className="text-foreground font-display text-2xl font-normal italic">
+              {t("events.noResults")}
+            </p>
+            <p className="text-ed-bone mt-2 font-serif">{t("events.noResultsHint")}</p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
