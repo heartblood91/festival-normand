@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { NAV_ITEMS, CTA_HREF, SOCIAL_LINKS } from "@/lib/navigation"
 import { isNavActive } from "@/lib/utils/nav"
-import { SparkleIcon } from "@/components/ui/sparkle-icon"
+import { LanternLogo } from "@/components/editorial/lantern-logo"
 import { ContrastToggle } from "@/components/layout/contrast-toggle"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 
@@ -30,8 +30,8 @@ const MobileNav = ({ open, onOpenChange, pathname }: MobileNavProps) => {
         id="mobile-nav"
       >
         <SheetHeader className="border-b border-white/10 pb-4">
-          <SheetTitle className="text-foreground font-serif text-lg">
-            <SparkleIcon className="inline-block size-5" /> {t("meta.festivalName")}
+          <SheetTitle className="text-foreground font-display flex items-center gap-2 text-lg">
+            <LanternLogo className="size-5" /> {t("meta.festivalName")}
           </SheetTitle>
         </SheetHeader>
 

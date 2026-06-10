@@ -60,3 +60,5 @@ scripts/_*.ts
 /blob-report/
 /playwright/.cache/
 public/videos/
+.audit/
+.design-reference/

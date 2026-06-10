@@ -4,6 +4,7 @@ import { publicEventWhere } from "@/lib/queries/visibility"
 import { localizeEntity } from "@/lib/i18n/db"
 import { searchEventIds } from "@/lib/search"
 import { isInNormandyBounds, normandyBoundsWhere } from "@/lib/geo/normandy"
+import { EDITION } from "@/lib/festival/edition"
 import type { Locale } from "@/lib/i18n/config"
 import type { Department, Category, Prisma } from "@prisma/client"
 
@@ -12,11 +13,9 @@ const ITEMS_PER_PAGE = 12
 /** Within this distance from the user, "Près de moi" is a strict filter. */
 export const NEARBY_RADIUS_KM = 50
 
-const FESTIVAL_DATES: Record<string, string> = {
-  "29": "2026-05-29",
-  "30": "2026-05-30",
-  "31": "2026-05-31",
-}
+const FESTIVAL_DATES: Record<string, string> = Object.fromEntries(
+  EDITION.nights.map((n) => [n.code, n.date])
+)
 
 export type EventFilters = {
   search?: string

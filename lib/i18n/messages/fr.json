@@ -7,13 +7,77 @@
   },
   "nav": {
     "home": "Accueil",
-    "events": "Événements",
+    "events": "Programme",
     "news": "Actualités",
     "festival": "Le Festival",
     "contact": "Contact",
-    "register": "Inscrivez votre événement",
+    "register": "Inscrire un événement",
     "legalNotice": "Mentions légales",
     "accessibility": "Accessibilité"
+  },
+  "editorial": {
+    "searchPlaceholder": "Chercher une ville, un lieu…",
+    "discoverProgramme": "Découvrir le programme",
+    "viewMap": "Voir la carte",
+    "viewAll": "Voir les {count} animations →",
+    "allNews": "Toutes les actualités →",
+    "allPartners": "Tous les partenaires →",
+    "readArticle": "Lire l'article",
+    "upcomingStatus": "J − {days} jours · billetterie ouverte",
+    "liveStatus": "Le festival est en cours · ce soir en Normandie",
+    "pastStatus": "Édition {year} terminée · rendez-vous en {nextYear}",
+    "stats": {
+      "places": "lieux illuminés",
+      "departments": "départements",
+      "nights": "nuits"
+    },
+    "threeNights": {
+      "marker": "Trois nuits, c'est maintenant",
+      "title": "Trois soirs, trois ambiances.",
+      "nightsLabel": "{count} animations",
+      "see": "Voir →"
+    },
+    "quote": {
+      "marker": "Le festival",
+      "text": "Le festival nocturne du patrimoine normand. Né dans l'Orne en 2009, il rayonne aujourd'hui dans les cinq départements : la lumière, comme métaphore, comme métier, comme invitation.",
+      "attribution": "— Co-organisé par les Départements de Normandie & la Fondation du Patrimoine"
+    },
+    "newsSection": {
+      "markerUpcoming": "Actualités",
+      "markerPast": "Bilan & presse",
+      "titleUpcoming": "Les nouvelles du festival.",
+      "titlePast": "Le bilan de l'édition."
+    },
+    "highlights": {
+      "markerUpcoming": "Coups de cœur",
+      "markerPast": "Temps forts {year}",
+      "titleUpcoming": "La sélection éditoriale.",
+      "titlePast": "Les moments à retenir.",
+      "ledeUpcoming": "Des moments choisis par l'équipe — pour celles et ceux qui ne savent pas par où commencer.",
+      "ledePast": "Les trois soirs vus par l'équipe — photos, captations, retours."
+    },
+    "programmeTeaser": {
+      "marker": "En lumière",
+      "title": "Un aperçu du programme."
+    },
+    "mapSection": {
+      "marker": "Cinq départements",
+      "title": "Toute la Normandie, allumée.",
+      "text": "{count} illuminations à travers Manche, Calvados, Seine-Maritime, Orne et Eure. Chaque point sur la carte est un lieu qui s'ouvre, à la nuit tombée.",
+      "places": "lieux"
+    },
+    "partnersSection": {
+      "marker": "Ils nous soutiennent",
+      "title": "Partenaires & mécènes.",
+      "note": "Pierres en Lumières est co-organisé par les cinq départements normands et la Fondation du Patrimoine, avec le soutien de mécènes privés."
+    },
+    "past": {
+      "marker": "Édition passée",
+      "title": "Revivez l'édition {year}.",
+      "text": "Les trois nuits sont terminées. Retrouvez la sélection éditoriale des temps forts de cette édition.",
+      "gallery": "Galerie photos {year}",
+      "replays": "Replays des mappings"
+    }
   },
   "a11y": {
     "skipToContent": "Aller au contenu principal",

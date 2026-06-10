@@ -7,13 +7,77 @@
   },
   "nav": {
     "home": "Home",
-    "events": "Events",
+    "events": "Programme",
     "news": "News",
     "festival": "The Festival",
     "contact": "Contact",
-    "register": "Register your event",
+    "register": "Register an event",
     "legalNotice": "Legal notice",
     "accessibility": "Accessibility"
+  },
+  "editorial": {
+    "searchPlaceholder": "Search a town, a place…",
+    "discoverProgramme": "Explore the programme",
+    "viewMap": "View the map",
+    "viewAll": "View all {count} events →",
+    "allNews": "All news →",
+    "allPartners": "All partners →",
+    "readArticle": "Read the article",
+    "upcomingStatus": "{days} days to go · booking open",
+    "liveStatus": "The festival is on · tonight across Normandy",
+    "pastStatus": "{year} edition over · see you in {nextYear}",
+    "stats": {
+      "places": "lit-up places",
+      "departments": "departments",
+      "nights": "nights"
+    },
+    "threeNights": {
+      "marker": "Three nights, it's now",
+      "title": "Three evenings, three moods.",
+      "nightsLabel": "{count} events",
+      "see": "See →"
+    },
+    "quote": {
+      "marker": "The festival",
+      "text": "The nocturnal festival of Norman heritage. Born in the Orne in 2009, it now shines across all five departments: light, as a metaphor, as a craft, as an invitation.",
+      "attribution": "— Co-organised by the Departments of Normandy & the Fondation du Patrimoine"
+    },
+    "newsSection": {
+      "markerUpcoming": "News",
+      "markerPast": "Review & press",
+      "titleUpcoming": "The latest from the festival.",
+      "titlePast": "A look back at the edition."
+    },
+    "highlights": {
+      "markerUpcoming": "Editor's picks",
+      "markerPast": "Highlights {year}",
+      "titleUpcoming": "The editorial selection.",
+      "titlePast": "Moments to remember.",
+      "ledeUpcoming": "A few moments chosen by the team — for those who don't know where to start.",
+      "ledePast": "The three evenings seen by the team — photos, recordings, feedback."
+    },
+    "programmeTeaser": {
+      "marker": "In the spotlight",
+      "title": "A glimpse of the programme."
+    },
+    "mapSection": {
+      "marker": "Five departments",
+      "title": "All of Normandy, lit up.",
+      "text": "{count} illuminations across Manche, Calvados, Seine-Maritime, Orne and Eure. Each point on the map is a place that opens, after dark.",
+      "places": "places"
+    },
+    "partnersSection": {
+      "marker": "They support us",
+      "title": "Partners & patrons.",
+      "note": "Pierres en Lumières is co-organised by the five Norman departments and the Fondation du Patrimoine, with the support of private patrons."
+    },
+    "past": {
+      "marker": "Past edition",
+      "title": "Relive the {year} edition.",
+      "text": "The three nights are over. Browse the editorial selection of this edition's highlights.",
+      "gallery": "{year} photo gallery",
+      "replays": "Mapping replays"
+    }
   },
   "a11y": {
     "skipToContent": "Skip to main content",

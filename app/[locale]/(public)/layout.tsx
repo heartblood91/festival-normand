@@ -2,6 +2,7 @@ import { setRequestLocale } from "next-intl/server"
 import { SkipNav } from "@/components/layout/skip-nav"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
+import { getEditionMode } from "@/lib/festival/edition"
 
 type PublicLayoutProps = {
   children: React.ReactNode
@@ -13,16 +14,17 @@ const PublicLayout = async ({ children, params }: PublicLayoutProps) => {
   // Layouts render in parallel with pages: each one must seed the request locale,
   // otherwise next-intl falls back to headers() and breaks on-demand ISR.
   setRequestLocale(locale)
+  const mode = getEditionMode()
 
   return (
-    <>
+    <div className="editorial bg-background text-foreground flex min-h-dvh flex-col font-serif">
       <SkipNav />
-      <Header />
+      <Header mode={mode} />
       <main id="main-content" className="flex-1">
         {children}
       </main>
       <Footer />
-    </>
+    </div>
   )
 }
 

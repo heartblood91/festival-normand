@@ -1,16 +1,22 @@
 import type { Metadata } from "next"
 import type { Locale } from "@/lib/i18n/config"
-import { HeroSection } from "@/components/home/hero-section"
-import { SearchBar } from "@/components/home/search-bar"
-import { FeaturedEvents } from "@/components/home/featured-events"
-import { NewsCarousel } from "@/components/home/news-carousel"
-import { PartnersSection } from "@/components/home/partners-section"
 import {
   getFeaturedEvents,
   getLatestNews,
   getPartners,
-  getEventCities,
+  getProgrammeTeaser,
+  getHomeStats,
 } from "@/lib/queries/homepage"
+import { getEditionMode, getCountdownDays, isDuringFestival } from "@/lib/festival/edition"
+import { Hero } from "@/components/home/editorial/hero"
+import { ThreeNights } from "@/components/home/editorial/three-nights"
+import { Quote } from "@/components/home/editorial/quote"
+import { NewsRow } from "@/components/home/editorial/news-row"
+import { Highlights } from "@/components/home/editorial/highlights"
+import { ProgrammeTeaser } from "@/components/home/editorial/programme-teaser"
+import { NormandySection } from "@/components/home/editorial/normandy-section"
+import { Partners } from "@/components/home/editorial/partners"
+import { PastRevive } from "@/components/home/editorial/past-revive"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
@@ -33,16 +39,9 @@ export const generateMetadata = async ({
   return {
     title,
     description,
-    openGraph: {
-      title,
-      description,
-      type: "website",
-    },
+    openGraph: { title, description, type: "website" },
     alternates: {
-      languages: {
-        fr: `${BASE_URL}/fr`,
-        en: `${BASE_URL}/en`,
-      },
+      languages: { fr: `${BASE_URL}/fr`, en: `${BASE_URL}/en` },
     },
   }
 }
@@ -53,20 +52,49 @@ type HomePageProps = {
 
 const HomePage = async ({ params }: HomePageProps) => {
   const { locale } = (await params) as { locale: Locale }
-  const [events, news, partners, cities] = await Promise.all([
+  const mode = getEditionMode()
+
+  const [featured, news, partners, programme, stats] = await Promise.all([
     getFeaturedEvents(locale),
     getLatestNews(locale),
     getPartners(locale),
-    getEventCities(),
+    getProgrammeTeaser(locale),
+    getHomeStats(),
   ])
+
+  const hero = (
+    <Hero
+      mode={mode}
+      totalPlaces={stats.totalPlaces}
+      countdownDays={getCountdownDays()}
+      live={isDuringFestival()}
+    />
+  )
+
+  if (mode === "bilan") {
+    return (
+      <>
+        {hero}
+        <PastRevive />
+        <Quote />
+        <NewsRow news={news} mode={mode} markerIndex="03" />
+        <Highlights events={featured} mode={mode} />
+        <NormandySection byDepartment={stats.byDepartment} totalPlaces={stats.totalPlaces} />
+        <Partners partners={partners} />
+      </>
+    )
+  }
 
   return (
     <>
-      <HeroSection />
-      <SearchBar cities={cities} />
-      <FeaturedEvents events={events} />
-      <NewsCarousel news={news} />
-      <PartnersSection partners={partners} />
+      {hero}
+      <ThreeNights byNight={stats.byNight} />
+      <Quote />
+      <NewsRow news={news} mode={mode} />
+      <Highlights events={featured} mode={mode} />
+      <ProgrammeTeaser events={programme} total={stats.totalPlaces} />
+      <NormandySection byDepartment={stats.byDepartment} totalPlaces={stats.totalPlaces} />
+      <Partners partners={partners} />
     </>
   )
 }
