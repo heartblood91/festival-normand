@@ -2,9 +2,7 @@ import type { Metadata } from "next"
 import type { Locale } from "@/lib/i18n/config"
 import { notFound } from "next/navigation"
 import { getPageBySlug } from "@/lib/queries/pages"
-import { getTranslations } from "next-intl/server"
-import { MarkdownContent } from "@/components/news/markdown-content"
-import { Breadcrumb } from "@/components/ui/breadcrumb"
+import { ClassicPage } from "@/components/editorial/classic-page"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
@@ -46,23 +44,17 @@ type FestivalPageProps = {
 const FestivalPage = async ({ params }: FestivalPageProps) => {
   const { locale } = (await params) as { locale: Locale }
   const page = await getPageBySlug("festival", locale)
-  const t = await getTranslations()
 
   if (!page) {
     notFound()
   }
 
   return (
-    <article className="mx-auto max-w-4xl px-4 py-8 md:py-12 lg:py-16">
-      <Breadcrumb
-        ariaLabel={t("a11y.breadcrumb")}
-        items={[{ label: t("nav.home"), href: `/${locale}` }, { label: page.title }]}
-      />
-      <h1 className="text-foreground mb-8 font-serif text-3xl font-bold md:text-4xl lg:text-5xl">
-        {page.title}
-      </h1>
-      <MarkdownContent content={page.content} />
-    </article>
+    <ClassicPage
+      title={page.title}
+      content={page.content}
+      marker={locale === "en" ? "The festival · since 2009" : "Le festival · depuis 2009"}
+    />
   )
 }
 
