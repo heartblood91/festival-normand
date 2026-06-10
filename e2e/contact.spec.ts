@@ -7,17 +7,17 @@ test.describe("Contact page", () => {
 
   test("renders page with correct title", async ({ page }) => {
     await expect(page).toHaveTitle(/Contact/)
-    await expect(page.getByRole("heading", { name: "Contactez-nous", level: 1 })).toBeVisible()
+    await expect(page.getByRole("heading", { name: /Allumons une pierre/, level: 1 })).toBeVisible()
   })
 
   test("renders info section with description", async ({ page }) => {
-    await expect(page.getByRole("heading", { name: "Nous écrire" })).toBeVisible()
+    await expect(page.getByText("Nous écrire").first()).toBeVisible()
     await expect(page.getByText("Une question sur le festival").first()).toBeVisible()
   })
 
   test("renders inscription CTA link in main content", async ({ page }) => {
     const main = page.locator("main")
-    await expect(main.getByRole("heading", { name: "Inscrivez votre événement" })).toBeVisible()
+    await expect(main.getByText("Inscrivez votre événement")).toBeVisible()
     const ctaLink = main.getByRole("link", { name: /S'inscrire/ })
     await expect(ctaLink).toBeVisible()
     await expect(ctaLink).toHaveAttribute("href", /\/inscription$/)

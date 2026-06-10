@@ -13,7 +13,7 @@ test.describe("Global layout", () => {
     // Desktop nav links (hidden on mobile, visible on lg)
     const nav = header.locator('nav[aria-label="Navigation principale"]')
     await expect(nav.getByText("Accueil")).toBeVisible()
-    await expect(nav.getByText("Événements")).toBeVisible()
+    await expect(nav.getByText("Programme")).toBeVisible()
     await expect(nav.getByText("Actualités")).toBeVisible()
     await expect(nav.getByText("Le Festival")).toBeVisible()
     await expect(nav.getByText("Contact")).toBeVisible()
@@ -27,7 +27,7 @@ test.describe("Global layout", () => {
 
   test("header has CTA button", async ({ page }) => {
     const header = page.locator("header")
-    await expect(header.getByRole("link", { name: "Inscrivez votre événement" })).toBeVisible()
+    await expect(header.getByRole("link", { name: "Inscrire un événement" })).toBeVisible()
   })
 
   test("footer displays navigation", async ({ page }) => {
@@ -55,7 +55,7 @@ test.describe("Global layout", () => {
   test("navigation links have correct locale-prefixed hrefs", async ({ page }) => {
     const nav = page.locator('nav[aria-label="Navigation principale"]')
     await expect(nav.getByText("Accueil")).toHaveAttribute("href", /^\/fr\/?$/)
-    await expect(nav.getByText("Événements")).toHaveAttribute("href", /\/evenements$/)
+    await expect(nav.getByText("Programme")).toHaveAttribute("href", /\/evenements$/)
     await expect(nav.getByText("Actualités")).toHaveAttribute("href", /\/actualites$/)
     await expect(nav.getByText("Le Festival")).toHaveAttribute("href", /\/festival$/)
     await expect(nav.getByText("Contact")).toHaveAttribute("href", /\/contact$/)
@@ -90,7 +90,7 @@ test.describe("Mobile navigation", () => {
     const sheetContent = page.locator("#mobile-nav")
     await expect(sheetContent).toBeVisible()
     await expect(sheetContent.getByRole("link", { name: "Accueil" })).toBeVisible()
-    await expect(sheetContent.getByRole("link", { name: "Événements" })).toBeVisible()
+    await expect(sheetContent.getByRole("link", { name: "Programme" })).toBeVisible()
   })
 
   test("mobile menu closes on link click", async ({ page }) => {

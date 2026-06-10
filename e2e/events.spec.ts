@@ -84,7 +84,7 @@ test.describe("Events list page", () => {
 
   test("navigates from homepage to events page", async ({ page }) => {
     await page.goto("/")
-    const link = page.getByRole("link", { name: "Découvrir les événements" })
+    const link = page.getByRole("link", { name: "Découvrir le programme" }).first()
     await link.click()
     await page.waitForURL(/\/evenements$/)
     await expect(page.getByRole("heading", { name: "Événements", level: 1 })).toBeVisible()

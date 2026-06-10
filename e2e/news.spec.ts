@@ -5,7 +5,8 @@ test.describe("News list page", () => {
     await page.goto("/actualites")
 
     await expect(page).toHaveTitle(/Actualités/)
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Actualités")
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible()
+    await expect(page.getByText("Actualités").first()).toBeVisible()
   })
 
   test("displays news cards with titles and dates", async ({ page }) => {
@@ -51,7 +52,7 @@ test.describe("News detail page", () => {
     const href = await firstCard.getAttribute("href")
     await page.goto(href!)
 
-    const heading = page.locator("article > header h1")
+    const heading = page.locator("article header h1")
     await expect(heading).toBeVisible()
     await expect(heading).toHaveText(title)
   })
@@ -62,7 +63,7 @@ test.describe("News detail page", () => {
     const href = await firstCard.getAttribute("href")
     await page.goto(href!)
 
-    await expect(page.locator("article > header h1")).toBeVisible()
+    await expect(page.locator("article header h1")).toBeVisible()
     await expect(page.locator("time").first()).toBeVisible()
   })
 
@@ -79,13 +80,15 @@ test.describe("News detail page", () => {
     expect(text.trim().length).toBeGreaterThan(0)
   })
 
-  test("has back link to news list", async ({ page }) => {
+  test("breadcrumb links back to the news list", async ({ page }) => {
     await page.goto("/actualites")
     const firstCard = page.locator('a[href*="/actualite/"]').first()
     const href = await firstCard.getAttribute("href")
     await page.goto(href!)
 
-    const backLink = page.getByRole("link", { name: "Retour aux actualités" })
+    const backLink = page
+      .locator('nav[aria-label="Fil d\'Ariane"]')
+      .getByRole("link", { name: "Actualités" })
     await expect(backLink).toBeVisible()
     await expect(backLink).toHaveAttribute("href", /\/actualites$/)
   })

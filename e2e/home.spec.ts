@@ -7,52 +7,55 @@ test.describe("Home page", () => {
     await expect(page.locator("h1")).toContainText("Pierres en Lumières")
   })
 
-  test("displays the hero section with dates and tagline", async ({ page }) => {
+  test("displays the hero tagline", async ({ page }) => {
     await page.goto("/")
-    await expect(page.getByText("29, 30 & 31 mai 2026", { exact: true }).first()).toBeVisible()
     await expect(
       page.getByText("Découvrez la magie du patrimoine normand en nocturne", { exact: true })
     ).toBeVisible()
   })
 
-  test("displays CTA buttons in hero", async ({ page }) => {
+  test("displays hero CTA buttons", async ({ page }) => {
     await page.goto("/")
-    const discoverBtn = page.getByRole("link", { name: "Découvrir les événements" })
+    const discoverBtn = page.getByRole("link", { name: "Découvrir le programme" }).first()
     await expect(discoverBtn).toBeVisible()
     await expect(discoverBtn).toHaveAttribute("href", /\/evenements$/)
 
-    const registerBtn = page.getByRole("link", { name: "Inscrire un site" })
-    await expect(registerBtn).toBeVisible()
-    await expect(registerBtn).toHaveAttribute("href", /\/inscription$/)
+    const mapBtn = page.getByRole("link", { name: "Voir la carte" })
+    await expect(mapBtn).toBeVisible()
+    await expect(mapBtn).toHaveAttribute("href", /\/evenements\?view=map$/)
   })
 
-  test("displays search bar", async ({ page }) => {
+  test("displays the header city search", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 })
     await page.goto("/")
-    const searchInput = page.getByRole("combobox", { name: /Rechercher un événement/i })
+    const searchInput = page.getByRole("searchbox", { name: /Rechercher un événement/i })
     await expect(searchInput).toBeVisible()
   })
 
-  test("displays featured events section with event cards", async ({ page }) => {
+  test("displays the editorial quote", async ({ page }) => {
     await page.goto("/")
-    const heading = page.getByRole("heading", { name: "Événements à la une" })
-    await expect(heading).toBeVisible()
-
-    const eventsSection = page.locator("section", { has: heading })
-    const eventCards = eventsSection.locator('a[href*="/evenement/"]')
-    const count = await eventCards.count()
-    expect(count).toBeGreaterThanOrEqual(1)
+    await expect(page.getByText(/comme métaphore, comme métier/)).toBeVisible()
   })
 
-  test("displays news carousel section", async ({ page }) => {
+  test("displays a link to all news", async ({ page }) => {
     await page.goto("/")
-    const heading = page.getByRole("heading", { name: "Actualités", exact: true })
-    await expect(heading).toBeVisible()
+    await expect(page.getByRole("link", { name: /Toutes les actualités/ })).toBeVisible()
+  })
+
+  test("displays editorial event cards", async ({ page }) => {
+    await page.goto("/")
+    const eventCards = page.locator('a[href*="/evenement/"]')
+    expect(await eventCards.count()).toBeGreaterThanOrEqual(1)
+  })
+
+  test("displays the Normandy map section", async ({ page }) => {
+    await page.goto("/")
+    await expect(page.getByRole("heading", { name: /Toute la Normandie, allumée/ })).toBeVisible()
   })
 
   test("displays partners section", async ({ page }) => {
     await page.goto("/")
-    const heading = page.getByRole("heading", { name: "Nos partenaires" })
-    await expect(heading).toBeVisible()
+    await expect(page.getByRole("heading", { name: /Partenaires & mécènes/ })).toBeVisible()
   })
 
   test("event card links navigate to event detail", async ({ page }) => {
@@ -60,13 +63,5 @@ test.describe("Home page", () => {
     const eventCard = page.locator('a[href*="/evenement/"]').first()
     const href = await eventCard.getAttribute("href")
     expect(href).toMatch(/\/evenement\//)
-  })
-
-  test("search bar shows autocomplete suggestions", async ({ page }) => {
-    await page.goto("/")
-    const searchInput = page.getByRole("combobox", { name: /Rechercher un événement/i })
-    await searchInput.fill("Ca")
-    const suggestions = page.locator("#city-suggestions")
-    await expect(suggestions).toBeVisible()
   })
 })

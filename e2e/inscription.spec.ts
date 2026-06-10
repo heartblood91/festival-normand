@@ -44,7 +44,7 @@ test.describe("Inscription page", () => {
   test("page is accessible via header CTA button", async ({ page }) => {
     await page.goto("/")
 
-    const ctaLink = page.locator("header").getByRole("link", { name: /Inscrivez votre événement/ })
+    const ctaLink = page.locator("header").getByRole("link", { name: /Inscrire un événement/ })
     await ctaLink.click()
 
     await expect(page).toHaveURL(/\/inscription/)

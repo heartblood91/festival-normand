@@ -45,16 +45,16 @@ test.describe("Event detail page", () => {
 
   test("shows description section", async ({ page }) => {
     await openFirstEvent(page)
-    await expect(page.getByRole("heading", { name: "Description" })).toBeVisible()
+    await expect(page.getByText("Description").first()).toBeVisible()
   })
 
-  test("has back link that returns to events list", async ({ page }) => {
+  test("breadcrumb links back to the programme list", async ({ page }) => {
     await openFirstEvent(page)
-    const backLink = page.getByRole("link", {
-      name: /Retour aux événements/i,
-    })
-    await expect(backLink).toBeVisible()
-    await expect(backLink).toHaveAttribute("href", /\/evenements$/)
+    const breadcrumbLink = page
+      .locator('nav[aria-label="Fil d\'Ariane"]')
+      .getByRole("link", { name: "Programme" })
+    await expect(breadcrumbLink).toBeVisible()
+    await expect(breadcrumbLink).toHaveAttribute("href", /\/evenements$/)
   })
 
   test("displays category badge", async ({ page }) => {
