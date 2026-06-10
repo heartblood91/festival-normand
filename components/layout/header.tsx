@@ -105,7 +105,10 @@ const Header = ({ mode }: HeaderProps) => {
             <span className="text-foreground font-display group-hover:text-primary text-lg font-medium transition-colors md:text-xl">
               {t("meta.festivalName")}
             </span>
-            <span className="text-primary mt-1 hidden font-mono text-[9px] tracking-[0.2em] uppercase sm:block">
+            <span
+              className="text-primary mt-1 hidden font-mono text-[9px] tracking-[0.2em] uppercase sm:block"
+              aria-hidden="true"
+            >
               {editionKicker(mode, locale)}
             </span>
           </span>

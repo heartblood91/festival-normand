@@ -106,10 +106,10 @@ const Footer = async () => {
         </div>
 
         <div className="border-primary/20 mt-12 flex flex-col gap-3 border-t pt-7 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-ed-bone font-mono text-[10px] tracking-[0.14em] uppercase opacity-60">
+          <p className="text-ed-bone font-mono text-[10px] tracking-[0.14em] uppercase opacity-80">
             {t("footer.copyright", { year })}
           </p>
-          <p className="text-ed-bone font-mono text-[10px] tracking-[0.14em] uppercase opacity-50">
+          <p className="text-ed-bone font-mono text-[10px] tracking-[0.14em] uppercase opacity-80">
             Départements de Normandie &amp; Fondation du Patrimoine
           </p>
         </div>
