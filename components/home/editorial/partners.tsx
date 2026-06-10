@@ -1,6 +1,5 @@
 import Image from "next/image"
 import { getTranslations } from "next-intl/server"
-import { Link } from "@/lib/i18n/routing"
 import type { PartnerItem } from "@/lib/queries/homepage"
 import { SectionHeading } from "@/components/editorial/primitives"
 
