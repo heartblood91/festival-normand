@@ -1,33 +1,11 @@
 import { Link } from "@/lib/i18n/routing"
 import NextImage from "next/image"
 import { getLocale, getTranslations } from "next-intl/server"
-import {
-  MapPin,
-  Calendar,
-  Clock,
-  Accessibility,
-  Flame,
-  Image as ImageIcon,
-  Music,
-  MapPin as MapPinIcon,
-} from "lucide-react"
+import { MapPin, Calendar, Clock, Accessibility } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { formatEventDateRange, formatTime } from "@/lib/utils/format-date"
 import type { EventListItem } from "@/lib/queries/events"
-
-const CATEGORY_GRADIENTS: Record<string, string> = {
-  ILLUMINATIONS: "from-amber-900/30 to-amber-700/10",
-  EXPOSITIONS: "from-blue-900/30 to-blue-700/10",
-  ANIMATIONS: "from-purple-900/30 to-purple-700/10",
-  VISITES: "from-emerald-900/30 to-emerald-700/10",
-}
-
-const CATEGORY_ICONS: Record<string, React.ReactNode> = {
-  ILLUMINATIONS: <Flame className="size-8" />,
-  EXPOSITIONS: <ImageIcon className="size-8" />,
-  ANIMATIONS: <Music className="size-8" />,
-  VISITES: <MapPinIcon className="size-8" />,
-}
+import { DEFAULT_EVENT_IMAGE } from "@/lib/events/default-image"
 
 type EventListCardProps = {
   event: EventListItem
@@ -38,6 +16,7 @@ type EventListCardProps = {
 const EventListCard = async ({ event, className, priority = false }: EventListCardProps) => {
   const locale = await getLocale()
   const t = await getTranslations()
+  const coverImage = event.coverImage ?? DEFAULT_EVENT_IMAGE
   return (
     <Link
       href={`/evenement/${event.slug}`}
@@ -46,30 +25,21 @@ const EventListCard = async ({ event, className, priority = false }: EventListCa
         className
       )}
     >
-      {/* Cover image or gradient placeholder */}
+      {/* Cover image */}
       <div
         className={cn(
           "relative flex aspect-[16/10] w-full items-center justify-center overflow-hidden",
-          event.coverImage
-            ? "from-primary/20 to-primary/5 bg-gradient-to-br"
-            : `bg-gradient-to-br ${CATEGORY_GRADIENTS[event.category] || "from-primary/20 to-primary/5"}`
+          "from-primary/20 to-primary/5 bg-gradient-to-br"
         )}
       >
-        {event.coverImage && (
-          <NextImage
-            src={event.coverImage}
-            alt={event.title}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            priority={priority}
-          />
-        )}
-        {!event.coverImage && (
-          <div className="text-primary/60 flex items-center justify-center">
-            {CATEGORY_ICONS[event.category]}
-          </div>
-        )}
+        <NextImage
+          src={coverImage}
+          alt={event.title}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          priority={priority}
+        />
         {/* Category badge */}
         <span className="border-primary/30 bg-background/80 text-primary absolute top-3 left-3 rounded-full border px-2.5 py-1 text-xs font-medium backdrop-blur-sm">
           {t(`categories.${event.category}`) ?? event.category}

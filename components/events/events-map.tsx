@@ -6,6 +6,8 @@ import mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
 import { formatEventDate } from "@/lib/utils/format-date"
 import type { MapEventItem } from "@/lib/queries/events"
+import { DEFAULT_EVENT_IMAGE } from "@/lib/events/default-image"
+import { isInFranceBounds } from "@/lib/geo/france"
 
 type EventsMapProps = {
   events: MapEventItem[]
@@ -21,7 +23,11 @@ const EventsMap = ({ events }: EventsMapProps) => {
   const mapRef = useRef<mapboxgl.Map | null>(null)
 
   const validEvents = events.filter(
-    (e) => e.latitude !== null && e.longitude !== null && (e.latitude !== 0 || e.longitude !== 0)
+    (e) =>
+      e.latitude !== null &&
+      e.longitude !== null &&
+      (e.latitude !== 0 || e.longitude !== 0) &&
+      isInFranceBounds(e)
   )
 
   const initMap = useCallback(() => {
@@ -58,7 +64,7 @@ const EventsMap = ({ events }: EventsMapProps) => {
             city: event.city || "",
             dateStart: event.dateStart ? formatEventDate(event.dateStart, locale) : "",
             timeStart: event.timeStart?.slice(0, 5) || "",
-            coverImage: event.coverImage || "",
+            coverImage: event.coverImage || DEFAULT_EVENT_IMAGE,
           },
         })),
       }
@@ -151,9 +157,7 @@ const EventsMap = ({ events }: EventsMapProps) => {
         const safeCat = escapeHtml(props.categoryLabel)
         const safeCity = escapeHtml(props.city)
         const safeSlug = escapeHtml(props.slug)
-        const imageHtml = props.coverImage
-          ? `<img src="${escapeHtml(props.coverImage)}" alt="${safeTitle}" style="width:100%;height:120px;object-fit:cover;border-radius:8px 8px 0 0;" />`
-          : `<div style="width:100%;height:60px;background:linear-gradient(135deg,#f59e0b33,#1e1b4b);border-radius:8px 8px 0 0;"></div>`
+        const imageHtml = `<img src="${escapeHtml(props.coverImage)}" alt="${safeTitle}" style="width:100%;height:120px;object-fit:cover;border-radius:8px 8px 0 0;" />`
         const viewLabel = locale === "en" ? "View event →" : "Voir l&#39;événement →"
 
         new mapboxgl.Popup({

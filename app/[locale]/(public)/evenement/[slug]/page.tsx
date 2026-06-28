@@ -10,6 +10,8 @@ import { PhotoCarousel, type CarouselPhoto } from "@/components/event-detail/pho
 import { EventMapWrapper } from "@/components/event-detail/event-map-wrapper"
 import { prisma } from "@/lib/prisma"
 import { locales } from "@/lib/i18n/config"
+import { DEFAULT_EVENT_IMAGE } from "@/lib/events/default-image"
+import { isInFranceBounds } from "@/lib/geo/france"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
@@ -62,20 +64,17 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
     notFound()
   }
 
-  const neighbours =
-    event.latitude && event.longitude
-      ? await getNeighbourEvents(slug, event.latitude, event.longitude, locale)
-      : []
+  const hasFranceCoordinates = isInFranceBounds(event)
+  const neighbours = hasFranceCoordinates
+    ? await getNeighbourEvents(slug, event.latitude as number, event.longitude as number, locale)
+    : []
 
   // Prefer the relational photos (with credit); fall back to coverImage/images
   // for legacy/seed events that predate the Tourinsoft import.
   const photos: CarouselPhoto[] =
     event.photos.length > 0
       ? event.photos.map((photo) => ({ url: photo.url, credit: photo.credit, title: photo.title }))
-      : [
-          ...(event.coverImage ? [{ url: event.coverImage }] : []),
-          ...event.images.map((url) => ({ url })),
-        ]
+      : [{ url: event.coverImage ?? DEFAULT_EVENT_IMAGE }, ...event.images.map((url) => ({ url }))]
 
   return (
     <article className="mx-auto max-w-7xl px-4 py-8 md:py-12 lg:py-16">
@@ -148,14 +147,14 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
           </section>
 
           {/* Map */}
-          {event.latitude && event.longitude && (
+          {hasFranceCoordinates && (
             <section>
               <h2 className="text-foreground mb-4 font-serif text-xl font-bold md:text-2xl">
                 {t("events.location")}
               </h2>
               <EventMapWrapper
-                latitude={event.latitude}
-                longitude={event.longitude}
+                latitude={event.latitude as number}
+                longitude={event.longitude as number}
                 title={event.title}
                 locale={locale}
                 neighbours={neighbours}

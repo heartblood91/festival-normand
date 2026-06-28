@@ -2,6 +2,7 @@ import { cachedQuery } from "@/lib/cache"
 import { prisma } from "@/lib/prisma"
 import { localizeEntity } from "@/lib/i18n/db"
 import { searchEventIds } from "@/lib/search"
+import { franceBoundsWhere, isInFranceBounds } from "@/lib/geo/france"
 import type { Locale } from "@/lib/i18n/config"
 import type { Department, Category, Prisma } from "@prisma/client"
 
@@ -185,8 +186,7 @@ export const getNeighbourEvents = async (
         where: {
           published: true,
           slug: { not: excludeSlug },
-          latitude: { not: 0 },
-          longitude: { not: 0 },
+          ...franceBoundsWhere,
           NOT: [{ latitude: null }, { longitude: null }],
         },
         select: {
@@ -204,9 +204,12 @@ export const getNeighbourEvents = async (
         .map((e) => ({
           ...localizeEntity(e, locale, ["title"]),
           distance:
-            e.latitude && e.longitude ? haversineDistance(lat, lng, e.latitude, e.longitude) : Infinity,
+            e.latitude && e.longitude
+              ? haversineDistance(lat, lng, e.latitude, e.longitude)
+              : Infinity,
         }))
         .filter((e) => Number.isFinite(e.distance))
+        .filter((e) => isInFranceBounds({ latitude: e.latitude, longitude: e.longitude }))
         .sort((a, b) => a.distance - b.distance)
 
       const capped = typeof limit === "number" ? sorted.slice(0, limit) : sorted
@@ -265,8 +268,7 @@ export const getAllFilteredEventsForMap = async (
       const events = await prisma.event.findMany({
         where: {
           ...(await buildFilterWhere(filters)),
-          latitude: { not: 0 },
-          longitude: { not: 0 },
+          ...franceBoundsWhere,
         },
         orderBy: { dateStart: "asc" },
         select: {

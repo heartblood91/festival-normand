@@ -1,4 +1,5 @@
 import { Category, Department } from "@prisma/client"
+import { normalizeFranceCoordinates } from "@/lib/geo/france"
 import { slugify } from "@/lib/schemas/event"
 import type {
   TourinsoftContact,
@@ -56,10 +57,7 @@ const INSEE_DEPARTMENT: Record<string, Department> = {
 
 // Tourinsoft has no department field; derive it from the INSEE code (or postal
 // code) prefix. Defaults to CALVADOS so the draft is always insertable.
-const mapDepartment = (
-  insee: string | null | undefined,
-  postalCode: string | null
-): Department => {
+const mapDepartment = (insee: string | null | undefined, postalCode: string | null): Department => {
   const prefix = (clean(insee) ?? clean(postalCode) ?? "").slice(0, 2)
   return INSEE_DEPARTMENT[prefix] ?? Department.CALVADOS
 }
@@ -100,7 +98,10 @@ const toTitleCase = (value: string | null): string | null => {
   if (!value) return null
   return value
     .toLowerCase()
-    .replace(/(^|[\s'-])([a-zà-ÿ])/g, (_, separator: string, char: string) => separator + char.toUpperCase())
+    .replace(
+      /(^|[\s'-])([a-zà-ÿ])/g,
+      (_, separator: string, char: string) => separator + char.toUpperCase()
+    )
 }
 
 const parseCoord = (value: string | null | undefined): number | null => {
@@ -169,6 +170,10 @@ export const mapOffer = (offer: TourinsoftOffer): MappedOffer => {
     .map((c) => clean(c.ThesLibelle))
     .filter(Boolean)
     .join(", ")
+  const coordinates = normalizeFranceCoordinates({
+    latitude: parseCoord(offer.GmapLatitude) ?? parseCoord(offer.Latitude),
+    longitude: parseCoord(offer.GmapLongitude) ?? parseCoord(offer.Longitude),
+  })
 
   return {
     tourinsoftId,
@@ -191,8 +196,8 @@ export const mapOffer = (offer: TourinsoftOffer): MappedOffer => {
     email: firstContact(offer.ContactMails),
     phone: firstContact(offer.ContactTels) ?? firstContact(offer.ContactMobils),
     website: firstContact(offer.ContactWebs),
-    latitude: parseCoord(offer.GmapLatitude) ?? parseCoord(offer.Latitude),
-    longitude: parseCoord(offer.GmapLongitude) ?? parseCoord(offer.Longitude),
+    latitude: coordinates.latitude,
+    longitude: coordinates.longitude,
     photos: mapPhotos(offer.Photoss),
   }
 }
