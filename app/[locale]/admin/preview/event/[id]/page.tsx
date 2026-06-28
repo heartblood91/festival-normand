@@ -7,6 +7,8 @@ import { PreviewBar } from "@/components/admin/preview-bar"
 import { EventInfo } from "@/components/event-detail/event-info"
 import { PhotoCarousel, type CarouselPhoto } from "@/components/event-detail/photo-carousel"
 import { EventMapWrapper } from "@/components/event-detail/event-map-wrapper"
+import { DEFAULT_EVENT_IMAGE } from "@/lib/events/default-image"
+import { isInFranceBounds } from "@/lib/geo/france"
 
 type EventPreviewPageProps = {
   params: Promise<{ locale: string; id: string }>
@@ -41,10 +43,8 @@ const EventPreviewPage = async ({ params }: EventPreviewPageProps) => {
   const photos: CarouselPhoto[] =
     event.photos.length > 0
       ? event.photos.map((photo) => ({ url: photo.url, credit: photo.credit, title: photo.title }))
-      : [
-          ...(event.coverImage ? [{ url: event.coverImage }] : []),
-          ...event.images.map((url) => ({ url })),
-        ]
+      : [{ url: event.coverImage ?? DEFAULT_EVENT_IMAGE }, ...event.images.map((url) => ({ url }))]
+  const hasFranceCoordinates = isInFranceBounds(event)
 
   return (
     <>
@@ -79,14 +79,14 @@ const EventPreviewPage = async ({ params }: EventPreviewPageProps) => {
             </section>
 
             {/* Map */}
-            {event.latitude && event.longitude && (
+            {hasFranceCoordinates && (
               <section>
                 <h2 className="text-foreground mb-4 font-serif text-xl font-bold md:text-2xl">
                   {t("events.location")}
                 </h2>
                 <EventMapWrapper
-                  latitude={event.latitude}
-                  longitude={event.longitude}
+                  latitude={event.latitude as number}
+                  longitude={event.longitude as number}
                   title={event.title}
                   locale={locale}
                   neighbours={[]}

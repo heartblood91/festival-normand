@@ -89,13 +89,16 @@ describe("mapOffer", () => {
     // baseOffer has ILLUM + Visite → VISITES wins (more specific than Illuminations)
     expect(mapOffer(baseOffer).category).toBe(Category.VISITES)
     expect(
-      mapOffer({ ...baseOffer, Categories: [{ ThesCode: "EXPOS", ThesLibelle: "Exposition" }] }).category
+      mapOffer({ ...baseOffer, Categories: [{ ThesCode: "EXPOS", ThesLibelle: "Exposition" }] })
+        .category
     ).toBe(Category.EXPOSITIONS)
     expect(
-      mapOffer({ ...baseOffer, Categories: [{ ThesCode: "ILLUM", ThesLibelle: "Illuminations" }] }).category
+      mapOffer({ ...baseOffer, Categories: [{ ThesCode: "ILLUM", ThesLibelle: "Illuminations" }] })
+        .category
     ).toBe(Category.ILLUMINATIONS)
     expect(
-      mapOffer({ ...baseOffer, Categories: [{ ThesCode: "ANIMVIV", ThesLibelle: "Animations" }] }).category
+      mapOffer({ ...baseOffer, Categories: [{ ThesCode: "ANIMVIV", ThesLibelle: "Animations" }] })
+        .category
     ).toBe(Category.ANIMATIONS)
     // unknown code → ANIMATIONS fallback
     expect(
@@ -118,13 +121,33 @@ describe("mapOffer", () => {
   })
 
   it("composes a pricing line from Tarifs", () => {
-    expect(mapOffer(baseOffer).pricingFr).toBe("5 € Tarif réduit (tarif unique), Gratuit (moins de 10 ans)")
+    expect(mapOffer(baseOffer).pricingFr).toBe(
+      "5 € Tarif réduit (tarif unique), Gratuit (moins de 10 ans)"
+    )
   })
 
   it("prefers Gmap coordinates and parses comma decimals", () => {
-    const result = mapOffer({ ...baseOffer, GmapLatitude: "49,5", GmapLongitude: null, Latitude: "48", Longitude: "1" })
+    const result = mapOffer({
+      ...baseOffer,
+      GmapLatitude: "49,5",
+      GmapLongitude: null,
+      Latitude: "48",
+      Longitude: "1",
+    })
     expect(result.latitude).toBe(49.5)
     expect(result.longitude).toBe(1)
+  })
+
+  it("drops coordinates outside France bounds", () => {
+    const result = mapOffer({
+      ...baseOffer,
+      GmapLatitude: "45.8965683",
+      GmapLongitude: "-74.153834",
+      Latitude: null,
+      Longitude: null,
+    })
+    expect(result.latitude).toBeNull()
+    expect(result.longitude).toBeNull()
   })
 
   it("maps photos with credit and title", () => {
@@ -138,7 +161,7 @@ describe("mapOffer", () => {
     })
   })
 
-  it("treats the literal string \"null\" as empty and falls back", () => {
+  it('treats the literal string "null" as empty and falls back', () => {
     const result = mapOffer({ ...baseOffer, Descriptif: "null", DescriptifCourt: "  " })
     expect(result.descriptionFr).toBe(baseOffer.NomOffre)
   })
@@ -149,7 +172,9 @@ describe("mapOffer", () => {
 
   it("parses Updated into tourinsoftUpdatedAt", () => {
     const result = mapOffer({ ...baseOffer, Updated: "2026-05-28T10:07:18" })
-    expect(result.tourinsoftUpdatedAt?.toISOString()).toBe(new Date("2026-05-28T10:07:18").toISOString())
+    expect(result.tourinsoftUpdatedAt?.toISOString()).toBe(
+      new Date("2026-05-28T10:07:18").toISOString()
+    )
     expect(mapOffer({ ...baseOffer, Updated: null }).tourinsoftUpdatedAt).toBeNull()
   })
 

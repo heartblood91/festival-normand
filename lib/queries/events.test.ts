@@ -434,4 +434,23 @@ describe("getNeighbourEvents", () => {
 
     expect(result.map((n) => n.slug)).toEqual(["ok"])
   })
+
+  it("filters out events with coordinates outside France", async () => {
+    prismaMock.event.findMany.mockResolvedValue([
+      { ...makeEvent("ok", 49.2, -0.4) },
+      { ...makeEvent("canada", 45.8965683, -74.153834) },
+    ])
+
+    const result = await getNeighbourEvents("current", caenLat, caenLng, "fr")
+
+    expect(result.map((n) => n.slug)).toEqual(["ok"])
+    expect(prismaMock.event.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          latitude: expect.objectContaining({ gte: 41, lte: 52 }),
+          longitude: expect.objectContaining({ gte: -6, lte: 10 }),
+        }),
+      })
+    )
+  })
 })

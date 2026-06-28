@@ -1,6 +1,7 @@
 import "dotenv/config"
 import { PrismaClient } from "@prisma/client"
 import { PrismaPg } from "@prisma/adapter-pg"
+import { isInFranceBounds } from "@/lib/geo/france"
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
@@ -20,7 +21,18 @@ const geocode = async (query: string): Promise<{ lat: number; lng: number } | nu
 
 const main = async () => {
   const events = await prisma.event.findMany({
-    where: { OR: [{ latitude: 0 }, { latitude: null }] },
+    where: {
+      OR: [
+        { latitude: 0 },
+        { latitude: null },
+        { longitude: 0 },
+        { longitude: null },
+        { latitude: { lt: 41 } },
+        { latitude: { gt: 52 } },
+        { longitude: { lt: -6 } },
+        { longitude: { gt: 10 } },
+      ],
+    },
     select: { id: true, titleFr: true, city: true, location: true, postalCode: true },
   })
 
@@ -44,7 +56,7 @@ const main = async () => {
       coords = await geocode(event.postalCode)
     }
 
-    if (coords) {
+    if (coords && isInFranceBounds({ latitude: coords.lat, longitude: coords.lng })) {
       await prisma.event.update({
         where: { id: event.id },
         data: { latitude: coords.lat, longitude: coords.lng },
