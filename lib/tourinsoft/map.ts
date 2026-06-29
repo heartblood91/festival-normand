@@ -1,5 +1,5 @@
 import { Category, Department } from "@prisma/client"
-import { normalizeFranceCoordinates } from "@/lib/geo/france"
+import { normalizeNormandyCoordinates } from "@/lib/geo/normandy"
 import { slugify } from "@/lib/schemas/event"
 import type {
   TourinsoftContact,
@@ -170,7 +170,7 @@ export const mapOffer = (offer: TourinsoftOffer): MappedOffer => {
     .map((c) => clean(c.ThesLibelle))
     .filter(Boolean)
     .join(", ")
-  const coordinates = normalizeFranceCoordinates({
+  const coordinates = normalizeNormandyCoordinates({
     latitude: parseCoord(offer.GmapLatitude) ?? parseCoord(offer.Latitude),
     longitude: parseCoord(offer.GmapLongitude) ?? parseCoord(offer.Longitude),
   })

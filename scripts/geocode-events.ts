@@ -1,23 +1,12 @@
 import "dotenv/config"
 import { PrismaClient } from "@prisma/client"
 import { PrismaPg } from "@prisma/adapter-pg"
-import { isInFranceBounds } from "@/lib/geo/france"
+import { geocodeNormandyAddress } from "@/lib/geo/geocode"
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
 })
 const prisma = new PrismaClient({ adapter })
-
-const geocode = async (query: string): Promise<{ lat: number; lng: number } | null> => {
-  const res = await fetch(
-    `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(query)}&limit=1`
-  )
-  const data = await res.json()
-  const feature = data.features?.[0]
-  if (!feature) return null
-  const [lng, lat] = feature.geometry.coordinates
-  return { lat, lng }
-}
 
 const main = async () => {
   const events = await prisma.event.findMany({
@@ -27,10 +16,10 @@ const main = async () => {
         { latitude: null },
         { longitude: 0 },
         { longitude: null },
-        { latitude: { lt: 41 } },
-        { latitude: { gt: 52 } },
-        { longitude: { lt: -6 } },
-        { longitude: { gt: 10 } },
+        { latitude: { lt: 48 } },
+        { latitude: { gt: 50.3 } },
+        { longitude: { lt: -2.2 } },
+        { longitude: { gt: 2 } },
       ],
     },
     select: { id: true, titleFr: true, city: true, location: true, postalCode: true },
@@ -42,26 +31,13 @@ const main = async () => {
   let failed = 0
 
   for (const event of events) {
-    const query = [event.location, event.city, event.postalCode].filter(Boolean).join(" ")
-    if (!query.trim()) {
-      console.log("Skip (no data):", event.titleFr)
-      failed++
-      continue
-    }
-
-    let coords = await geocode(query)
-
-    // Fallback: postal code only
-    if (!coords && event.postalCode) {
-      coords = await geocode(event.postalCode)
-    }
-
-    if (coords && isInFranceBounds({ latitude: coords.lat, longitude: coords.lng })) {
+    const coords = await geocodeNormandyAddress(event)
+    if (coords) {
       await prisma.event.update({
         where: { id: event.id },
-        data: { latitude: coords.lat, longitude: coords.lng },
+        data: { latitude: coords.latitude, longitude: coords.longitude },
       })
-      console.log(`✓ ${event.titleFr} → ${coords.lat}, ${coords.lng}`)
+      console.log(`✓ ${event.titleFr} → ${coords.latitude}, ${coords.longitude}`)
       success++
     } else {
       console.log(`✗ ${event.titleFr}`)
