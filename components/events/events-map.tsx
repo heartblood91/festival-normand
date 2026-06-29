@@ -7,7 +7,7 @@ import "mapbox-gl/dist/mapbox-gl.css"
 import { formatEventDate } from "@/lib/utils/format-date"
 import type { MapEventItem } from "@/lib/queries/events"
 import { DEFAULT_EVENT_IMAGE } from "@/lib/events/default-image"
-import { isInFranceBounds } from "@/lib/geo/france"
+import { isInNormandyBounds } from "@/lib/geo/normandy"
 
 type EventsMapProps = {
   events: MapEventItem[]
@@ -27,7 +27,7 @@ const EventsMap = ({ events }: EventsMapProps) => {
       e.latitude !== null &&
       e.longitude !== null &&
       (e.latitude !== 0 || e.longitude !== 0) &&
-      isInFranceBounds(e)
+      isInNormandyBounds(e)
   )
 
   const initMap = useCallback(() => {

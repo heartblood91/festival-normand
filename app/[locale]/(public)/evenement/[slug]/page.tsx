@@ -11,7 +11,7 @@ import { EventMapWrapper } from "@/components/event-detail/event-map-wrapper"
 import { prisma } from "@/lib/prisma"
 import { locales } from "@/lib/i18n/config"
 import { DEFAULT_EVENT_IMAGE } from "@/lib/events/default-image"
-import { isInFranceBounds } from "@/lib/geo/france"
+import { isInNormandyBounds } from "@/lib/geo/normandy"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
@@ -64,8 +64,8 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
     notFound()
   }
 
-  const hasFranceCoordinates = isInFranceBounds(event)
-  const neighbours = hasFranceCoordinates
+  const hasNormandyCoordinates = isInNormandyBounds(event)
+  const neighbours = hasNormandyCoordinates
     ? await getNeighbourEvents(slug, event.latitude as number, event.longitude as number, locale)
     : []
 
@@ -147,7 +147,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
           </section>
 
           {/* Map */}
-          {hasFranceCoordinates && (
+          {hasNormandyCoordinates && (
             <section>
               <h2 className="text-foreground mb-4 font-serif text-xl font-bold md:text-2xl">
                 {t("events.location")}

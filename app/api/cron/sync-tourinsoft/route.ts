@@ -5,6 +5,8 @@ import { mapOffer, type MappedOffer, type MappedPhoto } from "@/lib/tourinsoft/m
 import type { TourinsoftOffer } from "@/lib/tourinsoft/types"
 import { uploadImageFromUrl } from "@/lib/storage"
 import { translateContent } from "@/lib/actions/translate"
+import { geocodeNormandyAddress } from "@/lib/geo/geocode"
+import { isInNormandyBounds } from "@/lib/geo/normandy"
 
 export const maxDuration = 300
 
@@ -48,7 +50,11 @@ const translateToEn = async (text: string | null): Promise<string | null> => {
   }
 }
 
-type EnglishFields = { titleEn: string | null; descriptionEn: string | null; pricingEn: string | null }
+type EnglishFields = {
+  titleEn: string | null
+  descriptionEn: string | null
+  pricingEn: string | null
+}
 
 const translateEvent = async (mapped: MappedOffer): Promise<EnglishFields> => {
   const [titleEn, descriptionEn, pricingEn] = await Promise.all([
@@ -57,6 +63,13 @@ const translateEvent = async (mapped: MappedOffer): Promise<EnglishFields> => {
     translateToEn(mapped.pricingFr),
   ])
   return { titleEn, descriptionEn, pricingEn }
+}
+
+const withGeocodedCoordinates = async (mapped: MappedOffer): Promise<MappedOffer> => {
+  if (isInNormandyBounds(mapped)) return mapped
+
+  const coordinates = await geocodeNormandyAddress(mapped)
+  return coordinates ? { ...mapped, ...coordinates } : mapped
 }
 
 // New offer → published immediately (no human validation).
@@ -94,7 +107,13 @@ const updateEvent = async (mapped: MappedOffer, eventId: string): Promise<void> 
   ])
 }
 
-type SyncStats = { total: number; created: number; updated: number; skipped: number; failed: number }
+type SyncStats = {
+  total: number
+  created: number
+  updated: number
+  skipped: number
+  failed: number
+}
 
 // Reconcile the feed with our DB by `tourinsoftId`:
 //   unknown → create (published) · changed (Updated newer) → overwrite · unchanged → skip
@@ -111,7 +130,7 @@ const reconcileOffers = async (offers: TourinsoftOffer[], limit: number): Promis
   for (const offer of offers) {
     if (stats.created + stats.updated >= limit) break
     try {
-      const mapped = mapOffer(offer)
+      const mapped = await withGeocodedCoordinates(mapOffer(offer))
       const current = byTourinsoftId.get(mapped.tourinsoftId)
       if (!current) {
         await createEvent(mapped)

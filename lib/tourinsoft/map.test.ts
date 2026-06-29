@@ -138,11 +138,23 @@ describe("mapOffer", () => {
     expect(result.longitude).toBe(1)
   })
 
-  it("drops coordinates outside France bounds", () => {
+  it("drops coordinates outside Normandy bounds", () => {
     const result = mapOffer({
       ...baseOffer,
       GmapLatitude: "45.8965683",
       GmapLongitude: "-74.153834",
+      Latitude: null,
+      Longitude: null,
+    })
+    expect(result.latitude).toBeNull()
+    expect(result.longitude).toBeNull()
+  })
+
+  it("drops coordinates in France but outside Normandy bounds", () => {
+    const result = mapOffer({
+      ...baseOffer,
+      GmapLatitude: "46.485445",
+      GmapLongitude: "4.13739",
       Latitude: null,
       Longitude: null,
     })

@@ -382,7 +382,7 @@ describe("getNeighbourEvents", () => {
 
   it("excludes the current event from neighbours and sorts by distance", async () => {
     prismaMock.event.findMany.mockResolvedValue([
-      makeEvent("far", 48.86, 2.35), // Paris, ~230km
+      makeEvent("far", 49.9, 1.1), // Dieppe area, ~140km from Caen
       makeEvent("close", 49.2, -0.4), // 5km from Caen
       makeEvent("medium", 49.5, 0.1), // ~50km from Caen
     ])
@@ -435,10 +435,11 @@ describe("getNeighbourEvents", () => {
     expect(result.map((n) => n.slug)).toEqual(["ok"])
   })
 
-  it("filters out events with coordinates outside France", async () => {
+  it("filters out events with coordinates outside Normandy", async () => {
     prismaMock.event.findMany.mockResolvedValue([
       { ...makeEvent("ok", 49.2, -0.4) },
       { ...makeEvent("canada", 45.8965683, -74.153834) },
+      { ...makeEvent("burgundy", 46.485445, 4.13739) },
     ])
 
     const result = await getNeighbourEvents("current", caenLat, caenLng, "fr")
@@ -447,8 +448,8 @@ describe("getNeighbourEvents", () => {
     expect(prismaMock.event.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
-          latitude: expect.objectContaining({ gte: 41, lte: 52 }),
-          longitude: expect.objectContaining({ gte: -6, lte: 10 }),
+          latitude: expect.objectContaining({ gte: 48, lte: 50.3 }),
+          longitude: expect.objectContaining({ gte: -2.2, lte: 2 }),
         }),
       })
     )
