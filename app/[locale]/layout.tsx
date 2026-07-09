@@ -2,6 +2,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl"
 import { getMessages } from "next-intl/server"
 import { notFound } from "next/navigation"
 import { locales } from "@/lib/i18n/config"
+import { CookieConsent } from "@/components/cookies/cookie-consent"
 
 type LocaleLayoutProps = {
   children: React.ReactNode
@@ -20,6 +21,7 @@ const LocaleLayout = async ({ children, params }: LocaleLayoutProps) => {
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       {children}
+      <CookieConsent />
     </NextIntlClientProvider>
   )
 }
