@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server"
 import { Facebook, Instagram } from "lucide-react"
 import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/navigation"
 import { SparkleIcon } from "@/components/ui/sparkle-icon"
+import { CookiePreferencesFooterItem } from "@/components/cookies/cookie-preferences-footer-item"
 
 const Footer = async () => {
   const t = await getTranslations()
@@ -81,6 +82,7 @@ const Footer = async () => {
                     {t("nav.accessibility")}
                   </Link>
                 </li>
+                <CookiePreferencesFooterItem />
               </ul>
             </nav>
           </div>
