@@ -4,6 +4,7 @@ import createNextIntlPlugin from "next-intl/plugin"
 const withNextIntl = createNextIntlPlugin("./lib/i18n/request.ts")
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   images: {
     // Restrict transformation sizes to stay within Vercel Hobby limits.
     // Covers phone, tablet, laptop, desktop. Add 2560 only if 4K screens become a priority.
