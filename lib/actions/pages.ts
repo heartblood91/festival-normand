@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache"
 import { prisma } from "@/lib/prisma"
+import { requireRole } from "@/lib/rbac"
 import { pageSchema } from "@/lib/schemas/page"
 
 export type PageActionResult = {
@@ -14,6 +15,7 @@ export type PageActionResult = {
 const SYSTEM_SLUGS = ["festival", "inscription", "mentions-legales", "accessibilite"]
 
 export const getAdminPages = async () => {
+  await requireRole("EDITOR")
   return prisma.page.findMany({
     orderBy: { titleFr: "asc" },
     select: {
@@ -28,11 +30,13 @@ export const getAdminPages = async () => {
 export type AdminPageListItem = Awaited<ReturnType<typeof getAdminPages>>[number]
 
 export const getAdminPageById = async (id: string) => {
+  await requireRole("EDITOR")
   return prisma.page.findUnique({ where: { id } })
 }
 
 export const createPage = async (formData: FormData): Promise<PageActionResult> => {
   try {
+    await requireRole("EDITOR")
     const raw = extractPageFormData(formData)
     const result = pageSchema.safeParse(raw)
 
@@ -82,6 +86,7 @@ export const createPage = async (formData: FormData): Promise<PageActionResult> 
 
 export const updatePage = async (id: string, formData: FormData): Promise<PageActionResult> => {
   try {
+    await requireRole("EDITOR")
     const raw = extractPageFormData(formData)
     const result = pageSchema.safeParse(raw)
 
@@ -135,6 +140,7 @@ export const updatePage = async (id: string, formData: FormData): Promise<PageAc
 
 export const deletePage = async (id: string): Promise<PageActionResult> => {
   try {
+    await requireRole("EDITOR")
     const page = await prisma.page.findUnique({ where: { id } })
     if (!page) {
       return {

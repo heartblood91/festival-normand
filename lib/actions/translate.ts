@@ -1,10 +1,14 @@
 "use server"
 
+import { requireRole } from "@/lib/rbac"
+
 export const translateContent = async (
   text: string,
   fromLang: string,
   toLang: string
 ): Promise<string> => {
+  await requireRole("EDITOR")
+
   const apiKey = process.env.OPENROUTER_API_KEY
   if (!apiKey) throw new Error("OPENROUTER_API_KEY not configured")
 

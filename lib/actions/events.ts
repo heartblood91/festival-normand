@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache"
 import { prisma } from "@/lib/prisma"
+import { requireRole } from "@/lib/rbac"
 import { eventSchema } from "@/lib/schemas/event"
 import { searchEventIds } from "@/lib/search"
 import type { Category, Department, Prisma } from "@prisma/client"
@@ -41,6 +42,8 @@ export const getAdminEvents = async ({
   category,
   featured,
 }: GetAdminEventsParams = {}): Promise<GetAdminEventsResult> => {
+  await requireRole("EDITOR")
+
   const where: Prisma.EventWhereInput = {}
 
   if (search) {
@@ -102,11 +105,13 @@ export const getAdminEvents = async ({
 }
 
 export const getAdminEventById = async (id: string) => {
+  await requireRole("EDITOR")
   return prisma.event.findUnique({ where: { id } })
 }
 
 export const createEvent = async (formData: FormData): Promise<EventActionResult> => {
   try {
+    await requireRole("EDITOR")
     const raw = extractFormData(formData)
     const result = eventSchema.safeParse(raw)
 
@@ -181,6 +186,7 @@ export const createEvent = async (formData: FormData): Promise<EventActionResult
 
 export const updateEvent = async (id: string, formData: FormData): Promise<EventActionResult> => {
   try {
+    await requireRole("EDITOR")
     const raw = extractFormData(formData)
     const result = eventSchema.safeParse(raw)
 
@@ -264,6 +270,7 @@ export const updateEvent = async (id: string, formData: FormData): Promise<Event
 
 export const deleteEvent = async (id: string): Promise<EventActionResult> => {
   try {
+    await requireRole("EDITOR")
     const event = await prisma.event.delete({ where: { id } })
 
     revalidatePath("/evenements")
@@ -284,6 +291,7 @@ export const deleteEvent = async (id: string): Promise<EventActionResult> => {
 
 export const bulkDeleteEvents = async (ids: string[]): Promise<EventActionResult> => {
   try {
+    await requireRole("EDITOR")
     if (!ids.length) {
       return {
         success: false,

@@ -1,5 +1,7 @@
 "use server"
 
+import { requireRole } from "@/lib/rbac"
+
 export type SEOSuggestion = {
   type: "heading" | "meta" | "keyword" | "structure"
   message: string
@@ -47,6 +49,7 @@ export const checkSEO = async (
   locale: string
 ): Promise<SEOSuggestion[]> => {
   try {
+    await requireRole("EDITOR")
     const prompt = `Analyze this ${locale === "fr" ? "French" : "English"} content for SEO issues. Check: heading hierarchy (should not have h1, should start at h2 minimum), meta description quality (50-160 characters), keyword usage, content structure (proper sections, clear hierarchy).
 
 Title: ${title}
@@ -72,6 +75,7 @@ Return empty array [] if no issues found.`
 
 export const checkAccessibility = async (content: string): Promise<A11ySuggestion[]> => {
   try {
+    await requireRole("EDITOR")
     const prompt = `Analyze this HTML/markdown content for WCAG 2.1 accessibility issues. Check:
 1. Heading order (h1 should be first, then h2, h3 in sequence - no skipping levels)
 2. Images have alt text descriptions
@@ -104,6 +108,7 @@ export const checkSpelling = async (
   locale: string
 ): Promise<SpellingCorrection[]> => {
   try {
+    await requireRole("EDITOR")
     const prompt = `Check this ${locale === "fr" ? "French" : "English"} text for spelling and grammar errors.
 
 Text: ${content}
@@ -132,6 +137,7 @@ export const translateMultipleFields = async (
   toLang: string
 ): Promise<Record<string, string>> => {
   try {
+    await requireRole("EDITOR")
     const entries = Object.entries(fields)
       .filter(([_, v]) => v?.trim())
       .map(([k, v]) => `${k}: ${v}`)
