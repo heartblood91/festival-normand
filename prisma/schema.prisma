@@ -76,6 +76,32 @@ model Photo {
   @@map("photos")
 }
 
+enum SyncStatus {
+  RUNNING
+  SUCCESS
+  PARTIAL
+  FAILED
+}
+
+// One row per import run (Tourinsoft feed); powers health checks and the admin dashboard.
+model SyncRun {
+  id         String     @id @default(cuid())
+  source     String
+  trigger    String
+  status     SyncStatus @default(RUNNING)
+  startedAt  DateTime   @default(now()) @map("started_at")
+  finishedAt DateTime?  @map("finished_at")
+  total      Int        @default(0)
+  created    Int        @default(0)
+  updated    Int        @default(0)
+  skipped    Int        @default(0)
+  failed     Int        @default(0)
+  error      String?
+
+  @@index([source, startedAt])
+  @@map("sync_runs")
+}
+
 model News {
   id          String   @id @default(cuid())
   titleFr     String   @map("title_fr")

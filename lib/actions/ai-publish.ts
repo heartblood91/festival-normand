@@ -1,6 +1,7 @@
 "use server"
 
 import { requireRole } from "@/lib/rbac"
+import { chatCompletion, extractJson } from "@/lib/ai/openrouter"
 
 export type SEOSuggestion = {
   type: "heading" | "meta" | "keyword" | "structure"
@@ -20,28 +21,8 @@ export type SpellingCorrection = {
   context: string
 }
 
-const callOpenRouter = async (prompt: string): Promise<string> => {
-  const apiKey = process.env.OPENROUTER_API_KEY
-  if (!apiKey) throw new Error("OPENROUTER_API_KEY not configured")
-
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "google/gemini-flash-2.0",
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.2,
-    }),
-  })
-
-  if (!response.ok) throw new Error(`OpenRouter API error: ${response.status}`)
-
-  const data = await response.json()
-  return data.choices[0].message.content.trim()
-}
+const callOpenRouter = (prompt: string): Promise<string> =>
+  chatCompletion([{ role: "user", content: prompt }])
 
 export const checkSEO = async (
   title: string,
@@ -66,7 +47,7 @@ Example format:
 Return empty array [] if no issues found.`
 
     const response = await callOpenRouter(prompt)
-    const parsed = JSON.parse(response)
+    const parsed = extractJson<unknown>(response)
     return Array.isArray(parsed) ? parsed : []
   } catch {
     return []
@@ -96,7 +77,7 @@ Example format:
 Return empty array [] if no issues found.`
 
     const response = await callOpenRouter(prompt)
-    const parsed = JSON.parse(response)
+    const parsed = extractJson<unknown>(response)
     return Array.isArray(parsed) ? parsed : []
   } catch {
     return []
@@ -124,7 +105,7 @@ Example format:
 Return empty array [] if no errors found.`
 
     const response = await callOpenRouter(prompt)
-    const parsed = JSON.parse(response)
+    const parsed = extractJson<unknown>(response)
     return Array.isArray(parsed) ? parsed : []
   } catch {
     return []
@@ -158,8 +139,10 @@ Example format:
 Return ONLY valid JSON, no other text.`
 
     const response = await callOpenRouter(prompt)
-    const parsed = JSON.parse(response)
-    return typeof parsed === "object" ? parsed : {}
+    const parsed = extractJson<unknown>(response)
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? (parsed as Record<string, string>)
+      : {}
   } catch {
     return {}
   }
