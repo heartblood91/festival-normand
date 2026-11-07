@@ -1,11 +1,5 @@
 import type { Metadata } from "next"
-import {
-  Inter,
-  Playfair_Display,
-  Fraunces,
-  Cormorant_Garamond,
-  DM_Mono,
-} from "next/font/google"
+import { Inter, Playfair_Display, Fraunces, Cormorant_Garamond, DM_Mono } from "next/font/google"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/react"
 import { cn } from "@/lib/utils"
@@ -54,13 +48,13 @@ export const metadata: Metadata = {
     default: "Pierres en Lumières - Festival du Patrimoine Normand",
     template: "%s | Pierres en Lumières",
   },
-  description: "Découvrez la magie du patrimoine normand en nocturne. 29, 30 & 31 mai 2026.",
+  description: "Découvrez la magie du patrimoine normand en nocturne.",
   openGraph: {
     type: "website",
     siteName: "Pierres en Lumières",
     title: "Pierres en Lumières - Festival du Patrimoine Normand",
     description:
-      "Découvrez la magie du patrimoine normand en nocturne. Illuminations, expositions, animations et visites du patrimoine normand. 29, 30 & 31 mai 2026.",
+      "Découvrez la magie du patrimoine normand en nocturne. Illuminations, expositions, animations et visites du patrimoine normand.",
   },
   twitter: {
     card: "summary_large_image",

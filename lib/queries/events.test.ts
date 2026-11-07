@@ -137,11 +137,21 @@ describe("getEvents", () => {
     )
   })
 
-  it("filters by date", async () => {
+  it("ignores a day that is not a night of the current edition", async () => {
     prismaMock.event.findMany.mockResolvedValue([])
     prismaMock.event.count.mockResolvedValue(0)
 
     await getEvents({ date: "29" }, "fr")
+
+    expect(prismaMock.event.findMany.mock.calls[0][0].where.OR).toBeUndefined()
+  })
+
+  it("filters by date", async () => {
+    prismaMock.event.findMany.mockResolvedValue([])
+    prismaMock.event.count.mockResolvedValue(0)
+
+    // Default edition (no saved row): 2027, nights 21–23 May.
+    await getEvents({ date: "21" }, "fr")
 
     const call = prismaMock.event.findMany.mock.calls[0][0]
     expect(call.where.dateStart).toBeDefined()
@@ -149,9 +159,9 @@ describe("getEvents", () => {
   })
 
   it.each([
-    ["29", new Date("2026-05-29T20:00:00")],
-    ["30", new Date("2026-05-30T20:00:00")],
-    ["31", new Date("2026-05-31T20:00:00")],
+    ["21", new Date("2027-05-21T20:00:00")],
+    ["22", new Date("2027-05-22T20:00:00")],
+    ["23", new Date("2027-05-23T20:00:00")],
   ])(
     "filter day %s brackets the same calendar day (multi-day events match all 3)",
     async (filterDay, sample) => {
@@ -173,10 +183,10 @@ describe("getEvents", () => {
       expect(spanMs).toBeGreaterThan(23 * 60 * 60 * 1000 - 1000)
       expect(spanMs).toBeLessThan(24 * 60 * 60 * 1000)
 
-      // A multi-day event spanning 29-31 (sample at 20:00 of the queried day)
+      // A multi-day event spanning 21-23 (sample at 20:00 of the queried day)
       // must satisfy: dateStart <= dayEnd AND dateEnd >= dayStart.
-      const multiDayStart = new Date("2026-05-29T20:00:00")
-      const multiDayEnd = new Date("2026-05-31T22:00:00")
+      const multiDayStart = new Date("2027-05-21T20:00:00")
+      const multiDayEnd = new Date("2027-05-23T22:00:00")
       expect(multiDayStart.getTime()).toBeLessThanOrEqual(dayEnd.getTime())
       expect(multiDayEnd.getTime()).toBeGreaterThanOrEqual(dayStart.getTime())
       // And the queried day's sample falls inside the bracket

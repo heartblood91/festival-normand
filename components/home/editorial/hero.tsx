@@ -1,33 +1,31 @@
 import { getTranslations, getLocale } from "next-intl/server"
 import { Link } from "@/lib/i18n/routing"
 import type { Locale } from "@/lib/i18n/config"
-import {
-  EDITION,
-  editionKicker,
-  type EditionMode,
-} from "@/lib/festival/edition"
+import { editionKicker, type Edition, type EditionMode } from "@/lib/festival/edition"
 import { HeroVideoBg } from "@/components/home/editorial/hero-video-bg"
 
 type HeroProps = {
+  edition: Edition
   mode: EditionMode
   totalPlaces: number
   countdownDays: number
   live: boolean
 }
 
-const Hero = async ({ mode, totalPlaces, countdownDays, live }: HeroProps) => {
+const Hero = async ({ edition, mode, totalPlaces, countdownDays, live }: HeroProps) => {
   const t = await getTranslations()
   const locale = (await getLocale()) as Locale
 
+  // A zero counter reads as "nothing here": hide it until places are published.
   const stats = [
-    { n: totalPlaces.toString(), l: t("editorial.stats.places") },
-    { n: EDITION.departmentsCount.toString(), l: t("editorial.stats.departments") },
-    { n: EDITION.nights.length.toString(), l: t("editorial.stats.nights") },
-  ]
+    { n: totalPlaces, l: t("editorial.stats.places") },
+    { n: edition.departmentsCount, l: t("editorial.stats.departments") },
+    { n: edition.nights.length, l: t("editorial.stats.nights") },
+  ].filter((stat) => stat.n > 0)
 
   const status =
     mode === "bilan"
-      ? t("editorial.pastStatus", { year: EDITION.year, nextYear: EDITION.year + 1 })
+      ? t("editorial.pastStatus", { year: edition.year, nextYear: edition.year + 1 })
       : live
         ? t("editorial.liveStatus")
         : t("editorial.upcomingStatus", { days: countdownDays })
@@ -51,7 +49,7 @@ const Hero = async ({ mode, totalPlaces, countdownDays, live }: HeroProps) => {
       <div className="relative mx-auto max-w-4xl">
         <p className="text-primary mb-6 inline-flex items-center gap-3 font-mono text-[11px] tracking-[0.28em] uppercase md:text-xs">
           <span className="bg-primary/50 h-px w-6" aria-hidden="true" />
-          {editionKicker(mode, locale)}
+          {editionKicker(edition, mode, locale)}
           <span className="bg-primary/50 h-px w-6" aria-hidden="true" />
         </p>
 

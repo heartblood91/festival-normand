@@ -5,7 +5,11 @@ import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/navigation"
 import { CookiePreferencesFooterItem } from "@/components/cookies/cookie-preferences-footer-item"
 import { LanternLogo } from "@/components/editorial/lantern-logo"
 
-const Footer = async () => {
+type FooterProps = {
+  editionDates: string
+}
+
+const Footer = async ({ editionDates }: FooterProps) => {
   const t = await getTranslations()
   const year = new Date().getFullYear()
 
@@ -26,7 +30,7 @@ const Footer = async () => {
               </span>
             </Link>
             <p className="text-ed-bone max-w-sm font-serif text-base font-light opacity-75">
-              {t("footer.description")} {t("meta.festivalDates")}.
+              {t("footer.description")} {editionDates}.
             </p>
             <div className="mt-1 flex items-center gap-2">
               <a

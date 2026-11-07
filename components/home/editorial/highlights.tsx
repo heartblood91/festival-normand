@@ -1,7 +1,7 @@
 import { getTranslations, getLocale } from "next-intl/server"
 import { Link } from "@/lib/i18n/routing"
 import type { Locale } from "@/lib/i18n/config"
-import { EDITION, type EditionMode } from "@/lib/festival/edition"
+import type { EditionMode } from "@/lib/festival/edition"
 import type { FeaturedEvent } from "@/lib/queries/homepage"
 import { formatEventDate, formatTime } from "@/lib/utils/format-date"
 import { SectionHeading } from "@/components/editorial/primitives"
@@ -10,10 +10,11 @@ import { EventThumb } from "@/components/editorial/event-thumb"
 type HighlightsProps = {
   events: FeaturedEvent[]
   mode: EditionMode
+  year: number
   markerIndex: string
 }
 
-const Highlights = async ({ events, mode, markerIndex }: HighlightsProps) => {
+const Highlights = async ({ events, mode, year, markerIndex }: HighlightsProps) => {
   if (events.length === 0) return null
   const t = await getTranslations()
   const locale = (await getLocale()) as Locale
@@ -26,7 +27,7 @@ const Highlights = async ({ events, mode, markerIndex }: HighlightsProps) => {
           markerIndex={markerIndex}
           marker={
             past
-              ? t("editorial.highlights.markerPast", { year: EDITION.year })
+              ? t("editorial.highlights.markerPast", { year })
               : t("editorial.highlights.markerUpcoming")
           }
           title={t(`editorial.highlights.title${past ? "Past" : "Upcoming"}`)}

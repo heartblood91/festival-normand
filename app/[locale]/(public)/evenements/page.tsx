@@ -3,6 +3,8 @@ import type { Locale } from "@/lib/i18n/config"
 import { Suspense } from "react"
 import { getEvents, getFilterCounts, getAllFilteredEventsForMap } from "@/lib/queries/events"
 import { getEventCities } from "@/lib/queries/homepage"
+import { getCurrentEdition } from "@/lib/queries/edition"
+import { formatNight } from "@/lib/festival/edition"
 import { EventListCard } from "@/components/events/event-list-card"
 import { Pagination } from "@/components/events/pagination"
 import { FilterBar } from "@/components/events/filter-bar"
@@ -91,12 +93,19 @@ const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
     cities,
     counts,
     mapEvents,
+    edition,
   ] = await Promise.all([
     getEvents(filters, locale),
     getEventCities(),
     getFilterCounts(filters),
     view === "map" ? getAllFilteredEventsForMap(filters, locale) : Promise.resolve([]),
+    getCurrentEdition(),
   ])
+  const nights = edition.nights.map((night) => ({
+    value: night.code,
+    short: formatNight(night, locale, "short"),
+    long: formatNight(night, locale, "long"),
+  }))
 
   return (
     <div>
@@ -124,7 +133,7 @@ const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
         {/* Filter bar */}
         <div className="mb-6">
           <Suspense>
-            <FilterBar total={total} counts={counts} />
+            <FilterBar nights={nights} total={total} counts={counts} />
           </Suspense>
         </div>
 

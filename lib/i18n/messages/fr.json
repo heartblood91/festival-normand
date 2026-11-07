@@ -2,8 +2,7 @@
   "meta": {
     "siteName": "Pierres en Lumières",
     "siteDescription": "Découvrez la magie du patrimoine normand en nocturne. 29, 30 & 31 mai 2026.",
-    "festivalName": "Pierres en Lumières",
-    "festivalDates": "29, 30 & 31 mai 2026"
+    "festivalName": "Pierres en Lumières"
   },
   "nav": {
     "home": "Accueil",
@@ -23,7 +22,7 @@
     "allNews": "Toutes les actualités →",
     "allPartners": "Tous les partenaires →",
     "readArticle": "Lire l'article",
-    "upcomingStatus": "J − {days} jours · billetterie ouverte",
+    "upcomingStatus": "J − {days} {days, plural, one {jour} other {jours}} · entrée libre",
     "liveStatus": "Le festival est en cours · ce soir en Normandie",
     "pastStatus": "Édition {year} terminée · rendez-vous en {nextYear}",
     "stats": {
@@ -32,10 +31,24 @@
       "nights": "nuits"
     },
     "threeNights": {
-      "marker": "Trois nuits, c'est maintenant",
-      "title": "Trois soirs, trois ambiances.",
+      "marker": "{count, plural, =1 {Une nuit, c'est maintenant} =2 {Deux nuits, c'est maintenant} =3 {Trois nuits, c'est maintenant} =4 {Quatre nuits, c'est maintenant} other {# nuits, c'est maintenant}}",
+      "title": "{count, plural, =1 {Un soir, une ambiance.} =2 {Deux soirs, deux ambiances.} =3 {Trois soirs, trois ambiances.} =4 {Quatre soirs, quatre ambiances.} other {# soirs, # ambiances.}}",
       "nightsLabel": "{count} animations",
-      "see": "Voir →"
+      "see": "Voir →",
+      "roles": {
+        "opening": {
+          "sub": "L'ouverture",
+          "desc": "Veillées, premières illuminations, concerts dans les abbayes."
+        },
+        "main": {
+          "sub": "Le grand soir",
+          "desc": "Mappings monumentaux, balades aux flambeaux, créations lumière."
+        },
+        "closing": {
+          "sub": "La clôture",
+          "desc": "Récitals intimes, marches silencieuses, derniers feux."
+        }
+      }
     },
     "quote": {
       "marker": "Le festival",
@@ -63,7 +76,7 @@
     "mapSection": {
       "marker": "Cinq départements",
       "title": "Toute la Normandie, allumée.",
-      "text": "{count} illuminations à travers Manche, Calvados, Seine-Maritime, Orne et Eure. Chaque point sur la carte est un lieu qui s'ouvre, à la nuit tombée.",
+      "text": "{count, plural, =0 {Des illuminations} other {# illuminations}} à travers Manche, Calvados, Seine-Maritime, Orne et Eure. Chaque point sur la carte est un lieu qui s'ouvre, à la nuit tombée.",
       "places": "lieux"
     },
     "partnersSection": {
@@ -155,12 +168,6 @@
   "filters": {
     "department": "Département",
     "category": "Catégorie",
-    "date29": "Ven 29",
-    "date30": "Sam 30",
-    "date31": "Dim 31",
-    "date29Full": "Ven 29 mai",
-    "date30Full": "Sam 30 mai",
-    "date31Full": "Dim 31 mai",
     "pmr": "Accessible PMR",
     "filterBy": "Filtrer par {filter}",
     "removeFilter": "Retirer le filtre {filter}",
@@ -360,6 +367,17 @@
         "save": "Enregistrer",
         "hiddenUntil": "Masqué jusqu'au {date}",
         "visible": "Publié"
+      },
+      "dates": {
+        "title": "Dates de l'édition",
+        "description": "Ces dates pilotent le site public : compte à rebours, nuits de la page d'accueil, filtres par date du programme. À la date de bascule, l'accueil passe au bilan de l'édition. Enregistrer une nouvelle année la rend courante.",
+        "provisional": "Dates provisoires : aucune édition n'est encore enregistrée, le site affiche les valeurs par défaut.",
+        "year": "Année",
+        "dateStart": "Première nuit",
+        "dateEnd": "Dernière nuit",
+        "bilanFrom": "Bascule vers le bilan",
+        "bilanHint": "Laisser vide pour basculer le {date}, lendemain de la dernière nuit.",
+        "save": "Enregistrer les dates"
       }
     }
   },

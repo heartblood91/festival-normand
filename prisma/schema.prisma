@@ -154,6 +154,18 @@ model DepartmentSetting {
   @@map("department_settings")
 }
 
+// Festival edition dates, edited in /admin/edition. The row with the highest
+// year is the current edition; without any row the code default applies.
+model Edition {
+  year      Int       @id
+  dateStart DateTime  @map("date_start") @db.Date
+  dateEnd   DateTime  @map("date_end") @db.Date
+  bilanFrom DateTime? @map("bilan_from") @db.Date
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("editions")
+}
+
 model Page {
   id        String   @id @default(cuid())
   titleFr   String   @map("title_fr")

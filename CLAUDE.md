@@ -61,8 +61,8 @@ This project uses Ralph (autonomous AI coding loop). When running as Ralph (`cla
 
 ## Security
 
-- All admin server actions (`lib/actions/{events,news,partners,pages,
-  ai-publish,translate,registration-links}.ts`) call `requireRole("EDITOR")`
+- All admin server actions (`lib/actions/{events,news,partners,pages,edition,department-settings,
+ai-publish,translate,registration-links}.ts`) call `requireRole("EDITOR")`
   first — `"use server"` exposes them as public HTTP endpoints, so the guard is
   the real authorization boundary (middleware only protects page navigation).
   `lib/actions/users.ts` requires `ADMIN`. Keep this invariant when adding new

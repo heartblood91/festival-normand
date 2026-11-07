@@ -6,14 +6,12 @@ import { useTranslations, useLocale } from "next-intl"
 import { Link } from "@/lib/i18n/routing"
 import { Facebook, Instagram, Menu, Search } from "lucide-react"
 import { cn } from "@/lib/utils"
-import type { Locale } from "@/lib/i18n/config"
 import { NAV_ITEMS, CTA_HREF, SOCIAL_LINKS } from "@/lib/navigation"
 import { isNavActive } from "@/lib/utils/nav"
 import { MobileNav } from "@/components/layout/mobile-nav"
 import { ContrastToggle } from "@/components/layout/contrast-toggle"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { LanternLogo } from "@/components/editorial/lantern-logo"
-import { editionKicker, type EditionMode } from "@/lib/festival/edition"
 
 const HeaderSearch = () => {
   const t = useTranslations()
@@ -40,20 +38,20 @@ const HeaderSearch = () => {
         onChange={(e) => setValue(e.target.value)}
         placeholder={t("editorial.searchPlaceholder")}
         aria-label={t("search.ariaLabel")}
-        className="text-ed-bone placeholder:text-ed-bone/50 font-serif w-44 bg-transparent text-sm italic outline-none xl:w-56"
+        className="text-ed-bone placeholder:text-ed-bone/50 w-44 bg-transparent font-serif text-sm italic outline-none xl:w-56"
       />
     </form>
   )
 }
 
 type HeaderProps = {
-  mode: EditionMode
+  /** Edition kicker under the logo, e.g. "18ᵉ édition · 21 — 23 mai 2027" */
+  kicker: string
 }
 
-const Header = ({ mode }: HeaderProps) => {
+const Header = ({ kicker }: HeaderProps) => {
   const pathname = usePathname()
   const t = useTranslations()
-  const locale = useLocale() as Locale
   const [mobileOpen, setMobileOpen] = useState(false)
   const localePrefix = pathname.split("/")[1]
 
@@ -109,15 +107,12 @@ const Header = ({ mode }: HeaderProps) => {
               className="text-primary mt-1 hidden font-mono text-[9px] tracking-[0.2em] uppercase sm:block"
               aria-hidden="true"
             >
-              {editionKicker(mode, locale)}
+              {kicker}
             </span>
           </span>
         </Link>
 
-        <nav
-          className="hidden items-center gap-7 lg:flex"
-          aria-label={t("a11y.mainNav")}
-        >
+        <nav className="hidden items-center gap-7 lg:flex" aria-label={t("a11y.mainNav")}>
           {NAV_ITEMS.map((item) => {
             const pathWithoutLocale = pathname.replace(`/${localePrefix}`, "") || "/"
             const isActive = isNavActive(item.href, pathWithoutLocale)
@@ -127,9 +122,7 @@ const Header = ({ mode }: HeaderProps) => {
                 href={item.href}
                 className={cn(
                   "hover:text-primary focus-visible:ring-primary/50 rounded-sm border-b py-1 font-sans text-xs font-medium tracking-[0.16em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none",
-                  isActive
-                    ? "text-primary border-primary"
-                    : "text-foreground border-transparent"
+                  isActive ? "text-primary border-primary" : "text-foreground border-transparent"
                 )}
                 aria-current={isActive ? "page" : undefined}
               >

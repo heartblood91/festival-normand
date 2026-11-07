@@ -42,8 +42,6 @@ export const DepartmentEmbargoForm = ({ settings }: { settings: DepartmentSettin
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <h1 className="text-foreground font-serif text-2xl font-bold">{t("title")}</h1>
-
       <Card className="border-white/10 bg-white/5">
         <CardHeader>
           <CardTitle className="text-foreground">{t("embargo.title")}</CardTitle>

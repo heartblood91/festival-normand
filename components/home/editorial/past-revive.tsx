@@ -1,9 +1,9 @@
 import { getTranslations } from "next-intl/server"
 import { Link } from "@/lib/i18n/routing"
-import { EDITION } from "@/lib/festival/edition"
 import { Marker } from "@/components/editorial/primitives"
 
 type PastReviveProps = {
+  year: number
   markerIndex: string
   /** Render the gallery CTA only when there is gallery content to link to. */
   hasGallery?: boolean
@@ -12,6 +12,7 @@ type PastReviveProps = {
 }
 
 const PastRevive = async ({
+  year,
   markerIndex,
   hasGallery = false,
   hasReplays = false,
@@ -25,7 +26,7 @@ const PastRevive = async ({
           {t("editorial.past.marker")}
         </Marker>
         <h2 className="text-foreground font-display text-4xl font-normal tracking-tight italic md:text-5xl">
-          {t("editorial.past.title", { year: EDITION.year })}
+          {t("editorial.past.title", { year })}
         </h2>
         <p className="text-ed-bone mx-auto mt-6 max-w-2xl font-serif text-lg font-light italic">
           {t("editorial.past.text")}
@@ -36,7 +37,7 @@ const PastRevive = async ({
               href="/evenements?view=map"
               className="bg-primary text-primary-foreground hover:bg-ed-amber-deep focus-visible:ring-ring inline-flex items-center px-6 py-3.5 font-sans text-[11px] font-semibold tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             >
-              {t("editorial.past.gallery", { year: EDITION.year })}
+              {t("editorial.past.gallery", { year })}
             </Link>
           ) : null}
           {hasReplays ? (

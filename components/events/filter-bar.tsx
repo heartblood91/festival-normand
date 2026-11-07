@@ -11,11 +11,12 @@ type FilterCounts = {
   categories: Record<string, number>
 }
 
-const DATE_OPTIONS = [
-  { value: "29", labelKey: "date29" },
-  { value: "30", labelKey: "date30" },
-  { value: "31", labelKey: "date31" },
-]
+/** One chip per night of the current edition, labels formatted server-side. */
+export type NightOption = {
+  value: string
+  short: string
+  long: string
+}
 
 const CATEGORY_OPTIONS = [
   { value: "illuminations", labelKey: "ILLUMINATIONS" },
@@ -34,7 +35,13 @@ const DEPARTMENT_OPTIONS = [
 
 type DropdownState = "dept" | "category" | null
 
-const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCounts }) => {
+type FilterBarProps = {
+  nights: NightOption[]
+  total?: number
+  counts?: FilterCounts
+}
+
+const FilterBar = ({ nights, total = 0, counts }: FilterBarProps) => {
   const router = useRouter()
   const t = useTranslations()
   const searchParams = useSearchParams()
@@ -150,7 +157,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
           `categories.${CATEGORY_OPTIONS.find((c) => c.value === value)?.labelKey || "ILLUMINATIONS"}`
         )
       case "date":
-        return t(`filters.${DATE_OPTIONS.find((d) => d.value === value)?.labelKey || "date29"}Full`)
+        return nights.find((night) => night.value === value)?.long ?? value
       default:
         return value
     }
@@ -337,7 +344,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
 
           {/* Date chips */}
           <div className="flex gap-2 sm:flex-wrap">
-            {DATE_OPTIONS.map((option) => (
+            {nights.map((option) => (
               <button
                 key={option.value}
                 onClick={() => handleDateToggle(option.value)}
@@ -349,11 +356,13 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
                 )}
                 aria-pressed={selectedDates.includes(option.value)}
                 aria-label={t(
-                  selectedDates.includes(option.value) ? "filters.removeFilter" : "filters.filterBy",
-                  { filter: t(`filters.${option.labelKey}`) }
+                  selectedDates.includes(option.value)
+                    ? "filters.removeFilter"
+                    : "filters.filterBy",
+                  { filter: option.long }
                 )}
               >
-                {t(`filters.${option.labelKey}`)}
+                {option.short}
               </button>
             ))}
           </div>

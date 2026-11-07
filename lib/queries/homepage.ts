@@ -2,16 +2,19 @@ import { cachedQuery } from "@/lib/cache"
 import { prisma } from "@/lib/prisma"
 import { publicEventWhere } from "@/lib/queries/visibility"
 import { localizeEntity } from "@/lib/i18n/db"
-import { EDITION } from "@/lib/festival/edition"
+import { editionYearRange, type Edition } from "@/lib/festival/edition"
 import type { Locale } from "@/lib/i18n/config"
 
-export const getFeaturedEvents = async (locale: Locale = "fr") => {
+// Home sections only show the current edition: last year's picks must not
+// pass for the upcoming programme.
+export const getFeaturedEvents = async (locale: Locale = "fr", edition?: Edition) => {
   return cachedQuery(
     async () => {
       const events = await prisma.event.findMany({
         where: {
           ...(await publicEventWhere()),
           featured: true,
+          ...(edition ? { dateStart: editionYearRange(edition) } : {}),
         },
         orderBy: { dateStart: "asc" },
         take: 3,
@@ -39,17 +42,17 @@ export const getFeaturedEvents = async (locale: Locale = "fr") => {
         dateEnd: e.dateEnd?.toISOString() ?? null,
       }))
     },
-    ["featured-events", locale, "v2"],
+    ["featured-events", locale, "v3", String(edition?.year ?? "all")],
     { revalidate: 300, tags: ["events"] }
   )()
 }
 
 /** Sample of the programme shown as a teaser on the upcoming home. */
-export const getProgrammeTeaser = async (locale: Locale = "fr") => {
+export const getProgrammeTeaser = async (locale: Locale = "fr", edition: Edition) => {
   return cachedQuery(
     async () => {
       const events = await prisma.event.findMany({
-        where: await publicEventWhere(),
+        where: { ...(await publicEventWhere()), dateStart: editionYearRange(edition) },
         orderBy: { dateStart: "asc" },
         take: 6,
         select: {
@@ -73,22 +76,22 @@ export const getProgrammeTeaser = async (locale: Locale = "fr") => {
         dateStart: e.dateStart?.toISOString() ?? null,
       }))
     },
-    ["programme-teaser", locale],
+    ["programme-teaser", locale, String(edition.year)],
     { revalidate: 300, tags: ["events"] }
   )()
 }
 
-/** Headline numbers + per-department / per-night counts for the home. */
-export const getHomeStats = async () => {
+/** Headline numbers + per-department / per-night counts of the edition. */
+export const getHomeStats = async (edition: Edition) => {
   return cachedQuery(
     async () => {
-      const nightRanges = EDITION.nights.map((n) => {
+      const nightRanges = edition.nights.map((n) => {
         const start = new Date(`${n.date}T00:00:00`)
         const end = new Date(start.getTime() + 24 * 60 * 60 * 1000)
         return { code: n.code, start, end }
       })
 
-      const visible = await publicEventWhere()
+      const visible = { ...(await publicEventWhere()), dateStart: editionYearRange(edition) }
       const [total, grouped, ...nightCounts] = await Promise.all([
         prisma.event.count({ where: visible }),
         prisma.event.groupBy({
@@ -112,7 +115,7 @@ export const getHomeStats = async () => {
 
       return { totalPlaces: total, byDepartment, byNight }
     },
-    ["home-stats", "v2"],
+    ["home-stats", "v3", edition.nights.map((night) => night.date).join(",")],
     { revalidate: 300, tags: ["events"] }
   )()
 }

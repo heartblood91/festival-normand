@@ -44,12 +44,15 @@ const NormandySection = async ({
                 <dt className="text-primary font-mono text-[10px] tracking-[0.16em] uppercase">
                   {d.code} · {d.name.toUpperCase()}
                 </dt>
-                <dd className="text-foreground font-display text-2xl font-normal">
-                  {d.count}{" "}
-                  <span className="text-ed-mute text-sm italic">
-                    {t("editorial.mapSection.places")}
-                  </span>
-                </dd>
+                {/* Counts stay hidden until the edition has published places */}
+                {d.count > 0 ? (
+                  <dd className="text-foreground font-display text-2xl font-normal">
+                    {d.count}{" "}
+                    <span className="text-ed-mute text-sm italic">
+                      {t("editorial.mapSection.places")}
+                    </span>
+                  </dd>
+                ) : null}
               </div>
             ))}
           </dl>

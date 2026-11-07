@@ -7,7 +7,13 @@ import {
   getProgrammeTeaser,
   getHomeStats,
 } from "@/lib/queries/homepage"
-import { getEditionMode, getCountdownDays, isDuringFestival } from "@/lib/festival/edition"
+import {
+  editionDateRange,
+  getEditionMode,
+  getCountdownDays,
+  isDuringFestival,
+} from "@/lib/festival/edition"
+import { getCurrentEdition } from "@/lib/queries/edition"
 import { Hero } from "@/components/home/editorial/hero"
 import { ThreeNights } from "@/components/home/editorial/three-nights"
 import { Quote } from "@/components/home/editorial/quote"
@@ -28,10 +34,11 @@ export const generateMetadata = async ({
   params: Promise<{ locale: string }>
 }): Promise<Metadata> => {
   const { locale } = (await params) as { locale: Locale }
+  const dates = editionDateRange(await getCurrentEdition(), locale)
   const frenchTitle = "Pierres en Lumières — Festival du Patrimoine Normand"
   const englishTitle = "Pierres en Lumières — Festival of Norman Heritage"
-  const frenchDesc = "Découvrez la magie du patrimoine normand en nocturne. 29, 30 & 31 mai 2026."
-  const englishDesc = "Discover the magic of Norman heritage by night. May 29, 30 & 31, 2026."
+  const frenchDesc = `Découvrez la magie du patrimoine normand en nocturne. ${dates}.`
+  const englishDesc = `Discover the magic of Norman heritage by night. ${dates}.`
 
   const title = locale === "en" ? englishTitle : frenchTitle
   const description = locale === "en" ? englishDesc : frenchDesc
@@ -52,22 +59,24 @@ type HomePageProps = {
 
 const HomePage = async ({ params }: HomePageProps) => {
   const { locale } = (await params) as { locale: Locale }
-  const mode = getEditionMode()
+  const edition = await getCurrentEdition()
+  const mode = getEditionMode(edition)
 
   const [featured, news, partners, programme, stats] = await Promise.all([
-    getFeaturedEvents(locale),
+    getFeaturedEvents(locale, edition),
     getLatestNews(locale),
     getPartners(locale),
-    getProgrammeTeaser(locale),
-    getHomeStats(),
+    getProgrammeTeaser(locale, edition),
+    getHomeStats(edition),
   ])
 
   const hero = (
     <Hero
+      edition={edition}
       mode={mode}
       totalPlaces={stats.totalPlaces}
-      countdownDays={getCountdownDays()}
-      live={isDuringFestival()}
+      countdownDays={getCountdownDays(edition)}
+      live={isDuringFestival(edition)}
     />
   )
 
@@ -84,11 +93,16 @@ const HomePage = async ({ params }: HomePageProps) => {
     return (
       <>
         {hero}
-        <PastRevive markerIndex={nextMarker()} />
+        <PastRevive year={edition.year} markerIndex={nextMarker()} />
         <Quote markerIndex={nextMarker()} />
         {hasNews ? <NewsRow news={news} mode={mode} markerIndex={nextMarker()} /> : null}
         {hasFeatured ? (
-          <Highlights events={featured} mode={mode} markerIndex={nextMarker()} />
+          <Highlights
+            events={featured}
+            mode={mode}
+            year={edition.year}
+            markerIndex={nextMarker()}
+          />
         ) : null}
         <NormandySection
           byDepartment={stats.byDepartment}
@@ -103,18 +117,14 @@ const HomePage = async ({ params }: HomePageProps) => {
   return (
     <>
       {hero}
-      <ThreeNights byNight={stats.byNight} markerIndex={nextMarker()} />
+      <ThreeNights nights={edition.nights} byNight={stats.byNight} markerIndex={nextMarker()} />
       <Quote markerIndex={nextMarker()} />
       {hasNews ? <NewsRow news={news} mode={mode} markerIndex={nextMarker()} /> : null}
       {hasFeatured ? (
-        <Highlights events={featured} mode={mode} markerIndex={nextMarker()} />
+        <Highlights events={featured} mode={mode} year={edition.year} markerIndex={nextMarker()} />
       ) : null}
       {hasProgramme ? (
-        <ProgrammeTeaser
-          events={programme}
-          total={stats.totalPlaces}
-          markerIndex={nextMarker()}
-        />
+        <ProgrammeTeaser events={programme} total={stats.totalPlaces} markerIndex={nextMarker()} />
       ) : null}
       <NormandySection
         byDepartment={stats.byDepartment}

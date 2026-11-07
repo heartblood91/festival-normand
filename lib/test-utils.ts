@@ -24,6 +24,8 @@ export const prismaMock = {
   verification: mockMethods(),
   // No embargo by default: public queries see `{ published: true }`.
   departmentSetting: { ...mockMethods(), findMany: vi.fn().mockResolvedValue([]) },
+  // No saved edition by default: the code default (2027) applies.
+  edition: { ...mockMethods(), findFirst: vi.fn().mockResolvedValue(null) },
   $connect: vi.fn(),
   $disconnect: vi.fn(),
   $transaction: vi.fn(),

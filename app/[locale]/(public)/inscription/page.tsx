@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import type { Locale } from "@/lib/i18n/config"
 import { notFound } from "next/navigation"
 import { getPageBySlug } from "@/lib/queries/pages"
+import { getCurrentEdition } from "@/lib/queries/edition"
 import { ClassicPage } from "@/components/editorial/classic-page"
 import { DepartmentRegistrationLinks } from "@/components/inscription/department-registration-links"
 
@@ -15,12 +16,15 @@ export const generateMetadata = async ({
   params: Promise<{ locale: string }>
 }): Promise<Metadata> => {
   const { locale } = (await params) as { locale: Locale }
-  const page = await getPageBySlug("inscription", locale)
+  const [page, { year }] = await Promise.all([
+    getPageBySlug("inscription", locale),
+    getCurrentEdition(),
+  ])
   const title = page?.title ?? (locale === "en" ? "How to register?" : "Comment vous inscrire ?")
   const description =
     locale === "en"
-      ? "Register your heritage site to participate in Pierres en Lumières 2026, the free Norman heritage festival."
-      : "Inscrivez votre site patrimonial pour participer à Pierres en Lumières 2026, le festival gratuit du patrimoine normand."
+      ? `Register your heritage site to participate in Pierres en Lumières ${year}, the free Norman heritage festival.`
+      : `Inscrivez votre site patrimonial pour participer à Pierres en Lumières ${year}, le festival gratuit du patrimoine normand.`
 
   return {
     title,
