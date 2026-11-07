@@ -4,6 +4,7 @@ import { Facebook, Instagram } from "lucide-react"
 import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/navigation"
 import { CookiePreferencesFooterItem } from "@/components/cookies/cookie-preferences-footer-item"
 import { LanternLogo } from "@/components/editorial/lantern-logo"
+import { MakerCredit } from "@/packages/maker-credit/src"
 
 type FooterProps = {
   editionDates: string
@@ -117,6 +118,15 @@ const Footer = async ({ editionDates }: FooterProps) => {
             Départements de Normandie &amp; Fondation du Patrimoine
           </p>
         </div>
+
+        <MakerCredit
+          name="Cédric Freret"
+          url="https://cedric-freret.fr/"
+          role={t("footer.creditRole")}
+          prefix={t("footer.creditPrefix")}
+          links={[{ label: "LinkedIn", href: "https://www.linkedin.com/in/cedric-freret" }]}
+          className="mt-4 sm:text-right"
+        />
       </div>
     </footer>
   )

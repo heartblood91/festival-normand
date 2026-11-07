@@ -260,7 +260,9 @@
     "contactQuestion": "Une question sur le festival ?",
     "contactCta": "Nous contacter →",
     "manageCookies": "Gérer les cookies",
-    "copyright": "© {year} Pierres en Lumières. Tous droits réservés."
+    "copyright": "© {year} Pierres en Lumières. Tous droits réservés.",
+    "creditPrefix": "Site développé par",
+    "creditRole": "lead dev bénévole — Délégation Normandie"
   },
   "cookies": {
     "bannerAriaLabel": "Consentement aux statistiques de visite",

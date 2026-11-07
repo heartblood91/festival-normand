@@ -260,7 +260,9 @@
     "contactQuestion": "Have a question about the festival?",
     "contactCta": "Contact us →",
     "manageCookies": "Manage cookies",
-    "copyright": "© {year} Pierres en Lumières. All rights reserved."
+    "copyright": "© {year} Pierres en Lumières. All rights reserved.",
+    "creditPrefix": "Site built by",
+    "creditRole": "volunteer lead developer — Normandy delegation"
   },
   "cookies": {
     "bannerAriaLabel": "Visit analytics consent",

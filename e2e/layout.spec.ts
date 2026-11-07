@@ -44,6 +44,22 @@ test.describe("Global layout", () => {
     await expect(footer.getByLabel("Instagram")).toBeVisible()
   })
 
+  test("footer credits the developer discreetly, in each language", async ({ page }) => {
+    const credit = page.locator("footer").getByText(/Site développé par/)
+    await expect(credit).toBeVisible()
+    await expect(credit.getByRole("link", { name: "Cédric Freret" })).toHaveAttribute(
+      "href",
+      "https://cedric-freret.fr/"
+    )
+    await expect(credit.getByRole("link", { name: "LinkedIn" })).toHaveAttribute(
+      "href",
+      "https://www.linkedin.com/in/cedric-freret"
+    )
+
+    await page.goto("/en")
+    await expect(page.locator("footer").getByText(/Site built by/)).toBeVisible()
+  })
+
   test("skip-nav link is attached and becomes visible on focus", async ({ page }) => {
     const skipNav = page.getByText("Aller au contenu principal")
     await expect(skipNav).toBeAttached()
