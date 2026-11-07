@@ -10,15 +10,14 @@ test.describe("Mentions legales page", () => {
   test("displays editor information", async ({ page }) => {
     await page.goto("/mentions-legales")
 
-    await expect(page.getByRole("heading", { name: /Editeur/ })).toBeVisible()
-    await expect(page.getByText(/Département de l'Orne/).first()).toBeVisible()
+    // Page copy is edited in the admin, so assert the mandatory sections only.
+    await expect(page.getByRole("heading", { name: /[ÉE]diteur/ })).toBeVisible()
   })
 
   test("displays hosting information", async ({ page }) => {
     await page.goto("/mentions-legales")
 
     await expect(page.getByRole("heading", { name: /Hébergement/ })).toBeVisible()
-    await expect(page.getByText(/OVH SAS/)).toBeVisible()
   })
 
   test("displays intellectual property section", async ({ page }) => {

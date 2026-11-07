@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server"
 import { Link } from "@/lib/i18n/routing"
 import { MarkdownContent } from "@/components/news/markdown-content"
 import { Marker } from "@/components/editorial/primitives"
+import { stripLeadingTitle } from "@/lib/utils/markdown"
 
 type ClassicPageProps = {
   title: string
@@ -49,7 +50,7 @@ const ClassicPage = async ({ title, content, marker, children }: ClassicPageProp
       </div>
 
       <div className="mx-auto max-w-3xl px-4 py-12 md:px-6 md:py-16">
-        <MarkdownContent content={content} />
+        <MarkdownContent content={stripLeadingTitle(content, title)} />
         {children}
       </div>
     </article>

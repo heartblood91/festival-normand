@@ -7,38 +7,27 @@ test.describe("Inscription page", () => {
     await expect(page).toHaveTitle(/Comment vous inscrire|Inscr/)
   })
 
-  test("displays inscription heading", async ({ page }) => {
+  // Page copy is edited in the admin, so assert structure rather than wording.
+  test("displays a single inscription heading", async ({ page }) => {
     await page.goto("/inscription")
 
-    await expect(
-      page.getByRole("heading", { name: /Comment vous inscrire/, level: 1 })
-    ).toBeVisible()
+    await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1)
+    await expect(page.getByRole("heading", { level: 1, name: /inscri/i })).toBeVisible()
   })
 
-  test("displays inscription details", async ({ page }) => {
+  test("explains how to register", async ({ page }) => {
     await page.goto("/inscription")
 
-    await expect(page.getByText(/Vous êtes un particulier/)).toBeVisible()
+    await expect(page.getByRole("heading", { level: 2, name: /inscri/i }).first()).toBeVisible()
   })
 
-  test("displays registration opening date", async ({ page }) => {
+  test("links to the department registration forms", async ({ page }) => {
     await page.goto("/inscription")
 
-    await expect(page.getByText(/17 novembre 2025/)).toBeVisible()
-  })
-
-  test("renders tools section", async ({ page }) => {
-    await page.goto("/inscription")
-
-    await expect(
-      page.getByRole("heading", { name: /Différents outils pour organiser votre manifestation/ })
-    ).toBeVisible()
-  })
-
-  test("renders inscription section heading", async ({ page }) => {
-    await page.goto("/inscription")
-
-    await expect(page.getByRole("heading", { name: /Inscrivez-vous/ })).toBeVisible()
+    const formLinks = page
+      .locator("article a[href^='http']")
+      .filter({ hasText: /Calvados|Eure|Manche|Orne|Seine-Maritime/ })
+    expect(await formLinks.count()).toBeGreaterThanOrEqual(1)
   })
 
   test("page is accessible via header CTA button", async ({ page }) => {
