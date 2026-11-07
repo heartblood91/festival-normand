@@ -5,7 +5,15 @@ import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
 import { eventSchema } from "@/lib/schemas/event"
 import { searchEventIds } from "@/lib/search"
-import type { Category, Department, Prisma } from "@prisma/client"
+import type { AdminEventListItem } from "@/lib/types/admin"
+import {
+  eventListOrderBy,
+  eventListWhere,
+  parisToday,
+  publishBlocker,
+  type EventListParams,
+} from "@/lib/admin/event-list"
+import type { Category, Department } from "@prisma/client"
 
 export type EventActionResult = {
   success: boolean
@@ -14,18 +22,7 @@ export type EventActionResult = {
   eventId?: string
 }
 
-type GetAdminEventsParams = {
-  search?: string
-  page?: number
-  limit?: number
-  status?: "published" | "draft" | "depublished" | "all"
-  department?: string
-  category?: string
-  featured?: string
-  source?: "tourinsoft" | "manual" | "all"
-}
-
-import type { AdminEventListItem } from "@/lib/types/admin"
+type GetAdminEventsParams = EventListParams & { limit?: number }
 
 type GetAdminEventsResult = {
   items: AdminEventListItem[]
@@ -35,63 +32,22 @@ type GetAdminEventsResult = {
 }
 
 export const getAdminEvents = async ({
-  search,
-  page = 1,
   limit = 25,
-  status = "all",
-  department,
-  category,
-  featured,
-  source = "all",
+  ...params
 }: GetAdminEventsParams = {}): Promise<GetAdminEventsResult> => {
   await requireRole("EDITOR")
 
-  const where: Prisma.EventWhereInput = {}
-
-  if (search) {
-    const matchedIds = await searchEventIds(search)
-    where.id = { in: matchedIds }
-  }
-
-  if (status === "published") {
-    where.published = true
-  } else if (status === "draft") {
-    where.published = false
-    where.publishedAt = null
-    where.unpublishedAt = null
-  } else if (status === "depublished") {
-    where.published = false
-    where.unpublishedAt = { not: null }
-  }
-
-  if (department && department !== "all") {
-    where.department = department as Department
-  }
-
-  if (category && category !== "all") {
-    where.category = category as Category
-  }
-
-  if (featured === "true") {
-    where.featured = true
-  } else if (featured === "false") {
-    where.featured = false
-  }
-
-  if (source === "tourinsoft") {
-    where.tourinsoftId = { not: null }
-  } else if (source === "manual") {
-    where.tourinsoftId = null
-  }
+  const page = params.page ?? 1
+  const searchIds = params.search ? await searchEventIds(params.search) : undefined
+  const where = eventListWhere(params, parisToday(), searchIds)
 
   const total = await prisma.event.count({ where })
   const totalPages = Math.ceil(total / limit)
-  const skip = (page - 1) * limit
 
   const items = await prisma.event.findMany({
     where,
-    orderBy: { createdAt: "desc" },
-    skip,
+    orderBy: eventListOrderBy(params.sort),
+    skip: (page - 1) * limit,
     take: limit,
     select: {
       id: true,
@@ -346,3 +302,87 @@ const extractFormData = (formData: FormData) => ({
   accessible: formData.get("accessible") === "true",
   published: formData.get("published") !== "false",
 })
+
+const revalidateEvents = (slugs: string[]) => {
+  revalidatePath("/evenements")
+  slugs.forEach((slug) => revalidatePath(`/evenement/${slug}`))
+  revalidatePath("/")
+}
+
+const plural = (count: number, one: string, many: string) => `${count} ${count > 1 ? many : one}`
+
+/**
+ * Bulk publish skips the AI review but never the RGAA alt rule: blocked drafts
+ * stay unpublished and are named in the message.
+ */
+export const publishEvents = async (ids: string[]): Promise<EventActionResult> => {
+  try {
+    await requireRole("EDITOR")
+    if (!ids.length) return { success: false, message: "Aucun événement sélectionné." }
+
+    const drafts = await prisma.event.findMany({
+      where: { id: { in: ids }, published: false },
+      select: {
+        id: true,
+        slug: true,
+        titleFr: true,
+        coverImage: true,
+        coverImageAltFr: true,
+        descriptionFr: true,
+        descriptionEn: true,
+      },
+    })
+    const blocked = drafts.flatMap((event) => {
+      const reason = publishBlocker(event)
+      return reason ? [`${event.titleFr} (${reason})`] : []
+    })
+    const ready = drafts.filter((event) => !publishBlocker(event))
+    const skipped = blocked.length ? ` Non publié(s) : ${blocked.join(", ")}.` : ""
+
+    if (!ready.length) {
+      return { success: false, message: `Aucun événement publié.${skipped}` }
+    }
+
+    const { count } = await prisma.event.updateMany({
+      where: { id: { in: ready.map((event) => event.id) }, published: false },
+      data: { published: true, publishedAt: new Date(), unpublishedAt: null },
+    })
+    revalidateEvents(ready.map((event) => event.slug))
+
+    return {
+      success: true,
+      message: `${plural(count, "événement publié", "événements publiés")}.${skipped}`,
+    }
+  } catch {
+    return { success: false, message: "Une erreur est survenue lors de la publication." }
+  }
+}
+
+export const setEventsFeatured = async (
+  ids: string[],
+  featured: boolean
+): Promise<EventActionResult> => {
+  try {
+    await requireRole("EDITOR")
+    if (!ids.length) return { success: false, message: "Aucun événement sélectionné." }
+
+    const events = await prisma.event.findMany({
+      where: { id: { in: ids } },
+      select: { slug: true },
+    })
+    const { count } = await prisma.event.updateMany({
+      where: { id: { in: ids } },
+      data: { featured },
+    })
+    revalidateEvents(events.map((event) => event.slug))
+
+    return {
+      success: true,
+      message: featured
+        ? `${plural(count, "événement mis", "événements mis")} à la une.`
+        : `${plural(count, "événement retiré", "événements retirés")} de la une.`,
+    }
+  } catch {
+    return { success: false, message: "Une erreur est survenue lors de la mise à jour." }
+  }
+}

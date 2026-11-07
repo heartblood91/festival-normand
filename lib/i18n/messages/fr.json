@@ -356,7 +356,12 @@
           "PARTIAL": "Partielle",
           "FAILED": "Échec"
         }
-      }
+      },
+      "todo": "À traiter",
+      "todoDescription": "Événements publiés ou non à compléter avant le festival.",
+      "todoMissingEn": "Traduction EN manquante",
+      "todoMissingAlt": "Image sans texte alternatif",
+      "todoMissingGps": "Coordonnées GPS manquantes"
     },
     "common": {
       "save": "Enregistrer",

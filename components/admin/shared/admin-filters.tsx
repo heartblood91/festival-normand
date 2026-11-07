@@ -52,12 +52,15 @@ export const AdminFilters = ({ filters, baseUrl, currentValues }: AdminFiltersPr
     const params = new URLSearchParams()
     const searchValue = searchParams.get("search") ?? undefined
     if (searchValue) params.set("search", searchValue)
-    params.set("page", "1")
+    const sortValue = searchParams.get("sort") ?? undefined
+    if (sortValue) params.set("sort", sortValue)
 
     router.push(`${baseUrl}${params.toString() ? `?${params}` : ""}`)
   }
 
-  const hasActiveFilters = Object.values(currentValues).some((v) => v && v !== "all")
+  const hasActiveFilters = Object.entries(currentValues).some(
+    ([key, v]) => key !== "sort" && v && v !== "all"
+  )
 
   const getDisplayLabel = (filter: FilterConfig, value: string) => {
     if (!value || value === "all") return filter.label
@@ -108,7 +111,7 @@ export const AdminFilters = ({ filters, baseUrl, currentValues }: AdminFiltersPr
                 <button
                   onClick={() => handleClearFilter(filter.key)}
                   className="text-slate-400 hover:text-amber-400"
-                  aria-label={`Clear ${filter.label} filter`}
+                  aria-label={`Retirer le filtre ${filter.label}`}
                 >
                   <X className="h-4 w-4" />
                 </button>

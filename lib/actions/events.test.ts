@@ -36,8 +36,15 @@ vi.mock("next/cache", () => ({
 
 import * as eventActions from "./events"
 
-const { createEvent, updateEvent, unpublishEvents, getAdminEvents, getAdminEventById } =
-  eventActions
+const {
+  createEvent,
+  updateEvent,
+  unpublishEvents,
+  publishEvents,
+  setEventsFeatured,
+  getAdminEvents,
+  getAdminEventById,
+} = eventActions
 
 const createFormData = (data: Record<string, string>): FormData => {
   const formData = new FormData()
@@ -216,6 +223,97 @@ describe("unpublishEvents", () => {
   })
 })
 
+const draft = (
+  id: string,
+  titleFr: string,
+  cover: Partial<Record<string, string | null>> = {}
+) => ({
+  id,
+  slug: id,
+  titleFr,
+  coverImage: null,
+  coverImageAltFr: null,
+  descriptionFr: "<p>Texte</p>",
+  descriptionEn: null,
+  ...cover,
+})
+
+describe("publishEvents", () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it("publishes the drafts that pass the alt checks and names the others", async () => {
+    mockPrisma.event.findMany.mockResolvedValue([
+      draft("1", "Église"),
+      draft("2", "Abbaye", { coverImage: "/c.jpg", coverImageAltFr: "" }),
+    ])
+    mockPrisma.event.updateMany.mockResolvedValue({ count: 1 })
+
+    const result = await publishEvents(["1", "2"])
+
+    expect(mockPrisma.event.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: { in: ["1", "2"] }, published: false } })
+    )
+    expect(mockPrisma.event.updateMany).toHaveBeenCalledWith({
+      where: { id: { in: ["1"] }, published: false },
+      data: { published: true, publishedAt: expect.any(Date), unpublishedAt: null },
+    })
+    expect(result).toEqual({
+      success: true,
+      message:
+        "1 événement publié. Non publié(s) : Abbaye (image de couverture sans texte alternatif).",
+    })
+  })
+
+  it("fails when nothing can be published", async () => {
+    mockPrisma.event.findMany.mockResolvedValue([draft("2", "Abbaye", { coverImage: "/c.jpg" })])
+
+    const result = await publishEvents(["2"])
+
+    expect(result.success).toBe(false)
+    expect(result.message).toContain("Abbaye")
+    expect(mockPrisma.event.updateMany).not.toHaveBeenCalled()
+  })
+
+  it("checks the role before reading", async () => {
+    mockRequireRole.mockRejectedValueOnce(new Error("Unauthorized"))
+
+    const result = await publishEvents(["1"])
+
+    expect(result.success).toBe(false)
+    expect(mockPrisma.event.findMany).not.toHaveBeenCalled()
+  })
+})
+
+describe("setEventsFeatured", () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it("features or unfeatures the selection", async () => {
+    mockPrisma.event.findMany.mockResolvedValue([{ slug: "a" }])
+    mockPrisma.event.updateMany.mockResolvedValue({ count: 2 })
+
+    const result = await setEventsFeatured(["1", "2"], true)
+
+    expect(mockPrisma.event.updateMany).toHaveBeenCalledWith({
+      where: { id: { in: ["1", "2"] } },
+      data: { featured: true },
+    })
+    expect(result).toEqual({ success: true, message: "2 événements mis à la une." })
+  })
+
+  it("checks the role before writing", async () => {
+    mockRequireRole.mockRejectedValueOnce(new Error("Unauthorized"))
+
+    const result = await setEventsFeatured(["1"], false)
+
+    expect(result.success).toBe(false)
+    expect(mockPrisma.event.updateMany).not.toHaveBeenCalled()
+  })
+})
+
 describe("getAdminEvents", () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -257,7 +355,7 @@ describe("getAdminEvents", () => {
     expect(mockPrisma.event.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: {},
-        orderBy: { createdAt: "desc" },
+        orderBy: [{ createdAt: "desc" }],
       })
     )
   })

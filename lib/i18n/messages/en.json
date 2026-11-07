@@ -356,7 +356,12 @@
           "PARTIAL": "Partial",
           "FAILED": "Failed"
         }
-      }
+      },
+      "todo": "To do",
+      "todoDescription": "Published or draft events to complete before the festival.",
+      "todoMissingEn": "Missing EN translation",
+      "todoMissingAlt": "Image without alt text",
+      "todoMissingGps": "Missing GPS coordinates"
     },
     "common": {
       "save": "Save",
