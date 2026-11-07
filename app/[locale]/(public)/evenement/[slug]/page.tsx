@@ -9,6 +9,7 @@ import { EventInfo } from "@/components/event-detail/event-info"
 import { PhotoCarousel, type CarouselPhoto } from "@/components/event-detail/photo-carousel"
 import { EventMapWrapper } from "@/components/event-detail/event-map-wrapper"
 import { prisma } from "@/lib/prisma"
+import { publicEventWhere } from "@/lib/queries/visibility"
 import { locales } from "@/lib/i18n/config"
 import { DEFAULT_EVENT_IMAGE } from "@/lib/events/default-image"
 import { isInNormandyBounds } from "@/lib/geo/normandy"
@@ -22,7 +23,7 @@ export const dynamic = "error"
 
 export const generateStaticParams = async () => {
   const events = await prisma.event.findMany({
-    where: { published: true },
+    where: await publicEventWhere(),
     select: { slug: true },
   })
   return locales.flatMap((locale) => events.map((e) => ({ locale, slug: e.slug })))

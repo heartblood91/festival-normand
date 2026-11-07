@@ -1,5 +1,6 @@
 import { cachedQuery } from "@/lib/cache"
 import { prisma } from "@/lib/prisma"
+import { publicEventWhere } from "@/lib/queries/visibility"
 import { localizeEntity } from "@/lib/i18n/db"
 import { searchEventIds } from "@/lib/search"
 import { isInNormandyBounds, normandyBoundsWhere } from "@/lib/geo/normandy"
@@ -62,7 +63,7 @@ const buildFilterWhere = async (
   overrides?: { key: string; value: string }
 ): Promise<Prisma.EventWhereInput> => {
   const { search, date, accessible } = filters
-  const where: Prisma.EventWhereInput = { published: true }
+  const where: Prisma.EventWhereInput = await publicEventWhere()
 
   const dept =
     overrides?.key === "dept"
@@ -186,7 +187,7 @@ export const getNeighbourEvents = async (
     async () => {
       const candidates = await prisma.event.findMany({
         where: {
-          published: true,
+          ...(await publicEventWhere()),
           slug: { not: excludeSlug },
           ...normandyBoundsWhere,
           NOT: [{ latitude: null }, { longitude: null }],
@@ -235,8 +236,8 @@ export type NeighbourEvent = Awaited<ReturnType<typeof getNeighbourEvents>>[numb
 export const getEventBySlug = async (slug: string, locale: Locale = "fr") =>
   cachedQuery(
     async () => {
-      const event = await prisma.event.findUnique({
-        where: { slug, published: true },
+      const event = await prisma.event.findFirst({
+        where: { ...(await publicEventWhere()), slug },
         include: {
           photos: {
             orderBy: { order: "asc" },

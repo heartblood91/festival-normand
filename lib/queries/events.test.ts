@@ -335,13 +335,13 @@ const mockEventDetail = {
 
 describe("getEventBySlug", () => {
   it("returns event by slug with published filter", async () => {
-    prismaMock.event.findUnique.mockResolvedValue(mockEventDetail)
+    prismaMock.event.findFirst.mockResolvedValue(mockEventDetail)
 
     const result = await getEventBySlug("illumination-abbaye", "fr")
 
     expect(result).not.toBeNull()
-    expect(prismaMock.event.findUnique).toHaveBeenCalledWith({
-      where: { slug: "illumination-abbaye", published: true },
+    expect(prismaMock.event.findFirst).toHaveBeenCalledWith({
+      where: { published: true, slug: "illumination-abbaye" },
       include: {
         photos: {
           orderBy: { order: "asc" },
@@ -352,7 +352,7 @@ describe("getEventBySlug", () => {
   })
 
   it("returns null for non-existent slug", async () => {
-    prismaMock.event.findUnique.mockResolvedValue(null)
+    prismaMock.event.findFirst.mockResolvedValue(null)
 
     const result = await getEventBySlug("non-existent", "fr")
 
@@ -360,13 +360,13 @@ describe("getEventBySlug", () => {
   })
 
   it("returns null for unpublished event", async () => {
-    prismaMock.event.findUnique.mockResolvedValue(null)
+    prismaMock.event.findFirst.mockResolvedValue(null)
 
     const result = await getEventBySlug("unpublished-event", "fr")
 
     expect(result).toBeNull()
-    expect(prismaMock.event.findUnique).toHaveBeenCalledWith({
-      where: { slug: "unpublished-event", published: true },
+    expect(prismaMock.event.findFirst).toHaveBeenCalledWith({
+      where: { published: true, slug: "unpublished-event" },
       include: {
         photos: {
           orderBy: { order: "asc" },

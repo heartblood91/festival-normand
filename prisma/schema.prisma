@@ -144,6 +144,16 @@ model RegistrationLink {
   @@map("registration_links")
 }
 
+// Per-department settings. `publishFrom` is the M1 embargo: upcoming
+// Tourinsoft-imported events of the department stay hidden until that date.
+model DepartmentSetting {
+  department  Department @id
+  publishFrom DateTime?  @map("publish_from")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  @@map("department_settings")
+}
+
 model Page {
   id        String   @id @default(cuid())
   titleFr   String   @map("title_fr")

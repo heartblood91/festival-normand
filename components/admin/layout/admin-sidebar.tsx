@@ -9,6 +9,7 @@ import {
   Handshake,
   FileText,
   UserPlus,
+  CalendarRange,
   Users,
   Settings,
   LogOut,
@@ -75,6 +76,11 @@ const AdminSidebar = ({ user, pathname }: AdminSidebarProps) => {
       href: `/${locale}/admin/inscription`,
       icon: UserPlus,
       labelKey: "sidebar.registrationLinks",
+    },
+    {
+      href: `/${locale}/admin/edition`,
+      icon: CalendarRange,
+      labelKey: "sidebar.edition",
     },
     {
       href: `/${locale}/admin/users`,

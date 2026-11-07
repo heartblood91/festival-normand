@@ -22,6 +22,8 @@ export const prismaMock = {
   session: mockMethods(),
   account: mockMethods(),
   verification: mockMethods(),
+  // No embargo by default: public queries see `{ published: true }`.
+  departmentSetting: { ...mockMethods(), findMany: vi.fn().mockResolvedValue([]) },
   $connect: vi.fn(),
   $disconnect: vi.fn(),
   $transaction: vi.fn(),

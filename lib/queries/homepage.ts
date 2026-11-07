@@ -1,5 +1,6 @@
 import { cachedQuery } from "@/lib/cache"
 import { prisma } from "@/lib/prisma"
+import { publicEventWhere } from "@/lib/queries/visibility"
 import { localizeEntity } from "@/lib/i18n/db"
 import type { Locale } from "@/lib/i18n/config"
 
@@ -8,7 +9,7 @@ export const getFeaturedEvents = async (locale: Locale = "fr") => {
     async () => {
       const events = await prisma.event.findMany({
         where: {
-          published: true,
+          ...(await publicEventWhere()),
           featured: true,
         },
         orderBy: { dateStart: "asc" },
@@ -96,7 +97,7 @@ export const getEventCities = async () => {
   return cachedQuery(
     async () => {
       const events = await prisma.event.findMany({
-        where: { published: true },
+        where: await publicEventWhere(),
         select: { city: true },
         distinct: ["city"],
         orderBy: { city: "asc" },

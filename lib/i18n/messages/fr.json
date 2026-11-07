@@ -224,7 +224,8 @@
       "pages": "Pages",
       "users": "Utilisateurs",
       "settings": "Paramètres",
-      "registrationLinks": "Inscriptions"
+      "registrationLinks": "Inscriptions",
+      "edition": "Édition"
     },
     "dashboard": {
       "title": "Tableau de bord",
@@ -285,6 +286,16 @@
       "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cet utilisateur ?",
       "soleAdmin": "Impossible de supprimer le seul administrateur",
       "changeRole": "Modifier le rôle"
+    },
+    "edition": {
+      "title": "Édition",
+      "embargo": {
+        "title": "Date de publication par département",
+        "description": "Avant cette date, les événements à venir importés de Tourinsoft pour le département restent masqués sur le site public (ils restent visibles ici). Les événements créés à la main et les éditions passées ne sont pas concernés. Laisser vide pour publier immédiatement.",
+        "save": "Enregistrer",
+        "hiddenUntil": "Masqué jusqu'au {date}",
+        "visible": "Publié"
+      }
     }
   },
   "locale": {

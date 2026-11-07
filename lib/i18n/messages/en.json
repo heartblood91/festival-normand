@@ -224,7 +224,8 @@
       "pages": "Pages",
       "users": "Users",
       "settings": "Settings",
-      "registrationLinks": "Registrations"
+      "registrationLinks": "Registrations",
+      "edition": "Edition"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -285,6 +286,16 @@
       "deleteConfirm": "Are you sure you want to delete this user?",
       "soleAdmin": "Cannot delete the only administrator",
       "changeRole": "Change role"
+    },
+    "edition": {
+      "title": "Edition",
+      "embargo": {
+        "title": "Publication date per department",
+        "description": "Before this date, upcoming events imported from Tourinsoft for the department stay hidden on the public site (they remain visible here). Manually created events and past editions are not affected. Leave empty to publish immediately.",
+        "save": "Save",
+        "hiddenUntil": "Hidden until {date}",
+        "visible": "Published"
+      }
     }
   },
   "locale": {

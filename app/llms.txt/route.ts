@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { publicEventWhere } from "@/lib/queries/visibility"
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pierresenlumieres.fr"
 const isProduction = process.env.VERCEL_ENV === "production"
@@ -25,10 +26,11 @@ export const GET = async () => {
     return new NextResponse("Not available in preview/staging.", { status: 404 })
   }
 
+  const eventWhere = await publicEventWhere().catch(() => ({ published: true }))
   const [featuredEvents, upcomingEvents, news, pages] = await Promise.all([
     prisma.event
       .findMany({
-        where: { published: true, featured: true },
+        where: { ...eventWhere, featured: true },
         select: {
           titleFr: true,
           slug: true,
@@ -43,7 +45,7 @@ export const GET = async () => {
       .catch(() => []),
     prisma.event
       .findMany({
-        where: { published: true },
+        where: eventWhere,
         select: {
           titleFr: true,
           slug: true,
