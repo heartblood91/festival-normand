@@ -103,6 +103,29 @@ describe("eventSchema", () => {
     expect(result.success).toBe(false)
   })
 
+  it("rejects an end date before the start date, on the end date field", () => {
+    const result = eventSchema.safeParse({
+      ...validData,
+      dateStart: "2027-05-22",
+      dateEnd: "2027-05-21",
+    })
+    expect(result.success).toBe(false)
+    expect(result.error?.flatten().fieldErrors.dateEnd).toEqual([
+      "La date de fin doit être identique ou postérieure à la date de début",
+    ])
+  })
+
+  it("accepts a same-day end, and a night ending after midnight", () => {
+    const result = eventSchema.safeParse({
+      ...validData,
+      dateStart: "2027-05-21",
+      dateEnd: "2027-05-21",
+      timeStart: "21:00",
+      timeEnd: "00:30",
+    })
+    expect(result.success).toBe(true)
+  })
+
   it("accepts omitted latitude/longitude (optional)", () => {
     const result = eventSchema.safeParse(validData)
     expect(result.success).toBe(true)

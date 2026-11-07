@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { useEditor, EditorContent, type Editor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import Link from "@tiptap/extension-link"
@@ -296,6 +297,13 @@ export const TiptapEditor = ({ content, onChange }: TiptapEditorProps) => {
       },
     },
   })
+
+  // Content set from outside (restored draft, AI translation or corrections).
+  useEffect(() => {
+    if (editor && content !== editor.getHTML()) {
+      editor.commands.setContent(content, { emitUpdate: false })
+    }
+  }, [editor, content])
 
   return (
     <div className="overflow-hidden rounded-lg border border-white/10 bg-white/5">

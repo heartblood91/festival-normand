@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Eye, Languages, Search, AccessibilityIcon, ArrowLeft, Loader2 } from "lucide-react"
 import { toast } from "sonner"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { PreviewDrawer } from "./preview-drawer"
 import { AiCheckDialog, type AiCheckKind } from "./ai-check-dialog"
 import { useAiAvailability } from "./use-ai-availability"
@@ -21,6 +21,8 @@ type FormActionBarProps = {
   previewUrl?: string
   /** Omitted for content without a publication state (static pages). */
   isPublished?: boolean
+  /** Unsaved changes in the form. */
+  isDirty?: boolean
   onTogglePublish?: (published: boolean) => void
   ai?: FormAiTools
   onSubmit?: () => void
@@ -32,6 +34,7 @@ type FormActionBarProps = {
 export const FormActionBar = ({
   previewUrl,
   isPublished,
+  isDirty = false,
   onTogglePublish,
   ai,
   onSubmit,
@@ -67,10 +70,12 @@ export const FormActionBar = ({
       <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-white/5 px-6 py-3 backdrop-blur-xl">
         <div className="flex items-center gap-2">
           {backUrl ? (
-            <Link href={backUrl}>
-              <Button type="button" variant="ghost" size="sm">
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
+            <Link
+              href={backUrl}
+              aria-label="Retour à la liste"
+              className={buttonVariants({ variant: "ghost", size: "sm" })}
+            >
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             </Link>
           ) : null}
           {isPublished === undefined ? null : isPublished ? (
@@ -82,6 +87,10 @@ export const FormActionBar = ({
               Brouillon
             </span>
           )}
+          {/* Always rendered so screen readers announce the change. */}
+          <span role="status" className="text-xs whitespace-nowrap text-amber-300">
+            {isDirty ? "Modifications non enregistrées" : ""}
+          </span>
         </div>
 
         <div className="flex items-center gap-2">
