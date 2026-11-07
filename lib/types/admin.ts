@@ -11,6 +11,8 @@ export type AdminEventListItem = {
   publishedAt: Date | null
   unpublishedAt: Date | null
   accessible: boolean
+  tourinsoftId: string | null
+  tourinsoftUpdatedAt: Date | null
 }
 
 export type AdminNewsListItem = {

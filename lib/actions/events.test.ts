@@ -8,7 +8,7 @@ const { mockPrisma, mockRequireRole } = vi.hoisted(() => ({
       findFirst: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
-      delete: vi.fn(),
+      updateMany: vi.fn(),
       count: vi.fn(),
     },
     $queryRawUnsafe: vi.fn().mockResolvedValue([]),
@@ -17,16 +17,27 @@ const { mockPrisma, mockRequireRole } = vi.hoisted(() => ({
 }))
 
 // Default: an authenticated EDITOR. Implementation survives clearAllMocks.
-mockRequireRole.mockResolvedValue({ id: "admin-1", name: "Admin", email: "admin@test.fr", role: "ADMIN" })
+mockRequireRole.mockResolvedValue({
+  id: "admin-1",
+  name: "Admin",
+  email: "admin@test.fr",
+  role: "ADMIN",
+})
 
 vi.mock("@/lib/prisma", () => ({ prisma: mockPrisma }))
-vi.mock("@/lib/rbac", () => ({ requireRole: mockRequireRole, getAuthenticatedUser: mockRequireRole }))
+vi.mock("@/lib/rbac", () => ({
+  requireRole: mockRequireRole,
+  getAuthenticatedUser: mockRequireRole,
+}))
 
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
 }))
 
-import { createEvent, updateEvent, deleteEvent, getAdminEvents, getAdminEventById } from "./events"
+import * as eventActions from "./events"
+
+const { createEvent, updateEvent, unpublishEvents, getAdminEvents, getAdminEventById } =
+  eventActions
 
 const createFormData = (data: Record<string, string>): FormData => {
   const formData = new FormData()
@@ -165,38 +176,66 @@ describe("updateEvent", () => {
   })
 })
 
-describe("deleteEvent", () => {
+describe("unpublishEvents", () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it("deletes event successfully", async () => {
-    mockPrisma.event.delete.mockResolvedValue({
-      id: "test-id",
-      slug: "festival-de-lumieres-a-caen",
-    })
+  it("unpublishes the published events among the selection, keeping every row", async () => {
+    mockPrisma.event.findMany.mockResolvedValue([{ slug: "a" }, { slug: "b" }])
+    mockPrisma.event.updateMany.mockResolvedValue({ count: 2 })
 
-    const result = await deleteEvent("test-id")
+    const result = await unpublishEvents(["1", "2", "3"])
 
-    expect(result.success).toBe(true)
-    expect(mockPrisma.event.delete).toHaveBeenCalledWith({
-      where: { id: "test-id" },
+    expect(result).toEqual({ success: true, message: "2 événements dépubliés." })
+    expect(mockPrisma.event.updateMany).toHaveBeenCalledWith({
+      where: { id: { in: ["1", "2", "3"] }, published: true },
+      data: { published: false, unpublishedAt: expect.any(Date) },
     })
   })
 
-  it("handles database errors gracefully", async () => {
-    mockPrisma.event.delete.mockRejectedValue(new Error("Not found"))
+  it("refuses an empty selection", async () => {
+    const result = await unpublishEvents([])
 
-    const result = await deleteEvent("test-id")
+    expect(result.success).toBe(false)
+    expect(mockPrisma.event.updateMany).not.toHaveBeenCalled()
+  })
+
+  it("handles database errors gracefully", async () => {
+    mockPrisma.event.findMany.mockResolvedValue([])
+    mockPrisma.event.updateMany.mockRejectedValue(new Error("down"))
+
+    const result = await unpublishEvents(["1"])
 
     expect(result.success).toBe(false)
     expect(result.message).toContain("erreur")
+  })
+
+  it("exposes no way to delete an event", () => {
+    expect(Object.keys(eventActions).filter((name) => /delete/i.test(name))).toEqual([])
   })
 })
 
 describe("getAdminEvents", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  it.each([
+    ["tourinsoft", { tourinsoftId: { not: null } }],
+    ["manual", { tourinsoftId: null }],
+  ] as const)("filters by source %s", async (source, where) => {
+    mockPrisma.event.count.mockResolvedValue(0)
+    mockPrisma.event.findMany.mockResolvedValue([])
+
+    await getAdminEvents({ source })
+
+    expect(mockPrisma.event.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where,
+        select: expect.objectContaining({ tourinsoftId: true, tourinsoftUpdatedAt: true }),
+      })
+    )
   })
 
   it("returns all events without search", async () => {
@@ -273,7 +312,12 @@ describe("getAdminEventById", () => {
 describe("auth guards", () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockRequireRole.mockResolvedValue({ id: "admin-1", name: "Admin", email: "admin@test.fr", role: "ADMIN" })
+    mockRequireRole.mockResolvedValue({
+      id: "admin-1",
+      name: "Admin",
+      email: "admin@test.fr",
+      role: "ADMIN",
+    })
   })
 
   it("createEvent does not touch the DB when the caller is unauthenticated", async () => {
@@ -285,13 +329,13 @@ describe("auth guards", () => {
     expect(mockPrisma.event.create).not.toHaveBeenCalled()
   })
 
-  it("deleteEvent does not touch the DB when the caller is unauthenticated", async () => {
+  it("unpublishEvents does not touch the DB when the caller is unauthenticated", async () => {
     mockRequireRole.mockRejectedValueOnce(new Error("Unauthorized: not authenticated"))
 
-    const result = await deleteEvent("any-id")
+    const result = await unpublishEvents(["any-id"])
 
     expect(result.success).toBe(false)
-    expect(mockPrisma.event.delete).not.toHaveBeenCalled()
+    expect(mockPrisma.event.updateMany).not.toHaveBeenCalled()
   })
 
   it("getAdminEvents throws when the caller is unauthenticated", async () => {

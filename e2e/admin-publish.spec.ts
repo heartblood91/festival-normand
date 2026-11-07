@@ -4,6 +4,7 @@ import {
   editorCredentials,
   loginAsEditor,
   MISSING_EDITOR,
+  republishEvent,
 } from "./helpers/admin"
 
 const openPublishReview = async (page: Page) => {
@@ -11,17 +12,6 @@ const openPublishReview = async (page: Page) => {
   const wizard = page.getByRole("dialog")
   await expect(wizard.getByRole("button", { name: "Next" })).toBeEnabled({ timeout: 30_000 })
   return wizard
-}
-
-// The shared local DB must keep its seeded events published, even after a failure.
-const republishIfDraft = async (page: Page, editUrl: string) => {
-  await page.goto(editUrl)
-  if ((await page.getByText("Brouillon", { exact: true }).count()) === 0) return
-  await describeCoverIfMissing(page)
-  const wizard = await openPublishReview(page)
-  await wizard.getByRole("button", { name: "Confirmation" }).click()
-  await wizard.getByRole("button", { name: "Publish Now" }).click()
-  await expect(page).toHaveURL(/\/admin\/events(\?|$)/, { timeout: 15_000 })
 }
 
 test.describe("Admin publish workflow", () => {
@@ -96,7 +86,8 @@ test.describe("Admin publish workflow", () => {
       await page.goto(editUrl)
       await expect(page.getByText("Publié", { exact: true })).toBeVisible()
     } finally {
-      await republishIfDraft(page, editUrl)
+      // The shared local DB must keep its seeded events published, even after a failure.
+      await republishEvent(page, editUrl)
     }
   })
 

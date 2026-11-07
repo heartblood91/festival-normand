@@ -14,6 +14,7 @@ type Props = {
     department?: string
     category?: string
     featured?: string
+    source?: string
   }>
 }
 
@@ -30,6 +31,7 @@ const AdminEventsRoute = async ({ searchParams }: Props) => {
     department: params.department,
     category: params.category,
     featured: params.featured,
+    source: (params.source as "tourinsoft" | "manual" | "all") || "all",
   })
 
   return (
@@ -43,6 +45,7 @@ const AdminEventsRoute = async ({ searchParams }: Props) => {
       department={params.department}
       category={params.category}
       featured={params.featured}
+      source={params.source}
     />
   )
 }

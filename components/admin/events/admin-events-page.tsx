@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Plus, Search, Pencil, Trash2, Star, Eye, EyeOff, Accessibility } from "lucide-react"
+import { Plus, Search, Pencil, Star, Eye, EyeOff, Accessibility, RefreshCw } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,7 +18,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { deleteEvent, bulkDeleteEvents } from "@/lib/actions/events"
+import { unpublishEvents } from "@/lib/actions/events"
 import type { AdminEventListItem } from "@/lib/types/admin"
 import { AdminFilters, type FilterConfig } from "@/components/admin/shared/admin-filters"
 import { AdminPagination } from "@/components/admin/shared/admin-pagination"
@@ -33,6 +33,7 @@ type AdminEventsPageProps = {
   department?: string
   category?: string
   featured?: string
+  source?: string
 }
 
 const DEPARTMENT_LABELS: Record<string, string> = {
@@ -75,12 +76,13 @@ export const AdminEventsPage = ({
   department = "",
   category = "",
   featured = "",
+  source = "",
 }: AdminEventsPageProps) => {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState(search)
-  const [isDeleting, setIsDeleting] = useState<string | null>(null)
+  const [isUnpublishing, setIsUnpublishing] = useState<string | null>(null)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
-  const [isBulkDeleting, setIsBulkDeleting] = useState(false)
+  const [isBulkUnpublishing, setIsBulkUnpublishing] = useState(false)
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -89,6 +91,7 @@ export const AdminEventsPage = ({
     if (status && status !== "all") params.set("status", status)
     if (department) params.set("department", department)
     if (category) params.set("category", category)
+    if (source) params.set("source", source)
     params.set("page", "1")
     router.push(`/admin/events${params.toString() ? `?${params}` : ""}`)
   }
@@ -114,6 +117,14 @@ export const AdminEventsPage = ({
       options: CATEGORY_VALUES,
     },
     {
+      key: "source",
+      label: "Source",
+      options: [
+        { value: "tourinsoft", label: "Tourinsoft" },
+        { value: "manual", label: "Saisie manuelle" },
+      ],
+    },
+    {
       key: "featured",
       label: "À la une",
       options: [
@@ -128,12 +139,13 @@ export const AdminEventsPage = ({
     department: department || "",
     featured: featured || "",
     category: category || "",
+    source: source || "",
   }
 
-  const handleDelete = async (id: string) => {
-    setIsDeleting(id)
-    const result = await deleteEvent(id)
-    setIsDeleting(null)
+  const handleUnpublish = async (id: string) => {
+    setIsUnpublishing(id)
+    const result = await unpublishEvents([id])
+    setIsUnpublishing(null)
 
     if (result.success) {
       toast.success(result.message)
@@ -161,10 +173,10 @@ export const AdminEventsPage = ({
     setSelectedIds(newSelected)
   }
 
-  const handleBulkDelete = async () => {
-    setIsBulkDeleting(true)
-    const result = await bulkDeleteEvents(Array.from(selectedIds))
-    setIsBulkDeleting(false)
+  const handleBulkUnpublish = async () => {
+    setIsBulkUnpublishing(true)
+    const result = await unpublishEvents(Array.from(selectedIds))
+    setIsBulkUnpublishing(false)
 
     if (result.success) {
       toast.success(result.message)
@@ -214,6 +226,7 @@ export const AdminEventsPage = ({
                 if (status && status !== "all") params.set("status", status)
                 if (department) params.set("department", department)
                 if (category) params.set("category", category)
+                if (source) params.set("source", source)
                 params.set("page", "1")
                 router.push(`/admin/events${params.toString() ? `?${params}` : ""}`)
               }
@@ -230,6 +243,7 @@ export const AdminEventsPage = ({
                 if (status && status !== "all") params.set("status", status)
                 if (department) params.set("department", department)
                 if (category) params.set("category", category)
+                if (source) params.set("source", source)
                 params.set("page", "1")
                 router.push(`/admin/events${params.toString() ? `?${params}` : ""}`)
               }}
@@ -314,6 +328,19 @@ export const AdminEventsPage = ({
                             <Star className="size-3 fill-amber-400" aria-hidden="true" />À la une
                           </span>
                         )}
+                        {event.tourinsoftId && (
+                          <span
+                            className="inline-flex items-center gap-1 rounded-full bg-violet-500/20 px-2 py-0.5 text-xs font-medium text-violet-300"
+                            title={
+                              event.tourinsoftUpdatedAt
+                                ? `Fiche Tourinsoft mise à jour le ${formatDate(event.tourinsoftUpdatedAt)}`
+                                : undefined
+                            }
+                          >
+                            <RefreshCw className="size-3" aria-hidden="true" />
+                            Tourinsoft
+                          </span>
+                        )}
                         {event.accessible && (
                           <span
                             className="inline-flex items-center gap-1 rounded-full bg-blue-500/20 px-2 py-0.5 text-xs font-medium text-blue-400"
@@ -373,39 +400,40 @@ export const AdminEventsPage = ({
                             <Pencil className="h-3.5 w-3.5" />
                           </Button>
                         </Link>
-                        <AlertDialog>
-                          <AlertDialogTrigger
-                            render={
-                              <Button
-                                variant="ghost"
-                                size="icon-sm"
-                                className="text-red-400 hover:text-red-300"
-                                aria-label={`Supprimer ${event.titleFr}`}
-                              />
-                            }
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Supprimer l&apos;événement</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Êtes-vous sûr de vouloir supprimer &quot;{event.titleFr}&quot; ?
-                                Cette action est irréversible.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Annuler</AlertDialogCancel>
-                              <AlertDialogAction
-                                variant="destructive"
-                                onClick={() => handleDelete(event.id)}
-                                disabled={isDeleting === event.id}
-                              >
-                                {isDeleting === event.id ? "Suppression..." : "Supprimer"}
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                        {event.published && (
+                          <AlertDialog>
+                            <AlertDialogTrigger
+                              render={
+                                <Button
+                                  variant="ghost"
+                                  size="icon-sm"
+                                  className="text-orange-400 hover:text-orange-300"
+                                  aria-label={`Dépublier ${event.titleFr}`}
+                                />
+                              }
+                            >
+                              <EyeOff className="h-3.5 w-3.5" />
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Dépublier l&apos;événement</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  &quot;{event.titleFr}&quot; ne sera plus visible sur le site. Il
+                                  reste dans l&apos;administration et peut être republié.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleUnpublish(event.id)}
+                                  disabled={isUnpublishing === event.id}
+                                >
+                                  {isUnpublishing === event.id ? "Dépublication…" : "Dépublier"}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -423,6 +451,7 @@ export const AdminEventsPage = ({
               status: status || "",
               department: department || "",
               category: category || "",
+              source: source || "",
             }}
           />
         </>
@@ -445,28 +474,24 @@ export const AdminEventsPage = ({
             </Button>
             <AlertDialog>
               <AlertDialogTrigger
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90 inline-flex h-7 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium disabled:opacity-50"
-                disabled={isBulkDeleting}
+                className="inline-flex h-7 items-center gap-1.5 rounded-md bg-orange-500/20 px-2.5 text-sm font-medium text-orange-300 hover:bg-orange-500/30 disabled:opacity-50"
+                disabled={isBulkUnpublishing}
               >
-                <Trash2 className="size-3.5" />
-                Supprimer
+                <EyeOff className="size-3.5" aria-hidden="true" />
+                Dépublier
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Supprimer les événements</AlertDialogTitle>
+                  <AlertDialogTitle>Dépublier les événements</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Êtes-vous sûr de vouloir supprimer {selectedIds.size} événement
-                    {selectedIds.size > 1 ? "s" : ""} ? Cette action est irréversible.
+                    Les événements publiés de la sélection ne seront plus visibles sur le site. Ils
+                    restent dans l&apos;administration et peuvent être republiés.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Annuler</AlertDialogCancel>
-                  <AlertDialogAction
-                    variant="destructive"
-                    onClick={handleBulkDelete}
-                    disabled={isBulkDeleting}
-                  >
-                    {isBulkDeleting ? "Suppression..." : "Supprimer"}
+                  <AlertDialogAction onClick={handleBulkUnpublish} disabled={isBulkUnpublishing}>
+                    {isBulkUnpublishing ? "Dépublication…" : "Dépublier"}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

@@ -22,6 +22,7 @@ type GetAdminEventsParams = {
   department?: string
   category?: string
   featured?: string
+  source?: "tourinsoft" | "manual" | "all"
 }
 
 import type { AdminEventListItem } from "@/lib/types/admin"
@@ -41,6 +42,7 @@ export const getAdminEvents = async ({
   department,
   category,
   featured,
+  source = "all",
 }: GetAdminEventsParams = {}): Promise<GetAdminEventsResult> => {
   await requireRole("EDITOR")
 
@@ -76,6 +78,12 @@ export const getAdminEvents = async ({
     where.featured = false
   }
 
+  if (source === "tourinsoft") {
+    where.tourinsoftId = { not: null }
+  } else if (source === "manual") {
+    where.tourinsoftId = null
+  }
+
   const total = await prisma.event.count({ where })
   const totalPages = Math.ceil(total / limit)
   const skip = (page - 1) * limit
@@ -98,6 +106,8 @@ export const getAdminEvents = async ({
       publishedAt: true,
       unpublishedAt: true,
       accessible: true,
+      tourinsoftId: true,
+      tourinsoftUpdatedAt: true,
     },
   })
 
@@ -272,60 +282,36 @@ export const updateEvent = async (id: string, formData: FormData): Promise<Event
   }
 }
 
-export const deleteEvent = async (id: string): Promise<EventActionResult> => {
-  try {
-    await requireRole("EDITOR")
-    const event = await prisma.event.delete({ where: { id } })
-
-    revalidatePath("/evenements")
-    revalidatePath(`/evenement/${event.slug}`)
-    revalidatePath("/")
-
-    return {
-      success: true,
-      message: "Événement supprimé avec succès.",
-    }
-  } catch {
-    return {
-      success: false,
-      message: "Une erreur est survenue lors de la suppression de l'événement.",
-    }
-  }
-}
-
-export const bulkDeleteEvents = async (ids: string[]): Promise<EventActionResult> => {
+// Events are never deleted, only unpublished: the row, its URL history and the
+// Tourinsoft link stay, so the sync cannot recreate it and editors can undo.
+export const unpublishEvents = async (ids: string[]): Promise<EventActionResult> => {
   try {
     await requireRole("EDITOR")
     if (!ids.length) {
-      return {
-        success: false,
-        message: "Aucun événement sélectionné.",
-      }
+      return { success: false, message: "Aucun événement sélectionné." }
     }
 
     const events = await prisma.event.findMany({
-      where: { id: { in: ids } },
+      where: { id: { in: ids }, published: true },
       select: { slug: true },
     })
-
-    await prisma.event.deleteMany({
-      where: { id: { in: ids } },
+    const { count } = await prisma.event.updateMany({
+      where: { id: { in: ids }, published: true },
+      data: { published: false, unpublishedAt: new Date() },
     })
 
     revalidatePath("/evenements")
-    events.forEach((event) => {
-      revalidatePath(`/evenement/${event.slug}`)
-    })
+    events.forEach((event) => revalidatePath(`/evenement/${event.slug}`))
     revalidatePath("/")
 
     return {
       success: true,
-      message: `${ids.length} événement${ids.length > 1 ? "s" : ""} supprimé${ids.length > 1 ? "s" : ""} avec succès.`,
+      message: count > 1 ? `${count} événements dépubliés.` : `${count} événement dépublié.`,
     }
   } catch {
     return {
       success: false,
-      message: "Une erreur est survenue lors de la suppression des événements.",
+      message: "Une erreur est survenue lors de la dépublication.",
     }
   }
 }

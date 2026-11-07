@@ -34,3 +34,16 @@ export const describeCoverIfMissing = async (page: Page) => {
   if ((await alt.count()) === 0 || (await alt.inputValue()) !== "") return
   await alt.fill("Monument illuminé de nuit pendant le festival")
 }
+
+/** Publishes an event again through the review, so specs leave the seed published. */
+export const republishEvent = async (page: Page, editUrl: string) => {
+  await page.goto(editUrl)
+  if ((await page.getByText("Brouillon", { exact: true }).count()) === 0) return
+  await describeCoverIfMissing(page)
+  await page.getByRole("button", { name: "Publier", exact: true }).click()
+  const wizard = page.getByRole("dialog")
+  await expect(wizard.getByRole("button", { name: "Next" })).toBeEnabled({ timeout: 30_000 })
+  await wizard.getByRole("button", { name: "Confirmation" }).click()
+  await wizard.getByRole("button", { name: "Publish Now" }).click()
+  await expect(page).toHaveURL(/\/admin\/events(\?|$)/, { timeout: 15_000 })
+}

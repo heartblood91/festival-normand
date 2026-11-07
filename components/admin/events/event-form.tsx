@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AddressAutocomplete } from "@/components/admin/address-autocomplete"
+import { TourinsoftBanner } from "@/components/admin/events/tourinsoft-banner"
 import { PublishWizard, type PublishWizardResult } from "@/components/admin/publish/publish-wizard"
 import { FormActionBar } from "@/components/admin/shared/form-action-bar"
 import { CoverImageField } from "@/components/admin/shared/cover-image-field"
@@ -278,6 +279,8 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
         />
 
         {draft && <DraftBanner draft={draft} onRestore={restoreDraft} onDiscard={discardDraft} />}
+
+        {event?.tourinsoftId && <TourinsoftBanner updatedAt={event.tourinsoftUpdatedAt} />}
 
         {/* Basic Info with global i18n toggle */}
         <Card className="border-white/10 bg-white/5">
