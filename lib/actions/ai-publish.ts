@@ -1,7 +1,7 @@
 "use server"
 
 import { requireRole } from "@/lib/rbac"
-import { chatCompletion, extractJson } from "@/lib/ai/openrouter"
+import { chatCompletion, extractJson, isAiConfigured } from "@/lib/ai/openrouter"
 
 export type SEOSuggestion = {
   type: "heading" | "meta" | "keyword" | "structure"
@@ -19,6 +19,12 @@ export type SpellingCorrection = {
   original: string
   corrected: string
   context: string
+}
+
+/** Lets the admin say "AI unavailable" instead of silently showing no issues. */
+export const getAiAvailability = async (): Promise<{ available: boolean }> => {
+  await requireRole("EDITOR")
+  return { available: isAiConfigured() }
 }
 
 const callOpenRouter = (prompt: string): Promise<string> =>

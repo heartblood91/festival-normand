@@ -5,14 +5,24 @@ import { Eye, Languages, Search, AccessibilityIcon, ArrowLeft, Loader2 } from "l
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { PreviewDrawer } from "./preview-drawer"
+import { AiCheckDialog, type AiCheckKind } from "./ai-check-dialog"
+import { useAiAvailability } from "./use-ai-availability"
 import Link from "next/link"
+
+/** French source analysed by the SEO/RGAA checks, and the EN auto-fill. */
+export type FormAiTools = {
+  title: string
+  content: string
+  /** Fills empty EN fields; resolves to the number of fields filled. */
+  translateMissing: () => Promise<number>
+}
 
 type FormActionBarProps = {
   previewUrl?: string
   /** Omitted for content without a publication state (static pages). */
   isPublished?: boolean
   onTogglePublish?: (published: boolean) => void
-  onTranslate?: () => void
+  ai?: FormAiTools
   onSubmit?: () => void
   isSubmitting?: boolean
   saveLabel?: string
@@ -23,20 +33,33 @@ export const FormActionBar = ({
   previewUrl,
   isPublished,
   onTogglePublish,
-  onTranslate: _onTranslate,
+  ai,
   onSubmit,
   isSubmitting = false,
   saveLabel = "Enregistrer",
   backUrl,
 }: FormActionBarProps) => {
   const [previewOpen, setPreviewOpen] = useState(false)
+  const [check, setCheck] = useState<AiCheckKind | null>(null)
+  const [isTranslating, setIsTranslating] = useState(false)
+  const aiAvailable = useAiAvailability()
+  const aiDisabled = !aiAvailable || isTranslating
 
-  const handleSeo = () => {
-    toast.info("SEO — À venir")
-  }
-
-  const handleRgaa = () => {
-    toast.info("RGAA — À venir")
+  const handleTranslate = async () => {
+    if (!ai) return
+    setIsTranslating(true)
+    try {
+      const filled = await ai.translateMissing()
+      if (filled > 0) {
+        toast.success(`${filled} champ(s) anglais pré-rempli(s) : relisez l'onglet EN.`)
+      } else {
+        toast.info("Rien à traduire : les champs anglais sont déjà remplis.")
+      }
+    } catch {
+      toast.error("La traduction a échoué. Réessayez plus tard.")
+    } finally {
+      setIsTranslating(false)
+    }
   }
 
   return (
@@ -62,25 +85,59 @@ export const FormActionBar = ({
         </div>
 
         <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => toast.info("Traduction — À venir")}
-          >
-            <Languages className="mr-2 h-4 w-4" />
-            Traduire
-          </Button>
+          {ai && (
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleTranslate}
+                disabled={aiDisabled}
+                aria-describedby={aiAvailable === false ? "ai-unavailable" : undefined}
+              >
+                {isTranslating ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Languages className="mr-2 h-4 w-4" />
+                )}
+                Traduire
+              </Button>
 
-          <Button type="button" variant="outline" size="sm" onClick={handleSeo}>
-            <Search className="mr-2 h-4 w-4" />
-            SEO
-          </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setCheck("seo")}
+                disabled={aiDisabled}
+                aria-describedby={aiAvailable === false ? "ai-unavailable" : undefined}
+              >
+                <Search className="mr-2 h-4 w-4" />
+                SEO
+              </Button>
 
-          <Button type="button" variant="outline" size="sm" onClick={handleRgaa}>
-            <AccessibilityIcon className="mr-2 h-4 w-4" />
-            RGAA
-          </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setCheck("a11y")}
+                disabled={aiDisabled}
+                aria-describedby={aiAvailable === false ? "ai-unavailable" : undefined}
+              >
+                <AccessibilityIcon className="mr-2 h-4 w-4" />
+                RGAA
+              </Button>
+              {aiAvailable === false && (
+                <span
+                  id="ai-unavailable"
+                  title="Clé OpenRouter non configurée sur cet environnement"
+                  className="text-xs whitespace-nowrap text-slate-400"
+                >
+                  IA indisponible
+                  <span className="sr-only"> (clé OpenRouter non configurée)</span>
+                </span>
+              )}
+            </>
+          )}
 
           {previewUrl && (
             <Button type="button" variant="outline" size="sm" onClick={() => setPreviewOpen(true)}>
@@ -116,6 +173,15 @@ export const FormActionBar = ({
           )}
         </div>
       </div>
+
+      {ai && check && (
+        <AiCheckDialog
+          kind={check}
+          title={ai.title}
+          content={ai.content}
+          onClose={() => setCheck(null)}
+        />
+      )}
 
       {previewUrl && (
         <PreviewDrawer url={previewUrl} open={previewOpen} onClose={() => setPreviewOpen(false)} />

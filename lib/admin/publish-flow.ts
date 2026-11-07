@@ -9,6 +9,13 @@ export const needsPublishWizard = ({
   willPublish: boolean
 }): boolean => willPublish && !wasPublished
 
+/** Empty rich-text output such as "<p></p>" counts as blank. */
+export const isBlank = (value: string): boolean =>
+  !value
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .trim()
+
 /**
  * Machine translations only fill target fields the editor left empty: an
  * existing translation is the editor's work and is never overwritten.
@@ -20,7 +27,7 @@ export const fillMissingTranslations = (
   Object.fromEntries(
     Object.entries(current).map(([field, value]) => {
       const proposal = proposed[field]?.trim()
-      return [field, !value.trim() && proposal ? proposal : value]
+      return [field, isBlank(value) && proposal ? proposal : value]
     })
   )
 
@@ -30,7 +37,7 @@ export const missingTranslationSource = (
 ): Record<string, string> =>
   Object.fromEntries(
     Object.entries(pairs)
-      .filter(([, [source, target]]) => source.trim() && !target.trim())
+      .filter(([, [source, target]]) => !isBlank(source) && isBlank(target))
       .map(([field, [source]]) => [field, source])
   )
 

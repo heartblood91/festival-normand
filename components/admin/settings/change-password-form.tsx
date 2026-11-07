@@ -44,7 +44,7 @@ export const ChangePasswordForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
+    <form onSubmit={handleSubmit} className="max-w-md space-y-4">
       <div className="space-y-2">
         <Label htmlFor="current-password">Mot de passe actuel</Label>
         <PasswordInput

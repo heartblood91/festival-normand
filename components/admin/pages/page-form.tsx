@@ -12,6 +12,7 @@ import { FormActionBar } from "@/components/admin/shared/form-action-bar"
 import { createPage, updatePage } from "@/lib/actions/pages"
 import { slugify } from "@/lib/schemas/event"
 import { markdownToHtml, htmlToMarkdown } from "@/lib/utils/markdown"
+import { translateMissingFields } from "@/lib/admin/translate-missing"
 import type { Page } from "@prisma/client"
 
 const SYSTEM_SLUGS = ["festival", "inscription", "mentions-legales"]
@@ -82,6 +83,19 @@ export const PageForm = ({ page }: PageFormProps) => {
     <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
       <FormActionBar
         previewUrl={page ? `/${locale}/admin/preview/page/${page.id}` : undefined}
+        ai={{
+          title: titleFr,
+          content: contentFr,
+          translateMissing: async () => {
+            const filled = await translateMissingFields({
+              title: [titleFr, titleEn],
+              content: [contentFr, contentEn],
+            })
+            if (filled.title) setTitleEn(filled.title)
+            if (filled.content) setContentEn(filled.content)
+            return Object.keys(filled).length
+          },
+        }}
         onSubmit={handleSaveClick}
         isSubmitting={isSubmitting}
         saveLabel={page ? "Mettre à jour" : "Créer la page"}

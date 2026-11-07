@@ -1,5 +1,22 @@
-import { test, expect } from "@playwright/test"
+import { test, expect, type Page } from "@playwright/test"
 import { editorCredentials, loginAsEditor, MISSING_EDITOR } from "./helpers/admin"
+
+const openPublishReview = async (page: Page) => {
+  await page.getByRole("button", { name: "Publier", exact: true }).click()
+  const wizard = page.getByRole("dialog")
+  await expect(wizard.getByRole("button", { name: "Next" })).toBeEnabled({ timeout: 30_000 })
+  return wizard
+}
+
+// The shared local DB must keep its seeded events published, even after a failure.
+const republishIfDraft = async (page: Page, editUrl: string) => {
+  await page.goto(editUrl)
+  if ((await page.getByText("Brouillon", { exact: true }).count()) === 0) return
+  const wizard = await openPublishReview(page)
+  await wizard.getByRole("button", { name: "Confirmation" }).click()
+  await wizard.getByRole("button", { name: "Publish Now" }).click()
+  await expect(page).toHaveURL(/\/admin\/events(\?|$)/, { timeout: 15_000 })
+}
 
 test.describe("Admin publish workflow", () => {
   test.skip(!editorCredentials(), MISSING_EDITOR)
@@ -15,6 +32,9 @@ test.describe("Admin publish workflow", () => {
     await page.getByRole("button", { name: "Publier", exact: true }).click()
     const wizard = page.getByRole("dialog")
     await expect(wizard).toBeVisible()
+    if (!process.env.OPENROUTER_API_KEY) {
+      await expect(wizard.getByRole("status")).toContainText("Vérifications IA indisponibles")
+    }
 
     await wizard.getByRole("button", { name: "Cancel" }).click()
     await expect(wizard).toBeHidden()
@@ -45,24 +65,42 @@ test.describe("Admin publish workflow", () => {
     await expect(page).toHaveURL(/\/admin\/events\/[^/]+\/edit/)
     const editUrl = page.url()
 
-    // Unpublishing never opens the review.
-    await page.getByRole("button", { name: "Dépublier" }).click()
-    await expect(page).toHaveURL(/\/admin\/events(\?|$)/, { timeout: 15_000 })
+    try {
+      // Unpublishing never opens the review.
+      await page.getByRole("button", { name: "Dépublier" }).click()
+      await expect(page).toHaveURL(/\/admin\/events(\?|$)/, { timeout: 15_000 })
 
-    await page.goto(editUrl)
-    await expect(page.getByText("Brouillon", { exact: true })).toBeVisible()
-    await page.getByRole("button", { name: "Publier", exact: true }).click()
-    const wizard = page.getByRole("dialog")
-    await expect(wizard.getByRole("button", { name: "Next" })).toBeEnabled({ timeout: 30_000 })
-    await wizard.getByRole("button", { name: "Confirmation" }).click()
-    await wizard.getByRole("button", { name: "Publish Now" }).click()
+      await page.goto(editUrl)
+      await expect(page.getByText("Brouillon", { exact: true })).toBeVisible()
+      const wizard = await openPublishReview(page)
+      await wizard.getByRole("button", { name: "Confirmation" }).click()
+      if (!process.env.OPENROUTER_API_KEY) {
+        // Nothing was analysed, so nothing may be reported as passed.
+        await expect(wizard.getByText("Non vérifié", { exact: true })).toHaveCount(3)
+      }
+      await wizard.getByRole("button", { name: "Publish Now" }).click()
 
-    await expect(page.getByText("Événement mis à jour avec succès.")).toBeVisible({
-      timeout: 15_000,
-    })
-    await expect(page).toHaveURL(/\/admin\/events(\?|$)/)
-    await page.goto(editUrl)
-    await expect(page.getByText("Publié", { exact: true })).toBeVisible()
+      await expect(page.getByText("Événement mis à jour avec succès.")).toBeVisible({
+        timeout: 15_000,
+      })
+      await expect(page).toHaveURL(/\/admin\/events(\?|$)/)
+      await page.goto(editUrl)
+      await expect(page.getByText("Publié", { exact: true })).toBeVisible()
+    } finally {
+      await republishIfDraft(page, editUrl)
+    }
+  })
+
+  test("AI tools are real buttons that say when no AI key is configured", async ({ page }) => {
+    test.skip(!!process.env.OPENROUTER_API_KEY, "Checks the no-key state")
+    await page.goto("/fr/admin/events/new")
+    await expect(page.getByText(/^IA indisponible/)).toBeVisible()
+    for (const name of ["Traduire", "SEO", "RGAA"]) {
+      const button = page.getByRole("button", { name, exact: true })
+      await expect(button).toBeDisabled()
+      await expect(button).toHaveAccessibleDescription(/clé OpenRouter non configurée/)
+    }
+    await expect(page.getByText(/À venir/)).toHaveCount(0)
   })
 
   test("static pages show no publication state", async ({ page }) => {

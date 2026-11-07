@@ -48,7 +48,9 @@ export const RegistrationLinksForm = ({ links }: RegistrationLinksFormProps) => 
 
       <Card className="border-white/10 bg-white/5">
         <CardHeader>
-          <CardTitle className="text-white">Formulaire d&apos;inscription par département</CardTitle>
+          <CardTitle className="text-white">
+            Formulaire d&apos;inscription par département
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-slate-400">

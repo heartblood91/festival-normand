@@ -18,6 +18,7 @@ import {
   missingTranslationSource,
   needsPublishWizard,
 } from "@/lib/admin/publish-flow"
+import { translateMissingFields } from "@/lib/admin/translate-missing"
 import { slugify } from "@/lib/schemas/event"
 import type { News } from "@prisma/client"
 
@@ -167,6 +168,21 @@ export const NewsForm = ({ article }: NewsFormProps) => {
           previewUrl={article ? `/${locale}/admin/preview/news/${article.id}` : undefined}
           isPublished={published}
           onTogglePublish={setPublished}
+          ai={{
+            title: titleFr,
+            content: contentFr,
+            translateMissing: async () => {
+              const filled = await translateMissingFields({
+                title: [titleFr, titleEn],
+                content: [contentFr, contentEn],
+                excerpt: [excerptFr, excerptEn],
+              })
+              if (filled.title) setTitleEn(filled.title)
+              if (filled.content) setContentEn(filled.content)
+              if (filled.excerpt) setExcerptEn(filled.excerpt)
+              return Object.keys(filled).length
+            },
+          }}
           onSubmit={handleSaveClick}
           isSubmitting={isSubmitting}
           saveLabel={article ? "Mettre à jour" : "Créer l'article"}

@@ -19,6 +19,7 @@ import { A11yCheckStep } from "./a11y-check-step"
 import { SpellingCheckStep } from "./spelling-check-step"
 import { TranslationStep } from "./translation-step"
 import { ConfirmationStep } from "./confirmation-step"
+import { useAiAvailability } from "@/components/admin/shared/use-ai-availability"
 
 export type PublishWizardResult = {
   translations: Record<string, string>
@@ -74,6 +75,7 @@ export const PublishWizard = ({
   const [sourceFields, setSourceFields] = useState<Record<string, string>>({})
 
   const [isPublishing, setIsPublishing] = useState(false)
+  const aiAvailable = useAiAvailability()
 
   useEffect(() => {
     const runAnalysis = async () => {
@@ -184,7 +186,7 @@ export const PublishWizard = ({
 
   return (
     <Dialog open={true} onOpenChange={onCancel}>
-      <DialogContent className="max-w-2xl border-white/10 bg-slate-950 text-white">
+      <DialogContent className="max-h-[90dvh] max-w-2xl overflow-y-auto border-white/10 bg-slate-950 text-white">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold">
             Publish Content — {stepLabels[currentStep]}
@@ -207,7 +209,17 @@ export const PublishWizard = ({
           </div>
         </DialogHeader>
 
-        <div className="min-h-[400px] py-6">
+        {aiAvailable === false && (
+          <p
+            role="status"
+            className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-200"
+          >
+            Vérifications IA indisponibles (clé OpenRouter non configurée) : aucune suggestion ni
+            traduction ne sera proposée. Vous pouvez tout de même publier.
+          </p>
+        )}
+
+        <div className="py-6">
           {currentStep === "seo" && (
             <SEOCheckStep
               suggestions={seoSuggestions}
@@ -278,7 +290,9 @@ export const PublishWizard = ({
               locale={locale}
               seoIssues={seoSuggestions.length - seoDismissed.size}
               a11yIssues={a11ySuggestions.length - a11yDismissed.size}
-              spellingCorrections={spellingCorrections.length - spellingAccepted.size}
+              aiChecked={aiAvailable !== false}
+              spellingAccepted={spellingAccepted.size}
+              spellingRemaining={spellingCorrections.length - spellingAccepted.size}
               translationApplied={Object.keys(translatedFields).length > 0}
             />
           )}

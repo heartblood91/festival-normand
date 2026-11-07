@@ -58,8 +58,8 @@ export const ForgotPasswordForm = ({ emailEnabled }: ForgotPasswordFormProps) =>
         <CardContent className="space-y-4">
           <p className="text-sm text-slate-300">
             L&apos;envoi d&apos;email est désactivé sur cet environnement. Cette fonctionnalité
-            n&apos;est pas disponible — contactez un administrateur pour réinitialiser votre mot
-            de passe manuellement.
+            n&apos;est pas disponible — contactez un administrateur pour réinitialiser votre mot de
+            passe manuellement.
           </p>
           <Button asChild variant="outline" className="w-full">
             <Link href="/admin/login">Retour à la connexion</Link>
@@ -79,8 +79,8 @@ export const ForgotPasswordForm = ({ emailEnabled }: ForgotPasswordFormProps) =>
               <h2 className="text-lg font-semibold text-white">Email envoyé !</h2>
               <p className="mt-1 text-sm text-slate-400">
                 Si un compte existe avec l&apos;adresse{" "}
-                <span className="font-medium text-white">{email}</span>, un lien de
-                réinitialisation vient de lui être envoyé.
+                <span className="font-medium text-white">{email}</span>, un lien de réinitialisation
+                vient de lui être envoyé.
               </p>
             </div>
             <Button asChild variant="outline" className="w-full">

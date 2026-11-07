@@ -30,8 +30,8 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-slate-300">
-            Ce lien de réinitialisation est invalide ou a expiré. Demandez un nouveau lien
-            depuis la page de connexion.
+            Ce lien de réinitialisation est invalide ou a expiré. Demandez un nouveau lien depuis la
+            page de connexion.
           </p>
           <Button asChild variant="outline" className="w-full">
             <Link href="/admin/forgot-password">Demander un nouveau lien</Link>

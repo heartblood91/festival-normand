@@ -19,6 +19,7 @@ import {
   missingTranslationSource,
   needsPublishWizard,
 } from "@/lib/admin/publish-flow"
+import { translateMissingFields } from "@/lib/admin/translate-missing"
 import { slugify, DEPARTMENT_OPTIONS, CATEGORY_OPTIONS } from "@/lib/schemas/event"
 import type { Event } from "@prisma/client"
 
@@ -187,9 +188,20 @@ export const EventForm = ({ event }: EventFormProps) => {
           previewUrl={event ? `/${locale}/admin/preview/event/${event.id}` : undefined}
           isPublished={published}
           onTogglePublish={setPublished}
-          onTranslate={() => {
-            const button = document.querySelector("[data-translate-button]") as HTMLButtonElement
-            button?.click()
+          ai={{
+            title: titleFr,
+            content: descriptionFr,
+            translateMissing: async () => {
+              const filled = await translateMissingFields({
+                title: [titleFr, titleEn],
+                description: [descriptionFr, descriptionEn],
+                pricing: [pricingFr, pricingEn],
+              })
+              if (filled.title) setTitleEn(filled.title)
+              if (filled.description) setDescriptionEn(filled.description)
+              if (filled.pricing) setPricingEn(filled.pricing)
+              return Object.keys(filled).length
+            },
           }}
           onSubmit={handleSaveClick}
           isSubmitting={isSubmitting}

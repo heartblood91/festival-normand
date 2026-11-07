@@ -81,9 +81,7 @@ export const TwoFactorSection = ({ initialEnabled }: Props) => {
   if (enabled) {
     return (
       <form onSubmit={handleDisable} className="max-w-md space-y-4">
-        <p className="text-sm text-emerald-400">
-          ✓ Authentification à deux facteurs activée
-        </p>
+        <p className="text-sm text-emerald-400">✓ Authentification à deux facteurs activée</p>
         <div className="space-y-2">
           <Label htmlFor="disable-password">Mot de passe</Label>
           <PasswordInput
@@ -159,7 +157,8 @@ export const TwoFactorSection = ({ initialEnabled }: Props) => {
     <form onSubmit={handleVerify} className="max-w-md space-y-4">
       <div className="space-y-3">
         <p className="text-sm">
-          Scannez ce QR code ou saisissez la clé manuellement dans votre application d&apos;authentification :
+          Scannez ce QR code ou saisissez la clé manuellement dans votre application
+          d&apos;authentification :
         </p>
         {state.qrDataUrl ? (
           // Data URL QR code — next/image is overkill for a dynamic base64 string
@@ -175,7 +174,7 @@ export const TwoFactorSection = ({ initialEnabled }: Props) => {
           <div className="size-[220px] animate-pulse rounded-lg bg-white/10" />
         )}
         <div className="space-y-1">
-          <p className="text-muted-foreground text-xs font-medium uppercase tracking-wider">
+          <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
             Clé de configuration
           </p>
           <div className="flex items-center gap-2">

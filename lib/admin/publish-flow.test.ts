@@ -25,6 +25,12 @@ describe("fillMissingTranslations", () => {
     ).toEqual({ title: "Existing title", description: "AI description", pricing: "Free" })
   })
 
+  it("treats empty rich text as missing", () => {
+    expect(fillMissingTranslations({ description: "<p></p>" }, { description: "Text" })).toEqual({
+      description: "Text",
+    })
+  })
+
   it("keeps the current value when the proposal is blank", () => {
     expect(fillMissingTranslations({ title: "" }, { title: "  " })).toEqual({ title: "" })
   })
@@ -35,8 +41,8 @@ describe("missingTranslationSource", () => {
     expect(
       missingTranslationSource({
         title: ["Titre", "Title"],
-        description: ["<p>Texte</p>", ""],
-        pricing: ["", ""],
+        description: ["<p>Texte</p>", "<p></p>"],
+        pricing: ["<p>&nbsp;</p>", ""],
       })
     ).toEqual({ description: "<p>Texte</p>" })
   })

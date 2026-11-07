@@ -3,12 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 
 export type FilterConfig = {
