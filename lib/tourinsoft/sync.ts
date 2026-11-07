@@ -99,7 +99,7 @@ export const translateChangedFields = async (
   return Object.fromEntries(entries.filter((entry) => entry !== null)) as EnglishFields
 }
 
-const withGeocodedCoordinates = async (mapped: MappedOffer): Promise<MappedOffer> => {
+export const withGeocodedCoordinates = async (mapped: MappedOffer): Promise<MappedOffer> => {
   if (isInNormandyBounds(mapped)) return mapped
 
   const coordinates = await geocodeNormandyAddress(mapped)
@@ -120,13 +120,23 @@ export const ensureUniqueSlug = async (base: string): Promise<string> => {
   return `${base}-${index}`
 }
 
+export type CreateEventOptions = {
+  published?: boolean
+  downloadPhotos?: boolean
+  translate?: boolean
+}
+
 // New offer → published. Visibility before the festival is governed by the
-// per-department embargo, not by this flag.
-const createEvent = async (mapped: MappedOffer): Promise<void> => {
+// per-department embargo, not by this flag. The v1 recovery import reuses this
+// path with drafts and, for local runs, without photos or translation.
+export const createEventFromOffer = async (
+  mapped: MappedOffer,
+  { published = true, downloadPhotos = true, translate = true }: CreateEventOptions = {}
+): Promise<void> => {
   const { photos: rawPhotos, slug, ...data } = mapped
   const [photos, en, uniqueSlug] = await Promise.all([
-    persistPhotos(rawPhotos),
-    translateChangedFields(mapped, null),
+    downloadPhotos ? persistPhotos(rawPhotos) : [],
+    translate ? translateChangedFields(mapped, null) : {},
     ensureUniqueSlug(slug),
   ])
   await prisma.event.create({
@@ -134,8 +144,8 @@ const createEvent = async (mapped: MappedOffer): Promise<void> => {
       ...data,
       ...en,
       slug: uniqueSlug,
-      published: true,
-      publishedAt: new Date(),
+      published,
+      publishedAt: published ? new Date() : null,
       coverImage: photos[0]?.url ?? null,
       photos: { create: photos },
     },
@@ -198,7 +208,7 @@ export const reconcileOffers = async (
       const mapped = await withGeocodedCoordinates(mapOffer(offer))
       const current = byTourinsoftId.get(mapped.tourinsoftId)
       if (!current) {
-        await createEvent(mapped)
+        await createEventFromOffer(mapped)
         stats.created++
       } else if (
         current.tourinsoftUpdatedAt &&

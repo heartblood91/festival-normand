@@ -131,10 +131,41 @@ Two separate causes were found:
    branch (ordering tie-breaker on `id`) makes them all reachable again. The
    diagnostic's "cards seen" and "distinct" counts must then be equal.
 
-Events that existed on v1 but never reached the new site are covered by
-`docs/reports/v1-vs-prod.md` (P0.6).
+3. **v1 events that never reached the new site.** The 2026 edition was
+   published on v1 (pierresenlumieres.fr, Directus) but part of it never made
+   it to the new site — mostly Seine-Maritime (`FMANOR076…` offers). Compare
+   (read-only, v1 public API + new site map view):
+
+   ```sh
+   pnpm tsx scripts/compare-v1-prod.ts --year 2026   # → docs/reports/v1-vs-prod.md
+   ```
+
+   Then recover them from a checkout with prod `DATABASE_URL` in `.env`,
+   always starting with a dry run:
+
+   ```sh
+   pnpm tsx scripts/import-directus.ts --year 2026 --dry-run   # lists what would be created
+   pnpm tsx scripts/import-directus.ts --year 2026             # drafts, photos copied to our storage
+   ```
+
+   Events are created **as drafts** (editors review and publish them in the
+   admin; add `--publish` to publish directly). Existing events are matched by
+   Tourinsoft id first, then by title + commune, title slug, and place
+   (`lib/directus/match.ts`, same edition only); nothing is updated,
+   unpublished or deleted, and a second run creates nothing. The Tourinsoft sync
+   recognises recovered events by the same id. Options: `--limit N`,
+   `--skip-images`, `--no-translate` (otherwise EN is translated when
+   `OPENROUTER_API_KEY` is set). Photos go to Vercel Blob when
+   `BLOB_READ_WRITE_TOKEN` is set, else to `public/uploads` (persistent volume
+   needed).
 
 ### Verified locally
 
-On the local database (`pel-audit-db`): first `scripts/sync-tourinsoft.ts`
-run → `created: 4` (published, photos downloaded); second run → `skipped: 4`.
+On the local database (`pel-audit-db`):
+
+- `scripts/sync-tourinsoft.ts`: first run → `created: 4` (published, photos
+  downloaded); second run → `skipped: 4`.
+- `scripts/import-directus.ts --year 2026`: dry run → `planned: 423`;
+  `--limit 5` → `created: 5` drafts with photos and coordinates; full run with
+  `--skip-images` → `knownById: 5, created: 418`; re-run → `knownById: 423,
+created: 0`. The test drafts were then removed from the local database.
