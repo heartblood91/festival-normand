@@ -348,7 +348,10 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
                     : "text-muted-foreground hover:text-foreground border-white/10 bg-white/5 hover:bg-white/10"
                 )}
                 aria-pressed={selectedDates.includes(option.value)}
-                aria-label={`${t("filters.removeFilter", { filter: t(`filters.${option.labelKey}`) })}`}
+                aria-label={t(
+                  selectedDates.includes(option.value) ? "filters.removeFilter" : "filters.filterBy",
+                  { filter: t(`filters.${option.labelKey}`) }
+                )}
               >
                 {t(`filters.${option.labelKey}`)}
               </button>

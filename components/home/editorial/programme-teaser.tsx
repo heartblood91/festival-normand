@@ -9,9 +9,10 @@ import { EventThumb } from "@/components/editorial/event-thumb"
 type ProgrammeTeaserProps = {
   events: ProgrammeTeaserEvent[]
   total: number
+  markerIndex: string
 }
 
-const ProgrammeTeaser = async ({ events, total }: ProgrammeTeaserProps) => {
+const ProgrammeTeaser = async ({ events, total, markerIndex }: ProgrammeTeaserProps) => {
   if (events.length === 0) return null
   const t = await getTranslations()
   const locale = (await getLocale()) as Locale
@@ -20,7 +21,7 @@ const ProgrammeTeaser = async ({ events, total }: ProgrammeTeaserProps) => {
     <section className="bg-ed-bg-deep border-primary/25 border-t px-4 py-20 md:px-6 md:py-24">
       <div className="mx-auto max-w-7xl">
         <SectionHeading
-          markerIndex="05"
+          markerIndex={markerIndex}
           marker={t("editorial.programmeTeaser.marker")}
           title={t("editorial.programmeTeaser.title")}
           action={

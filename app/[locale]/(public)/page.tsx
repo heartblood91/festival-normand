@@ -71,16 +71,31 @@ const HomePage = async ({ params }: HomePageProps) => {
     />
   )
 
+  // Sequential editorial markers — advance only for sections that actually
+  // render, so the ¶ NN numbers never skip a number across edition modes.
+  let markerCount = 0
+  const nextMarker = () => String(++markerCount).padStart(2, "0")
+  const hasNews = news.length > 0
+  const hasFeatured = featured.length > 0
+  const hasProgramme = programme.length > 0
+  const hasPartners = partners.length > 0
+
   if (mode === "bilan") {
     return (
       <>
         {hero}
-        <PastRevive />
-        <Quote />
-        <NewsRow news={news} mode={mode} markerIndex="03" />
-        <Highlights events={featured} mode={mode} />
-        <NormandySection byDepartment={stats.byDepartment} totalPlaces={stats.totalPlaces} />
-        <Partners partners={partners} />
+        <PastRevive markerIndex={nextMarker()} />
+        <Quote markerIndex={nextMarker()} />
+        {hasNews ? <NewsRow news={news} mode={mode} markerIndex={nextMarker()} /> : null}
+        {hasFeatured ? (
+          <Highlights events={featured} mode={mode} markerIndex={nextMarker()} />
+        ) : null}
+        <NormandySection
+          byDepartment={stats.byDepartment}
+          totalPlaces={stats.totalPlaces}
+          markerIndex={nextMarker()}
+        />
+        {hasPartners ? <Partners partners={partners} markerIndex={nextMarker()} /> : null}
       </>
     )
   }
@@ -88,13 +103,25 @@ const HomePage = async ({ params }: HomePageProps) => {
   return (
     <>
       {hero}
-      <ThreeNights byNight={stats.byNight} />
-      <Quote />
-      <NewsRow news={news} mode={mode} />
-      <Highlights events={featured} mode={mode} />
-      <ProgrammeTeaser events={programme} total={stats.totalPlaces} />
-      <NormandySection byDepartment={stats.byDepartment} totalPlaces={stats.totalPlaces} />
-      <Partners partners={partners} />
+      <ThreeNights byNight={stats.byNight} markerIndex={nextMarker()} />
+      <Quote markerIndex={nextMarker()} />
+      {hasNews ? <NewsRow news={news} mode={mode} markerIndex={nextMarker()} /> : null}
+      {hasFeatured ? (
+        <Highlights events={featured} mode={mode} markerIndex={nextMarker()} />
+      ) : null}
+      {hasProgramme ? (
+        <ProgrammeTeaser
+          events={programme}
+          total={stats.totalPlaces}
+          markerIndex={nextMarker()}
+        />
+      ) : null}
+      <NormandySection
+        byDepartment={stats.byDepartment}
+        totalPlaces={stats.totalPlaces}
+        markerIndex={nextMarker()}
+      />
+      {hasPartners ? <Partners partners={partners} markerIndex={nextMarker()} /> : null}
     </>
   )
 }

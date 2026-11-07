@@ -162,6 +162,7 @@
     "date30Full": "Sat May 30",
     "date31Full": "Sun May 31",
     "pmr": "Wheelchair accessible",
+    "filterBy": "Filter by {filter}",
     "removeFilter": "Remove {filter} filter",
     "clearAll": "Clear all",
     "eventCount": "{count} events",

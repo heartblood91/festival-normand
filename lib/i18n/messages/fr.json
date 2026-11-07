@@ -162,6 +162,7 @@
     "date30Full": "Sam 30 mai",
     "date31Full": "Dim 31 mai",
     "pmr": "Accessible PMR",
+    "filterBy": "Filtrer par {filter}",
     "removeFilter": "Retirer le filtre {filter}",
     "clearAll": "Tout effacer",
     "eventCount": "{count} événements",

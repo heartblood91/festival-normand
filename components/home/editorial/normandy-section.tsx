@@ -7,9 +7,14 @@ import { NormandyMap } from "@/components/editorial/normandy-map"
 type NormandySectionProps = {
   byDepartment: Record<string, number>
   totalPlaces: number
+  markerIndex: string
 }
 
-const NormandySection = async ({ byDepartment, totalPlaces }: NormandySectionProps) => {
+const NormandySection = async ({
+  byDepartment,
+  totalPlaces,
+  markerIndex,
+}: NormandySectionProps) => {
   const t = await getTranslations()
   const locale = (await getLocale()) as Locale
 
@@ -24,7 +29,7 @@ const NormandySection = async ({ byDepartment, totalPlaces }: NormandySectionPro
       <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1fr_380px]">
         <NormandyMap departments={departments} className="h-auto w-full" />
         <div>
-          <Marker index="06" className="mb-3.5">
+          <Marker index={markerIndex} className="mb-3.5">
             {t("editorial.mapSection.marker")}
           </Marker>
           <h2 className="text-foreground font-display text-3xl leading-tight font-normal tracking-tight italic md:text-4xl">

@@ -4,19 +4,24 @@ import { EDITION } from "@/lib/festival/edition"
 import { Marker } from "@/components/editorial/primitives"
 
 type PastReviveProps = {
+  markerIndex: string
   /** Render the gallery CTA only when there is gallery content to link to. */
   hasGallery?: boolean
   /** Render the replays CTA only when there are mapping replays available. */
   hasReplays?: boolean
 }
 
-const PastRevive = async ({ hasGallery = false, hasReplays = false }: PastReviveProps) => {
+const PastRevive = async ({
+  markerIndex,
+  hasGallery = false,
+  hasReplays = false,
+}: PastReviveProps) => {
   const t = await getTranslations()
 
   return (
     <section className="bg-background border-primary/25 border-t px-4 py-16 md:px-6 md:py-20">
       <div className="mx-auto max-w-4xl text-center">
-        <Marker index="01" className="mb-3 inline-block">
+        <Marker index={markerIndex} className="mb-3 inline-block">
           {t("editorial.past.marker")}
         </Marker>
         <h2 className="text-foreground font-display text-4xl font-normal tracking-tight italic md:text-5xl">

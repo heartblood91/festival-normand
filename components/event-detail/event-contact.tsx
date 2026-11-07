@@ -12,9 +12,9 @@ const EventContact = async ({ event }: EventContactProps) => {
 
   return (
     <div className="bg-ed-bg-deep border-primary/25 border p-6">
-      <p className="text-primary mb-4 font-mono text-[10.5px] tracking-[0.22em] uppercase">
+      <h2 className="text-primary mb-4 font-mono text-[10.5px] tracking-[0.22em] uppercase">
         <span aria-hidden="true">¶</span> {t("events.organizer")}
-      </p>
+      </h2>
       {event.organizer ? (
         <p className="text-foreground font-display mb-3 text-lg font-normal italic">
           {event.organizer}

@@ -38,9 +38,9 @@ const EventInfo = async ({ event, locale }: EventInfoProps) => {
 
   return (
     <div className="bg-ed-bg-soft border-primary/25 border p-6">
-      <p className="text-primary mb-5 font-mono text-[10.5px] tracking-[0.22em] uppercase">
+      <h2 className="text-primary mb-5 font-mono text-[10.5px] tracking-[0.22em] uppercase">
         <span aria-hidden="true">¶</span> {t("events.practicalInfo")}
-      </p>
+      </h2>
       <dl className="grid gap-3.5">
         <Row label={t("events.date")} value={dateDisplay} />
         {timeDisplay ? <Row label={t("events.time")} value={timeDisplay} /> : null}

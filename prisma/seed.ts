@@ -938,6 +938,79 @@ In accordance with GDPR, you have the right to access, rectify and erase your pe
 
 This website uses technical cookies required for its operation. No advertising cookies are used.`,
     },
+    {
+      titleFr: "Déclaration d'accessibilité",
+      titleEn: "Accessibility statement",
+      slug: "accessibilite",
+      contentFr: `# Déclaration d'accessibilité
+
+Pierres en Lumières s'engage à rendre son site internet accessible conformément à l'article 47 de la loi n° 2005-102 du 11 février 2005.
+
+## État de conformité
+
+Ce site est **non conforme** avec le référentiel général d'amélioration de l'accessibilité (RGAA), version 4.1. Aucun audit de conformité n'a encore été réalisé.
+
+## Contenus non accessibles
+
+- Certaines images importées depuis des sources externes peuvent ne pas disposer d'alternatives textuelles optimales.
+- La carte interactive (Mapbox) dispose d'une accessibilité limitée pour les utilisateurs de lecteurs d'écran.
+
+## Mesures d'accessibilité mises en œuvre
+
+- Lien d'évitement vers le contenu principal
+- Navigation complète au clavier
+- Hiérarchie de titres cohérente
+- Zones de navigation identifiées (landmarks ARIA)
+- Ratios de contraste conformes (minimum 4.5:1)
+- Alternatives textuelles sur les images
+- Formulaires avec étiquettes associées
+- Fil d'Ariane sur les pages de détail
+- Respect du paramètre prefers-reduced-motion
+
+## Retour d'information et contact
+
+Si vous n'arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable du site pour être orienté vers une alternative accessible ou obtenir le contenu sous une autre forme. Contactez-nous via notre [formulaire de contact](/fr/contact).
+
+## Voies de recours
+
+Si vous constatez un défaut d'accessibilité vous empêchant d'accéder à un contenu ou une fonctionnalité du site, que vous nous le signalez et que vous ne parvenez pas à obtenir une réponse de notre part, vous êtes en droit de faire parvenir vos doléances ou une demande de saisine au Défenseur des droits.
+
+Dernière mise à jour : mars 2026`,
+      contentEn: `# Accessibility statement
+
+Pierres en Lumières is committed to making its website accessible in accordance with Article 47 of French Law No. 2005-102 of 11 February 2005.
+
+## Conformity status
+
+This website is **non-conformant** with the General Reference for Digital Accessibility Improvement (RGAA), version 4.1. No conformity audit has been conducted yet.
+
+## Non-accessible content
+
+- Some externally sourced images may lack optimal text alternatives.
+- The interactive map (Mapbox) has limited accessibility for screen reader users.
+
+## Accessibility measures implemented
+
+- Skip link to main content
+- Complete keyboard navigation
+- Consistent heading hierarchy
+- Identified navigation zones (ARIA landmarks)
+- Compliant contrast ratios (minimum 4.5:1)
+- Text alternatives for images
+- Forms with associated labels
+- Breadcrumbs on detail pages
+- Respect for prefers-reduced-motion setting
+
+## Feedback and contact
+
+If you are unable to access content or a service, you can contact the site administrator to be directed to an accessible alternative or to obtain the content in another format. Contact us via our [contact form](/en/contact).
+
+## Legal recourse
+
+If you encounter an accessibility problem preventing you from accessing content or a site feature, report it to us, and you are unable to obtain a response, you have the right to file a complaint with the Defender of Rights (Défenseur des droits).
+
+Last updated: March 2026`,
+    },
   ]
 
   for (const page of pages) {

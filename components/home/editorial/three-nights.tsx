@@ -6,9 +6,10 @@ import { Marker } from "@/components/editorial/primitives"
 
 type ThreeNightsProps = {
   byNight: Record<string, number>
+  markerIndex: string
 }
 
-const ThreeNights = async ({ byNight }: ThreeNightsProps) => {
+const ThreeNights = async ({ byNight, markerIndex }: ThreeNightsProps) => {
   const t = await getTranslations()
   const locale = (await getLocale()) as Locale
   const isEn = locale === "en"
@@ -17,7 +18,7 @@ const ThreeNights = async ({ byNight }: ThreeNightsProps) => {
     <section className="border-primary/25 bg-background border-t px-4 py-16 md:px-6 md:py-20">
       <div className="mx-auto max-w-7xl">
         <div className="mb-10 text-center">
-          <Marker index="01" className="mb-3 inline-block">
+          <Marker index={markerIndex} className="mb-3 inline-block">
             {t("editorial.threeNights.marker")}
           </Marker>
           <h2 className="text-foreground font-display text-4xl font-normal tracking-tight italic md:text-5xl">

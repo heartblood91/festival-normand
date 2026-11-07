@@ -77,19 +77,19 @@ const ContactPage = async ({ params }: ContactPageProps) => {
         <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr] lg:gap-20">
           {/* Form */}
           <div>
-            <Marker className="mb-7">{t("contact.formTitle")}</Marker>
+            <Marker as="h2" className="mb-7">{t("contact.formTitle")}</Marker>
             <ContactForm />
           </div>
 
           {/* Coordinates */}
           <div className="lg:border-primary/25 lg:border-l lg:pl-16">
-            <Marker className="mb-7">{isEn ? "Contact details" : "Coordonnées"}</Marker>
+            <Marker as="h2" className="mb-7">{isEn ? "Contact details" : "Coordonnées"}</Marker>
             <div className="grid gap-8">
               {coordinates.map((block) => (
                 <div key={block.label} className="border-primary/20 border-b pb-7">
-                  <p className="text-primary mb-3 font-mono text-[10px] tracking-[0.2em] uppercase">
+                  <h3 className="text-primary mb-3 font-mono text-[10px] tracking-[0.2em] uppercase">
                     {block.label}
-                  </p>
+                  </h3>
                   {block.lines.map((line, i) => (
                     <p
                       key={line}
@@ -107,9 +107,9 @@ const ContactPage = async ({ params }: ContactPageProps) => {
 
               {/* Register CTA */}
               <div className="bg-ed-bg-soft border-primary/25 border p-6">
-                <p className="text-primary mb-3 font-mono text-[10px] tracking-[0.2em] uppercase">
+                <h3 className="text-primary mb-3 font-mono text-[10px] tracking-[0.2em] uppercase">
                   {t("contact.registerTitle")}
-                </p>
+                </h3>
                 <p className="text-ed-bone mb-5 font-serif text-base font-light">
                   {t("contact.registerDescription")}
                 </p>

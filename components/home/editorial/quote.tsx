@@ -1,13 +1,17 @@
 import { getTranslations } from "next-intl/server"
 import { Marker } from "@/components/editorial/primitives"
 
-const Quote = async () => {
+type QuoteProps = {
+  markerIndex: string
+}
+
+const Quote = async ({ markerIndex }: QuoteProps) => {
   const t = await getTranslations()
 
   return (
     <section className="bg-ed-bg-deep border-primary/25 border-y px-4 py-20 md:px-6 md:py-28">
       <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-[180px_1fr] md:gap-16">
-        <Marker index="02" className="md:pt-5">
+        <Marker index={markerIndex} className="md:pt-5">
           {t("editorial.quote.marker")}
         </Marker>
         <figure className="m-0">

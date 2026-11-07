@@ -14,9 +14,10 @@ const initials = (name: string) =>
 
 type PartnersProps = {
   partners: PartnerItem[]
+  markerIndex: string
 }
 
-const Partners = async ({ partners }: PartnersProps) => {
+const Partners = async ({ partners, markerIndex }: PartnersProps) => {
   if (partners.length === 0) return null
   const t = await getTranslations()
 
@@ -24,7 +25,7 @@ const Partners = async ({ partners }: PartnersProps) => {
     <section className="bg-background border-primary/25 border-t px-4 py-20 md:px-6 md:py-24">
       <div className="mx-auto max-w-7xl">
         <SectionHeading
-          markerIndex="07"
+          markerIndex={markerIndex}
           marker={t("editorial.partnersSection.marker")}
           title={t("editorial.partnersSection.title")}
         />

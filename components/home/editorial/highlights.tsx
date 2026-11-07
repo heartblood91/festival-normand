@@ -10,9 +10,10 @@ import { EventThumb } from "@/components/editorial/event-thumb"
 type HighlightsProps = {
   events: FeaturedEvent[]
   mode: EditionMode
+  markerIndex: string
 }
 
-const Highlights = async ({ events, mode }: HighlightsProps) => {
+const Highlights = async ({ events, mode, markerIndex }: HighlightsProps) => {
   if (events.length === 0) return null
   const t = await getTranslations()
   const locale = (await getLocale()) as Locale
@@ -22,7 +23,7 @@ const Highlights = async ({ events, mode }: HighlightsProps) => {
     <section className="bg-ed-bg-deep border-primary/25 border-t px-4 py-20 md:px-6 md:py-24">
       <div className="mx-auto max-w-7xl">
         <SectionHeading
-          markerIndex="04"
+          markerIndex={markerIndex}
           marker={
             past
               ? t("editorial.highlights.markerPast", { year: EDITION.year })
