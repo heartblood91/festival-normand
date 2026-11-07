@@ -163,7 +163,14 @@
     "organizer": "Organizer",
     "free": "Free",
     "accessible": "Wheelchair accessible",
-    "nearbyFallback": "No events within 50 km of your location. Here are the closest events, around {distance} km away."
+    "nearbyFallback": "No events within 50 km of your location. Here are the closest events, around {distance} km away.",
+    "nearbySameDay": "Same day, nearby",
+    "nearbyClosest": "Closest sites",
+    "nearbySameDayHint": "Open the same day, within {radius} km. Numbers match the map.",
+    "nearbyClosestHint": "No other site is open the same day within {radius} km. Numbers match the map.",
+    "distanceKm": "{distance, number} km",
+    "mapYouAreHere": "You are here",
+    "mapLabel": "Map: {title} and {count, plural, =0 {no neighbouring site} one {# numbered neighbouring site} other {# numbered neighbouring sites}}"
   },
   "filters": {
     "department": "Department",

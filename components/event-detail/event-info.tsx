@@ -57,12 +57,13 @@ const EventInfo = async ({ event, locale }: EventInfoProps) => {
           }
         />
         {event.pricing ? (
-          <Row label={t("events.pricing")} value={<span className="text-primary">{event.pricing}</span>} />
+          <Row
+            label={t("events.pricing")}
+            value={<span className="text-primary">{event.pricing}</span>}
+          />
         ) : null}
         {event.organizer ? <Row label={t("events.organizer")} value={event.organizer} /> : null}
-        {event.accessible ? (
-          <Row label={t("filters.pmr")} value={t("events.accessible")} />
-        ) : null}
+        {event.accessible ? <Row label={t("filters.pmr")} value={t("events.accessible")} /> : null}
       </dl>
     </div>
   )

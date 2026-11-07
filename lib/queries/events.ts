@@ -209,6 +209,8 @@ export const getNeighbourEvents = async (
           longitude: true,
           city: true,
           category: true,
+          dateStart: true,
+          dateEnd: true,
         },
       })
 
@@ -233,6 +235,8 @@ export const getNeighbourEvents = async (
         longitude: e.longitude as number,
         city: e.city,
         category: e.category,
+        dateStart: e.dateStart?.toISOString() ?? null,
+        dateEnd: e.dateEnd?.toISOString() ?? null,
         distanceKm: Math.round(e.distance * 10) / 10,
       }))
     },

@@ -5,6 +5,8 @@ import Image from "next/image"
 import { Link } from "@/lib/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { getEventBySlug, getNeighbourEvents } from "@/lib/queries/events"
+import { pickNearbySuggestions } from "@/lib/events/nearby"
+import { NearbySuggestions } from "@/components/event-detail/nearby-suggestions"
 import { EventInfo } from "@/components/event-detail/event-info"
 import { EventContact } from "@/components/event-detail/event-contact"
 import { PhotoCarousel, type CarouselPhoto } from "@/components/event-detail/photo-carousel"
@@ -75,6 +77,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
   const neighbours = hasNormandyCoordinates
     ? await getNeighbourEvents(slug, event.latitude as number, event.longitude as number, locale)
     : []
+  const nearby = pickNearbySuggestions(event, neighbours)
 
   // Prefer the relational photos (with credit); fall back to coverImage/images
   // for legacy/seed events that predate the Tourinsoft import.
@@ -202,7 +205,12 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
                   longitude={event.longitude as number}
                   title={event.title}
                   locale={locale}
+                  suggestions={nearby.items}
                   neighbours={neighbours}
+                  labels={{
+                    youAreHere: t("events.mapYouAreHere"),
+                    map: t("events.mapLabel", { title: event.title, count: nearby.items.length }),
+                  }}
                 />
                 <p className="text-ed-bone mt-4 font-serif text-base italic">
                   {event.location}
@@ -211,6 +219,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
                     {event.postalCode} {event.city}
                   </span>
                 </p>
+                <NearbySuggestions items={nearby.items} sameDay={nearby.sameDay} locale={locale} />
               </section>
             ) : null}
             <EventContact event={event} />

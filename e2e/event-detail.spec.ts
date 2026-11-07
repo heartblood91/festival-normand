@@ -72,6 +72,20 @@ test.describe("Event detail page", () => {
     expect(count).toBeGreaterThanOrEqual(0)
   })
 
+  test("lists nearby sites as numbered links matching the map", async ({ page }) => {
+    await openFirstEvent(page)
+    const locHeading = page.getByRole("heading", { name: "Localisation" })
+    test.skip((await locHeading.count()) === 0, "first event has no Normandy coordinates")
+
+    const nearby = page.getByRole("region", { name: /Le même jour, à proximité|plus proches/ })
+    await expect(nearby).toBeVisible()
+    const links = nearby.getByRole("link")
+    expect(await links.count()).toBeGreaterThanOrEqual(1)
+    expect(await links.count()).toBeLessThanOrEqual(6)
+    await expect(links.first()).toHaveAttribute("href", /\/evenement\//)
+    await expect(links.first()).toContainText(/\d+([.,]\d)? km/)
+  })
+
   test("has proper SEO meta tags", async ({ page }) => {
     await openFirstEvent(page)
     const ogType = page.locator('meta[property="og:type"]')

@@ -413,6 +413,17 @@ describe("getNeighbourEvents", () => {
     longitude: lng,
     city,
     category: "ILLUMINATIONS",
+    dateStart: new Date("2027-05-22T20:00:00"),
+    dateEnd: null,
+  })
+
+  it("returns the dates so the page can suggest same-day neighbours", async () => {
+    prismaMock.event.findMany.mockResolvedValue([makeEvent("close", 49.2, -0.4)])
+
+    const [neighbour] = await getNeighbourEvents("current", caenLat, caenLng, "fr")
+
+    expect(neighbour.dateStart).toBe(new Date("2027-05-22T20:00:00").toISOString())
+    expect(neighbour.dateEnd).toBeNull()
   })
 
   it("excludes the current event from neighbours and sorts by distance", async () => {

@@ -89,7 +89,12 @@ const EventPreviewPage = async ({ params }: EventPreviewPageProps) => {
                   longitude={event.longitude as number}
                   title={event.title}
                   locale={locale}
+                  suggestions={[]}
                   neighbours={[]}
+                  labels={{
+                    youAreHere: t("events.mapYouAreHere"),
+                    map: t("events.mapLabel", { title: event.title, count: 0 }),
+                  }}
                 />
               </section>
             )}
