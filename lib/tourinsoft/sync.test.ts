@@ -18,7 +18,9 @@ const { mockPrisma, translateTextMock, requireRoleMock } = vi.hoisted(() => ({
 }))
 
 vi.mock("@/lib/prisma", () => ({ prisma: mockPrisma }))
-vi.mock("@/lib/storage", () => ({ uploadImageFromUrl: vi.fn(async (url: string) => `stored:${url}`) }))
+vi.mock("@/lib/storage", () => ({
+  uploadImageFromUrl: vi.fn(async (url: string) => `stored:${url}`),
+}))
 vi.mock("@/lib/geo/geocode", () => ({ geocodeNormandyAddress: vi.fn(async () => null) }))
 vi.mock("@/lib/ai/openrouter", () => ({
   isAiConfigured: () => true,

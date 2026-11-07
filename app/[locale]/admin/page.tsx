@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { AdminDashboard } from "@/components/admin/admin-dashboard"
 import { prisma } from "@/lib/prisma"
+import { getLastTourinsoftRun } from "@/lib/tourinsoft/sync"
 
 const AdminPage = async () => {
   const session = await auth.api.getSession({
@@ -22,6 +23,7 @@ const AdminPage = async () => {
     draftNewsCount,
     depublishedEventCount,
     depublishedNewsCount,
+    lastSyncRun,
   ] = await Promise.all([
     prisma.event.count({ where: { published: true } }),
     prisma.news.count({ where: { published: true } }),
@@ -33,11 +35,13 @@ const AdminPage = async () => {
     // Depublished: was published or has unpublishedAt
     prisma.event.count({ where: { published: false, unpublishedAt: { not: null } } }),
     prisma.news.count({ where: { published: false, unpublishedAt: { not: null } } }),
+    getLastTourinsoftRun(),
   ])
 
   return (
     <AdminDashboard
       user={session.user}
+      lastSyncRun={lastSyncRun}
       stats={{
         events: eventCount,
         news: newsCount,

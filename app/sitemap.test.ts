@@ -5,11 +5,16 @@ vi.mock("@/lib/prisma", () => ({
   prisma: prismaMock,
 }))
 
-import sitemap from "./sitemap"
+import sitemap, { revalidate } from "./sitemap"
 
 describe("sitemap", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  it("is regenerated periodically instead of frozen at build time", () => {
+    expect(revalidate).toBeGreaterThan(0)
+    expect(revalidate).toBeLessThanOrEqual(3600)
   })
 
   it("returns static pages", async () => {

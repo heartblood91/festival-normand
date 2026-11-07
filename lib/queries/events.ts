@@ -115,7 +115,9 @@ export const getEvents = async (filters: EventFilters = {}, locale: Locale = "fr
       const [rawEvents, total] = await Promise.all([
         prisma.event.findMany({
           where,
-          orderBy: isNearby ? undefined : { dateStart: "asc" },
+          // Many events share the same night: without a unique tie-breaker,
+          // OFFSET pagination returns overlapping pages and some events never show.
+          orderBy: isNearby ? undefined : [{ dateStart: "asc" }, { id: "asc" }],
           ...(isNearby ? {} : { skip, take: ITEMS_PER_PAGE }),
           select: EVENT_LIST_SELECT,
         }),

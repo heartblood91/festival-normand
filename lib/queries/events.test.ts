@@ -78,6 +78,17 @@ describe("getEvents", () => {
     )
   })
 
+  it("orders with a unique tie-breaker so OFFSET pages never overlap", async () => {
+    prismaMock.event.findMany.mockResolvedValue([])
+    prismaMock.event.count.mockResolvedValue(0)
+
+    await getEvents({ page: 2 }, "fr")
+
+    expect(prismaMock.event.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ orderBy: [{ dateStart: "asc" }, { id: "asc" }] })
+    )
+  })
+
   it("filters by category", async () => {
     prismaMock.event.findMany.mockResolvedValue([])
     prismaMock.event.count.mockResolvedValue(0)

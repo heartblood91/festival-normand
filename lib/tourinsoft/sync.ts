@@ -71,7 +71,11 @@ type CurrentTexts = {
   pricingEn: string | null
 }
 
-type EnglishFields = { titleEn?: string | null; descriptionEn?: string | null; pricingEn?: string | null }
+type EnglishFields = {
+  titleEn?: string | null
+  descriptionEn?: string | null
+  pricingEn?: string | null
+}
 
 // Only (re)translate a field when its French source changed or no English exists,
 // so manual EN corrections survive unrelated upstream updates.

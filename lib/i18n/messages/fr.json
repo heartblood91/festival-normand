@@ -243,7 +243,20 @@
       "quickActions": "Actions rapides",
       "createEvent": "Créer un événement",
       "createNews": "Créer une actualité",
-      "managePartners": "Gérer les partenaires"
+      "managePartners": "Gérer les partenaires",
+      "sync": {
+        "title": "Synchro Tourinsoft",
+        "never": "Aucune synchronisation enregistrée.",
+        "lastRun": "Dernière exécution : {date}",
+        "counts": "{created} créés · {updated} mis à jour · {skipped} inchangés · {failed} en échec",
+        "trigger": "Déclencheur : {trigger}",
+        "status": {
+          "RUNNING": "En cours",
+          "SUCCESS": "Réussie",
+          "PARTIAL": "Partielle",
+          "FAILED": "Échec"
+        }
+      }
     },
     "common": {
       "save": "Enregistrer",

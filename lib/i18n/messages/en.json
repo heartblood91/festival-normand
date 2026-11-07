@@ -243,7 +243,20 @@
       "quickActions": "Quick actions",
       "createEvent": "Create event",
       "createNews": "Create news article",
-      "managePartners": "Manage partners"
+      "managePartners": "Manage partners",
+      "sync": {
+        "title": "Tourinsoft sync",
+        "never": "No sync recorded yet.",
+        "lastRun": "Last run: {date}",
+        "counts": "{created} created · {updated} updated · {skipped} unchanged · {failed} failed",
+        "trigger": "Trigger: {trigger}",
+        "status": {
+          "RUNNING": "Running",
+          "SUCCESS": "Succeeded",
+          "PARTIAL": "Partial",
+          "FAILED": "Failed"
+        }
+      }
     },
     "common": {
       "save": "Save",

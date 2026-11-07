@@ -4,6 +4,10 @@ import { locales } from "@/lib/i18n/config"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
+// Without this the sitemap is rendered once at build time: a build against an
+// empty or unreachable DB ships a sitemap with no event at all (seen in prod).
+export const revalidate = 3600
+
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
   const [events, news, pages] = await Promise.all([
     prisma.event.findMany({

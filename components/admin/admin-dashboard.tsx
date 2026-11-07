@@ -13,6 +13,8 @@ import {
   Info,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { SyncStatusCard } from "@/components/admin/sync-status-card"
+import type { SyncRunSummary } from "@/lib/tourinsoft/sync"
 
 type AdminDashboardProps = {
   user: {
@@ -30,6 +32,7 @@ type AdminDashboardProps = {
     depublishedEvents: number
     depublishedNews: number
   }
+  lastSyncRun: SyncRunSummary | null
 }
 
 const statCards = [
@@ -44,7 +47,7 @@ const statCards = [
   { key: "totalPages", icon: FileText, color: "text-purple-400", bgColor: "bg-purple-400/10" },
 ] as const
 
-export const AdminDashboard = ({ user, stats }: AdminDashboardProps) => {
+export const AdminDashboard = ({ user, stats, lastSyncRun }: AdminDashboardProps) => {
   const t = useTranslations("admin")
   const locale = useLocale()
 
@@ -201,6 +204,8 @@ export const AdminDashboard = ({ user, stats }: AdminDashboardProps) => {
           </div>
         </div>
       </div>
+
+      <SyncStatusCard lastRun={lastSyncRun} />
     </div>
   )
 }
