@@ -58,6 +58,30 @@ test.describe("Events list page", () => {
     expect(page.url()).toContain("category=illuminations")
   })
 
+  test("several nights can be selected together", async ({ page }) => {
+    await page.goto("/evenements")
+    // Night chips come from the current edition; pick the first and the last.
+    const nightChips = page.locator("button[aria-pressed]").filter({ hasText: /\d/ })
+    const count = await nightChips.count()
+    expect(count).toBeGreaterThanOrEqual(2)
+    const first = (await nightChips.first().textContent())!.trim()
+    const last = (await nightChips.last().textContent())!.trim()
+
+    await nightChips.first().click()
+    await page.waitForURL(/date=\d{2}$/)
+    await page.locator("button[aria-pressed]").filter({ hasText: last }).click()
+    await page.waitForURL(/date=\d{2}(%2C|,)\d{2}/)
+
+    await expect(page.locator("button[aria-pressed]").filter({ hasText: first })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    )
+    await expect(page.locator("button[aria-pressed]").filter({ hasText: last })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    )
+  })
+
   test("active filters display and can be removed", async ({ page }) => {
     await page.goto("/evenements?category=illuminations")
     const filterChip = page.getByRole("button", {

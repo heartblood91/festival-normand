@@ -71,7 +71,7 @@ const parseSearchParams = (params: Record<string, string | string[] | undefined>
 
   return {
     search: getString("search"),
-    date: getString("date"),
+    dates: getString("date")?.split(",").filter(Boolean),
     category: getString("category")?.toUpperCase() as Category | undefined,
     department: getString("dept")?.toUpperCase() as Department | undefined,
     accessible: getString("accessible") === "true",

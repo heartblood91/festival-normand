@@ -129,6 +129,17 @@ export const buildEdition = (settings: EditionSettings): Edition => {
   }
 }
 
+/**
+ * Night codes from a `?date=` value ("21" or "21,23"), restricted to the
+ * nights of the edition and returned in night order without duplicates.
+ */
+export const parseNightCodes = (raw: string | string[] | undefined, edition: Edition): string[] => {
+  const requested = new Set(
+    (Array.isArray(raw) ? raw : (raw ?? "").split(",")).map((code) => code.trim())
+  )
+  return edition.nights.map((night) => night.code).filter((code) => requested.has(code))
+}
+
 export const getEditionMode = (edition: Edition, now: Date = new Date()): EditionMode => {
   // Optional override to preview the other face before its date window (and for
   // QA). Set NEXT_PUBLIC_PEL_FORCE_MODE to "upcoming" or "bilan".

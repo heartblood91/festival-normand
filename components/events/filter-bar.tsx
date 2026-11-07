@@ -49,7 +49,7 @@ const FilterBar = ({ nights, total = 0, counts }: FilterBarProps) => {
   const [selectedDept, setSelectedDept] = useState(searchParams.get("dept") ?? "")
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") ?? "")
   const [selectedDates, setSelectedDates] = useState<string[]>(
-    searchParams.get("date") ? [searchParams.get("date")!] : []
+    (searchParams.get("date") ?? "").split(",").filter(Boolean)
   )
   const [pmrEnabled, setPmrEnabled] = useState(searchParams.get("accessible") === "true")
 
@@ -86,7 +86,7 @@ const FilterBar = ({ nights, total = 0, counts }: FilterBarProps) => {
     }
 
     if (dates && dates.length > 0) {
-      params.set("date", dates[0])
+      params.set("date", dates.join(","))
     } else {
       params.delete("date")
     }
@@ -117,10 +117,12 @@ const FilterBar = ({ nights, total = 0, counts }: FilterBarProps) => {
     updateUrl(selectedDept, newCategory, selectedDates, pmrEnabled)
   }
 
+  // Several nights can be combined; the URL keeps them in night order.
   const handleDateToggle = (value: string) => {
-    const newDates = selectedDates.includes(value)
+    const toggled = selectedDates.includes(value)
       ? selectedDates.filter((d) => d !== value)
-      : [value]
+      : [...selectedDates, value]
+    const newDates = nights.map((night) => night.value).filter((code) => toggled.includes(code))
     setSelectedDates(newDates)
     updateUrl(selectedDept, selectedCategory, newDates, pmrEnabled)
   }

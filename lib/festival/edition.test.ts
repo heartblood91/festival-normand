@@ -9,6 +9,7 @@ import {
   getCountdownDays,
   getEditionMode,
   isDuringFestival,
+  parseNightCodes,
   validateEditionSettings,
 } from "./edition"
 
@@ -122,5 +123,18 @@ describe("validateEditionSettings", () => {
     expect(
       validateEditionSettings({ ...DEFAULT_EDITION_SETTINGS, bilanFrom: "2027-05-22" })
     ).not.toEqual([])
+  })
+})
+
+describe("parseNightCodes", () => {
+  it("keeps the valid night codes of a comma-separated value, in night order", () => {
+    expect(parseNightCodes("23,21", edition2027)).toEqual(["21", "23"])
+    expect(parseNightCodes("22", edition2027)).toEqual(["22"])
+  })
+
+  it("drops unknown codes, duplicates and blanks", () => {
+    expect(parseNightCodes("29,22,22,,x", edition2027)).toEqual(["22"])
+    expect(parseNightCodes(undefined, edition2027)).toEqual([])
+    expect(parseNightCodes(["21", "23"], edition2027)).toEqual(["21", "23"])
   })
 })

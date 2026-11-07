@@ -5,6 +5,7 @@ import { localizeEntity } from "@/lib/i18n/db"
 import { searchEventIds } from "@/lib/search"
 import { isInNormandyBounds, normandyBoundsWhere } from "@/lib/geo/normandy"
 import { getCurrentEdition } from "@/lib/queries/edition"
+import { parseNightCodes } from "@/lib/festival/edition"
 import type { Locale } from "@/lib/i18n/config"
 import type { Department, Category, Prisma } from "@prisma/client"
 
@@ -15,7 +16,8 @@ export const NEARBY_RADIUS_KM = 50
 
 export type EventFilters = {
   search?: string
-  date?: string
+  /** Night codes (day of month) of the current edition, e.g. ["21", "23"] */
+  dates?: string[]
   category?: Category
   department?: Department
   accessible?: boolean
@@ -53,11 +55,23 @@ const EVENT_LIST_SELECT = {
   longitude: true,
 } as const
 
+/** Events overlapping at least one of the given local calendar days. */
+const overlapsAnyDay = (days: string[]): Prisma.EventWhereInput => ({
+  OR: days.map((day) => {
+    const dayStart = new Date(`${day}T00:00:00`)
+    const dayEnd = new Date(`${day}T23:59:59`)
+    return {
+      dateStart: { lte: dayEnd },
+      OR: [{ dateEnd: { gte: dayStart } }, { dateEnd: null, dateStart: { gte: dayStart } }],
+    }
+  }),
+})
+
 const buildFilterWhere = async (
   filters: EventFilters,
   overrides?: { key: string; value: string }
 ): Promise<Prisma.EventWhereInput> => {
-  const { search, date, accessible } = filters
+  const { search, dates, accessible } = filters
   const where: Prisma.EventWhereInput = await publicEventWhere()
 
   const dept =
@@ -77,23 +91,22 @@ const buildFilterWhere = async (
   if (dept) where.department = dept as Department
   if (accessible) where.accessible = true
 
-  if (date) {
-    const { nights } = await getCurrentEdition()
-    const dateStr = nights.find((night) => night.code === date)?.date
-    if (dateStr) {
-      const dayStart = new Date(`${dateStr}T00:00:00`)
-      const dayEnd = new Date(`${dateStr}T23:59:59`)
-      where.dateStart = { lte: dayEnd }
-      where.OR = [{ dateEnd: { gte: dayStart } }, { dateEnd: null, dateStart: { gte: dayStart } }]
-    }
+  const and: Prisma.EventWhereInput[] = []
+
+  if (dates?.length) {
+    const edition = await getCurrentEdition()
+    const days = edition.nights
+      .filter((night) => parseNightCodes(dates, edition).includes(night.code))
+      .map((night) => night.date)
+    if (days.length) and.push(overlapsAnyDay(days))
   }
 
   if (search) {
-    const matchedIds = await searchEventIds(search)
-    where.AND = [
-      ...(Array.isArray(where.AND) ? where.AND : where.AND ? [where.AND] : []),
-      { id: { in: matchedIds } },
-    ]
+    and.push({ id: { in: await searchEventIds(search) } })
+  }
+
+  if (and.length) {
+    where.AND = [...(Array.isArray(where.AND) ? where.AND : where.AND ? [where.AND] : []), ...and]
   }
 
   return where
