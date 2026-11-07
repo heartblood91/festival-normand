@@ -5,6 +5,7 @@ import { getPageBySlug } from "@/lib/queries/pages"
 import { getCurrentEdition } from "@/lib/queries/edition"
 import { ClassicPage } from "@/components/editorial/classic-page"
 import { DepartmentRegistrationLinks } from "@/components/inscription/department-registration-links"
+import { RegistrationSteps } from "@/components/inscription/registration-steps"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
@@ -59,9 +60,13 @@ const InscriptionPage = async ({ params }: InscriptionPageProps) => {
       title={page.title}
       content={page.content}
       marker={locale === "en" ? "Take part" : "Participer"}
-    >
-      <DepartmentRegistrationLinks />
-    </ClassicPage>
+      lead={
+        <>
+          <RegistrationSteps />
+          <DepartmentRegistrationLinks />
+        </>
+      }
+    />
   )
 }
 

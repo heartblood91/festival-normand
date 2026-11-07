@@ -10,13 +10,15 @@ type ClassicPageProps = {
   content: string
   /** Editorial kicker above the title */
   marker?: string
-  /** Rendered after the markdown body (e.g. registration links) */
+  /** Rendered before the markdown body (e.g. the actions a visitor came for) */
+  lead?: ReactNode
+  /** Rendered after the markdown body */
   children?: ReactNode
 }
 
 // Shared editorial shell for long-form markdown pages
 // (festival, inscription, legal notice, accessibility statement).
-const ClassicPage = async ({ title, content, marker, children }: ClassicPageProps) => {
+const ClassicPage = async ({ title, content, marker, lead, children }: ClassicPageProps) => {
   const t = await getTranslations()
 
   return (
@@ -50,6 +52,7 @@ const ClassicPage = async ({ title, content, marker, children }: ClassicPageProp
       </div>
 
       <div className="mx-auto max-w-3xl px-4 py-12 md:px-6 md:py-16">
+        {lead}
         <MarkdownContent content={stripLeadingTitle(content, title)} />
         {children}
       </div>

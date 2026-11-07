@@ -205,9 +205,27 @@
     "SEINE_MARITIME": "Seine-Maritime"
   },
   "registration": {
-    "byDepartmentTitle": "Inscrivez votre événement",
-    "byDepartmentIntro": "Sélectionnez votre département pour accéder au formulaire d'inscription.",
-    "cta": "S'inscrire"
+    "byDepartmentTitle": "Choisissez votre département",
+    "byDepartmentIntro": "Le formulaire s'ouvre dans un nouvel onglet, sur le site de votre département.",
+    "cta": "Accéder au formulaire",
+    "stepsTitle": "Inscrire votre événement en 3 étapes",
+    "steps": {
+      "choose": {
+        "title": "Choisissez votre département",
+        "text": "Chaque département gère les inscriptions de son territoire et vous accompagne."
+      },
+      "fill": {
+        "title": "Remplissez le formulaire en ligne",
+        "text": "Décrivez votre site, vos animations et vos horaires, ajoutez une ou plusieurs photos."
+      },
+      "publish": {
+        "title": "Le département valide, le site publie",
+        "text": "Votre événement rejoint le programme après validation. L'inscription est gratuite."
+      }
+    },
+    "newTab": "(nouvel onglet)",
+    "comingSoon": "Formulaire bientôt en ligne",
+    "departmentNumber": "Département {code}"
   },
   "news": {
     "title": "Actualités",

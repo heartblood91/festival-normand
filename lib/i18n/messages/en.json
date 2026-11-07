@@ -205,9 +205,27 @@
     "SEINE_MARITIME": "Seine-Maritime"
   },
   "registration": {
-    "byDepartmentTitle": "Register your event",
-    "byDepartmentIntro": "Select your department to access the registration form.",
-    "cta": "Register"
+    "byDepartmentTitle": "Choose your département",
+    "byDepartmentIntro": "The form opens in a new tab, on your département's website.",
+    "cta": "Open the form",
+    "stepsTitle": "Register your event in 3 steps",
+    "steps": {
+      "choose": {
+        "title": "Choose your département",
+        "text": "Each département handles registrations for its territory and supports you."
+      },
+      "fill": {
+        "title": "Fill in the online form",
+        "text": "Describe your site, activities and opening hours, and add one or more photos."
+      },
+      "publish": {
+        "title": "The département approves, the site publishes",
+        "text": "Your event joins the programme once approved. Registration is free."
+      }
+    },
+    "newTab": "(opens in a new tab)",
+    "comingSoon": "Form coming soon",
+    "departmentNumber": "Département {code}"
   },
   "news": {
     "title": "News",

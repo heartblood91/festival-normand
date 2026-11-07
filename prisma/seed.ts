@@ -816,25 +816,11 @@ Thanks to its network of volunteers and patrons, the Foundation supports hundred
       slug: "inscription",
       contentFr: `# Inscrivez votre événement
 
-Vous êtes propriétaire ou gestionnaire d'un site patrimonial en Normandie ? Participez à Pierres en Lumières 2026 !
+Vous êtes propriétaire ou gestionnaire d'un site patrimonial en Normandie ? Participez à Pierres en Lumières !
 
 ## Découvrez le festival en vidéo
 
 [Pierres en Lumières 2025 - Retour en images](https://www.youtube.com/embed/AHnGhy1o0pA)
-
-## Comment s'inscrire ?
-
-L'inscription est gratuite et ouverte à tous les sites patrimoniaux normands : châteaux, églises, manoirs, sites industriels, jardins...
-
-Chaque département dispose de son propre formulaire d'inscription. Cliquez sur le lien de votre département ci-dessous pour accéder au formulaire.
-
-## Formulaires d'inscription par département
-
-- [Calvados — Formulaire d'inscription](https://inscription.calvados.pierresenlumieres.fr)
-- [Eure — Formulaire d'inscription](https://inscription.eure.pierresenlumieres.fr)
-- [Manche — Formulaire d'inscription](https://inscription.manche.pierresenlumieres.fr)
-- [Orne — Formulaire d'inscription](https://inscription.orne.pierresenlumieres.fr)
-- [Seine-Maritime — Formulaire d'inscription](https://inscription.seine-maritime.pierresenlumieres.fr)
 
 ## Critères de participation
 
@@ -845,28 +831,14 @@ Chaque département dispose de son propre formulaire d'inscription. Cliquez sur 
 
 ## Dates limites
 
-Les inscriptions pour l'édition 2026 sont ouvertes jusqu'au **15 avril 2026**.`,
+Chaque département fixe sa date limite d'inscription ; elle est indiquée sur son formulaire.`,
       contentEn: `# Register your event
 
-Are you the owner or manager of a heritage site in Normandy? Take part in Pierres en Lumières 2026!
+Are you the owner or manager of a heritage site in Normandy? Take part in Pierres en Lumières!
 
 ## Discover the festival on video
 
 [Pierres en Lumières 2025 — highlights](https://www.youtube.com/embed/AHnGhy1o0pA)
-
-## How to register
-
-Registration is free and open to all Norman heritage sites: châteaux, churches, manors, industrial sites, gardens and more.
-
-Each département has its own registration form. Click your département's link below to access the form.
-
-## Registration forms by département
-
-- [Calvados — Registration form](https://inscription.calvados.pierresenlumieres.fr)
-- [Eure — Registration form](https://inscription.eure.pierresenlumieres.fr)
-- [Manche — Registration form](https://inscription.manche.pierresenlumieres.fr)
-- [Orne — Registration form](https://inscription.orne.pierresenlumieres.fr)
-- [Seine-Maritime — Registration form](https://inscription.seine-maritime.pierresenlumieres.fr)
 
 ## Eligibility criteria
 
@@ -877,7 +849,7 @@ Each département has its own registration form. Click your département's link 
 
 ## Deadlines
 
-Registrations for the 2026 edition are open until **15 April 2026**.`,
+Each département sets its own registration deadline, shown on its form.`,
     },
     {
       titleFr: "Mentions légales",
