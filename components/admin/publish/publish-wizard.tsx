@@ -20,12 +20,20 @@ import { SpellingCheckStep } from "./spelling-check-step"
 import { TranslationStep } from "./translation-step"
 import { ConfirmationStep } from "./confirmation-step"
 
+export type PublishWizardResult = {
+  translations: Record<string, string>
+  corrections: SpellingCorrection[]
+}
+
 type PublishWizardProps = {
   title: string
   content: string
   locale: string
   contentType: "event" | "news" | "page"
-  onComplete: (translatedFields?: Record<string, string>) => void
+  /** Source fields whose translation is still empty; existing ones are kept. */
+  translationSource: Record<string, string>
+  /** Saves the content; resolves to false when the server refused it. */
+  onComplete: (result: PublishWizardResult) => Promise<boolean>
   onCancel: () => void
 }
 
@@ -46,6 +54,7 @@ export const PublishWizard = ({
   content,
   locale,
   contentType,
+  translationSource,
   onComplete,
   onCancel,
 }: PublishWizardProps) => {
@@ -70,33 +79,32 @@ export const PublishWizard = ({
     const runAnalysis = async () => {
       setIsLoading(true)
       try {
-        setSourceFields({ title, description: content })
+        setSourceFields(translationSource)
 
         const [seoResults, a11yResults, spellingResults, translationResults] = await Promise.all([
           checkSEO(title, content, locale),
           checkAccessibility(content),
           checkSpelling(content, locale),
-          translateMultipleFields(
-            { title, description: content },
-            locale,
-            locale === "fr" ? "en" : "fr"
-          ),
+          Object.keys(translationSource).length > 0
+            ? translateMultipleFields(translationSource, locale, locale === "fr" ? "en" : "fr")
+            : Promise.resolve({}),
         ])
 
         setSeoSuggestions(seoResults)
         setA11ySuggestions(a11yResults)
         setSpellingCorrections(spellingResults)
         setTranslatedFields(translationResults)
-      } catch (error) {
+      } catch {
         toast.error("Failed to analyze content")
-        console.error(error)
       } finally {
         setIsLoading(false)
       }
     }
 
     runAnalysis()
-  }, [title, content, locale])
+    // The analysis runs once, on the content the editor asked to publish.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleRegenerateSEO = async () => {
     setIsLoading(true)
@@ -153,21 +161,16 @@ export const PublishWizard = ({
     }
   }
 
+  // The form saves and reports the server result; the wizard only closes on success.
   const handlePublish = async () => {
     setIsPublishing(true)
     try {
-      const filteredTranslations: Record<string, string> = {}
-      Object.entries(translatedFields).forEach(([key, value]) => {
-        if (value?.trim()) {
-          filteredTranslations[key] = value
-        }
+      await onComplete({
+        translations: Object.fromEntries(
+          Object.entries(translatedFields).filter(([, value]) => value?.trim())
+        ),
+        corrections: spellingCorrections.filter((_, index) => spellingAccepted.has(index)),
       })
-
-      onComplete(filteredTranslations)
-      toast.success("Published successfully!")
-    } catch (error) {
-      toast.error("Failed to publish")
-      console.error(error)
     } finally {
       setIsPublishing(false)
     }

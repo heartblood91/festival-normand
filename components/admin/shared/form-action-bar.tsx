@@ -9,8 +9,9 @@ import Link from "next/link"
 
 type FormActionBarProps = {
   previewUrl?: string
-  isPublished: boolean
-  onTogglePublish: (published: boolean) => void
+  /** Omitted for content without a publication state (static pages). */
+  isPublished?: boolean
+  onTogglePublish?: (published: boolean) => void
   onTranslate?: () => void
   onSubmit?: () => void
   isSubmitting?: boolean
@@ -49,7 +50,7 @@ export const FormActionBar = ({
               </Button>
             </Link>
           ) : null}
-          {isPublished ? (
+          {isPublished === undefined ? null : isPublished ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-medium text-emerald-400">
               Publié
             </span>
@@ -88,22 +89,24 @@ export const FormActionBar = ({
             </Button>
           )}
 
-          <Button
-            type="button"
-            size="sm"
-            onClick={() => {
-              onTogglePublish(!isPublished)
-              // Auto-submit after state update so the change persists
-              requestAnimationFrame(() => onSubmit?.())
-            }}
-            className={
-              isPublished
-                ? "border-orange-500/30 bg-orange-500/10 text-orange-400 hover:bg-orange-500/20"
-                : "border-blue-500/30 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20"
-            }
-          >
-            {isPublished ? "Dépublier" : "Publier"}
-          </Button>
+          {onTogglePublish && isPublished !== undefined && (
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => {
+                onTogglePublish(!isPublished)
+                // Auto-submit after state update so the change persists
+                requestAnimationFrame(() => onSubmit?.())
+              }}
+              className={
+                isPublished
+                  ? "border-orange-500/30 bg-orange-500/10 text-orange-400 hover:bg-orange-500/20"
+                  : "border-blue-500/30 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20"
+              }
+            >
+              {isPublished ? "Dépublier" : "Publier"}
+            </Button>
+          )}
 
           {onSubmit && (
             <Button type="button" onClick={onSubmit} disabled={isSubmitting}>

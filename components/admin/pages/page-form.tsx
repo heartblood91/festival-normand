@@ -82,8 +82,6 @@ export const PageForm = ({ page }: PageFormProps) => {
     <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
       <FormActionBar
         previewUrl={page ? `/${locale}/admin/preview/page/${page.id}` : undefined}
-        isPublished={true}
-        onTogglePublish={() => {}}
         onSubmit={handleSaveClick}
         isSubmitting={isSubmitting}
         saveLabel={page ? "Mettre à jour" : "Créer la page"}

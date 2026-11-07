@@ -49,6 +49,10 @@ export const TranslationStep = ({
           <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-amber-500 border-t-transparent" />
           <p className="mt-2 text-sm text-slate-400">Translating content...</p>
         </div>
+      ) : entries.length === 0 ? (
+        <p className="rounded-lg border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
+          Aucun champ à traduire : les traductions existantes sont conservées.
+        </p>
       ) : (
         <div className="max-h-[400px] space-y-4 overflow-y-auto">
           {entries.map(([key, sourceValue]) => (

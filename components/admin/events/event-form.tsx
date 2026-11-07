@@ -9,10 +9,16 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ImageUpload } from "@/components/admin/image-upload"
 import { AddressAutocomplete } from "@/components/admin/address-autocomplete"
-import { PublishWizard } from "@/components/admin/publish/publish-wizard"
+import { PublishWizard, type PublishWizardResult } from "@/components/admin/publish/publish-wizard"
 import { FormActionBar } from "@/components/admin/shared/form-action-bar"
 import { TiptapEditor } from "@/components/admin/tiptap-editor"
 import { createEvent, updateEvent } from "@/lib/actions/events"
+import {
+  applySpellingCorrections,
+  fillMissingTranslations,
+  missingTranslationSource,
+  needsPublishWizard,
+} from "@/lib/admin/publish-flow"
 import { slugify, DEPARTMENT_OPTIONS, CATEGORY_OPTIONS } from "@/lib/schemas/event"
 import type { Event } from "@prisma/client"
 
@@ -37,7 +43,8 @@ export const EventForm = ({ event }: EventFormProps) => {
   const [autoSlug] = useState(!event)
   const [featured, setFeatured] = useState(event?.featured ?? false)
   const [accessible, setAccessible] = useState(event?.accessible ?? false)
-  const [published, setPublished] = useState(event?.published ?? false)
+  const wasPublished = event?.published ?? false
+  const [published, setPublished] = useState(wasPublished)
   const [titleFr, setTitleFr] = useState(event?.titleFr ?? "")
   const [titleEn, setTitleEn] = useState(event?.titleEn ?? "")
   const [descriptionFr, setDescriptionFr] = useState(event?.descriptionFr ?? "")
@@ -51,7 +58,6 @@ export const EventForm = ({ event }: EventFormProps) => {
   const [latitude, setLatitude] = useState(event?.latitude ?? 0)
   const [longitude, setLongitude] = useState(event?.longitude ?? 0)
   const [showPublishWizard, setShowPublishWizard] = useState(false)
-  const [, setPublishingFields] = useState<Record<string, string>>({})
   const [coverImage, setCoverImage] = useState(event?.coverImage ?? "")
 
   const handleTitleFrChange = useCallback(
@@ -68,145 +74,94 @@ export const EventForm = ({ event }: EventFormProps) => {
     formRef.current?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }))
   }, [])
 
-  const handlePublishClick = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setPublishingFields({
+  const save = async (overrides: Record<string, string> = {}): Promise<boolean> => {
+    if (!formRef.current) return false
+    const fields: Record<string, string> = {
+      slug,
       titleFr,
+      titleEn,
       descriptionFr,
+      descriptionEn,
       pricingFr,
-    })
-    setShowPublishWizard(true)
-  }
-
-  const handleWizardComplete = async (translatedFields?: Record<string, string>) => {
-    setShowPublishWizard(false)
-
-    const newTitleEn = translatedFields?.title || titleEn
-    const newDescriptionEn = translatedFields?.description || descriptionEn
-    const newPricingEn = translatedFields?.pricing || pricingEn
-
-    if (translatedFields?.title) setTitleEn(newTitleEn)
-    if (translatedFields?.description) setDescriptionEn(newDescriptionEn)
-    if (translatedFields?.pricing) setPricingEn(newPricingEn)
-
-    const formData = new FormData()
-    formData.set("slug", slug)
-    formData.set("titleFr", titleFr)
-    formData.set("titleEn", newTitleEn)
-    formData.set("descriptionFr", descriptionFr)
-    formData.set("descriptionEn", newDescriptionEn)
-    formData.set("pricingFr", pricingFr)
-    formData.set("pricingEn", newPricingEn)
-    formData.set("location", location)
-    formData.set("city", city)
-    formData.set("postalCode", postalCode)
-    formData.set("department", department)
-    formData.set("latitude", latitude !== null ? String(latitude) : "")
-    formData.set("longitude", longitude !== null ? String(longitude) : "")
-    formData.set("coverImage", coverImage)
-    formData.set("featured", String(featured))
-    formData.set("accessible", String(accessible))
-    formData.set("published", String(true))
-
-    const categoryInput = document.querySelector<HTMLSelectElement>('[name="category"]')
-    const organizerInput = document.querySelector<HTMLInputElement>('[name="organizer"]')
-    const emailInput = document.querySelector<HTMLInputElement>('[name="email"]')
-    const phoneInput = document.querySelector<HTMLInputElement>('[name="phone"]')
-    const websiteInput = document.querySelector<HTMLInputElement>('[name="website"]')
-    const dateStartInput = document.querySelector<HTMLInputElement>('[name="dateStart"]')
-    const dateEndInput = document.querySelector<HTMLInputElement>('[name="dateEnd"]')
-    const timeStartInput = document.querySelector<HTMLInputElement>('[name="timeStart"]')
-    const timeEndInput = document.querySelector<HTMLInputElement>('[name="timeEnd"]')
-
-    if (categoryInput?.value) formData.set("category", categoryInput.value)
-    if (organizerInput?.value) formData.set("organizer", organizerInput.value)
-    if (emailInput?.value) formData.set("email", emailInput.value)
-    if (phoneInput?.value) formData.set("phone", phoneInput.value)
-    if (websiteInput?.value) formData.set("website", websiteInput.value)
-    if (dateStartInput?.value) formData.set("dateStart", dateStartInput.value)
-    if (dateEndInput?.value) formData.set("dateEnd", dateEndInput.value)
-    if (timeStartInput?.value) formData.set("timeStart", timeStartInput.value)
-    if (timeEndInput?.value) formData.set("timeEnd", timeEndInput.value)
+      pricingEn,
+      location,
+      city,
+      postalCode,
+      department,
+      latitude: latitude !== null ? String(latitude) : "",
+      longitude: longitude !== null ? String(longitude) : "",
+      coverImage,
+      featured: String(featured),
+      accessible: String(accessible),
+      published: String(published),
+      ...overrides,
+    }
+    const formData = new FormData(formRef.current)
+    Object.entries(fields).forEach(([name, value]) => formData.set(name, value))
 
     setIsSubmitting(true)
     setErrors({})
-
     const result = event ? await updateEvent(event.id, formData) : await createEvent(formData)
-
     setIsSubmitting(false)
 
     if (result.success) {
       toast.success(result.message)
       router.push("/admin/events")
       router.refresh()
-    } else {
-      if (result.errors) {
-        setErrors(result.errors)
-        const errorList = Object.entries(result.errors)
-          .map(([, msgs]) => msgs.join(", "))
-          .join(" • ")
-        toast.error(`${result.message} — ${errorList}`, { duration: 8000 })
-        const firstErrorField = Object.keys(result.errors)[0]
-        const el = document.querySelector(`[name="${firstErrorField}"], [id="${firstErrorField}"]`)
-        el?.scrollIntoView({ behavior: "smooth", block: "center" })
-      } else {
-        toast.error(result.message)
-      }
+      return true
     }
+    if (result.errors) {
+      setErrors(result.errors)
+      const errorList = Object.entries(result.errors)
+        .map(([, msgs]) => msgs.join(", "))
+        .join(" • ")
+      toast.error(`${result.message} — ${errorList}`, { duration: 8000 })
+      const firstErrorField = Object.keys(result.errors)[0]
+      const el = document.querySelector(`[name="${firstErrorField}"], [id="${firstErrorField}"]`)
+      el?.scrollIntoView({ behavior: "smooth", block: "center" })
+    } else {
+      toast.error(result.message)
+    }
+    return false
+  }
+
+  const handleWizardComplete = async ({ translations, corrections }: PublishWizardResult) => {
+    const correctedTitleFr = applySpellingCorrections(titleFr, corrections)
+    const correctedDescriptionFr = applySpellingCorrections(descriptionFr, corrections)
+    const english = fillMissingTranslations(
+      { title: titleEn, description: descriptionEn, pricing: pricingEn },
+      translations
+    )
+    setTitleFr(correctedTitleFr)
+    setDescriptionFr(correctedDescriptionFr)
+    setTitleEn(english.title)
+    setDescriptionEn(english.description)
+    setPricingEn(english.pricing)
+
+    const saved = await save({
+      titleFr: correctedTitleFr,
+      descriptionFr: correctedDescriptionFr,
+      titleEn: english.title,
+      descriptionEn: english.description,
+      pricingEn: english.pricing,
+      published: "true",
+    })
+    if (saved) setShowPublishWizard(false)
+    return saved
+  }
+
+  const handleWizardCancel = () => {
+    setShowPublishWizard(false)
+    setPublished(wasPublished)
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-
-    if (published) {
-      handlePublishClick(e)
+    if (needsPublishWizard({ wasPublished, willPublish: published })) {
+      setShowPublishWizard(true)
       return
     }
-
-    setIsSubmitting(true)
-    setErrors({})
-
-    const formData = new FormData(e.currentTarget)
-    formData.set("slug", slug)
-    formData.set("titleFr", titleFr)
-    formData.set("titleEn", titleEn)
-    formData.set("descriptionFr", descriptionFr)
-    formData.set("descriptionEn", descriptionEn)
-    formData.set("pricingFr", pricingFr)
-    formData.set("pricingEn", pricingEn)
-    formData.set("location", location)
-    formData.set("city", city)
-    formData.set("postalCode", postalCode)
-    formData.set("department", department)
-    formData.set("latitude", latitude !== null ? String(latitude) : "")
-    formData.set("longitude", longitude !== null ? String(longitude) : "")
-    formData.set("coverImage", coverImage)
-    formData.set("featured", String(featured))
-    formData.set("accessible", String(accessible))
-    formData.set("published", String(published))
-
-    const result = event ? await updateEvent(event.id, formData) : await createEvent(formData)
-
-    setIsSubmitting(false)
-
-    if (result.success) {
-      toast.success(result.message)
-      router.push("/admin/events")
-      router.refresh()
-    } else {
-      if (result.errors) {
-        setErrors(result.errors)
-        const errorList = Object.entries(result.errors)
-          .map(([, msgs]) => msgs.join(", "))
-          .join(" • ")
-        toast.error(`${result.message} — ${errorList}`, { duration: 8000 })
-        const firstErrorField = Object.keys(result.errors)[0]
-        const el = document.querySelector(`[name="${firstErrorField}"], [id="${firstErrorField}"]`)
-        el?.scrollIntoView({ behavior: "smooth", block: "center" })
-      } else {
-        toast.error(result.message)
-      }
-    }
+    await save()
   }
 
   return (
@@ -217,8 +172,13 @@ export const EventForm = ({ event }: EventFormProps) => {
           content={descriptionFr}
           locale="fr"
           contentType="event"
+          translationSource={missingTranslationSource({
+            title: [titleFr, titleEn],
+            description: [descriptionFr, descriptionEn],
+            pricing: [pricingFr, pricingEn],
+          })}
           onComplete={handleWizardComplete}
-          onCancel={() => setShowPublishWizard(false)}
+          onCancel={handleWizardCancel}
         />
       )}
 

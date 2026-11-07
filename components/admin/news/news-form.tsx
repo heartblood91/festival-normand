@@ -10,8 +10,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TiptapEditor } from "@/components/admin/tiptap-editor"
 import { ImageUpload } from "@/components/admin/image-upload"
 import { FormActionBar } from "@/components/admin/shared/form-action-bar"
-import { PublishWizard } from "@/components/admin/publish/publish-wizard"
+import { PublishWizard, type PublishWizardResult } from "@/components/admin/publish/publish-wizard"
 import { createNews, updateNews } from "@/lib/actions/news"
+import {
+  applySpellingCorrections,
+  fillMissingTranslations,
+  missingTranslationSource,
+  needsPublishWizard,
+} from "@/lib/admin/publish-flow"
 import { slugify } from "@/lib/schemas/event"
 import type { News } from "@prisma/client"
 
@@ -41,7 +47,8 @@ export const NewsForm = ({ article }: NewsFormProps) => {
   const [excerptFr, setExcerptFr] = useState(article?.excerptFr ?? "")
   const [excerptEn, setExcerptEn] = useState(article?.excerptEn ?? "")
   const [coverImage, setCoverImage] = useState(article?.coverImage ?? "")
-  const [published, setPublished] = useState(article?.published ?? false)
+  const wasPublished = article?.published ?? false
+  const [published, setPublished] = useState(wasPublished)
   const [showPublishWizard, setShowPublishWizard] = useState(false)
 
   const handleTitleFrChange = useCallback(
@@ -58,101 +65,83 @@ export const NewsForm = ({ article }: NewsFormProps) => {
     formRef.current?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }))
   }, [])
 
-  const handlePublishClick = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setShowPublishWizard(true)
-  }
-
-  const handleWizardComplete = async (translatedFields?: Record<string, string>) => {
-    setShowPublishWizard(false)
-
-    const newTitleEn = translatedFields?.title || titleEn
-    const newContentEn = translatedFields?.description || contentEn
-    const newExcerptEn = translatedFields?.excerpt || excerptEn
-
-    if (translatedFields?.title) setTitleEn(newTitleEn)
-    if (translatedFields?.description) setContentEn(newContentEn)
-    if (translatedFields?.excerpt) setExcerptEn(newExcerptEn)
-
-    const formData = new FormData()
-    formData.set("slug", slug)
-    formData.set("titleFr", titleFr)
-    formData.set("titleEn", newTitleEn)
-    formData.set("contentFr", contentFr)
-    formData.set("contentEn", newContentEn)
-    formData.set("excerptFr", excerptFr)
-    formData.set("excerptEn", newExcerptEn)
-    formData.set("coverImage", coverImage)
-    formData.set("published", String(true))
-
-    const publishedAtInput = document.querySelector<HTMLInputElement>('[name="publishedAt"]')
-    if (publishedAtInput?.value) formData.set("publishedAt", publishedAtInput.value)
+  const save = async (overrides: Record<string, string> = {}): Promise<boolean> => {
+    if (!formRef.current) return false
+    const fields: Record<string, string> = {
+      slug,
+      titleFr,
+      titleEn,
+      contentFr,
+      contentEn,
+      excerptFr,
+      excerptEn,
+      coverImage,
+      published: String(published),
+      ...overrides,
+    }
+    const formData = new FormData(formRef.current)
+    Object.entries(fields).forEach(([name, value]) => formData.set(name, value))
 
     setIsSubmitting(true)
     setErrors({})
-
     const result = article ? await updateNews(article.id, formData) : await createNews(formData)
-
     setIsSubmitting(false)
 
     if (result.success) {
       toast.success(result.message)
       router.push("/admin/news")
       router.refresh()
-    } else {
-      if (result.errors) {
-        setErrors(result.errors)
-        const errorList = Object.entries(result.errors)
-          .map(([, msgs]) => msgs.join(", "))
-          .join(" • ")
-        toast.error(`${result.message} — ${errorList}`, { duration: 8000 })
-      } else {
-        toast.error(result.message)
-      }
+      return true
     }
+    if (result.errors) {
+      setErrors(result.errors)
+      const errorList = Object.entries(result.errors)
+        .map(([, msgs]) => msgs.join(", "))
+        .join(" • ")
+      toast.error(`${result.message} — ${errorList}`, { duration: 8000 })
+    } else {
+      toast.error(result.message)
+    }
+    return false
+  }
+
+  const handleWizardComplete = async ({ translations, corrections }: PublishWizardResult) => {
+    const correctedTitleFr = applySpellingCorrections(titleFr, corrections)
+    const correctedContentFr = applySpellingCorrections(contentFr, corrections)
+    const english = fillMissingTranslations(
+      { title: titleEn, content: contentEn, excerpt: excerptEn },
+      translations
+    )
+    setTitleFr(correctedTitleFr)
+    setContentFr(correctedContentFr)
+    setTitleEn(english.title)
+    setContentEn(english.content)
+    setExcerptEn(english.excerpt)
+
+    const saved = await save({
+      titleFr: correctedTitleFr,
+      contentFr: correctedContentFr,
+      titleEn: english.title,
+      contentEn: english.content,
+      excerptEn: english.excerpt,
+      published: "true",
+    })
+    if (saved) setShowPublishWizard(false)
+    return saved
+  }
+
+  const handleWizardCancel = () => {
+    setShowPublishWizard(false)
+    setPublished(wasPublished)
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-
-    if (published) {
-      handlePublishClick(e)
+    if (needsPublishWizard({ wasPublished, willPublish: published })) {
+      setShowPublishWizard(true)
       return
     }
-
-    setIsSubmitting(true)
-    setErrors({})
-
-    const formData = new FormData(e.currentTarget)
-    formData.set("slug", slug)
-    formData.set("titleFr", titleFr)
-    formData.set("titleEn", titleEn)
-    formData.set("contentFr", contentFr)
-    formData.set("contentEn", contentEn)
-    formData.set("excerptFr", excerptFr)
-    formData.set("excerptEn", excerptEn)
-    formData.set("coverImage", coverImage)
-    formData.set("published", String(published))
-
-    const result = article ? await updateNews(article.id, formData) : await createNews(formData)
-
-    setIsSubmitting(false)
-
-    if (result.success) {
-      toast.success(result.message)
-      router.push("/admin/news")
-      router.refresh()
-    } else {
-      if (result.errors) {
-        setErrors(result.errors)
-        const errorList = Object.entries(result.errors)
-          .map(([, msgs]) => msgs.join(", "))
-          .join(" • ")
-        toast.error(`${result.message} — ${errorList}`, { duration: 8000 })
-      } else {
-        toast.error(result.message)
-      }
-    }
+    await save()
   }
 
   return (
@@ -163,8 +152,13 @@ export const NewsForm = ({ article }: NewsFormProps) => {
           content={contentFr}
           locale="fr"
           contentType="news"
+          translationSource={missingTranslationSource({
+            title: [titleFr, titleEn],
+            content: [contentFr, contentEn],
+            excerpt: [excerptFr, excerptEn],
+          })}
           onComplete={handleWizardComplete}
-          onCancel={() => setShowPublishWizard(false)}
+          onCancel={handleWizardCancel}
         />
       )}
 
