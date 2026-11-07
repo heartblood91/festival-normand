@@ -3,7 +3,7 @@ import type { Locale } from "@/lib/i18n/config"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
-import { getTranslations } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { getEventBySlug, getNeighbourEvents } from "@/lib/queries/events"
 import { EventInfo } from "@/components/event-detail/event-info"
 import { PhotoCarousel, type CarouselPhoto } from "@/components/event-detail/photo-carousel"
@@ -16,6 +16,9 @@ import { isInNormandyBounds } from "@/lib/geo/normandy"
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
 export const revalidate = 1800
+// Fail the build instead of serving 500s if a dynamic API (headers, cookies)
+// sneaks into this ISR route: on-demand renders of new slugs would crash.
+export const dynamic = "error"
 
 export const generateStaticParams = async () => {
   const events = await prisma.event.findMany({
@@ -57,6 +60,7 @@ export const generateMetadata = async ({ params }: EventDetailPageProps): Promis
 
 const EventDetailPage = async ({ params }: EventDetailPageProps) => {
   const { locale, slug } = (await params) as { locale: Locale; slug: string }
+  setRequestLocale(locale)
   const t = await getTranslations()
   const event = await getEventBySlug(slug, locale)
 

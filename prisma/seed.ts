@@ -581,7 +581,7 @@ See the full list of accessible sites on our [events page](/evenements?accessibl
   ]
 
   for (const article of articles) {
-    await prisma.news.create({ data: article })
+    await prisma.news.create({ data: { ...article, published: true } })
   }
   console.log(`${articles.length} news articles seeded.`)
 }

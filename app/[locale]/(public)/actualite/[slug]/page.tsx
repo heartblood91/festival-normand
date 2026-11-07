@@ -4,7 +4,7 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { ArrowLeft, Calendar } from "lucide-react"
-import { getTranslations } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { getNewsBySlug } from "@/lib/queries/news"
 import { MarkdownContent } from "@/components/news/markdown-content"
 import { prisma } from "@/lib/prisma"
@@ -13,6 +13,9 @@ import { locales } from "@/lib/i18n/config"
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
 export const revalidate = 1800
+// Fail the build instead of serving 500s if a dynamic API (headers, cookies)
+// sneaks into this ISR route: on-demand renders of new slugs would crash.
+export const dynamic = "error"
 
 export const generateStaticParams = async () => {
   const news = await prisma.news.findMany({
@@ -65,6 +68,7 @@ export const generateMetadata = async ({ params }: NewsDetailPageProps): Promise
 
 const NewsDetailPage = async ({ params }: NewsDetailPageProps) => {
   const { locale, slug } = (await params) as { locale: Locale; slug: string }
+  setRequestLocale(locale)
   const t = await getTranslations()
   const article = await getNewsBySlug(slug, locale)
 

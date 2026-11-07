@@ -13,6 +13,16 @@ FROM base AS dependencies
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
+# One-shot schema migration, run before each deploy:
+#   docker build --target migrate -t pel-migrate . && docker run --rm -e DATABASE_URL=... pel-migrate
+FROM base AS migrate
+
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY package.json prisma.config.ts ./
+COPY prisma ./prisma
+
+CMD ["pnpm", "prisma", "migrate", "deploy"]
+
 FROM base AS builder
 
 COPY --from=dependencies /app/node_modules ./node_modules
