@@ -440,7 +440,7 @@ const seedEvents = async () => {
   ]
 
   for (const event of events) {
-    await prisma.event.create({ data: event })
+    await prisma.event.create({ data: { ...event, published: true } })
   }
   console.log(`${events.length} events seeded.`)
 }

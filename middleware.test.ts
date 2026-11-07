@@ -9,22 +9,19 @@ vi.mock("next-intl/middleware", () => ({
   },
 }))
 
-vi.mock("better-auth/cookies", () => ({
-  getSessionCookie: vi.fn(),
-}))
-
 vi.mock("@/lib/i18n/config", () => ({
   locales: ["fr", "en"],
   defaultLocale: "fr",
 }))
 
 import { middleware } from "./middleware"
-import { getSessionCookie } from "better-auth/cookies"
 import { NextRequest } from "next/server"
 
-const mockGetSessionCookie = vi.mocked(getSessionCookie)
-
-const createRequest = (path: string) => new NextRequest(new URL(path, "http://localhost:3010"))
+const createRequest = (path: string, sessionCookie?: string) => {
+  const request = new NextRequest(new URL(path, "http://localhost:3010"))
+  if (sessionCookie) request.cookies.set(sessionCookie, "valid-session-token")
+  return request
+}
 
 describe("admin route middleware", () => {
   beforeEach(() => {
@@ -32,8 +29,6 @@ describe("admin route middleware", () => {
   })
 
   it("redirects to login when no session cookie on /fr/admin", () => {
-    mockGetSessionCookie.mockReturnValue(null)
-
     const response = middleware(createRequest("/fr/admin"))
 
     expect(response.status).toBe(307)
@@ -41,8 +36,6 @@ describe("admin route middleware", () => {
   })
 
   it("redirects to login when no session cookie on /fr/admin/events", () => {
-    mockGetSessionCookie.mockReturnValue(null)
-
     const response = middleware(createRequest("/fr/admin/events"))
 
     expect(response.status).toBe(307)
@@ -50,33 +43,25 @@ describe("admin route middleware", () => {
   })
 
   it("allows access to /fr/admin/login without session", () => {
-    mockGetSessionCookie.mockReturnValue(null)
-
     const response = middleware(createRequest("/fr/admin/login"))
 
     expect(response.status).toBe(200)
   })
 
   it("allows access to /api/auth routes without session", () => {
-    mockGetSessionCookie.mockReturnValue(null)
-
     const response = middleware(createRequest("/api/auth/sign-in/magic-link"))
 
     expect(response.status).toBe(200)
   })
 
   it("allows access to /fr/admin when session cookie exists", () => {
-    mockGetSessionCookie.mockReturnValue("valid-session-token")
-
-    const response = middleware(createRequest("/fr/admin"))
+    const response = middleware(createRequest("/fr/admin", "better-auth.session_token"))
 
     expect(response.status).toBe(200)
   })
 
-  it("allows access to /en/admin/events when session cookie exists", () => {
-    mockGetSessionCookie.mockReturnValue("valid-session-token")
-
-    const response = middleware(createRequest("/en/admin/events"))
+  it("allows access to /en/admin/events with the secure session cookie", () => {
+    const response = middleware(createRequest("/en/admin/events", "__Secure-better-auth.session_token"))
 
     expect(response.status).toBe(200)
   })
