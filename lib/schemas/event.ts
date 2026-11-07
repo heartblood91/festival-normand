@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { altTextField, checkImageAlts } from "@/lib/schemas/image-alt"
 
 export const eventSchema = z
   .object({
@@ -52,6 +53,8 @@ export const eventSchema = z
       .optional()
       .or(z.literal("").transform(() => undefined)),
     coverImage: z.string().optional().or(z.literal("")),
+    coverImageAltFr: altTextField,
+    coverImageAltEn: altTextField,
     featured: z.boolean().default(false),
     accessible: z.boolean().default(false),
     published: z.boolean().default(true),
@@ -64,6 +67,15 @@ export const eventSchema = z
       path: ["dateEnd"],
       message: "La date de fin doit être identique ou postérieure à la date de début",
     }
+  )
+  .superRefine((data, ctx) =>
+    checkImageAlts(
+      {
+        ...data,
+        richText: { descriptionFr: data.descriptionFr, descriptionEn: data.descriptionEn },
+      },
+      ctx
+    )
   )
 
 export type EventFormData = z.infer<typeof eventSchema>

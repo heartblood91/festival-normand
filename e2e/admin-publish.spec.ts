@@ -1,5 +1,10 @@
 import { test, expect, type Page } from "@playwright/test"
-import { editorCredentials, loginAsEditor, MISSING_EDITOR } from "./helpers/admin"
+import {
+  describeCoverIfMissing,
+  editorCredentials,
+  loginAsEditor,
+  MISSING_EDITOR,
+} from "./helpers/admin"
 
 const openPublishReview = async (page: Page) => {
   await page.getByRole("button", { name: "Publier", exact: true }).click()
@@ -12,6 +17,7 @@ const openPublishReview = async (page: Page) => {
 const republishIfDraft = async (page: Page, editUrl: string) => {
   await page.goto(editUrl)
   if ((await page.getByText("Brouillon", { exact: true }).count()) === 0) return
+  await describeCoverIfMissing(page)
   const wizard = await openPublishReview(page)
   await wizard.getByRole("button", { name: "Confirmation" }).click()
   await wizard.getByRole("button", { name: "Publish Now" }).click()
@@ -50,6 +56,7 @@ test.describe("Admin publish workflow", () => {
       .click()
     await expect(page).toHaveURL(/\/admin\/events\/[^/]+\/edit/)
     await expect(page.getByText("Publié", { exact: true })).toBeVisible()
+    await describeCoverIfMissing(page)
 
     await page.getByRole("button", { name: "Mettre à jour" }).click()
     await expect(page.getByRole("dialog")).toHaveCount(0)
@@ -66,12 +73,14 @@ test.describe("Admin publish workflow", () => {
     const editUrl = page.url()
 
     try {
+      await describeCoverIfMissing(page)
       // Unpublishing never opens the review.
       await page.getByRole("button", { name: "Dépublier" }).click()
       await expect(page).toHaveURL(/\/admin\/events(\?|$)/, { timeout: 15_000 })
 
       await page.goto(editUrl)
       await expect(page.getByText("Brouillon", { exact: true })).toBeVisible()
+      await describeCoverIfMissing(page)
       const wizard = await openPublishReview(page)
       await wizard.getByRole("button", { name: "Confirmation" }).click()
       if (!process.env.OPENROUTER_API_KEY) {

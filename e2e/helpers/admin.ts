@@ -24,3 +24,13 @@ export const loginAsEditor = async (page: Page) => {
   await page.getByRole("button", { name: "Se connecter" }).click()
   await expect(page).not.toHaveURL(/\/admin\/login/, { timeout: 15_000 })
 }
+
+/**
+ * Seeded events predate the cover alt rule: describe the cover so a published
+ * event can be saved again.
+ */
+export const describeCoverIfMissing = async (page: Page) => {
+  const alt = page.getByLabel("Texte alternatif (FR) *")
+  if ((await alt.count()) === 0 || (await alt.inputValue()) !== "") return
+  await alt.fill("Monument illuminé de nuit pendant le festival")
+}

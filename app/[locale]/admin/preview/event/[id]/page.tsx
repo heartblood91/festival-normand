@@ -33,7 +33,7 @@ const EventPreviewPage = async ({ params }: EventPreviewPageProps) => {
   }
 
   const event = {
-    ...localizeEntity(rawEvent, locale, ["title", "description", "pricing"]),
+    ...localizeEntity(rawEvent, locale, ["title", "description", "pricing", "coverImageAlt"]),
     dateStart: rawEvent.dateStart?.toISOString() ?? null,
     dateEnd: rawEvent.dateEnd?.toISOString() ?? null,
     createdAt: rawEvent.createdAt.toISOString(),

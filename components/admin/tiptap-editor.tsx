@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useEditor, EditorContent, type Editor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import Link from "@tiptap/extension-link"
@@ -33,9 +33,14 @@ import {
   AlignJustify,
   Table as TableIcon,
   Trash2,
+  TextCursorInput,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ImageUploadDialog } from "@/components/admin/image-upload-dialog"
+import { ImageAltDialog } from "@/components/admin/editor/image-alt-dialog"
+import { UrlDialog } from "@/components/admin/editor/url-dialog"
+import { imagesWithoutAlt } from "@/lib/admin/alt-text"
+import { isYoutubeUrl, normalizeLinkUrl } from "@/lib/admin/editor-urls"
 
 type TiptapEditorProps = {
   content: string
@@ -67,26 +72,22 @@ const ToolbarButton = ({
   </Button>
 )
 
+type EditorDialog = "link" | "youtube" | "alt" | null
+
 const MenuBar = ({ editor }: { editor: Editor | null }) => {
+  const [dialog, setDialog] = useState<EditorDialog>(null)
   if (!editor) return null
 
-  const addLink = () => {
-    const url = window.prompt("URL du lien :")
-    if (url) {
-      editor.chain().focus().setLink({ href: url }).run()
-    }
+  const closeDialog = (open: boolean) => {
+    if (!open) setDialog(null)
   }
 
-  const onImageInsert = (url: string) => {
-    editor.chain().focus().setImage({ src: url }).run()
+  const onImageInsert = ({ src, alt }: { src: string; alt: string }) => {
+    editor.chain().focus().setImage({ src, alt }).run()
   }
 
-  const addYoutube = () => {
-    const url = window.prompt("URL de la vidéo YouTube :")
-    if (url) {
-      editor.chain().focus().setYoutubeVideo({ src: url }).run()
-    }
-  }
+  const currentLink = (editor.getAttributes("link").href as string | undefined) ?? ""
+  const selectedImage = editor.getAttributes("image") as { src?: string; alt?: string }
 
   const insertTable = () => {
     editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
@@ -231,12 +232,25 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         <div className="flex gap-0.5">
           <ToolbarButton
             icon={LinkIcon}
-            action={addLink}
+            action={() => setDialog("link")}
             active={editor.isActive("link")}
             label="Lien"
           />
           <ImageUploadDialog onInsert={onImageInsert} />
-          <ToolbarButton icon={YoutubeIcon} action={addYoutube} active={false} label="YouTube" />
+          {editor.isActive("image") && (
+            <ToolbarButton
+              icon={TextCursorInput}
+              action={() => setDialog("alt")}
+              active={false}
+              label="Texte alternatif de l'image"
+            />
+          )}
+          <ToolbarButton
+            icon={YoutubeIcon}
+            action={() => setDialog("youtube")}
+            active={false}
+            label="YouTube"
+          />
         </div>
 
         <div className="mx-1 h-6 w-px bg-white/10" aria-hidden="true" />
@@ -256,6 +270,52 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           />
         </div>
       </div>
+
+      {dialog === "link" && (
+        <UrlDialog
+          open
+          onOpenChange={closeDialog}
+          title={currentLink ? "Modifier le lien" : "Ajouter un lien"}
+          description="Adresse web (https://…), page du site (/fr/…), e-mail (mailto:) ou téléphone (tel:)."
+          label="Adresse du lien"
+          initialValue={currentLink}
+          placeholder="https://"
+          validate={normalizeLinkUrl}
+          invalidMessage="Adresse invalide : utilisez https://, /, mailto: ou tel:."
+          submitLabel={currentLink ? "Mettre à jour" : "Ajouter le lien"}
+          onSubmit={(href) =>
+            editor.chain().focus().extendMarkRange("link").setLink({ href }).run()
+          }
+          onRemove={
+            currentLink
+              ? () => editor.chain().focus().extendMarkRange("link").unsetLink().run()
+              : undefined
+          }
+        />
+      )}
+      {dialog === "youtube" && (
+        <UrlDialog
+          open
+          onOpenChange={closeDialog}
+          title="Insérer une vidéo YouTube"
+          description="La vidéo est intégrée sans cookie publicitaire (youtube-nocookie)."
+          label="Adresse de la vidéo"
+          placeholder="https://www.youtube.com/watch?v=…"
+          validate={(value) => (isYoutubeUrl(value) ? value.trim() : null)}
+          invalidMessage="Collez l'adresse d'une vidéo YouTube (youtube.com ou youtu.be)."
+          submitLabel="Insérer la vidéo"
+          onSubmit={(src) => editor.chain().focus().setYoutubeVideo({ src }).run()}
+        />
+      )}
+      {dialog === "alt" && selectedImage.src && (
+        <ImageAltDialog
+          open
+          onOpenChange={closeDialog}
+          src={selectedImage.src}
+          initialAlt={selectedImage.alt ?? ""}
+          onSave={(alt) => editor.chain().focus().updateAttributes("image", { alt }).run()}
+        />
+      )}
     </>
   )
 }
@@ -298,6 +358,8 @@ export const TiptapEditor = ({ content, onChange }: TiptapEditorProps) => {
     },
   })
 
+  const missingAlts = imagesWithoutAlt(content).length
+
   // Content set from outside (restored draft, AI translation or corrections).
   useEffect(() => {
     if (editor && content !== editor.getHTML()) {
@@ -316,9 +378,20 @@ export const TiptapEditor = ({ content, onChange }: TiptapEditorProps) => {
           border: 1px solid rgba(255, 255, 255, 0.1);
           padding: 8px;
         }
+        .ProseMirror img:not([alt]),
+        .ProseMirror img[alt=""] {
+          outline: 2px dashed #f59e0b;
+          outline-offset: 2px;
+        }
       `}</style>
       <MenuBar editor={editor} />
       <EditorContent editor={editor} />
+      {missingAlts > 0 && (
+        <p className="border-t border-amber-500/30 bg-amber-500/10 px-4 py-2 text-xs text-amber-200">
+          {missingAlts} image(s) sans texte alternatif (cadre pointillé) : sélectionnez-la puis «
+          Texte alternatif de l&apos;image ».
+        </p>
+      )}
     </div>
   )
 }

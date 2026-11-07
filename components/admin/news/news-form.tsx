@@ -8,8 +8,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TiptapEditor } from "@/components/admin/tiptap-editor"
-import { ImageUpload } from "@/components/admin/image-upload"
 import { FormActionBar } from "@/components/admin/shared/form-action-bar"
+import { CoverImageField } from "@/components/admin/shared/cover-image-field"
 import { DraftBanner } from "@/components/admin/shared/draft-banner"
 import {
   LocaleTabs,
@@ -62,6 +62,10 @@ export const NewsForm = ({ article }: NewsFormProps) => {
   const [excerptFr, setExcerptFr] = useState(article?.excerptFr ?? "")
   const [excerptEn, setExcerptEn] = useState(article?.excerptEn ?? "")
   const [coverImage, setCoverImage] = useState(article?.coverImage ?? "")
+  const [coverAlt, setCoverAlt] = useState({
+    fr: article?.coverImageAltFr ?? "",
+    en: article?.coverImageAltEn ?? "",
+  })
   const wasPublished = article?.published ?? false
   const [published, setPublished] = useState(wasPublished)
   const [showPublishWizard, setShowPublishWizard] = useState(false)
@@ -75,6 +79,8 @@ export const NewsForm = ({ article }: NewsFormProps) => {
     excerptFr,
     excerptEn,
     coverImage,
+    coverImageAltFr: coverAlt.fr,
+    coverImageAltEn: coverAlt.en,
   }
 
   const { dirty, draft, restoreDraft, discardDraft, markSaved } = useFormDraft({
@@ -90,6 +96,7 @@ export const NewsForm = ({ article }: NewsFormProps) => {
       setExcerptFr(values.excerptFr ?? "")
       setExcerptEn(values.excerptEn ?? "")
       setCoverImage(values.coverImage ?? "")
+      setCoverAlt({ fr: values.coverImageAltFr ?? "", en: values.coverImageAltEn ?? "" })
     },
   })
 
@@ -368,10 +375,15 @@ export const NewsForm = ({ article }: NewsFormProps) => {
               )}
             </div>
 
-            <div>
-              <Label className="mb-2 block text-slate-300">Image de couverture</Label>
-              <ImageUpload value={coverImage} onChange={setCoverImage} preset="cover" />
-            </div>
+            <CoverImageField
+              value={coverImage}
+              onChange={setCoverImage}
+              altFr={coverAlt.fr}
+              altEn={coverAlt.en}
+              onAltChange={setCoverAlt}
+              context={titleFr}
+              errors={errors}
+            />
           </CardContent>
         </Card>
 

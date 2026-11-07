@@ -2,6 +2,7 @@
 
 import { requireRole } from "@/lib/rbac"
 import { chatCompletion, extractJson, isAiConfigured } from "@/lib/ai/openrouter"
+import { cleanAltProposal, resolveImageUrl } from "@/lib/admin/alt-text"
 
 export type SEOSuggestion = {
   type: "heading" | "meta" | "keyword" | "structure"
@@ -151,5 +152,43 @@ Return ONLY valid JSON, no other text.`
       : {}
   } catch {
     return {}
+  }
+}
+
+export type AltTextProposal = { alt: string } | { error: string }
+
+/**
+ * Proposes a French text alternative for an image; the editor reviews it
+ * before it is used. The model fetches the image itself: only public web URLs
+ * are sent, never local files.
+ */
+export const proposeAltText = async (
+  imageUrl: string,
+  context: string
+): Promise<AltTextProposal> => {
+  await requireRole("EDITOR")
+  if (!isAiConfigured()) return { error: "IA indisponible (clé OpenRouter non configurée)" }
+  const url = resolveImageUrl(imageUrl, process.env.NEXT_PUBLIC_SITE_URL ?? "")
+  if (!url) return { error: "Cette image n'est pas accessible publiquement." }
+
+  try {
+    const answer = await chatCompletion([
+      {
+        role: "system",
+        content:
+          "Tu rédiges des textes alternatifs d'images pour un site public (RGAA). Réponds uniquement par le texte alternatif, en français, une phrase de moins de 150 caractères, sans commencer par « Image de » ou « Photo de ». Décris ce qui est utile pour comprendre la page : lieu, monument, ambiance lumineuse. Ne devine pas de nom de lieu qui n'est pas dans le contexte.",
+      },
+      {
+        role: "user",
+        content: [
+          { type: "text", text: `Contexte de la page : ${context.slice(0, 500)}` },
+          { type: "image_url", image_url: { url } },
+        ],
+      },
+    ])
+    const alt = cleanAltProposal(answer)
+    return alt ? { alt } : { error: "Aucune proposition n'a été générée." }
+  } catch {
+    return { error: "La proposition a échoué. Réessayez plus tard." }
   }
 }

@@ -86,6 +86,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
       ? event.photos.map((photo) => ({ url: photo.url, credit: photo.credit, title: photo.title }))
       : [{ url: event.coverImage ?? DEFAULT_EVENT_IMAGE }, ...event.images.map((url) => ({ url }))]
   const [hero] = photos
+  const heroAlt = (hero.url === event.coverImage && event.coverImageAlt) || event.title
   const paragraphs = event.description.split("\n").filter((p) => p.trim().length > 0)
 
   return (
@@ -120,14 +121,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
 
       {/* Hero image — credits must stay visible whenever a photo is shown */}
       <figure className="relative h-[42vh] min-h-72 w-full overflow-hidden md:h-[55vh]">
-        <Image
-          src={hero.url}
-          alt={event.title}
-          fill
-          sizes="100vw"
-          priority
-          className="object-cover"
-        />
+        <Image src={hero.url} alt={heroAlt} fill sizes="100vw" priority className="object-cover" />
         <div
           className="from-ed-bg-deep/60 to-background absolute inset-0 bg-gradient-to-b via-transparent"
           aria-hidden="true"

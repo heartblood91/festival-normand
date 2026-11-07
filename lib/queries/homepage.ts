@@ -34,10 +34,12 @@ export const getFeaturedEvents = async (locale: Locale = "fr", edition?: Edition
           pricingFr: true,
           pricingEn: true,
           coverImage: true,
+          coverImageAltFr: true,
+          coverImageAltEn: true,
         },
       })
       return events.map((e) => ({
-        ...localizeEntity(e, locale, ["title", "pricing"]),
+        ...localizeEntity(e, locale, ["title", "pricing", "coverImageAlt"]),
         dateStart: e.dateStart?.toISOString() ?? null,
         dateEnd: e.dateEnd?.toISOString() ?? null,
       }))
@@ -69,10 +71,12 @@ export const getProgrammeTeaser = async (locale: Locale = "fr", edition: Edition
           pricingFr: true,
           pricingEn: true,
           coverImage: true,
+          coverImageAltFr: true,
+          coverImageAltEn: true,
         },
       })
       return events.map((e) => ({
-        ...localizeEntity(e, locale, ["title", "pricing"]),
+        ...localizeEntity(e, locale, ["title", "pricing", "coverImageAlt"]),
         dateStart: e.dateStart?.toISOString() ?? null,
       }))
     },
@@ -135,11 +139,13 @@ export const getLatestNews = async (locale: Locale = "fr") => {
           excerptFr: true,
           excerptEn: true,
           coverImage: true,
+          coverImageAltFr: true,
+          coverImageAltEn: true,
           publishedAt: true,
         },
       })
       return news.map((n) => ({
-        ...localizeEntity(n, locale, ["title", "excerpt"]),
+        ...localizeEntity(n, locale, ["title", "excerpt", "coverImageAlt"]),
         publishedAt: n.publishedAt?.toISOString() ?? null,
       }))
     },

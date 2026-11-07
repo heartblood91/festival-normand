@@ -3,23 +3,32 @@
 import { useState } from "react"
 import { ImageIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { ImageUpload } from "@/components/admin/image-upload"
+import { AltTextField } from "@/components/admin/shared/alt-text-field"
 
 type ImageUploadDialogProps = {
-  onInsert: (url: string) => void
+  onInsert: (image: { src: string; alt: string }) => void
 }
 
 export const ImageUploadDialog = ({ onInsert }: ImageUploadDialogProps) => {
   const [open, setOpen] = useState(false)
   const [imageUrl, setImageUrl] = useState("")
+  const [alt, setAlt] = useState("")
 
   const handleInsert = () => {
-    if (imageUrl) {
-      onInsert(imageUrl)
-      setImageUrl("")
-      setOpen(false)
-    }
+    if (!imageUrl || !alt.trim()) return
+    onInsert({ src: imageUrl, alt: alt.trim() })
+    setImageUrl("")
+    setAlt("")
+    setOpen(false)
   }
 
   return (
@@ -30,27 +39,45 @@ export const ImageUploadDialog = ({ onInsert }: ImageUploadDialogProps) => {
         size="icon-xs"
         onClick={() => setOpen(true)}
         className="h-8 w-8 text-slate-400 hover:text-white"
-        aria-label="Insert image"
+        aria-label="Insérer une image"
       >
         <ImageIcon className="h-4 w-4" />
       </Button>
 
-      <DialogContent className="border-white/10 bg-slate-900">
+      <DialogContent className="max-h-[90dvh] overflow-y-auto border-white/10 bg-slate-900 sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-white">Insert Image</DialogTitle>
+          <DialogTitle className="text-white">Insérer une image</DialogTitle>
+          <DialogDescription>
+            Le texte alternatif est obligatoire : il est lu aux personnes qui ne voient pas
+            l&apos;image.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
-          <ImageUpload value={imageUrl} onChange={setImageUrl} preset="content" />
-
-          <Button
-            onClick={handleInsert}
-            disabled={!imageUrl}
-            className="w-full bg-amber-500 hover:bg-amber-600"
-          >
-            Insert
-          </Button>
+          <ImageUpload
+            value={imageUrl}
+            onChange={(url) => {
+              setImageUrl(url)
+              setAlt("")
+            }}
+            preset="content"
+          />
+          {imageUrl && (
+            <AltTextField
+              id="editor-image-alt"
+              label="Texte alternatif *"
+              value={alt}
+              onChange={setAlt}
+              imageUrl={imageUrl}
+            />
+          )}
         </div>
+
+        <DialogFooter>
+          <Button type="button" onClick={handleInsert} disabled={!imageUrl || !alt.trim()}>
+            Insérer
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

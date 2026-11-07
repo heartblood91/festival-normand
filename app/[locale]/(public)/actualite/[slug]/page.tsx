@@ -117,7 +117,7 @@ const NewsDetailPage = async ({ params }: NewsDetailPageProps) => {
           <div className="border-primary/20 relative mb-10 aspect-[16/9] w-full overflow-hidden border">
             <Image
               src={article.coverImage}
-              alt={article.title}
+              alt={article.coverImageAlt || article.title}
               fill
               sizes="(max-width: 1024px) 100vw, 768px"
               className="object-cover"

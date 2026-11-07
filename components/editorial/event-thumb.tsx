@@ -19,6 +19,8 @@ const hash = (seed: string) => {
 
 type EventThumbProps = {
   coverImage?: string | null
+  /** Localized description of the cover; falls back to the title. */
+  coverImageAlt?: string
   category: string
   title: string
   seed?: string
@@ -29,6 +31,7 @@ type EventThumbProps = {
 
 const EventThumb = ({
   coverImage,
+  coverImageAlt,
   category,
   title,
   seed,
@@ -36,17 +39,14 @@ const EventThumb = ({
   sizes = "120px",
   priority = false,
 }: EventThumbProps) => {
-  const base = cn(
-    "border-primary/30 relative overflow-hidden border",
-    className
-  )
+  const base = cn("border-primary/30 relative overflow-hidden border", className)
 
   if (coverImage) {
     return (
       <div className={base}>
         <Image
           src={coverImage}
-          alt={title}
+          alt={coverImageAlt || title}
           fill
           sizes={sizes}
           priority={priority}

@@ -26,7 +26,7 @@ const NewsCard = async ({ article, className, priority = false }: NewsCardProps)
         {article.coverImage ? (
           <Image
             src={article.coverImage}
-            alt={article.title}
+            alt={article.coverImageAlt || article.title}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover"

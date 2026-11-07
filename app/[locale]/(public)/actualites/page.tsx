@@ -78,7 +78,7 @@ const NewsListPage = async ({ params }: NewsListPageProps) => {
                   {featured.coverImage ? (
                     <Image
                       src={featured.coverImage}
-                      alt={featured.title}
+                      alt={featured.coverImageAlt || featured.title}
                       fill
                       sizes="(max-width: 1024px) 100vw, 55vw"
                       className="object-cover"

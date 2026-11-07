@@ -17,11 +17,13 @@ export const getNews = async (locale: Locale = "fr") => {
           excerptFr: true,
           excerptEn: true,
           coverImage: true,
+          coverImageAltFr: true,
+          coverImageAltEn: true,
           publishedAt: true,
         },
       })
       return news.map((n) => ({
-        ...localizeEntity(n, locale, ["title", "excerpt"]),
+        ...localizeEntity(n, locale, ["title", "excerpt", "coverImageAlt"]),
         publishedAt: n.publishedAt?.toISOString() ?? null,
       }))
     },
@@ -40,7 +42,7 @@ export const getNewsBySlug = async (slug: string, locale: Locale = "fr") => {
       })
       if (!news) return null
       return {
-        ...localizeEntity(news, locale, ["title", "excerpt", "content"]),
+        ...localizeEntity(news, locale, ["title", "excerpt", "content", "coverImageAlt"]),
         publishedAt: news.publishedAt?.toISOString() ?? null,
         createdAt: news.createdAt.toISOString(),
         updatedAt: news.updatedAt.toISOString(),

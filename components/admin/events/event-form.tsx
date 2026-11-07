@@ -7,10 +7,10 @@ import { useLocale } from "next-intl"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ImageUpload } from "@/components/admin/image-upload"
 import { AddressAutocomplete } from "@/components/admin/address-autocomplete"
 import { PublishWizard, type PublishWizardResult } from "@/components/admin/publish/publish-wizard"
 import { FormActionBar } from "@/components/admin/shared/form-action-bar"
+import { CoverImageField } from "@/components/admin/shared/cover-image-field"
 import { DraftBanner } from "@/components/admin/shared/draft-banner"
 import {
   LocaleTabs,
@@ -76,6 +76,10 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
   const [longitude, setLongitude] = useState(event?.longitude ?? 0)
   const [showPublishWizard, setShowPublishWizard] = useState(false)
   const [coverImage, setCoverImage] = useState(event?.coverImage ?? "")
+  const [coverAlt, setCoverAlt] = useState({
+    fr: event?.coverImageAltFr ?? "",
+    en: event?.coverImageAltEn ?? "",
+  })
   const [minDateEnd, setMinDateEnd] = useState(
     formatDateForInput(event?.dateStart) || defaultDateStart
   )
@@ -96,6 +100,8 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
     latitude: latitude !== null ? String(latitude) : "",
     longitude: longitude !== null ? String(longitude) : "",
     coverImage,
+    coverImageAltFr: coverAlt.fr,
+    coverImageAltEn: coverAlt.en,
     featured: String(featured),
     accessible: String(accessible),
   }
@@ -119,6 +125,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
       setLatitude(Number(values.latitude) || 0)
       setLongitude(Number(values.longitude) || 0)
       setCoverImage(values.coverImage ?? "")
+      setCoverAlt({ fr: values.coverImageAltFr ?? "", en: values.coverImageAltEn ?? "" })
       setFeatured(values.featured === "true")
       setAccessible(values.accessible === "true")
       setMinDateEnd(values.dateStart ?? minDateEnd)
@@ -671,10 +678,15 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
             <CardTitle className="text-white">Image</CardTitle>
           </CardHeader>
           <CardContent>
-            <div>
-              <Label className="mb-2 block text-slate-300">Image de couverture</Label>
-              <ImageUpload value={coverImage} onChange={setCoverImage} preset="cover" />
-            </div>
+            <CoverImageField
+              value={coverImage}
+              onChange={setCoverImage}
+              altFr={coverAlt.fr}
+              altEn={coverAlt.en}
+              onAltChange={setCoverAlt}
+              context={titleFr}
+              errors={errors}
+            />
           </CardContent>
         </Card>
 

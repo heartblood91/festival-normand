@@ -50,6 +50,8 @@ const EVENT_LIST_SELECT = {
   timeStart: true,
   timeEnd: true,
   coverImage: true,
+  coverImageAltFr: true,
+  coverImageAltEn: true,
   accessible: true,
   latitude: true,
   longitude: true,
@@ -152,7 +154,7 @@ export const getEvents = async (filters: EventFilters = {}, locale: Locale = "fr
         : rawEvents
 
       const serialized = events.map((e) => ({
-        ...localizeEntity(e, locale, ["title"]),
+        ...localizeEntity(e, locale, ["title", "coverImageAlt"]),
         dateStart: e.dateStart?.toISOString() ?? null,
         dateEnd: e.dateEnd?.toISOString() ?? null,
       }))
@@ -260,7 +262,7 @@ export const getEventBySlug = async (slug: string, locale: Locale = "fr") =>
       })
       if (!event) return null
       return {
-        ...localizeEntity(event, locale, ["title", "description", "pricing"]),
+        ...localizeEntity(event, locale, ["title", "description", "pricing", "coverImageAlt"]),
         dateStart: event.dateStart?.toISOString() ?? null,
         dateEnd: event.dateEnd?.toISOString() ?? null,
         createdAt: event.createdAt.toISOString(),

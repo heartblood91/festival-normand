@@ -126,6 +126,29 @@ describe("eventSchema", () => {
     expect(result.success).toBe(true)
   })
 
+  it("requires a cover alt text to publish, not to keep a draft", () => {
+    const withCover = { ...validData, coverImage: "https://cdn.example.org/a.jpg" }
+    const published = eventSchema.safeParse(withCover)
+    expect(published.error?.flatten().fieldErrors.coverImageAltFr).toEqual([
+      "Décrivez l'image de couverture (texte alternatif) avant de publier",
+    ])
+    expect(eventSchema.safeParse({ ...withCover, published: false }).success).toBe(true)
+    expect(
+      eventSchema.safeParse({ ...withCover, coverImageAltFr: "Église illuminée de nuit" }).success
+    ).toBe(true)
+  })
+
+  it("refuses to publish content images without alt, per language", () => {
+    const result = eventSchema.safeParse({
+      ...validData,
+      descriptionFr: '<p>Une veillée.</p><img src="/a.jpg">',
+      descriptionEn: '<p>An evening.</p><img src="/a.jpg" alt="Nave">',
+    })
+    expect(result.error?.flatten().fieldErrors).toEqual({
+      descriptionFr: ["1 image(s) sans texte alternatif dans le contenu"],
+    })
+  })
+
   it("accepts omitted latitude/longitude (optional)", () => {
     const result = eventSchema.safeParse(validData)
     expect(result.success).toBe(true)

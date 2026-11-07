@@ -28,6 +28,7 @@ const EventListCard = async ({ event, className, priority = false }: EventListCa
       <div className="relative">
         <EventThumb
           coverImage={event.coverImage ?? DEFAULT_EVENT_IMAGE}
+          coverImageAlt={event.coverImage ? event.coverImageAlt : undefined}
           category={event.category}
           title={event.title}
           seed={event.slug}
