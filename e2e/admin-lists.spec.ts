@@ -1,13 +1,17 @@
 import { test, expect, type Page } from "@playwright/test"
 import { editorCredentials, loginAsEditor, MISSING_EDITOR, republishEvent } from "./helpers/admin"
+import { hasDatabase, query } from "./helpers/db"
 
 const NO_COVER_EVENT = "Visite guidée du Moulin d'Andé"
 const SELECT_PREFIX = "Sélectionner "
 
 const rowTitles = async (page: Page) => {
-  const labels = await page
-    .getByRole("checkbox", { name: /^Sélectionner (?!tous)/ })
-    .evaluateAll((boxes) => boxes.map((box) => box.getAttribute("aria-label") ?? ""))
+  const boxes = page.getByRole("checkbox", { name: /^Sélectionner (?!tous)/ })
+  // On a production build the rows appear after the page load event.
+  await expect(boxes.first().or(page.getByText(/^0 résultat/))).toBeVisible()
+  const labels = await boxes.evaluateAll((nodes) =>
+    nodes.map((box) => box.getAttribute("aria-label") ?? "")
+  )
   return labels.map((label) => label.slice(SELECT_PREFIX.length))
 }
 
@@ -93,9 +97,19 @@ test.describe("Admin event lists", () => {
   })
 
   test("bulk publish skips a cover without alt and names it", async ({ page }) => {
+    test.skip(!hasDatabase(), "Needs DATABASE_URL to clear a cover alt")
+    // Other specs describe covers when they save events: clear one alt here.
+    const [fixture] = await query<{ id: string; alt: string | null }>(
+      `select id, cover_image_alt_fr as alt from events
+       where published and cover_image is not null and title_fr <> $1
+       order by title_fr limit 1`,
+      [NO_COVER_EVENT]
+    )
+    await query(`update events set cover_image_alt_fr = null where id = $1`, [fixture.id])
+
     await page.goto("/fr/admin/events?todo=missing-alt&status=published&sort=title")
     const [blocked] = await rowTitles(page)
-    test.skip(!blocked, "Every published cover already has an alt")
+    expect(blocked).toBeTruthy()
 
     await page.goto("/fr/admin/events?sort=title")
     const blockedEdit = await page
@@ -127,6 +141,10 @@ test.describe("Admin event lists", () => {
     } finally {
       await republishEvent(page, `/fr${blockedEdit}`)
       await republishEvent(page, `/fr${noCoverEdit}`)
+      await query(`update events set cover_image_alt_fr = $2 where id = $1`, [
+        fixture.id,
+        fixture.alt,
+      ])
     }
   })
 

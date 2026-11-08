@@ -101,9 +101,12 @@ test.describe("Admin forms keep unsaved work", () => {
     await expect(page.getByLabel("Date de fin")).toHaveAttribute("min", await start.inputValue())
     // Typed like a user (headless Chromium keeps the mm/dd/yyyy order whatever the
     // locale): fill() on a date input does not reach React's onChange.
-    await start.focus()
-    await page.keyboard.type("05222027")
-    await expect(start).toHaveValue("2027-05-22")
+    // Retried: on a production build, keys typed before hydration are reset.
+    await expect(async () => {
+      await start.focus()
+      await page.keyboard.type("05222027")
+      await expect(start).toHaveValue("2027-05-22", { timeout: 2_000 })
+    }).toPass({ timeout: 15_000 })
     await expect(page.getByLabel("Date de fin")).toHaveAttribute("min", "2027-05-22")
 
     await page.goto("/fr/admin/news/new")

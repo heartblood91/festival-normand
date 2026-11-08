@@ -1,3 +1,4 @@
+import { existsSync, readFileSync } from "node:fs"
 import { expect, type Page } from "@playwright/test"
 
 /**
@@ -14,15 +15,27 @@ export const editorCredentials = () => {
 export const MISSING_EDITOR =
   "Set E2E_EDITOR_EMAIL and E2E_EDITOR_PASSWORD (see e2e/helpers/admin.ts)"
 
+// Wiped by Playwright at the start of each run, and ignored by git.
+const SESSION_FILE = "test-results/.auth/editor.json"
+
 export const loginAsEditor = async (page: Page) => {
   const credentials = editorCredentials()
   if (!credentials) throw new Error(MISSING_EDITOR)
+
+  // One sign-in per run: production builds rate-limit /sign-in/email.
+  if (existsSync(SESSION_FILE)) {
+    const { cookies } = JSON.parse(readFileSync(SESSION_FILE, "utf8"))
+    await page.context().addCookies(cookies)
+    await page.goto("/fr/admin")
+    if (!new URL(page.url()).pathname.includes("/admin/login")) return
+  }
 
   await page.goto("/fr/admin/login")
   await page.getByLabel("Adresse email").fill(credentials.email)
   await page.getByLabel("Mot de passe", { exact: true }).fill(credentials.password)
   await page.getByRole("button", { name: "Se connecter" }).click()
   await expect(page).not.toHaveURL(/\/admin\/login/, { timeout: 15_000 })
+  await page.context().storageState({ path: SESSION_FILE })
 }
 
 /**
