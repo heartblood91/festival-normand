@@ -9,7 +9,7 @@ import { requireRole } from "@/lib/rbac"
 import { inviteUserSchema, setupAccountSchema, updateRoleSchema } from "@/lib/schemas/user"
 import type { Role } from "@prisma/client"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const getResend = () => new Resend(process.env.RESEND_API_KEY)
 
 export type UserActionResult = {
   success: boolean
@@ -120,7 +120,7 @@ export const inviteUser = async (formData: FormData): Promise<UserActionResult> 
 
     const fromAddress =
       process.env.RESEND_FROM_EMAIL || "Pierres en Lumières <onboarding@resend.dev>"
-    await resend.emails.send({
+    await getResend().emails.send({
       from: fromAddress,
       to: data.email,
       subject: "Invitation - Accès administrateur Pierres en Lumières",
