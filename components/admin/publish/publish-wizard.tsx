@@ -43,10 +43,10 @@ type Step = "seo" | "a11y" | "spelling" | "translation" | "confirmation"
 const STEPS: Step[] = ["seo", "a11y", "spelling", "translation", "confirmation"]
 
 const stepLabels: Record<Step, string> = {
-  seo: "SEO Check",
-  a11y: "Accessibility",
-  spelling: "Spelling",
-  translation: "Translation",
+  seo: "SEO",
+  a11y: "Accessibilité",
+  spelling: "Orthographe",
+  translation: "Traduction",
   confirmation: "Confirmation",
 }
 
@@ -97,7 +97,7 @@ export const PublishWizard = ({
         setSpellingCorrections(spellingResults)
         setTranslatedFields(translationResults)
       } catch {
-        toast.error("Failed to analyze content")
+        toast.error("L'analyse du contenu a échoué.")
       } finally {
         setIsLoading(false)
       }
@@ -115,7 +115,7 @@ export const PublishWizard = ({
       setSeoSuggestions(results)
       setSeoDismissed(new Set())
     } catch {
-      toast.error("Failed to regenerate SEO analysis")
+      toast.error("La nouvelle analyse SEO a échoué.")
     } finally {
       setIsLoading(false)
     }
@@ -128,7 +128,7 @@ export const PublishWizard = ({
       setA11ySuggestions(results)
       setA11yDismissed(new Set())
     } catch {
-      toast.error("Failed to regenerate accessibility check")
+      toast.error("La nouvelle vérification d'accessibilité a échoué.")
     } finally {
       setIsLoading(false)
     }
@@ -141,7 +141,7 @@ export const PublishWizard = ({
       setSpellingCorrections(results)
       setSpellingAccepted(new Set())
     } catch {
-      toast.error("Failed to regenerate spelling check")
+      toast.error("La nouvelle vérification orthographique a échoué.")
     } finally {
       setIsLoading(false)
     }
@@ -157,7 +157,7 @@ export const PublishWizard = ({
       )
       setTranslatedFields(results)
     } catch {
-      toast.error("Failed to regenerate translation")
+      toast.error("La nouvelle traduction a échoué.")
     } finally {
       setIsLoading(false)
     }
@@ -186,12 +186,12 @@ export const PublishWizard = ({
 
   return (
     <Dialog open={true} onOpenChange={onCancel}>
-      <DialogContent className="max-h-[90dvh] max-w-2xl overflow-y-auto border-white/10 bg-slate-950 text-white">
+      <DialogContent className="bg-background max-h-[90dvh] max-w-2xl overflow-y-auto border-white/10 text-white">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold">
-            Publish Content — {stepLabels[currentStep]}
+            Publier — {stepLabels[currentStep]}
           </DialogTitle>
-          <div className="mt-4 flex gap-2">
+          <div className="mt-4 flex flex-wrap gap-2">
             {STEPS.map((step) => (
               <button
                 key={step}
@@ -200,7 +200,7 @@ export const PublishWizard = ({
                 className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                   currentStep === step
                     ? "bg-amber-500 text-white"
-                    : "bg-white/10 text-slate-400 hover:bg-white/20 disabled:opacity-50"
+                    : "text-muted-foreground bg-white/10 hover:bg-white/20 disabled:opacity-50"
                 }`}
               >
                 {stepLabels[step]}
@@ -298,19 +298,19 @@ export const PublishWizard = ({
           )}
         </div>
 
-        <div className="flex items-center justify-between border-t border-white/10 pt-6">
-          <div className="text-xs text-slate-400">
-            Step {currentStepIndex + 1} of {STEPS.length}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-6">
+          <div className="text-muted-foreground text-xs">
+            Étape {currentStepIndex + 1} sur {STEPS.length}
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-2">
             <Button
               type="button"
               variant="ghost"
               onClick={onCancel}
               disabled={isLoading || isPublishing}
             >
-              Cancel
+              Annuler
             </Button>
 
             <Button
@@ -326,7 +326,7 @@ export const PublishWizard = ({
               className="gap-1.5"
             >
               <ChevronLeft className="h-4 w-4" />
-              Previous
+              Précédent
             </Button>
 
             {!isLastStep && (
@@ -341,7 +341,7 @@ export const PublishWizard = ({
                 disabled={!canGoNext || isLoading || isPublishing}
                 className="gap-1.5 bg-amber-600 hover:bg-amber-700"
               >
-                Next
+                Suivant
                 <ChevronRight className="h-4 w-4" />
               </Button>
             )}
@@ -354,7 +354,7 @@ export const PublishWizard = ({
                 className="gap-1.5 bg-green-600 hover:bg-green-700"
               >
                 {isPublishing && <Loader2 className="h-4 w-4 animate-spin" />}
-                Publish Now
+                Publier maintenant
               </Button>
             )}
           </div>

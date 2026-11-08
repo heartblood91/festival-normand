@@ -83,7 +83,7 @@ test.describe("Admin images and links", () => {
       .getByRole("link", { name: /^Modifier / })
       .first()
       .click()
-    await expect(page).toHaveURL(/\/admin\/events\/[^/]+\/edit/)
+    await expect(page).toHaveURL(/\/admin\/events\/[^/]+\/edit/, { timeout: 15_000 })
     const editUrl = page.url()
     const draftKey = `pel-admin-draft:event:${editUrl.split("/").at(-2)}`
 

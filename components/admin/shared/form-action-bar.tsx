@@ -67,8 +67,9 @@ export const FormActionBar = ({
 
   return (
     <>
-      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-white/5 px-6 py-3 backdrop-blur-xl">
-        <div className="flex items-center gap-2">
+      {/* No backdrop filter below md: it would trap the fixed bottom actions. */}
+      <div className="bg-background/95 sticky top-0 z-10 flex flex-wrap items-center justify-between gap-2 border-b border-white/10 px-3 py-3 md:bg-white/5 md:px-6 md:backdrop-blur-xl">
+        <div className="flex flex-wrap items-center gap-2">
           {backUrl ? (
             <Link
               href={backUrl}
@@ -93,7 +94,7 @@ export const FormActionBar = ({
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {ai && (
             <>
               <Button
@@ -139,7 +140,7 @@ export const FormActionBar = ({
                 <span
                   id="ai-unavailable"
                   title="Clé OpenRouter non configurée sur cet environnement"
-                  className="text-xs whitespace-nowrap text-slate-400"
+                  className="text-muted-foreground text-xs whitespace-nowrap"
                 >
                   IA indisponible
                   <span className="sr-only"> (clé OpenRouter non configurée)</span>
@@ -155,31 +156,33 @@ export const FormActionBar = ({
             </Button>
           )}
 
-          {onTogglePublish && isPublished !== undefined && (
-            <Button
-              type="button"
-              size="sm"
-              onClick={() => {
-                onTogglePublish(!isPublished)
-                // Auto-submit after state update so the change persists
-                requestAnimationFrame(() => onSubmit?.())
-              }}
-              className={
-                isPublished
-                  ? "border-orange-500/30 bg-orange-500/10 text-orange-400 hover:bg-orange-500/20"
-                  : "border-blue-500/30 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20"
-              }
-            >
-              {isPublished ? "Dépublier" : "Publier"}
-            </Button>
-          )}
+          <div className="bg-background/95 fixed inset-x-0 bottom-0 z-30 flex justify-end gap-2 border-t border-white/10 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] empty:hidden md:static md:z-auto md:border-0 md:bg-transparent md:p-0">
+            {onTogglePublish && isPublished !== undefined && (
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => {
+                  onTogglePublish(!isPublished)
+                  // Auto-submit after state update so the change persists
+                  requestAnimationFrame(() => onSubmit?.())
+                }}
+                className={
+                  isPublished
+                    ? "border-orange-500/30 bg-orange-500/10 text-orange-400 hover:bg-orange-500/20"
+                    : "border-blue-500/30 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20"
+                }
+              >
+                {isPublished ? "Dépublier" : "Publier"}
+              </Button>
+            )}
 
-          {onSubmit && (
-            <Button type="button" onClick={onSubmit} disabled={isSubmitting}>
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {saveLabel}
-            </Button>
-          )}
+            {onSubmit && (
+              <Button type="button" onClick={onSubmit} disabled={isSubmitting}>
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {saveLabel}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 

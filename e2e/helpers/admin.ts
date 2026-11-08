@@ -42,8 +42,8 @@ export const republishEvent = async (page: Page, editUrl: string) => {
   await describeCoverIfMissing(page)
   await page.getByRole("button", { name: "Publier", exact: true }).click()
   const wizard = page.getByRole("dialog")
-  await expect(wizard.getByRole("button", { name: "Next" })).toBeEnabled({ timeout: 30_000 })
+  await expect(wizard.getByRole("button", { name: "Suivant" })).toBeEnabled({ timeout: 30_000 })
   await wizard.getByRole("button", { name: "Confirmation" }).click()
-  await wizard.getByRole("button", { name: "Publish Now" }).click()
+  await wizard.getByRole("button", { name: "Publier maintenant" }).click()
   await expect(page).toHaveURL(/\/admin\/events(\?|$)/, { timeout: 15_000 })
 }

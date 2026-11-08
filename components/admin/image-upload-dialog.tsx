@@ -38,13 +38,13 @@ export const ImageUploadDialog = ({ onInsert }: ImageUploadDialogProps) => {
         variant="ghost"
         size="icon-xs"
         onClick={() => setOpen(true)}
-        className="h-8 w-8 text-slate-400 hover:text-white"
+        className="text-muted-foreground h-8 w-8 hover:text-white"
         aria-label="Insérer une image"
       >
         <ImageIcon className="h-4 w-4" />
       </Button>
 
-      <DialogContent className="max-h-[90dvh] overflow-y-auto border-white/10 bg-slate-900 sm:max-w-lg">
+      <DialogContent className="bg-background max-h-[90dvh] overflow-y-auto border-white/10 sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="text-white">Insérer une image</DialogTitle>
           <DialogDescription>

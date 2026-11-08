@@ -29,7 +29,7 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
           <CardTitle className="text-white">Lien invalide</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-slate-300">
+          <p className="text-muted-foreground text-sm">
             Ce lien de réinitialisation est invalide ou a expiré. Demandez un nouveau lien depuis la
             page de connexion.
           </p>
@@ -79,7 +79,7 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
             <CheckCircle className="h-12 w-12 text-green-500" />
             <div>
               <h2 className="text-lg font-semibold text-white">Mot de passe mis à jour</h2>
-              <p className="mt-1 text-sm text-slate-400">
+              <p className="text-muted-foreground mt-1 text-sm">
                 Vous allez être redirigé vers la connexion…
               </p>
             </div>
@@ -93,14 +93,14 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
     <Card className="border-white/10 bg-white/5 backdrop-blur-xl">
       <CardHeader>
         <CardTitle className="text-white">Nouveau mot de passe</CardTitle>
-        <CardDescription className="text-slate-400">
+        <CardDescription className="text-muted-foreground">
           Choisissez un nouveau mot de passe pour votre compte.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="new-password" className="text-slate-300">
+            <Label htmlFor="new-password" className="text-muted-foreground">
               Nouveau mot de passe
             </Label>
             <PasswordInput
@@ -110,13 +110,13 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
               minLength={8}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+              className="placeholder:text-muted-foreground border-white/10 bg-white/5 text-white"
               placeholder="Au moins 8 caractères"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirm-password" className="text-slate-300">
+            <Label htmlFor="confirm-password" className="text-muted-foreground">
               Confirmer le mot de passe
             </Label>
             <PasswordInput
@@ -126,7 +126,7 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
               minLength={8}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+              className="placeholder:text-muted-foreground border-white/10 bg-white/5 text-white"
               placeholder="Confirmez votre mot de passe"
             />
           </div>
@@ -134,7 +134,7 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-amber-500 text-slate-950 hover:bg-amber-400"
+            className="text-primary-foreground w-full bg-amber-500 hover:bg-amber-400"
           >
             {isLoading ? (
               <>

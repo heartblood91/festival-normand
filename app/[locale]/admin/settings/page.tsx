@@ -15,9 +15,9 @@ const SettingsPage = async () => {
   })
 
   return (
-    <div className="space-y-8 p-6 md:p-8">
+    <div className="space-y-8">
       <div>
-        <h1 className="font-serif text-3xl font-bold text-foreground md:text-4xl">
+        <h1 className="text-foreground font-serif text-3xl font-bold md:text-4xl">
           Paramètres du compte
         </h1>
         <p className="text-muted-foreground mt-2">
@@ -26,7 +26,7 @@ const SettingsPage = async () => {
       </div>
 
       <section className="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl md:p-8">
-        <h2 className="mb-1 font-serif text-xl font-bold text-foreground">Mot de passe</h2>
+        <h2 className="text-foreground mb-1 font-serif text-xl font-bold">Mot de passe</h2>
         <p className="text-muted-foreground mb-6 text-sm">
           Changer votre mot de passe déconnectera toutes vos autres sessions actives.
         </p>
@@ -34,7 +34,7 @@ const SettingsPage = async () => {
       </section>
 
       <section className="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl md:p-8">
-        <h2 className="mb-1 font-serif text-xl font-bold text-foreground">
+        <h2 className="text-foreground mb-1 font-serif text-xl font-bold">
           Authentification à deux facteurs
         </h2>
         <p className="text-muted-foreground mb-6 text-sm">

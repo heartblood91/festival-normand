@@ -213,7 +213,7 @@ export const NewsForm = ({ article }: NewsFormProps) => {
         />
       )}
 
-      <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
+      <form ref={formRef} onSubmit={handleSubmit} className="space-y-6 pb-20 md:pb-0">
         <FormActionBar
           previewUrl={article ? `/${locale}/admin/preview/news/${article.id}` : undefined}
           isPublished={published}
@@ -257,7 +257,7 @@ export const NewsForm = ({ article }: NewsFormProps) => {
               {formLocale === "fr" ? (
                 <>
                   <div>
-                    <Label htmlFor="titleFr" className="text-slate-300">
+                    <Label htmlFor="titleFr" className="text-muted-foreground">
                       Titre *
                     </Label>
                     <Input
@@ -278,7 +278,7 @@ export const NewsForm = ({ article }: NewsFormProps) => {
                   </div>
 
                   <div>
-                    <Label htmlFor="excerptFr" className="text-slate-300">
+                    <Label htmlFor="excerptFr" className="text-muted-foreground">
                       Extrait
                     </Label>
                     <textarea
@@ -287,7 +287,7 @@ export const NewsForm = ({ article }: NewsFormProps) => {
                       value={excerptFr}
                       onChange={(e) => setExcerptFr(e.target.value)}
                       rows={4}
-                      className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
+                      className="placeholder:text-muted-foreground mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
                       placeholder="Résumé court de l'article..."
                     />
                   </div>
@@ -295,7 +295,7 @@ export const NewsForm = ({ article }: NewsFormProps) => {
               ) : (
                 <>
                   <div>
-                    <Label htmlFor="titleEn" className="text-slate-300">
+                    <Label htmlFor="titleEn" className="text-muted-foreground">
                       Title
                     </Label>
                     <Input
@@ -314,7 +314,7 @@ export const NewsForm = ({ article }: NewsFormProps) => {
                   </div>
 
                   <div>
-                    <Label htmlFor="excerptEn" className="text-slate-300">
+                    <Label htmlFor="excerptEn" className="text-muted-foreground">
                       Excerpt
                     </Label>
                     <textarea
@@ -323,7 +323,7 @@ export const NewsForm = ({ article }: NewsFormProps) => {
                       value={excerptEn}
                       onChange={(e) => setExcerptEn(e.target.value)}
                       rows={4}
-                      className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
+                      className="placeholder:text-muted-foreground mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
                       placeholder="Short article summary..."
                     />
                   </div>
@@ -332,7 +332,7 @@ export const NewsForm = ({ article }: NewsFormProps) => {
             </div>
 
             <div>
-              <Label htmlFor="slug" className="mb-2 block text-slate-300">
+              <Label htmlFor="slug" className="text-muted-foreground mb-2 block">
                 Slug
               </Label>
               <Input
@@ -341,7 +341,7 @@ export const NewsForm = ({ article }: NewsFormProps) => {
                 value={slug}
                 readOnly
                 required
-                className="cursor-not-allowed border-white/10 bg-slate-900 text-slate-400 opacity-60"
+                className="bg-background text-muted-foreground cursor-not-allowed border-white/10 opacity-60"
                 aria-invalid={!!errors.slug}
                 aria-describedby={errors.slug ? "slug-error" : undefined}
               />
@@ -353,7 +353,7 @@ export const NewsForm = ({ article }: NewsFormProps) => {
             </div>
 
             <div>
-              <Label htmlFor="publishedAt" className="text-slate-300">
+              <Label htmlFor="publishedAt" className="text-muted-foreground">
                 Date de publication *
               </Label>
               <Input

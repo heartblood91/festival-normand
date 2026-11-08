@@ -79,7 +79,7 @@ export const AdminPagination = ({
       {pageNumbers.map((page, index) => {
         if (page === "...") {
           return (
-            <span key={`ellipsis-${index}`} className="px-1 text-slate-500">
+            <span key={`ellipsis-${index}`} className="text-muted-foreground px-1">
               ...
             </span>
           )

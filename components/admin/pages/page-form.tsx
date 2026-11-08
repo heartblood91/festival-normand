@@ -118,7 +118,7 @@ export const PageForm = ({ page }: PageFormProps) => {
   }
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
+    <form ref={formRef} onSubmit={handleSubmit} className="space-y-6 pb-20 md:pb-0">
       <FormActionBar
         previewUrl={page ? `/${locale}/admin/preview/page/${page.id}` : undefined}
         isDirty={dirty}
@@ -157,7 +157,7 @@ export const PageForm = ({ page }: PageFormProps) => {
           <div {...localePanelProps("page-panel-general", formLocale)}>
             {formLocale === "fr" ? (
               <div>
-                <Label htmlFor="titleFr" className="text-slate-300">
+                <Label htmlFor="titleFr" className="text-muted-foreground">
                   Titre *
                 </Label>
                 <Input
@@ -179,7 +179,7 @@ export const PageForm = ({ page }: PageFormProps) => {
             ) : (
               <>
                 <div>
-                  <Label htmlFor="titleEn" className="text-slate-300">
+                  <Label htmlFor="titleEn" className="text-muted-foreground">
                     Title
                   </Label>
                   <Input
@@ -201,7 +201,7 @@ export const PageForm = ({ page }: PageFormProps) => {
           </div>
 
           <div>
-            <Label htmlFor="slug" className="mb-2 block text-slate-300">
+            <Label htmlFor="slug" className="text-muted-foreground mb-2 block">
               Slug
             </Label>
             <Input
@@ -210,7 +210,7 @@ export const PageForm = ({ page }: PageFormProps) => {
               value={slug}
               readOnly
               required
-              className="cursor-not-allowed border-white/10 bg-slate-900 text-slate-400 opacity-60"
+              className="bg-background text-muted-foreground cursor-not-allowed border-white/10 opacity-60"
               aria-invalid={!!errors.slug}
               aria-describedby={errors.slug ? "slug-error" : undefined}
             />

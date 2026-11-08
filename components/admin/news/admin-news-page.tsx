@@ -125,11 +125,11 @@ export const AdminNewsPage = ({
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl p-4 md:p-8">
+    <div className="mx-auto w-full max-w-6xl">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
           <h1 className="font-serif text-2xl font-bold text-amber-500">Actualités</h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="text-muted-foreground mt-1 text-sm">
             {total} article{total !== 1 ? "s" : ""}
           </p>
         </div>
@@ -143,7 +143,7 @@ export const AdminNewsPage = ({
 
       <form onSubmit={handleSearch} className="mb-6">
         <div className="relative">
-          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <Input
             type="search"
             placeholder="Rechercher par titre..."
@@ -157,7 +157,7 @@ export const AdminNewsPage = ({
                 router.push(`/admin/news${params.toString() ? `?${params}` : ""}`)
               }
             }}
-            className="border-white/10 bg-white/5 pr-10 pl-10 text-white placeholder:text-slate-500"
+            className="placeholder:text-muted-foreground border-white/10 bg-white/5 pr-10 pl-10 text-white"
             aria-label="Rechercher des articles"
           />
           {searchQuery && (
@@ -170,7 +170,7 @@ export const AdminNewsPage = ({
                 params.set("page", "1")
                 router.push(`/admin/news${params.toString() ? `?${params}` : ""}`)
               }}
-              className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+              className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
               aria-label="Effacer la recherche"
             >
               ×
@@ -187,7 +187,7 @@ export const AdminNewsPage = ({
 
       {items.length === 0 ? (
         <div className="rounded-xl border border-white/10 bg-white/5 p-12 text-center">
-          <p className="text-slate-400">
+          <p className="text-muted-foreground">
             {search
               ? "Aucun article ne correspond à votre recherche."
               : "Aucun article pour le moment."}
@@ -208,12 +208,16 @@ export const AdminNewsPage = ({
                       aria-label="Sélectionner tous les articles"
                     />
                   </th>
-                  <th className="px-4 py-3 text-left font-medium text-slate-300">Titre</th>
-                  <th className="hidden px-4 py-3 text-left font-medium text-slate-300 md:table-cell">
+                  <th className="text-muted-foreground px-4 py-3 text-left font-medium">Titre</th>
+                  <th className="text-muted-foreground hidden px-4 py-3 text-left font-medium md:table-cell">
                     Date de publication
                   </th>
-                  <th className="px-4 py-3 text-center font-medium text-slate-300">Statut</th>
-                  <th className="px-4 py-3 text-right font-medium text-slate-300">Actions</th>
+                  <th className="text-muted-foreground px-4 py-3 text-center font-medium">
+                    Statut
+                  </th>
+                  <th className="text-muted-foreground px-4 py-3 text-right font-medium">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -234,12 +238,12 @@ export const AdminNewsPage = ({
                     <td className="px-4 py-3">
                       <span className="font-medium text-white">{article.titleFr}</span>
                       {article.excerptFr && (
-                        <p className="mt-0.5 line-clamp-1 text-xs text-slate-500">
+                        <p className="text-muted-foreground mt-0.5 line-clamp-1 text-xs">
                           {article.excerptFr}
                         </p>
                       )}
                     </td>
-                    <td className="hidden px-4 py-3 text-slate-400 md:table-cell">
+                    <td className="text-muted-foreground hidden px-4 py-3 md:table-cell">
                       {article.publishedAt ? formatDate(article.publishedAt) : "—"}
                     </td>
                     <td className="px-4 py-3 text-center">
@@ -253,7 +257,7 @@ export const AdminNewsPage = ({
                         </span>
                       ) : (
                         <span
-                          className="inline-flex items-center gap-1 text-slate-500"
+                          className="text-muted-foreground inline-flex items-center gap-1"
                           aria-label="Brouillon"
                         >
                           <EyeOff className="h-3.5 w-3.5" />
@@ -326,7 +330,7 @@ export const AdminNewsPage = ({
       )}
 
       {selectedIds.size > 0 && (
-        <div className="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center justify-between gap-6 rounded-xl border border-white/10 bg-slate-900/95 px-6 py-3 shadow-2xl backdrop-blur-xl">
+        <div className="bg-background/95 fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center justify-between gap-6 rounded-xl border border-white/10 px-6 py-3 shadow-2xl backdrop-blur-xl">
           <span className="text-sm font-medium text-white">
             {selectedIds.size} sélectionné{selectedIds.size > 1 ? "s" : ""}
           </span>

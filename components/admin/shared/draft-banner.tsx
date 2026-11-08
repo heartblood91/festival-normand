@@ -29,7 +29,7 @@ export const DraftBanner = ({
         <h2 id="draft-banner-title" className="text-sm font-semibold text-white">
           Brouillon non enregistré
         </h2>
-        <p className="text-sm text-slate-300">
+        <p className="text-muted-foreground text-sm">
           Des modifications du {savedAtFormat.format(draft.savedAt)} n&apos;ont pas été enregistrées
           sur ce formulaire.
         </p>

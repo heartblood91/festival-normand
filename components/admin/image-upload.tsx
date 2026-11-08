@@ -113,7 +113,7 @@ export const ImageUpload = ({
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-500/30 border-t-amber-500" />
             <div className="text-center">
               <p className="text-sm font-medium text-white">{progress}%</p>
-              <p className="text-xs text-slate-400">Téléversement…</p>
+              <p className="text-muted-foreground text-xs">Téléversement…</p>
             </div>
           </>
         ) : value ? (
@@ -126,14 +126,14 @@ export const ImageUpload = ({
               className="max-h-32 max-w-full rounded-lg object-contain"
               unoptimized
             />
-            <p className="text-xs text-slate-400">Cliquer pour changer</p>
+            <p className="text-muted-foreground text-xs">Cliquer pour changer</p>
           </>
         ) : (
           <>
-            <Upload className="h-8 w-8 text-slate-400" />
+            <Upload className="text-muted-foreground h-8 w-8" />
             <div className="text-center">
               <p className="text-sm font-medium text-white">Déposez une image ici ou cliquez</p>
-              <p className="text-xs text-slate-400">PNG, JPG, WebP, GIF (max 10MB)</p>
+              <p className="text-muted-foreground text-xs">PNG, JPG, WebP, GIF (max 10MB)</p>
             </div>
           </>
         )}

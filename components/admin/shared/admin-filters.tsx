@@ -98,7 +98,7 @@ export const AdminFilters = ({ filters, baseUrl, currentValues }: AdminFiltersPr
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="">
-                    <span className="text-slate-400">{filter.label}</span>
+                    <span className="text-muted-foreground">{filter.label}</span>
                   </SelectItem>
                   {filter.options.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
@@ -110,7 +110,7 @@ export const AdminFilters = ({ filters, baseUrl, currentValues }: AdminFiltersPr
               {isActive && (
                 <button
                   onClick={() => handleClearFilter(filter.key)}
-                  className="text-slate-400 hover:text-amber-400"
+                  className="text-muted-foreground hover:text-amber-400"
                   aria-label={`Retirer le filtre ${filter.label}`}
                 >
                   <X className="h-4 w-4" />

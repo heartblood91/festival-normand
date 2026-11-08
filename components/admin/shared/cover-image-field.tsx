@@ -27,7 +27,7 @@ export const CoverImageField = ({
 }: CoverImageFieldProps) => (
   <div className="space-y-4">
     <div>
-      <Label className="mb-2 block text-slate-300">Image de couverture</Label>
+      <Label className="text-muted-foreground mb-2 block">Image de couverture</Label>
       <ImageUpload
         value={value}
         onChange={(url) => {

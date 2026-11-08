@@ -67,7 +67,7 @@ export const AiCheckDialog = ({ kind, title, content, onClose }: AiCheckDialogPr
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl border-white/10 bg-slate-950 text-white">
+      <DialogContent className="bg-background max-w-2xl border-white/10 text-white">
         <DialogHeader>
           <DialogTitle>{HEADINGS[kind].title}</DialogTitle>
           <DialogDescription>{HEADINGS[kind].description}</DialogDescription>

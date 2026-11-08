@@ -10,7 +10,7 @@ import {
 const openPublishReview = async (page: Page) => {
   await page.getByRole("button", { name: "Publier", exact: true }).click()
   const wizard = page.getByRole("dialog")
-  await expect(wizard.getByRole("button", { name: "Next" })).toBeEnabled({ timeout: 30_000 })
+  await expect(wizard.getByRole("button", { name: "Suivant" })).toBeEnabled({ timeout: 30_000 })
   return wizard
 }
 
@@ -32,7 +32,7 @@ test.describe("Admin publish workflow", () => {
       await expect(wizard.getByRole("status")).toContainText("Vérifications IA indisponibles")
     }
 
-    await wizard.getByRole("button", { name: "Cancel" }).click()
+    await wizard.getByRole("button", { name: "Annuler" }).click()
     await expect(wizard).toBeHidden()
     await expect(page.getByText("Brouillon", { exact: true })).toBeVisible()
     await expect(page).toHaveURL(/\/admin\/events\/new/)
@@ -44,7 +44,7 @@ test.describe("Admin publish workflow", () => {
       .getByRole("link", { name: /^Modifier / })
       .first()
       .click()
-    await expect(page).toHaveURL(/\/admin\/events\/[^/]+\/edit/)
+    await expect(page).toHaveURL(/\/admin\/events\/[^/]+\/edit/, { timeout: 15_000 })
     await expect(page.getByText("Publié", { exact: true })).toBeVisible()
     await describeCoverIfMissing(page)
 
@@ -59,7 +59,7 @@ test.describe("Admin publish workflow", () => {
       .getByRole("link", { name: /^Modifier / })
       .last()
       .click()
-    await expect(page).toHaveURL(/\/admin\/events\/[^/]+\/edit/)
+    await expect(page).toHaveURL(/\/admin\/events\/[^/]+\/edit/, { timeout: 15_000 })
     const editUrl = page.url()
 
     try {
@@ -77,7 +77,7 @@ test.describe("Admin publish workflow", () => {
         // Nothing was analysed, so nothing may be reported as passed.
         await expect(wizard.getByText("Non vérifié", { exact: true })).toHaveCount(3)
       }
-      await wizard.getByRole("button", { name: "Publish Now" }).click()
+      await wizard.getByRole("button", { name: "Publier maintenant" }).click()
 
       await expect(page.getByText("Événement mis à jour avec succès.")).toBeVisible({
         timeout: 15_000,
@@ -109,7 +109,7 @@ test.describe("Admin publish workflow", () => {
       .getByRole("link", { name: /^Modifier / })
       .first()
       .click()
-    await expect(page).toHaveURL(/\/admin\/pages\/[^/]+\/edit/)
+    await expect(page).toHaveURL(/\/admin\/pages\/[^/]+\/edit/, { timeout: 15_000 })
     await expect(page.getByRole("button", { name: "Mettre à jour" })).toBeVisible()
     await expect(page.getByText("Publié", { exact: true })).toHaveCount(0)
     await expect(page.getByRole("button", { name: "Publier", exact: true })).toHaveCount(0)

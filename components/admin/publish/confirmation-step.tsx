@@ -24,7 +24,11 @@ const ROW_STYLES: Record<RowState, { box: string; icon: string; Icon: typeof Che
     icon: "text-amber-400",
     Icon: AlertCircle,
   },
-  unchecked: { box: "border-white/10 bg-white/5", icon: "text-slate-400", Icon: CircleDashed },
+  unchecked: {
+    box: "border-white/10 bg-white/5",
+    icon: "text-muted-foreground",
+    Icon: CircleDashed,
+  },
 }
 
 const SummaryRow = ({
@@ -42,7 +46,7 @@ const SummaryRow = ({
       <Icon className={`mt-0.5 h-5 w-5 shrink-0 ${icon}`} aria-hidden="true" />
       <div>
         <p className="text-sm font-medium text-white">{label}</p>
-        <p className="text-xs text-slate-300">{detail}</p>
+        <p className="text-muted-foreground text-xs">{detail}</p>
       </div>
     </li>
   )
@@ -86,24 +90,26 @@ export const ConfirmationStep = ({
     <div className="space-y-6">
       <div>
         <h3 className="mb-2 font-semibold text-white">Prêt à publier</h3>
-        <p className="text-sm text-slate-400">Vérifiez le résumé puis confirmez la publication.</p>
+        <p className="text-muted-foreground text-sm">
+          Vérifiez le résumé puis confirmez la publication.
+        </p>
       </div>
 
       <dl className="space-y-3 rounded-lg border border-white/10 bg-white/5 p-4">
         <div className="flex items-start justify-between gap-4">
-          <dt className="text-sm text-slate-400">Type</dt>
+          <dt className="text-muted-foreground text-sm">Type</dt>
           <dd className="text-sm font-medium text-white">
             {CONTENT_TYPES[contentType] ?? contentType}
           </dd>
         </div>
         <div className="flex items-start justify-between gap-4">
-          <dt className="text-sm text-slate-400">Titre</dt>
+          <dt className="text-muted-foreground text-sm">Titre</dt>
           <dd className="max-w-xs text-right text-sm font-medium break-words text-white">
             {title}
           </dd>
         </div>
         <div className="flex items-start justify-between gap-4">
-          <dt className="text-sm text-slate-400">Langue</dt>
+          <dt className="text-muted-foreground text-sm">Langue</dt>
           <dd className="text-sm font-medium text-white uppercase">{locale}</dd>
         </div>
       </dl>

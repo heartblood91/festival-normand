@@ -30,7 +30,7 @@ export const ImageAltDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90dvh] overflow-y-auto border-white/10 bg-slate-900 sm:max-w-lg">
+      <DialogContent className="bg-background max-h-[90dvh] overflow-y-auto border-white/10 sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="text-white">Texte alternatif de l&apos;image</DialogTitle>
           <DialogDescription>

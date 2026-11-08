@@ -23,18 +23,18 @@ const AdminShell = ({ user, children }: AdminShellProps) => {
   const isPreviewPage = pathname.includes("/admin/preview/")
 
   if (isAuthPage || isPreviewPage) {
-    return <div className="flex min-h-dvh flex-col bg-slate-950">{children}</div>
+    return <div className="bg-background flex min-h-dvh flex-col">{children}</div>
   }
 
   return (
-    <div className="flex h-dvh w-full bg-slate-950">
+    <div className="bg-background flex h-dvh w-full">
       {/* Desktop Sidebar */}
       <div className="hidden lg:flex">
         <AdminSidebar user={user} pathname={pathname} />
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col">
         {/* Mobile Top Bar */}
         <div className="flex h-16 items-center gap-4 border-b border-white/10 bg-white/5 px-4 backdrop-blur-xl lg:hidden">
           <AdminSidebarMobile user={user} pathname={pathname} />
@@ -42,7 +42,7 @@ const AdminShell = ({ user, children }: AdminShellProps) => {
         </div>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-y-auto p-6 md:p-8">{children}</main>
+        <main className="flex-1 overflow-y-auto p-4 md:p-8">{children}</main>
       </div>
     </div>
   )

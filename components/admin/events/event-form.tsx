@@ -251,7 +251,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
         />
       )}
 
-      <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
+      <form ref={formRef} onSubmit={handleSubmit} className="space-y-6 pb-20 md:pb-0">
         <FormActionBar
           previewUrl={event ? `/${locale}/admin/preview/event/${event.id}` : undefined}
           isPublished={published}
@@ -298,7 +298,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
               {formLocale === "fr" ? (
                 <>
                   <div>
-                    <Label htmlFor="titleFr" className="mb-2 block text-slate-300">
+                    <Label htmlFor="titleFr" className="text-muted-foreground mb-2 block">
                       Titre *
                     </Label>
                     <Input
@@ -319,7 +319,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
                   </div>
 
                   <div>
-                    <Label htmlFor="descriptionFr" className="mb-2 block text-slate-300">
+                    <Label htmlFor="descriptionFr" className="text-muted-foreground mb-2 block">
                       Description *
                     </Label>
                     <TiptapEditor content={descriptionFr} onChange={setDescriptionFr} />
@@ -333,7 +333,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
               ) : (
                 <>
                   <div>
-                    <Label htmlFor="titleEn" className="mb-2 block text-slate-300">
+                    <Label htmlFor="titleEn" className="text-muted-foreground mb-2 block">
                       Title
                     </Label>
                     <Input
@@ -352,7 +352,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
                   </div>
 
                   <div>
-                    <Label htmlFor="descriptionEn" className="mb-2 block text-slate-300">
+                    <Label htmlFor="descriptionEn" className="text-muted-foreground mb-2 block">
                       Description
                     </Label>
                     <TiptapEditor content={descriptionEn} onChange={setDescriptionEn} />
@@ -367,7 +367,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
             </div>
 
             <div>
-              <Label htmlFor="slug" className="mb-2 block text-slate-300">
+              <Label htmlFor="slug" className="text-muted-foreground mb-2 block">
                 Slug
               </Label>
               <Input
@@ -376,7 +376,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
                 value={slug}
                 readOnly
                 required
-                className="cursor-not-allowed border-white/10 bg-slate-900 text-slate-400 opacity-60"
+                className="bg-background text-muted-foreground cursor-not-allowed border-white/10 opacity-60"
                 aria-invalid={!!errors.slug}
                 aria-describedby={errors.slug ? "slug-error" : undefined}
               />
@@ -411,7 +411,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <Label htmlFor="city" className="text-slate-300">
+                <Label htmlFor="city" className="text-muted-foreground">
                   Ville
                 </Label>
                 <Input
@@ -424,7 +424,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
               </div>
 
               <div>
-                <Label htmlFor="postalCode" className="text-slate-300">
+                <Label htmlFor="postalCode" className="text-muted-foreground">
                   Code postal
                 </Label>
                 <Input
@@ -439,7 +439,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <Label htmlFor="department" className="text-slate-300">
+                <Label htmlFor="department" className="text-muted-foreground">
                   Département *
                 </Label>
                 <select
@@ -452,11 +452,11 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
                   aria-invalid={!!errors.department}
                   aria-describedby={errors.department ? "department-error" : undefined}
                 >
-                  <option value="" className="bg-slate-900">
+                  <option value="" className="bg-background">
                     Sélectionner...
                   </option>
                   {DEPARTMENT_OPTIONS.map((dept) => (
-                    <option key={dept.value} value={dept.value} className="bg-slate-900">
+                    <option key={dept.value} value={dept.value} className="bg-background">
                       {dept.label}
                     </option>
                   ))}
@@ -469,7 +469,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
               </div>
 
               <div>
-                <Label htmlFor="category" className="text-slate-300">
+                <Label htmlFor="category" className="text-muted-foreground">
                   Catégorie *
                 </Label>
                 <select
@@ -481,11 +481,11 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
                   aria-invalid={!!errors.category}
                   aria-describedby={errors.category ? "category-error" : undefined}
                 >
-                  <option value="" className="bg-slate-900">
+                  <option value="" className="bg-background">
                     Sélectionner...
                   </option>
                   {CATEGORY_OPTIONS.map((cat) => (
-                    <option key={cat.value} value={cat.value} className="bg-slate-900">
+                    <option key={cat.value} value={cat.value} className="bg-background">
                       {cat.label}
                     </option>
                   ))}
@@ -508,7 +508,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
           <CardContent className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <Label htmlFor="dateStart" className="text-slate-300">
+                <Label htmlFor="dateStart" className="text-muted-foreground">
                   Date de début *
                 </Label>
                 <Input
@@ -530,7 +530,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
               </div>
 
               <div>
-                <Label htmlFor="timeStart" className="text-slate-300">
+                <Label htmlFor="timeStart" className="text-muted-foreground">
                   Heure de début
                 </Label>
                 <Input
@@ -545,7 +545,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <Label htmlFor="dateEnd" className="text-slate-300">
+                <Label htmlFor="dateEnd" className="text-muted-foreground">
                   Date de fin
                 </Label>
                 <Input
@@ -566,7 +566,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
               </div>
 
               <div>
-                <Label htmlFor="timeEnd" className="text-slate-300">
+                <Label htmlFor="timeEnd" className="text-muted-foreground">
                   Heure de fin
                 </Label>
                 <Input
@@ -590,7 +590,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
             <div {...localePanelProps("event-panel-pricing", formLocale)}>
               {formLocale === "fr" ? (
                 <div>
-                  <Label htmlFor="pricingFr" className="text-slate-300">
+                  <Label htmlFor="pricingFr" className="text-muted-foreground">
                     Tarification
                   </Label>
                   <Input
@@ -599,12 +599,12 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
                     value={pricingFr}
                     onChange={(e) => setPricingFr(e.target.value)}
                     placeholder="Gratuit, 5€, etc."
-                    className="mt-1 border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+                    className="placeholder:text-muted-foreground mt-1 border-white/10 bg-white/5 text-white"
                   />
                 </div>
               ) : (
                 <div>
-                  <Label htmlFor="pricingEn" className="text-slate-300">
+                  <Label htmlFor="pricingEn" className="text-muted-foreground">
                     Pricing
                   </Label>
                   <Input
@@ -613,14 +613,14 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
                     value={pricingEn}
                     onChange={(e) => setPricingEn(e.target.value)}
                     placeholder="Free, 5€, etc."
-                    className="mt-1 border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+                    className="placeholder:text-muted-foreground mt-1 border-white/10 bg-white/5 text-white"
                   />
                 </div>
               )}
             </div>
 
             <div>
-              <Label htmlFor="organizer" className="text-slate-300">
+              <Label htmlFor="organizer" className="text-muted-foreground">
                 Organisateur
               </Label>
               <Input
@@ -633,7 +633,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
 
             <div className="grid gap-4 md:grid-cols-3">
               <div>
-                <Label htmlFor="email" className="text-slate-300">
+                <Label htmlFor="email" className="text-muted-foreground">
                   Email de contact
                 </Label>
                 <Input
@@ -646,7 +646,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
               </div>
 
               <div>
-                <Label htmlFor="phone" className="text-slate-300">
+                <Label htmlFor="phone" className="text-muted-foreground">
                   Téléphone
                 </Label>
                 <Input
@@ -659,7 +659,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
               </div>
 
               <div>
-                <Label htmlFor="website" className="text-slate-300">
+                <Label htmlFor="website" className="text-muted-foreground">
                   Site web
                 </Label>
                 <Input
@@ -668,7 +668,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
                   type="url"
                   defaultValue={event?.website ?? ""}
                   placeholder="https://..."
-                  className="mt-1 border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+                  className="placeholder:text-muted-foreground mt-1 border-white/10 bg-white/5 text-white"
                 />
               </div>
             </div>
@@ -702,7 +702,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
             <label className="flex cursor-pointer items-center justify-between rounded-lg border border-white/10 p-3 transition-colors hover:bg-white/5">
               <div>
                 <p className="font-medium text-white">À la une</p>
-                <p className="text-sm text-slate-400">
+                <p className="text-muted-foreground text-sm">
                   Afficher cet événement dans la section &quot;À la une&quot; de la page
                   d&apos;accueil
                 </p>
@@ -713,7 +713,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
                 aria-checked={featured}
                 onClick={() => setFeatured(!featured)}
                 className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
-                  featured ? "bg-amber-500" : "bg-slate-600"
+                  featured ? "bg-amber-500" : "bg-muted-foreground/40"
                 }`}
               >
                 <span
@@ -727,7 +727,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
             <label className="flex cursor-pointer items-center justify-between rounded-lg border border-white/10 p-3 transition-colors hover:bg-white/5">
               <div>
                 <p className="font-medium text-white">Accessible PMR</p>
-                <p className="text-sm text-slate-400">
+                <p className="text-muted-foreground text-sm">
                   Cet événement est accessible aux personnes à mobilité réduite
                 </p>
               </div>
@@ -737,7 +737,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
                 aria-checked={accessible}
                 onClick={() => setAccessible(!accessible)}
                 className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
-                  accessible ? "bg-amber-500" : "bg-slate-600"
+                  accessible ? "bg-amber-500" : "bg-muted-foreground/40"
                 }`}
               >
                 <span

@@ -64,7 +64,7 @@ const ToolbarButton = ({
     size="icon-xs"
     onClick={action}
     data-active={active}
-    className="size-8 rounded-md text-slate-400 transition-colors hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-amber-500/50 data-[active=true]:bg-amber-500/20 data-[active=true]:text-amber-400"
+    className="text-muted-foreground size-8 rounded-md transition-colors hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-amber-500/50 data-[active=true]:bg-amber-500/20 data-[active=true]:text-amber-400"
     aria-label={label}
     aria-pressed={active}
   >

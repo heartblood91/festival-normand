@@ -34,9 +34,9 @@ export const TranslateButton = ({
       }
 
       onTranslated(translations)
-      toast.success("Translation completed")
+      toast.success("Traduction terminée : relisez les champs anglais.")
     } catch {
-      toast.error("Translation failed. Check your OpenRouter API key.")
+      toast.error("La traduction a échoué. Réessayez plus tard.")
     } finally {
       setIsLoading(false)
     }
@@ -56,7 +56,7 @@ export const TranslateButton = ({
       ) : (
         <Languages className="size-3.5" />
       )}
-      {isLoading ? "Translating..." : "Auto-translate from FR"}
+      {isLoading ? "Traduction…" : "Traduire depuis le français"}
     </Button>
   )
 }

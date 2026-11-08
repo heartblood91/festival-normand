@@ -63,13 +63,13 @@ export const UrlDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border-white/10 bg-slate-900">
+      <DialogContent className="bg-background border-white/10">
         <DialogHeader>
           <DialogTitle className="text-white">{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <div className="space-y-2">
-          <Label htmlFor="editor-url" className="text-slate-300">
+          <Label htmlFor="editor-url" className="text-muted-foreground">
             {label}
           </Label>
           <Input

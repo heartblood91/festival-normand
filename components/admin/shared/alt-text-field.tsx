@@ -59,7 +59,7 @@ export const AltTextField = ({
 
   return (
     <div className="space-y-2">
-      <Label htmlFor={id} className="block text-slate-300">
+      <Label htmlFor={id} className="text-muted-foreground block">
         {label}
       </Label>
       <div className="flex flex-col gap-2 md:flex-row">
@@ -94,7 +94,7 @@ export const AltTextField = ({
           </Button>
         )}
       </div>
-      <p id={hintId} className="text-xs text-slate-400">
+      <p id={hintId} className="text-muted-foreground text-xs">
         Décrivez ce que l&apos;image apporte à la page ({value.length}/{ALT_MAX_LENGTH} caractères
         conseillés).
       </p>
@@ -106,7 +106,7 @@ export const AltTextField = ({
       <div role="status">
         {proposal && (
           <div className="space-y-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
-            <p className="text-sm text-slate-200">
+            <p className="text-foreground text-sm">
               <span className="font-medium text-amber-300">Proposition IA, à relire :</span>{" "}
               {proposal}
             </p>

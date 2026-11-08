@@ -60,7 +60,12 @@ test.describe("Home page", () => {
     const eventCards = page.locator('a[href*="/evenement/"]')
     const count = await eventCards.count()
     if (count === 0) {
-      test.info().annotations.push({ type: "note", description: "no home event cards in this data/mode state" })
+      test
+        .info()
+        .annotations.push({
+          type: "note",
+          description: "no home event cards in this data/mode state",
+        })
       return
     }
     const href = await eventCards.first().getAttribute("href")

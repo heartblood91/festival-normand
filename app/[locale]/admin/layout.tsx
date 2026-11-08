@@ -10,7 +10,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
 
   // No session → minimal wrapper (login page, or middleware will redirect)
   if (!session) {
-    return <div className="flex min-h-dvh flex-col bg-slate-950">{children}</div>
+    return <div className="bg-background flex min-h-dvh flex-col">{children}</div>
   }
 
   const user = await prisma.user.findUnique({
