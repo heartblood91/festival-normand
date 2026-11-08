@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { altTextField, checkImageAlts } from "@/lib/schemas/image-alt"
+import { isFundraisingImageUrl, isFundraisingUrl } from "@/lib/fundraising/fondation"
 
 export const eventSchema = z
   .object({
@@ -59,6 +60,27 @@ export const eventSchema = z
     accessible: z.boolean().default(false),
     published: z.boolean().default(true),
     themeIds: z.array(z.string().min(1)).optional(),
+    fundraisingUrl: z
+      .string()
+      .trim()
+      .refine(
+        (value) => !value || isFundraisingUrl(value),
+        "Le lien doit pointer vers une collecte sur https://www.fondation-patrimoine.org"
+      )
+      .optional(),
+    fundraisingTitle: z
+      .string()
+      .trim()
+      .max(200, "Le titre de la collecte ne peut pas dépasser 200 caractères")
+      .optional(),
+    fundraisingImage: z
+      .string()
+      .trim()
+      .refine(
+        (value) => !value || isFundraisingImageUrl(value),
+        "L'image doit venir de fondation-patrimoine.org ou de la médiathèque du site"
+      )
+      .optional(),
   })
   .refine(
     // ISO yyyy-mm-dd strings compare in date order. Times are not compared:

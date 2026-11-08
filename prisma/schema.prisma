@@ -22,48 +22,82 @@ enum Category {
 }
 
 model Event {
-  id                   String     @id @default(cuid())
-  titleFr              String     @map("title_fr")
-  titleEn              String?    @map("title_en")
-  slug                 String     @unique
-  descriptionFr        String     @map("description_fr") @db.Text
-  descriptionEn        String?    @map("description_en") @db.Text
-  location             String
-  city                 String
-  postalCode           String     @map("postal_code")
-  department           Department
-  category             Category
-  dateStart            DateTime   @map("date_start")
-  dateEnd              DateTime?  @map("date_end")
-  timeStart            String?    @map("time_start")
-  timeEnd              String?    @map("time_end")
-  pricingFr            String?    @map("pricing_fr")
-  pricingEn            String?    @map("pricing_en")
-  organizer            String?
-  email                String?
-  phone                String?
-  website              String?
-  latitude             Float?
-  longitude            Float?
-  coverImage           String?    @map("cover_image")
+  id                     String                  @id @default(cuid())
+  titleFr                String                  @map("title_fr")
+  titleEn                String?                 @map("title_en")
+  slug                   String                  @unique
+  descriptionFr          String                  @map("description_fr") @db.Text
+  descriptionEn          String?                 @map("description_en") @db.Text
+  location               String
+  city                   String
+  postalCode             String                  @map("postal_code")
+  department             Department
+  category               Category
+  dateStart              DateTime                @map("date_start")
+  dateEnd                DateTime?               @map("date_end")
+  timeStart              String?                 @map("time_start")
+  timeEnd                String?                 @map("time_end")
+  pricingFr              String?                 @map("pricing_fr")
+  pricingEn              String?                 @map("pricing_en")
+  organizer              String?
+  email                  String?
+  phone                  String?
+  website                String?
+  latitude               Float?
+  longitude              Float?
+  coverImage             String?                 @map("cover_image")
   /// Text alternative of the cover (RGAA); required to publish with a cover.
-  coverImageAltFr      String?    @map("cover_image_alt_fr")
-  coverImageAltEn      String?    @map("cover_image_alt_en")
-  images               String[]   @default([])
-  photos               Photo[]
-  themes               Theme[]    @relation("event_themes")
-  tourinsoftId         String?    @unique @map("tourinsoft_id")
-  tourinsoftCategories String?    @map("tourinsoft_categories")
-  tourinsoftUpdatedAt  DateTime?  @map("tourinsoft_updated_at")
-  featured             Boolean    @default(false)
-  accessible           Boolean    @default(false)
-  published            Boolean    @default(false)
-  publishedAt          DateTime?  @map("published_at")
-  unpublishedAt        DateTime?  @map("unpublished_at")
-  createdAt            DateTime   @default(now()) @map("created_at")
-  updatedAt            DateTime   @updatedAt @map("updated_at")
+  coverImageAltFr        String?                 @map("cover_image_alt_fr")
+  coverImageAltEn        String?                 @map("cover_image_alt_en")
+  images                 String[]                @default([])
+  /// Fondation du patrimoine collect for this site (public CTA and card badge).
+  fundraisingUrl         String?                 @map("fundraising_url")
+  fundraisingTitle       String?                 @map("fundraising_title")
+  fundraisingImage       String?                 @map("fundraising_image")
+  fundraisingSuggestions FundraisingSuggestion[]
+  photos                 Photo[]
+  themes                 Theme[]                 @relation("event_themes")
+  tourinsoftId           String?                 @unique @map("tourinsoft_id")
+  tourinsoftCategories   String?                 @map("tourinsoft_categories")
+  tourinsoftUpdatedAt    DateTime?               @map("tourinsoft_updated_at")
+  featured               Boolean                 @default(false)
+  accessible             Boolean                 @default(false)
+  published              Boolean                 @default(false)
+  publishedAt            DateTime?               @map("published_at")
+  unpublishedAt          DateTime?               @map("unpublished_at")
+  createdAt              DateTime                @default(now()) @map("created_at")
+  updatedAt              DateTime                @updatedAt @map("updated_at")
 
   @@map("events")
+}
+
+enum FundraisingSuggestionStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+/// Nearby Fondation collect proposed by scripts/match-collectes.ts; it reaches
+/// the public site only once an editor attaches it to the event.
+model FundraisingSuggestion {
+  id               String                      @id @default(cuid())
+  eventId          String                      @map("event_id")
+  event            Event                       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  projectCode      String                      @map("project_code")
+  url              String
+  title            String
+  city             String
+  imageUrl         String?                     @map("image_url")
+  reason           String
+  distanceKm       Float?                      @map("distance_km")
+  collectedPercent Int?                        @map("collected_percent")
+  status           FundraisingSuggestionStatus @default(PENDING)
+  createdAt        DateTime                    @default(now()) @map("created_at")
+  updatedAt        DateTime                    @updatedAt @map("updated_at")
+
+  @@unique([eventId, projectCode])
+  @@index([status])
+  @@map("fundraising_suggestions")
 }
 
 /// Editorial thread across events (e.g. Millennium): filter, home section, map marker.

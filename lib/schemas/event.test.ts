@@ -66,6 +66,36 @@ describe("eventSchema", () => {
     expect(result.success).toBe(false)
   })
 
+  it("accepts only a fondation-patrimoine.org link for the collect", () => {
+    const url = "https://www.fondation-patrimoine.org/les-projets/abbaye/123"
+    expect(eventSchema.safeParse({ ...validData, fundraisingUrl: url }).success).toBe(true)
+    expect(eventSchema.safeParse({ ...validData, fundraisingUrl: "" }).success).toBe(true)
+    const other = eventSchema.safeParse({
+      ...validData,
+      fundraisingUrl: "https://www.helloasso.com/x",
+    })
+    expect(other.success).toBe(false)
+    expect(other.error?.flatten().fieldErrors.fundraisingUrl?.[0]).toMatch(
+      /fondation-patrimoine\.org/
+    )
+  })
+
+  it("accepts a collect image from the Fondation CDN only", () => {
+    const base = {
+      ...validData,
+      fundraisingUrl: "https://www.fondation-patrimoine.org/les-projets/abbaye/123",
+    }
+    expect(
+      eventSchema.safeParse({
+        ...base,
+        fundraisingImage: "https://strapi-upload.cdn.fondation-patrimoine.org/a.jpg",
+      }).success
+    ).toBe(true)
+    expect(
+      eventSchema.safeParse({ ...base, fundraisingImage: "https://example.com/a.jpg" }).success
+    ).toBe(false)
+  })
+
   it("accepts empty string latitude/longitude (coerced to 0)", () => {
     const result = eventSchema.safeParse({ ...validData, latitude: "", longitude: "" })
     expect(result.success).toBe(true)

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
-import { eventSchema } from "@/lib/schemas/event"
+import { eventSchema, type EventFormData } from "@/lib/schemas/event"
 import { searchEventIds } from "@/lib/search"
 import type { AdminEventListItem } from "@/lib/types/admin"
 import {
@@ -138,6 +138,7 @@ export const createEvent = async (formData: FormData): Promise<EventActionResult
         ...(data.themeIds?.length
           ? { themes: { connect: data.themeIds.map((themeId) => ({ id: themeId })) } }
           : {}),
+        ...fundraisingData(data),
       },
     })
 
@@ -227,6 +228,7 @@ export const updateEvent = async (id: string, formData: FormData): Promise<Event
         ...(data.themeIds
           ? { themes: { set: data.themeIds.map((themeId) => ({ id: themeId })) } }
           : {}),
+        ...fundraisingData(data),
       },
     })
 
@@ -314,7 +316,26 @@ const extractFormData = (formData: FormData) => ({
   themeIds: formData.has("themeIds")
     ? String(formData.get("themeIds")).split(",").filter(Boolean)
     : undefined,
+  // Absent means the form has no collect section: the attached collect is kept.
+  ...(formData.has("fundraisingUrl")
+    ? {
+        fundraisingUrl: String(formData.get("fundraisingUrl")),
+        fundraisingTitle: String(formData.get("fundraisingTitle") ?? ""),
+        fundraisingImage: String(formData.get("fundraisingImage") ?? ""),
+      }
+    : {}),
 })
+
+/** Clearing the link clears its title and image: they only describe the link. */
+const fundraisingData = (data: EventFormData) => {
+  if (data.fundraisingUrl === undefined) return {}
+  const url = data.fundraisingUrl || null
+  return {
+    fundraisingUrl: url,
+    fundraisingTitle: url ? data.fundraisingTitle || null : null,
+    fundraisingImage: url ? data.fundraisingImage || null : null,
+  }
+}
 
 const revalidateEvents = (slugs: string[]) => {
   revalidatePath("/evenements")

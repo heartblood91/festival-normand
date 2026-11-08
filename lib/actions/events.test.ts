@@ -199,6 +199,33 @@ describe("updateEvent", () => {
     expect(mockPrisma.event.update.mock.calls[0][0].data).not.toHaveProperty("themes")
   })
 
+  it("saves the collect link, and clears its title and image with it", async () => {
+    mockPrisma.event.findFirst.mockResolvedValue(null)
+    mockPrisma.event.update.mockResolvedValue({ id: "test-id", slug: "x" })
+    const collect = {
+      fundraisingUrl: "https://www.fondation-patrimoine.org/les-projets/abbaye/123",
+      fundraisingTitle: "Abbaye aux Hommes",
+      fundraisingImage: "https://strapi-upload.cdn.fondation-patrimoine.org/thumb.jpg",
+    }
+
+    await updateEvent("test-id", createFormData({ ...validEventData, ...collect }))
+    expect(mockPrisma.event.update.mock.calls[0][0].data).toMatchObject(collect)
+
+    await updateEvent(
+      "test-id",
+      createFormData({ ...validEventData, ...collect, fundraisingUrl: "" })
+    )
+    expect(mockPrisma.event.update.mock.calls[1][0].data).toMatchObject({
+      fundraisingUrl: null,
+      fundraisingTitle: null,
+      fundraisingImage: null,
+    })
+
+    // A form without the collect field (bulk tools) keeps the attached collect.
+    await updateEvent("test-id", createFormData(validEventData))
+    expect(mockPrisma.event.update.mock.calls[2][0].data).not.toHaveProperty("fundraisingUrl")
+  })
+
   it("returns error for duplicate slug on different event", async () => {
     mockPrisma.event.findFirst.mockResolvedValue({ id: "other-id" })
 

@@ -1,6 +1,6 @@
 import { Link } from "@/lib/i18n/routing"
 import { getLocale, getTranslations } from "next-intl/server"
-import { Accessibility } from "lucide-react"
+import { Accessibility, HandHeart } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { formatEventDateRange, formatTime } from "@/lib/utils/format-date"
 import { DEFAULT_EVENT_IMAGE } from "@/lib/events/default-image"
@@ -46,6 +46,15 @@ const EventListCard = async ({ event, className, priority = false }: EventListCa
               aria-label={t("events.accessible")}
             >
               <Accessibility className="size-3.5" aria-hidden="true" />
+            </span>
+          ) : null}
+          {event.fundraisingUrl ? (
+            <span
+              className="bg-primary text-primary-foreground absolute right-3 bottom-3 flex items-center gap-1.5 px-2.5 py-1 font-sans text-[10px] font-semibold tracking-[0.14em] uppercase"
+              title={t("fundraising.badgeLabel")}
+            >
+              <HandHeart className="size-3.5" aria-hidden="true" />
+              {t("fundraising.badge")}
             </span>
           ) : null}
         </div>

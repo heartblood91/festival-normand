@@ -58,6 +58,7 @@ export const EVENT_LIST_SELECT = {
   accessible: true,
   latitude: true,
   longitude: true,
+  fundraisingUrl: true,
 } as const
 
 /** Events overlapping at least one of the given local calendar days. */

@@ -466,5 +466,14 @@
     "importAll": "Add these places to my travel book",
     "imported": "Places added to your travel book.",
     "openMine": "Open my travel book"
+  },
+  "fundraising": {
+    "badge": "Fundraising",
+    "badgeLabel": "Donation campaign under way for this site",
+    "marker": "Fondation du patrimoine",
+    "title": "Help restore this place",
+    "lede": "This heritage site has a fundraising campaign run by the Fondation du patrimoine. Every donation helps to save it.",
+    "cta": "Make a donation",
+    "newTab": "(opens a new tab, fondation-patrimoine.org)"
   }
 }

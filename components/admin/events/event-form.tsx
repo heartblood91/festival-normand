@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AddressAutocomplete } from "@/components/admin/address-autocomplete"
 import { TourinsoftBanner } from "@/components/admin/events/tourinsoft-banner"
+import { FundraisingSection } from "@/components/admin/events/fundraising-section"
 import { PublishWizard, type PublishWizardResult } from "@/components/admin/publish/publish-wizard"
 import { FormActionBar } from "@/components/admin/shared/form-action-bar"
 import { CoverImageField } from "@/components/admin/shared/cover-image-field"
@@ -32,6 +33,7 @@ import {
 import { translateMissingFields } from "@/lib/admin/translate-missing"
 import { slugify, DEPARTMENT_OPTIONS, CATEGORY_OPTIONS } from "@/lib/schemas/event"
 import type { ThemeOption } from "@/lib/actions/themes"
+import type { FundraisingSuggestionItem } from "@/lib/actions/fundraising"
 import type { Event } from "@prisma/client"
 
 type EventFormProps = {
@@ -40,6 +42,7 @@ type EventFormProps = {
   themes?: ThemeOption[]
   /** yyyy-mm-dd prefilled for a new event: the edition's first night. */
   defaultDateStart?: string
+  fundraisingSuggestions?: FundraisingSuggestionItem[]
 }
 
 const LOCALE_FIELDS = {
@@ -55,7 +58,12 @@ const formatDateForInput = (date: Date | null | undefined): string => {
 
 const splitIds = (value: string) => value.split(",").filter(Boolean)
 
-export const EventForm = ({ event, themes = [], defaultDateStart = "" }: EventFormProps) => {
+export const EventForm = ({
+  event,
+  themes = [],
+  defaultDateStart = "",
+  fundraisingSuggestions,
+}: EventFormProps) => {
   const router = useRouter()
   const locale = useLocale()
   const formRef = useRef<HTMLFormElement>(null)
@@ -91,6 +99,11 @@ export const EventForm = ({ event, themes = [], defaultDateStart = "" }: EventFo
   )
   const [restoreCount, setRestoreCount] = useState(0)
   const [themeIds, setThemeIds] = useState<string[]>(event?.themes?.map((theme) => theme.id) ?? [])
+  const [fundraising, setFundraising] = useState({
+    url: event?.fundraisingUrl ?? "",
+    title: event?.fundraisingTitle ?? "",
+    image: event?.fundraisingImage ?? "",
+  })
 
   const draftValues: Record<string, string> = {
     slug,
@@ -112,6 +125,9 @@ export const EventForm = ({ event, themes = [], defaultDateStart = "" }: EventFo
     featured: String(featured),
     accessible: String(accessible),
     themeIds: themeIds.join(","),
+    fundraisingUrl: fundraising.url,
+    fundraisingTitle: fundraising.title,
+    fundraisingImage: fundraising.image,
   }
 
   const { dirty, draft, restoreDraft, discardDraft, markSaved } = useFormDraft({
@@ -137,6 +153,11 @@ export const EventForm = ({ event, themes = [], defaultDateStart = "" }: EventFo
       setFeatured(values.featured === "true")
       setAccessible(values.accessible === "true")
       if (values.themeIds !== undefined) setThemeIds(splitIds(values.themeIds))
+      setFundraising({
+        url: values.fundraisingUrl ?? "",
+        title: values.fundraisingTitle ?? "",
+        image: values.fundraisingImage ?? "",
+      })
       setMinDateEnd(values.dateStart ?? minDateEnd)
       // Remounts the address search so it shows the restored address.
       setRestoreCount((count) => count + 1)
@@ -682,6 +703,13 @@ export const EventForm = ({ event, themes = [], defaultDateStart = "" }: EventFo
             </div>
           </CardContent>
         </Card>
+
+        <FundraisingSection
+          value={fundraising}
+          onChange={setFundraising}
+          suggestions={fundraisingSuggestions}
+          errors={errors}
+        />
 
         {/* Image */}
         <Card className="border-white/10 bg-white/5">

@@ -466,5 +466,14 @@
     "importAll": "Ajouter ces lieux à mon carnet",
     "imported": "Lieux ajoutés à votre carnet.",
     "openMine": "Ouvrir mon carnet"
+  },
+  "fundraising": {
+    "badge": "Collecte",
+    "badgeLabel": "Collecte de dons en cours pour ce lieu",
+    "marker": "Fondation du patrimoine",
+    "title": "Soutenir la restauration de ce lieu",
+    "lede": "Ce patrimoine fait l'objet d'une collecte de la Fondation du patrimoine. Chaque don, déductible des impôts, aide à le sauvegarder.",
+    "cta": "Faire un don",
+    "newTab": "(nouvel onglet, fondation-patrimoine.org)"
   }
 }

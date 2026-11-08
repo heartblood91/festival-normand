@@ -18,6 +18,7 @@ import { locales } from "@/lib/i18n/config"
 import { DEFAULT_EVENT_IMAGE } from "@/lib/events/default-image"
 import { isInNormandyBounds } from "@/lib/geo/normandy"
 import { FavoriteButton } from "@/components/travel-book/favorite-button"
+import { FundraisingCallout } from "@/components/events/fundraising-callout"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
@@ -193,6 +194,12 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
                 <PhotoCarousel photos={photos} alt={event.title} />
               </div>
             ) : null}
+
+            <FundraisingCallout
+              url={event.fundraisingUrl}
+              title={event.fundraisingTitle}
+              image={event.fundraisingImage}
+            />
           </div>
 
           <aside className="flex min-w-0 flex-col gap-6">
