@@ -37,7 +37,8 @@ export const updateRegistrationLinks = async (
   } catch (error) {
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Une erreur est survenue lors de la mise à jour.",
+      message:
+        error instanceof Error ? error.message : "Une erreur est survenue lors de la mise à jour.",
     }
   }
 }

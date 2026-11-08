@@ -18,8 +18,6 @@ describe("stripLeadingTitle", () => {
   })
 
   it("keeps content without a leading h1", () => {
-    expect(stripLeadingTitle("Texte\n# Le Festival", "Le Festival")).toBe(
-      "Texte\n# Le Festival"
-    )
+    expect(stripLeadingTitle("Texte\n# Le Festival", "Le Festival")).toBe("Texte\n# Le Festival")
   })
 })

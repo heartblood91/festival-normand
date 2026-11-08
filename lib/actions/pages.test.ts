@@ -14,10 +14,18 @@ const { mockPrisma, mockRequireRole } = vi.hoisted(() => ({
   mockRequireRole: vi.fn(),
 }))
 
-mockRequireRole.mockResolvedValue({ id: "admin-1", name: "Admin", email: "admin@test.fr", role: "ADMIN" })
+mockRequireRole.mockResolvedValue({
+  id: "admin-1",
+  name: "Admin",
+  email: "admin@test.fr",
+  role: "ADMIN",
+})
 
 vi.mock("@/lib/prisma", () => ({ prisma: mockPrisma }))
-vi.mock("@/lib/rbac", () => ({ requireRole: mockRequireRole, getAuthenticatedUser: mockRequireRole }))
+vi.mock("@/lib/rbac", () => ({
+  requireRole: mockRequireRole,
+  getAuthenticatedUser: mockRequireRole,
+}))
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
 
 import { createPage, updatePage, deletePage, getAdminPages, getAdminPageById } from "./pages"
@@ -233,7 +241,12 @@ describe("getAdminPageById", () => {
 describe("auth guards", () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockRequireRole.mockResolvedValue({ id: "admin-1", name: "Admin", email: "admin@test.fr", role: "ADMIN" })
+    mockRequireRole.mockResolvedValue({
+      id: "admin-1",
+      name: "Admin",
+      email: "admin@test.fr",
+      role: "ADMIN",
+    })
   })
 
   it("createPage does not touch the DB when unauthenticated", async () => {

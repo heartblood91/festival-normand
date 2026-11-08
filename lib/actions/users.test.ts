@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
-const { mockPrisma, mockHashPassword, mockRequireRole, mockSend, mockIsEmailEnabled } =
-  vi.hoisted(() => ({
+const { mockPrisma, mockHashPassword, mockRequireRole, mockSend, mockIsEmailEnabled } = vi.hoisted(
+  () => ({
     mockPrisma: {
       user: {
         findUnique: vi.fn(),
@@ -24,7 +24,8 @@ const { mockPrisma, mockHashPassword, mockRequireRole, mockSend, mockIsEmailEnab
     mockRequireRole: vi.fn(),
     mockSend: vi.fn().mockResolvedValue({ id: "email-id" }),
     mockIsEmailEnabled: vi.fn(() => true),
-  }))
+  })
+)
 
 vi.mock("@/lib/prisma", () => ({ prisma: mockPrisma }))
 vi.mock("@/lib/rbac", () => ({ requireRole: mockRequireRole }))
@@ -51,7 +52,9 @@ describe("inviteUser", () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockRequireRole.mockResolvedValue({ id: "admin-id" })
-    mockPrisma.$transaction.mockImplementation(async (cb: (tx: typeof mockPrisma) => unknown) => cb(mockPrisma))
+    mockPrisma.$transaction.mockImplementation(async (cb: (tx: typeof mockPrisma) => unknown) =>
+      cb(mockPrisma)
+    )
     mockIsEmailEnabled.mockReturnValue(true)
   })
 
@@ -60,9 +63,7 @@ describe("inviteUser", () => {
     mockPrisma.user.create.mockResolvedValue({ id: "user-1", email: "new@example.com" })
     mockPrisma.verification.create.mockResolvedValue({ id: "verif-1" })
 
-    const result = await inviteUser(
-      createFormData({ email: "new@example.com", role: "EDITOR" })
-    )
+    const result = await inviteUser(createFormData({ email: "new@example.com", role: "EDITOR" }))
 
     expect(result.success).toBe(true)
     expect(mockPrisma.user.create).toHaveBeenCalled()
@@ -79,16 +80,12 @@ describe("inviteUser", () => {
     mockPrisma.user.create.mockResolvedValue({ id: "user-1", email: "new@example.com" })
     mockPrisma.verification.create.mockResolvedValue({ id: "verif-1" })
 
-    const result = await inviteUser(
-      createFormData({ email: "new@example.com", role: "EDITOR" })
-    )
+    const result = await inviteUser(createFormData({ email: "new@example.com", role: "EDITOR" }))
 
     expect(result.success).toBe(true)
     expect(result.setupUrl).toBeUndefined()
     expect(mockSend).toHaveBeenCalledTimes(1)
-    expect(mockSend).toHaveBeenCalledWith(
-      expect.objectContaining({ to: "new@example.com" })
-    )
+    expect(mockSend).toHaveBeenCalledWith(expect.objectContaining({ to: "new@example.com" }))
   })
 
   it("returns the setup URL and skips email when email delivery is disabled", async () => {
@@ -97,9 +94,7 @@ describe("inviteUser", () => {
     mockPrisma.user.create.mockResolvedValue({ id: "user-1", email: "new@example.com" })
     mockPrisma.verification.create.mockResolvedValue({ id: "verif-1" })
 
-    const result = await inviteUser(
-      createFormData({ email: "new@example.com", role: "EDITOR" })
-    )
+    const result = await inviteUser(createFormData({ email: "new@example.com", role: "EDITOR" }))
 
     expect(result.success).toBe(true)
     expect(result.setupUrl).toMatch(/\/admin\/setup-account\?token=.+&email=new%40example\.com$/)
@@ -111,7 +106,9 @@ describe("setupAccount", () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockHashPassword.mockResolvedValue("salt:hashedvalue")
-    mockPrisma.$transaction.mockImplementation(async (cb: (tx: typeof mockPrisma) => unknown) => cb(mockPrisma))
+    mockPrisma.$transaction.mockImplementation(async (cb: (tx: typeof mockPrisma) => unknown) =>
+      cb(mockPrisma)
+    )
   })
 
   it("hashes the password, upserts the credential account and deletes the token", async () => {
