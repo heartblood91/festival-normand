@@ -12,6 +12,7 @@ import { MobileNav } from "@/components/layout/mobile-nav"
 import { ContrastToggle } from "@/components/layout/contrast-toggle"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { LanternLogo } from "@/components/editorial/lantern-logo"
+import { TravelBookLink } from "@/components/travel-book/travel-book-link"
 
 const HeaderSearch = () => {
   const t = useTranslations()
@@ -56,7 +57,7 @@ const Header = ({ kicker }: HeaderProps) => {
   const localePrefix = pathname.split("/")[1]
 
   return (
-    <header className="border-primary/25 bg-ed-bg-deep/85 sticky top-0 z-50 w-full border-b backdrop-blur-xl">
+    <header className="border-primary/25 bg-ed-bg-deep/85 sticky top-0 z-50 w-full border-b backdrop-blur-xl print:hidden">
       {/* Utility strip — contrast, language, city search, social */}
       <div className="border-primary/15 hidden border-b md:block">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-2">
@@ -133,6 +134,7 @@ const Header = ({ kicker }: HeaderProps) => {
         </nav>
 
         <div className="flex items-center gap-2">
+          <TravelBookLink active={/^\/[a-z]{2}\/carnet(\/|$)/.test(pathname)} />
           <Link
             href={CTA_HREF}
             className="bg-primary text-primary-foreground hover:bg-ed-amber-deep focus-visible:ring-ring hidden items-center px-5 py-3 font-sans text-[11px] font-semibold tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none lg:inline-flex"

@@ -61,7 +61,8 @@ test.describe("Events list page", () => {
   test("several nights can be selected together", async ({ page }) => {
     await page.goto("/evenements")
     // Night chips come from the current edition; pick the first and the last.
-    const nightChips = page.locator("button[aria-pressed]").filter({ hasText: /\d/ })
+    // "Ven 21": the theme chips also carry a digit (their count).
+    const nightChips = page.locator("button[aria-pressed]").filter({ hasText: /^\S+ \d{1,2}$/ })
     const count = await nightChips.count()
     expect(count).toBeGreaterThanOrEqual(2)
     const first = (await nightChips.first().textContent())!.trim()

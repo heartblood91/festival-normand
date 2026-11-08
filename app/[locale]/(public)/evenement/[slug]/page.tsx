@@ -17,6 +17,7 @@ import { publicEventWhere } from "@/lib/queries/visibility"
 import { locales } from "@/lib/i18n/config"
 import { DEFAULT_EVENT_IMAGE } from "@/lib/events/default-image"
 import { isInNormandyBounds } from "@/lib/geo/normandy"
+import { FavoriteButton } from "@/components/travel-book/favorite-button"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
@@ -156,6 +157,12 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
             <p className="text-ed-bone mt-4 font-serif text-xl font-light italic md:text-2xl">
               {event.location} · {event.city}, {t(`departments.${event.department}`)}
             </p>
+            <FavoriteButton
+              eventId={event.id}
+              title={event.title}
+              variant="labelled"
+              className="mt-6"
+            />
           </div>
 
           {/* Intentionally NOT sticky: a sticky aside next to a long main column

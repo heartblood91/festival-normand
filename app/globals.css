@@ -327,3 +327,20 @@ input::-ms-reveal,
 input::-ms-clear {
   display: none;
 }
+
+/* Paper output (travel book and any public page): dark ink on white, no backgrounds. */
+@media print {
+  body,
+  .editorial {
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  .editorial * {
+    color: #111 !important;
+    background: transparent !important;
+    border-color: #999 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+}

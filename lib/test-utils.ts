@@ -17,6 +17,7 @@ export const prismaMock = {
   news: mockMethods(),
   partner: mockMethods(),
   theme: mockMethods(),
+  travelBook: mockMethods(),
   page: mockMethods(),
   adminUser: mockMethods(),
   user: mockMethods(),

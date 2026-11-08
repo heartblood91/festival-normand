@@ -87,6 +87,16 @@ model Theme {
   @@map("themes")
 }
 
+/// Shared read-only travel book: only public event ids, no personal data.
+model TravelBook {
+  id        String   @id @default(uuid()) @db.Uuid
+  /// sha256 of the sorted event ids: sharing the same selection reuses the row.
+  key       String   @unique
+  eventIds  String[] @map("event_ids")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("travel_books")
+}
 
 model Photo {
   id        String   @id @default(cuid())
