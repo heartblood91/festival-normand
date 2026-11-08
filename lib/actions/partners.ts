@@ -1,6 +1,6 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
+import { revalidatePublic } from "@/lib/revalidate-public"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
 import { partnerSchema } from "@/lib/schemas/partner"
@@ -52,7 +52,7 @@ export const createPartner = async (formData: FormData): Promise<PartnerActionRe
       },
     })
 
-    revalidatePath("/")
+    revalidatePublic("/")
 
     return {
       success: true,
@@ -97,7 +97,7 @@ export const updatePartner = async (
       },
     })
 
-    revalidatePath("/")
+    revalidatePublic("/")
 
     return {
       success: true,
@@ -117,7 +117,7 @@ export const deletePartner = async (id: string): Promise<PartnerActionResult> =>
     await requireRole("EDITOR")
     await prisma.partner.delete({ where: { id } })
 
-    revalidatePath("/")
+    revalidatePublic("/")
 
     return {
       success: true,
@@ -143,7 +143,7 @@ export const reorderPartners = async (orderedIds: string[]): Promise<PartnerActi
       )
     )
 
-    revalidatePath("/")
+    revalidatePublic("/")
 
     return {
       success: true,

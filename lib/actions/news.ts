@@ -1,6 +1,6 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
+import { revalidatePublic } from "@/lib/revalidate-public"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
 import { newsSchema } from "@/lib/schemas/news"
@@ -126,9 +126,7 @@ export const createNews = async (formData: FormData): Promise<NewsActionResult> 
       },
     })
 
-    revalidatePath("/actualites")
-    revalidatePath(`/actualite/${news.slug}`)
-    revalidatePath("/")
+    revalidatePublic("/actualites", `/actualite/${news.slug}`, "/")
 
     return {
       success: true,
@@ -188,9 +186,7 @@ export const updateNews = async (id: string, formData: FormData): Promise<NewsAc
       },
     })
 
-    revalidatePath("/actualites")
-    revalidatePath(`/actualite/${news.slug}`)
-    revalidatePath("/")
+    revalidatePublic("/actualites", `/actualite/${news.slug}`, "/")
 
     return {
       success: true,
@@ -210,9 +206,7 @@ export const deleteNews = async (id: string): Promise<NewsActionResult> => {
     await requireRole("EDITOR")
     const news = await prisma.news.delete({ where: { id } })
 
-    revalidatePath("/actualites")
-    revalidatePath(`/actualite/${news.slug}`)
-    revalidatePath("/")
+    revalidatePublic("/actualites", `/actualite/${news.slug}`, "/")
 
     return {
       success: true,
@@ -245,11 +239,7 @@ export const bulkDeleteNews = async (ids: string[]): Promise<NewsActionResult> =
       where: { id: { in: ids } },
     })
 
-    revalidatePath("/actualites")
-    articles.forEach((article) => {
-      revalidatePath(`/actualite/${article.slug}`)
-    })
-    revalidatePath("/")
+    revalidatePublic("/actualites", ...articles.map((article) => `/actualite/${article.slug}`), "/")
 
     return {
       success: true,

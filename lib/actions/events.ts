@@ -1,6 +1,6 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
+import { revalidatePublic } from "@/lib/revalidate-public"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
 import { eventSchema, type EventFormData } from "@/lib/schemas/event"
@@ -142,9 +142,7 @@ export const createEvent = async (formData: FormData): Promise<EventActionResult
       },
     })
 
-    revalidatePath("/evenements")
-    revalidatePath(`/evenement/${event.slug}`)
-    revalidatePath("/")
+    revalidatePublic("/evenements", `/evenement/${event.slug}`, "/")
 
     return {
       success: true,
@@ -232,9 +230,7 @@ export const updateEvent = async (id: string, formData: FormData): Promise<Event
       },
     })
 
-    revalidatePath("/evenements")
-    revalidatePath(`/evenement/${event.slug}`)
-    revalidatePath("/")
+    revalidatePublic("/evenements", `/evenement/${event.slug}`, "/")
 
     return {
       success: true,
@@ -267,9 +263,7 @@ export const unpublishEvents = async (ids: string[]): Promise<EventActionResult>
       data: { published: false, unpublishedAt: new Date() },
     })
 
-    revalidatePath("/evenements")
-    events.forEach((event) => revalidatePath(`/evenement/${event.slug}`))
-    revalidatePath("/")
+    revalidatePublic("/evenements", ...events.map((event) => `/evenement/${event.slug}`), "/")
 
     return {
       success: true,
@@ -338,9 +332,7 @@ const fundraisingData = (data: EventFormData) => {
 }
 
 const revalidateEvents = (slugs: string[]) => {
-  revalidatePath("/evenements")
-  slugs.forEach((slug) => revalidatePath(`/evenement/${slug}`))
-  revalidatePath("/")
+  revalidatePublic("/evenements", ...slugs.map((slug) => `/evenement/${slug}`), "/")
 }
 
 const plural = (count: number, one: string, many: string) => `${count} ${count > 1 ? many : one}`

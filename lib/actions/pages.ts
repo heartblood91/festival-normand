@@ -1,6 +1,6 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
+import { revalidatePublic } from "@/lib/revalidate-public"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
 import { pageSchema } from "@/lib/schemas/page"
@@ -69,7 +69,7 @@ export const createPage = async (formData: FormData): Promise<PageActionResult> 
       },
     })
 
-    revalidatePath(`/${page.slug}`)
+    revalidatePublic(`/${page.slug}`)
 
     return {
       success: true,
@@ -122,8 +122,7 @@ export const updatePage = async (id: string, formData: FormData): Promise<PageAc
       },
     })
 
-    revalidatePath(`/${page.slug}`)
-    revalidatePath("/")
+    revalidatePublic(`/${page.slug}`, "/")
 
     return {
       success: true,
@@ -158,7 +157,7 @@ export const deletePage = async (id: string): Promise<PageActionResult> => {
 
     await prisma.page.delete({ where: { id } })
 
-    revalidatePath(`/${page.slug}`)
+    revalidatePublic(`/${page.slug}`)
 
     return {
       success: true,
