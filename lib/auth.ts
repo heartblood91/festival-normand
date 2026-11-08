@@ -6,7 +6,7 @@ import { Resend } from "resend"
 import { prisma } from "@/lib/prisma"
 import { isEmailEnabled } from "@/lib/email"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const getResend = () => new Resend(process.env.RESEND_API_KEY)
 
 const fromAddress = () =>
   process.env.RESEND_FROM_EMAIL || "Pierres en Lumières <onboarding@resend.dev>"
@@ -28,7 +28,7 @@ export const auth = betterAuth({
           message: "L'envoi d'email est désactivé sur cet environnement.",
         })
       }
-      await resend.emails.send({
+      await getResend().emails.send({
         from: fromAddress(),
         to: user.email,
         subject: "Réinitialisation du mot de passe — Pierres en Lumières",
@@ -77,7 +77,7 @@ export const auth = betterAuth({
             message: "L'envoi d'email est désactivé sur cet environnement.",
           })
         }
-        await resend.emails.send({
+        await getResend().emails.send({
           from: fromAddress(),
           to: email,
           subject: "Connexion à l'administration Pierres en Lumières",
