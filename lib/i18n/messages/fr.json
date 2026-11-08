@@ -90,6 +90,11 @@
       "text": "Les trois nuits sont terminées. Retrouvez la sélection éditoriale des temps forts de cette édition.",
       "gallery": "Galerie photos {year}",
       "replays": "Replays des mappings"
+    },
+    "theme": {
+      "marker": "Fil rouge {year}",
+      "viewAll": "Voir les événements",
+      "soon": "Les lieux participants seront annoncés prochainement."
     }
   },
   "a11y": {
@@ -170,7 +175,8 @@
     "nearbyClosestHint": "Aucun autre site ouvert le même jour à moins de {radius} km. Les numéros renvoient à la carte.",
     "distanceKm": "{distance, number} km",
     "mapYouAreHere": "Vous êtes ici",
-    "mapLabel": "Carte : {title} et {count, plural, =0 {aucun site voisin} one {# site voisin numéroté} other {# sites voisins numérotés}}"
+    "mapLabel": "Carte : {title} et {count, plural, =0 {aucun site voisin} one {# site voisin numéroté} other {# sites voisins numérotés}}",
+    "themes": "Thématiques"
   },
   "filters": {
     "department": "Département",
@@ -189,7 +195,9 @@
     "geoUnavailable": "Votre position n'a pas pu être déterminée (GPS ou Wi-Fi indisponibles). Réessayez dans quelques instants.",
     "geoTimeout": "La localisation a pris trop de temps. Vérifiez votre connexion et réessayez.",
     "geoError": "Impossible de vous localiser. Réessayez dans quelques instants.",
-    "dismissError": "Fermer le message d'erreur"
+    "dismissError": "Fermer le message d'erreur",
+    "theme": "Thématique",
+    "themes": "Thématiques"
   },
   "categories": {
     "ILLUMINATIONS": "Illuminations",
@@ -318,6 +326,7 @@
     "sidebar": {
       "dashboard": "Tableau de bord",
       "events": "Événements",
+      "themes": "Thématiques",
       "news": "Actualités",
       "partners": "Partenaires",
       "pages": "Pages",

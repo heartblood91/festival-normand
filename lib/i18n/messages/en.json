@@ -90,6 +90,11 @@
       "text": "The three nights are over. Browse the editorial selection of this edition's highlights.",
       "gallery": "{year} photo gallery",
       "replays": "Mapping replays"
+    },
+    "theme": {
+      "marker": "{year} common thread",
+      "viewAll": "See the events",
+      "soon": "Participating places will be announced soon."
     }
   },
   "a11y": {
@@ -170,7 +175,8 @@
     "nearbyClosestHint": "No other site is open the same day within {radius} km. Numbers match the map.",
     "distanceKm": "{distance, number} km",
     "mapYouAreHere": "You are here",
-    "mapLabel": "Map: {title} and {count, plural, =0 {no neighbouring site} one {# numbered neighbouring site} other {# numbered neighbouring sites}}"
+    "mapLabel": "Map: {title} and {count, plural, =0 {no neighbouring site} one {# numbered neighbouring site} other {# numbered neighbouring sites}}",
+    "themes": "Themes"
   },
   "filters": {
     "department": "Department",
@@ -189,7 +195,9 @@
     "geoUnavailable": "Your location could not be determined (GPS or Wi-Fi unavailable). Please try again in a moment.",
     "geoTimeout": "Locating took too long. Check your connection and try again.",
     "geoError": "Unable to locate you. Please try again in a moment.",
-    "dismissError": "Dismiss error message"
+    "dismissError": "Dismiss error message",
+    "theme": "Theme",
+    "themes": "Themes"
   },
   "categories": {
     "ILLUMINATIONS": "Light shows",
@@ -318,6 +326,7 @@
     "sidebar": {
       "dashboard": "Dashboard",
       "events": "Events",
+      "themes": "Themes",
       "news": "News",
       "partners": "Partners",
       "pages": "Pages",

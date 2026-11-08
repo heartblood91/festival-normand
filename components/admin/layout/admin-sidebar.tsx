@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl"
 import {
   LayoutDashboard,
   Calendar,
+  Tags,
   Newspaper,
   Handshake,
   FileText,
@@ -67,6 +68,11 @@ const AdminSidebar = ({
       href: `/${locale}/admin/events`,
       icon: Calendar,
       labelKey: "sidebar.events",
+    },
+    {
+      href: `/${locale}/admin/themes`,
+      icon: Tags,
+      labelKey: "sidebar.themes",
     },
     {
       href: `/${locale}/admin/news`,

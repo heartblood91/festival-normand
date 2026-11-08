@@ -112,6 +112,17 @@ describe("createEvent", () => {
     )
   })
 
+  it("connects the ticked themes on creation", async () => {
+    mockPrisma.event.findUnique.mockResolvedValue(null)
+    mockPrisma.event.create.mockResolvedValue({ id: "new", slug: "x" })
+
+    await createEvent(createFormData({ ...validEventData, themeIds: "t1" }))
+
+    expect(mockPrisma.event.create.mock.calls[0][0].data.themes).toEqual({
+      connect: [{ id: "t1" }],
+    })
+  })
+
   it("returns validation errors for invalid data", async () => {
     const result = await createEvent(
       createFormData({ ...validEventData, titleFr: "ab", descriptionFr: "short" })
@@ -164,6 +175,28 @@ describe("updateEvent", () => {
         where: { id: "test-id" },
       })
     )
+  })
+
+  it("replaces the themes with the ticked ones", async () => {
+    mockPrisma.event.findFirst.mockResolvedValue(null)
+    mockPrisma.event.update.mockResolvedValue({ id: "test-id", slug: "x" })
+
+    await updateEvent("test-id", createFormData({ ...validEventData, themeIds: "t1,t2" }))
+    expect(mockPrisma.event.update.mock.calls[0][0].data.themes).toEqual({
+      set: [{ id: "t1" }, { id: "t2" }],
+    })
+
+    await updateEvent("test-id", createFormData({ ...validEventData, themeIds: "" }))
+    expect(mockPrisma.event.update.mock.calls[1][0].data.themes).toEqual({ set: [] })
+  })
+
+  it("leaves the themes alone when the form has no theme field", async () => {
+    mockPrisma.event.findFirst.mockResolvedValue(null)
+    mockPrisma.event.update.mockResolvedValue({ id: "test-id", slug: "x" })
+
+    await updateEvent("test-id", createFormData(validEventData))
+
+    expect(mockPrisma.event.update.mock.calls[0][0].data).not.toHaveProperty("themes")
   })
 
   it("returns error for duplicate slug on different event", async () => {
@@ -395,6 +428,7 @@ describe("getAdminEventById", () => {
     expect(result).toEqual(mockEvent)
     expect(mockPrisma.event.findUnique).toHaveBeenCalledWith({
       where: { id: "test-id" },
+      include: { themes: { select: { id: true } } },
     })
   })
 

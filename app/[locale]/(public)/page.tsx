@@ -14,6 +14,7 @@ import {
   isDuringFestival,
 } from "@/lib/festival/edition"
 import { getCurrentEdition } from "@/lib/queries/edition"
+import { getHomeThemes } from "@/lib/queries/themes"
 import { Hero } from "@/components/home/editorial/hero"
 import { ThreeNights } from "@/components/home/editorial/three-nights"
 import { Quote } from "@/components/home/editorial/quote"
@@ -23,6 +24,7 @@ import { ProgrammeTeaser } from "@/components/home/editorial/programme-teaser"
 import { NormandySection } from "@/components/home/editorial/normandy-section"
 import { Partners } from "@/components/home/editorial/partners"
 import { PastRevive } from "@/components/home/editorial/past-revive"
+import { ThemeSpotlight } from "@/components/home/editorial/theme-spotlight"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
@@ -62,12 +64,13 @@ const HomePage = async ({ params }: HomePageProps) => {
   const edition = await getCurrentEdition()
   const mode = getEditionMode(edition)
 
-  const [featured, news, partners, programme, stats] = await Promise.all([
+  const [featured, news, partners, programme, stats, themes] = await Promise.all([
     getFeaturedEvents(locale, edition),
     getLatestNews(locale),
     getPartners(locale),
     getProgrammeTeaser(locale, edition),
     getHomeStats(edition),
+    getHomeThemes(locale, edition),
   ])
 
   const hero = (
@@ -88,6 +91,15 @@ const HomePage = async ({ params }: HomePageProps) => {
   const hasFeatured = featured.length > 0
   const hasProgramme = programme.length > 0
   const hasPartners = partners.length > 0
+  const themeSections = () =>
+    themes.map((theme) => (
+      <ThemeSpotlight
+        key={theme.slug}
+        theme={theme}
+        year={edition.year}
+        markerIndex={nextMarker()}
+      />
+    ))
 
   if (mode === "bilan") {
     return (
@@ -95,6 +107,7 @@ const HomePage = async ({ params }: HomePageProps) => {
         {hero}
         <PastRevive year={edition.year} markerIndex={nextMarker()} />
         <Quote markerIndex={nextMarker()} />
+        {themeSections()}
         {hasNews ? <NewsRow news={news} mode={mode} markerIndex={nextMarker()} /> : null}
         {hasFeatured ? (
           <Highlights
@@ -119,6 +132,7 @@ const HomePage = async ({ params }: HomePageProps) => {
       {hero}
       <ThreeNights nights={edition.nights} byNight={stats.byNight} markerIndex={nextMarker()} />
       <Quote markerIndex={nextMarker()} />
+      {themeSections()}
       {hasNews ? <NewsRow news={news} mode={mode} markerIndex={nextMarker()} /> : null}
       {hasFeatured ? (
         <Highlights events={featured} mode={mode} year={edition.year} markerIndex={nextMarker()} />

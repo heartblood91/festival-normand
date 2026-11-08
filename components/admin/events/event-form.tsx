@@ -31,10 +31,13 @@ import {
 } from "@/lib/admin/publish-flow"
 import { translateMissingFields } from "@/lib/admin/translate-missing"
 import { slugify, DEPARTMENT_OPTIONS, CATEGORY_OPTIONS } from "@/lib/schemas/event"
+import type { ThemeOption } from "@/lib/actions/themes"
 import type { Event } from "@prisma/client"
 
 type EventFormProps = {
-  event?: Event
+  event?: Event & { themes?: { id: string }[] }
+  /** Themes the editor can tick (Millennium…). */
+  themes?: ThemeOption[]
   /** yyyy-mm-dd prefilled for a new event: the edition's first night. */
   defaultDateStart?: string
 }
@@ -50,7 +53,9 @@ const formatDateForInput = (date: Date | null | undefined): string => {
   return d.toISOString().split("T")[0]
 }
 
-export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
+const splitIds = (value: string) => value.split(",").filter(Boolean)
+
+export const EventForm = ({ event, themes = [], defaultDateStart = "" }: EventFormProps) => {
   const router = useRouter()
   const locale = useLocale()
   const formRef = useRef<HTMLFormElement>(null)
@@ -85,6 +90,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
     formatDateForInput(event?.dateStart) || defaultDateStart
   )
   const [restoreCount, setRestoreCount] = useState(0)
+  const [themeIds, setThemeIds] = useState<string[]>(event?.themes?.map((theme) => theme.id) ?? [])
 
   const draftValues: Record<string, string> = {
     slug,
@@ -105,6 +111,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
     coverImageAltEn: coverAlt.en,
     featured: String(featured),
     accessible: String(accessible),
+    themeIds: themeIds.join(","),
   }
 
   const { dirty, draft, restoreDraft, discardDraft, markSaved } = useFormDraft({
@@ -129,6 +136,7 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
       setCoverAlt({ fr: values.coverImageAltFr ?? "", en: values.coverImageAltEn ?? "" })
       setFeatured(values.featured === "true")
       setAccessible(values.accessible === "true")
+      if (values.themeIds !== undefined) setThemeIds(splitIds(values.themeIds))
       setMinDateEnd(values.dateStart ?? minDateEnd)
       // Remounts the address search so it shows the restored address.
       setRestoreCount((count) => count + 1)
@@ -749,6 +757,49 @@ export const EventForm = ({ event, defaultDateStart = "" }: EventFormProps) => {
             </label>
           </CardContent>
         </Card>
+
+        {themes.length > 0 && (
+          <Card className="border-white/10 bg-white/5">
+            <CardHeader>
+              <CardTitle className="text-white">Thématiques</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <fieldset>
+                <legend className="text-muted-foreground mb-3 text-sm">
+                  Rattacher l&apos;événement à un fil rouge (filtre public, section d&apos;accueil,
+                  marqueur de carte).
+                </legend>
+                <div className="flex flex-wrap gap-2">
+                  {themes.map((theme) => (
+                    <label
+                      key={theme.id}
+                      className="flex min-h-11 cursor-pointer items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-sm text-white has-[:checked]:border-amber-500/50 has-[:checked]:bg-amber-500/10"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={themeIds.includes(theme.id)}
+                        onChange={(e) =>
+                          setThemeIds((ids) =>
+                            e.target.checked
+                              ? [...ids, theme.id]
+                              : ids.filter((id) => id !== theme.id)
+                          )
+                        }
+                        className="size-4 accent-amber-500"
+                      />
+                      <span
+                        className="size-3 rounded-full"
+                        style={{ backgroundColor: theme.color }}
+                        aria-hidden="true"
+                      />
+                      {theme.nameFr}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Hidden inputs for address fields */}
         <input type="hidden" name="location" value={location} />

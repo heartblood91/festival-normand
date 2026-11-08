@@ -51,6 +51,7 @@ model Event {
   coverImageAltEn      String?    @map("cover_image_alt_en")
   images               String[]   @default([])
   photos               Photo[]
+  themes               Theme[]    @relation("event_themes")
   tourinsoftId         String?    @unique @map("tourinsoft_id")
   tourinsoftCategories String?    @map("tourinsoft_categories")
   tourinsoftUpdatedAt  DateTime?  @map("tourinsoft_updated_at")
@@ -64,6 +65,28 @@ model Event {
 
   @@map("events")
 }
+
+/// Editorial thread across events (e.g. Millennium): filter, home section, map marker.
+model Theme {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  nameFr        String   @map("name_fr")
+  nameEn        String?  @map("name_en")
+  descriptionFr String?  @map("description_fr") @db.Text
+  descriptionEn String?  @map("description_en") @db.Text
+  /// Hex colour of the theme chip and of map pins without a marker image.
+  color         String   @default("#f59e0b")
+  /// Map marker / emblem image, replaceable by upload in admin.
+  markerImage   String?  @map("marker_image")
+  showOnHome    Boolean  @default(false) @map("show_on_home")
+  order         Int      @default(0)
+  events        Event[]  @relation("event_themes")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("themes")
+}
+
 
 model Photo {
   id        String   @id @default(cuid())

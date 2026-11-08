@@ -58,6 +58,7 @@ export const eventSchema = z
     featured: z.boolean().default(false),
     accessible: z.boolean().default(false),
     published: z.boolean().default(true),
+    themeIds: z.array(z.string().min(1)).optional(),
   })
   .refine(
     // ISO yyyy-mm-dd strings compare in date order. Times are not compared:

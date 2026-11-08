@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server"
+import { Link } from "@/lib/i18n/routing"
 import { formatFullDate, formatTime } from "@/lib/utils/format-date"
 import type { EventDetail } from "@/lib/queries/events"
 
@@ -64,6 +65,29 @@ const EventInfo = async ({ event, locale }: EventInfoProps) => {
         ) : null}
         {event.organizer ? <Row label={t("events.organizer")} value={event.organizer} /> : null}
         {event.accessible ? <Row label={t("filters.pmr")} value={t("events.accessible")} /> : null}
+        {event.themes.length > 0 ? (
+          <Row
+            label={t("events.themes")}
+            value={
+              <span className="flex flex-wrap justify-end gap-x-3 gap-y-1">
+                {event.themes.map((theme) => (
+                  <Link
+                    key={theme.slug}
+                    href={`/evenements?theme=${theme.slug}`}
+                    className="text-primary hover:text-ed-amber-soft focus-visible:ring-primary/50 inline-flex min-h-6 items-center gap-1.5 rounded-sm underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:outline-none"
+                  >
+                    <span
+                      className="size-2 rounded-full not-italic"
+                      style={{ backgroundColor: theme.color }}
+                      aria-hidden="true"
+                    />
+                    {theme.name}
+                  </Link>
+                ))}
+              </span>
+            }
+          />
+        ) : null}
       </dl>
     </div>
   )

@@ -121,6 +121,19 @@ describe("getEvents", () => {
     )
   })
 
+  it("filters by theme slug", async () => {
+    prismaMock.event.findMany.mockResolvedValue([])
+    prismaMock.event.count.mockResolvedValue(0)
+
+    await getEvents({ theme: "millennium" }, "fr")
+
+    expect(prismaMock.event.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ themes: { some: { slug: "millennium" } } }),
+      })
+    )
+  })
+
   it("filters by accessibility", async () => {
     prismaMock.event.findMany.mockResolvedValue([])
     prismaMock.event.count.mockResolvedValue(0)
@@ -355,6 +368,7 @@ const mockEventDetail = {
   published: true,
   createdAt: new Date(),
   updatedAt: new Date(),
+  themes: [{ slug: "millennium", nameFr: "Millénaire", nameEn: "Millennium", color: "#d97706" }],
 }
 
 describe("getEventBySlug", () => {
@@ -363,13 +377,17 @@ describe("getEventBySlug", () => {
 
     const result = await getEventBySlug("illumination-abbaye", "fr")
 
-    expect(result).not.toBeNull()
+    expect(result?.themes).toEqual([{ slug: "millennium", name: "Millénaire", color: "#d97706" }])
     expect(prismaMock.event.findFirst).toHaveBeenCalledWith({
       where: { published: true, slug: "illumination-abbaye" },
       include: {
         photos: {
           orderBy: { order: "asc" },
           select: { url: true, credit: true, title: true, order: true },
+        },
+        themes: {
+          orderBy: [{ order: "asc" }, { nameFr: "asc" }],
+          select: { slug: true, nameFr: true, nameEn: true, color: true },
         },
       },
     })
@@ -395,6 +413,10 @@ describe("getEventBySlug", () => {
         photos: {
           orderBy: { order: "asc" },
           select: { url: true, credit: true, title: true, order: true },
+        },
+        themes: {
+          orderBy: [{ order: "asc" }, { nameFr: "asc" }],
+          select: { slug: true, nameFr: true, nameEn: true, color: true },
         },
       },
     })

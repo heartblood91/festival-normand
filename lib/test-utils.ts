@@ -16,6 +16,7 @@ export const prismaMock = {
   event: mockMethods(),
   news: mockMethods(),
   partner: mockMethods(),
+  theme: mockMethods(),
   page: mockMethods(),
   adminUser: mockMethods(),
   user: mockMethods(),

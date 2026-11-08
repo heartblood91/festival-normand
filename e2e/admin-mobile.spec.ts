@@ -9,6 +9,8 @@ const ADMIN_PAGES = [
   "/fr/admin/news/new",
   "/fr/admin/partners",
   "/fr/admin/partners/new",
+  "/fr/admin/themes",
+  "/fr/admin/themes/new",
   "/fr/admin/pages",
   "/fr/admin/settings",
   "/fr/admin/edition",

@@ -6,6 +6,7 @@ import { searchEventIds } from "@/lib/search"
 import { isInNormandyBounds, normandyBoundsWhere } from "@/lib/geo/normandy"
 import { getCurrentEdition } from "@/lib/queries/edition"
 import { parseNightCodes } from "@/lib/festival/edition"
+import { themePin } from "@/lib/themes/marker"
 import type { Locale } from "@/lib/i18n/config"
 import type { Department, Category, Prisma } from "@prisma/client"
 
@@ -21,6 +22,8 @@ export type EventFilters = {
   category?: Category
   department?: Department
   accessible?: boolean
+  /** Theme slug */
+  theme?: string
   page?: number
   lat?: number
   lng?: number
@@ -73,7 +76,7 @@ const buildFilterWhere = async (
   filters: EventFilters,
   overrides?: { key: string; value: string }
 ): Promise<Prisma.EventWhereInput> => {
-  const { search, dates, accessible } = filters
+  const { search, dates, accessible, theme } = filters
   const where: Prisma.EventWhereInput = await publicEventWhere()
 
   const dept =
@@ -92,6 +95,7 @@ const buildFilterWhere = async (
   if (cat) where.category = cat as Category
   if (dept) where.department = dept as Department
   if (accessible) where.accessible = true
+  if (theme) where.themes = { some: { slug: theme } }
 
   const and: Prisma.EventWhereInput[] = []
 
@@ -258,11 +262,20 @@ export const getEventBySlug = async (slug: string, locale: Locale = "fr") =>
             orderBy: { order: "asc" },
             select: { url: true, credit: true, title: true, order: true },
           },
+          themes: {
+            orderBy: [{ order: "asc" }, { nameFr: "asc" }],
+            select: { slug: true, nameFr: true, nameEn: true, color: true },
+          },
         },
       })
       if (!event) return null
       return {
         ...localizeEntity(event, locale, ["title", "description", "pricing", "coverImageAlt"]),
+        themes: event.themes.map((theme) => ({
+          slug: theme.slug,
+          name: localizeEntity(theme, locale, ["name"]).name,
+          color: theme.color,
+        })),
         dateStart: event.dateStart?.toISOString() ?? null,
         dateEnd: event.dateEnd?.toISOString() ?? null,
         createdAt: event.createdAt.toISOString(),
@@ -302,12 +315,14 @@ export const getAllFilteredEventsForMap = async (
           timeStart: true,
           city: true,
           coverImage: true,
+          themes: { select: { order: true, color: true, markerImage: true } },
         },
       })
-      return events.map((e) => ({
+      return events.map(({ themes, ...e }) => ({
         ...localizeEntity(e, locale, ["title"]),
         dateStart: e.dateStart?.toISOString() ?? null,
         dateEnd: e.dateEnd?.toISOString() ?? null,
+        pin: themePin(themes),
       }))
     },
     ["events-map", locale, cacheKey],

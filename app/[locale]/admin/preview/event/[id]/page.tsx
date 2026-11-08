@@ -25,6 +25,10 @@ const EventPreviewPage = async ({ params }: EventPreviewPageProps) => {
         orderBy: { order: "asc" },
         select: { url: true, credit: true, title: true, order: true },
       },
+      themes: {
+        orderBy: [{ order: "asc" }, { nameFr: "asc" }],
+        select: { slug: true, nameFr: true, nameEn: true, color: true },
+      },
     },
   })
 
@@ -38,6 +42,11 @@ const EventPreviewPage = async ({ params }: EventPreviewPageProps) => {
     dateEnd: rawEvent.dateEnd?.toISOString() ?? null,
     createdAt: rawEvent.createdAt.toISOString(),
     updatedAt: rawEvent.updatedAt.toISOString(),
+    themes: rawEvent.themes.map((theme) => ({
+      slug: theme.slug,
+      name: localizeEntity(theme, locale, ["name"]).name,
+      color: theme.color,
+    })),
   }
 
   const photos: CarouselPhoto[] =

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { ChevronDown, Accessibility, X } from "lucide-react"
 import { cn } from "@/lib/utils"
+import type { FilterTheme } from "@/lib/queries/themes"
 
 type FilterCounts = {
   departments: Record<string, number>
@@ -39,9 +40,10 @@ type FilterBarProps = {
   nights: NightOption[]
   total?: number
   counts?: FilterCounts
+  themes?: FilterTheme[]
 }
 
-const FilterBar = ({ nights, total = 0, counts }: FilterBarProps) => {
+const FilterBar = ({ nights, total = 0, counts, themes = [] }: FilterBarProps) => {
   const router = useRouter()
   const t = useTranslations()
   const searchParams = useSearchParams()
@@ -52,6 +54,7 @@ const FilterBar = ({ nights, total = 0, counts }: FilterBarProps) => {
     (searchParams.get("date") ?? "").split(",").filter(Boolean)
   )
   const [pmrEnabled, setPmrEnabled] = useState(searchParams.get("accessible") === "true")
+  const [selectedTheme, setSelectedTheme] = useState(searchParams.get("theme") ?? "")
 
   const deptRef = useRef<HTMLDivElement>(null)
   const categoryRef = useRef<HTMLDivElement>(null)
@@ -70,7 +73,13 @@ const FilterBar = ({ nights, total = 0, counts }: FilterBarProps) => {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [openDropdown])
 
-  const updateUrl = (dept?: string, category?: string, dates?: string[], pmr?: boolean) => {
+  const updateUrl = (
+    dept?: string,
+    category?: string,
+    dates?: string[],
+    pmr?: boolean,
+    theme = selectedTheme
+  ) => {
     const params = new URLSearchParams(searchParams.toString())
 
     if (dept) {
@@ -95,6 +104,12 @@ const FilterBar = ({ nights, total = 0, counts }: FilterBarProps) => {
       params.set("accessible", "true")
     } else {
       params.delete("accessible")
+    }
+
+    if (theme) {
+      params.set("theme", theme)
+    } else {
+      params.delete("theme")
     }
 
     params.delete("page")
@@ -133,6 +148,12 @@ const FilterBar = ({ nights, total = 0, counts }: FilterBarProps) => {
     updateUrl(selectedDept, selectedCategory, selectedDates, newPmr)
   }
 
+  const handleThemeToggle = (slug: string) => {
+    const newTheme = selectedTheme === slug ? "" : slug
+    setSelectedTheme(newTheme)
+    updateUrl(selectedDept, selectedCategory, selectedDates, pmrEnabled, newTheme)
+  }
+
   const clearAll = () => {
     const params = new URLSearchParams()
     const search = searchParams.get("search")
@@ -143,10 +164,13 @@ const FilterBar = ({ nights, total = 0, counts }: FilterBarProps) => {
     setSelectedCategory("")
     setSelectedDates([])
     setPmrEnabled(false)
+    setSelectedTheme("")
   }
 
+  const activeTheme = themes.find((theme) => theme.slug === selectedTheme)
+
   const hasActiveFilters =
-    selectedDept || selectedCategory || selectedDates.length > 0 || pmrEnabled
+    selectedDept || selectedCategory || selectedDates.length > 0 || pmrEnabled || activeTheme
 
   const getFilterLabel = (type: string, value: string): string => {
     switch (type) {
@@ -191,6 +215,10 @@ const FilterBar = ({ nights, total = 0, counts }: FilterBarProps) => {
     })
   })
 
+  if (activeTheme) {
+    activeFilters.push({ key: "theme", label: activeTheme.name, type: "theme" })
+  }
+
   if (pmrEnabled) {
     activeFilters.push({
       key: "accessible",
@@ -208,6 +236,8 @@ const FilterBar = ({ nights, total = 0, counts }: FilterBarProps) => {
       handleDateToggle(value)
     } else if (type === "accessible") {
       handlePmrToggle()
+    } else if (type === "theme") {
+      handleThemeToggle(selectedTheme)
     }
   }
 
@@ -395,6 +425,39 @@ const FilterBar = ({ nights, total = 0, counts }: FilterBarProps) => {
             {t("filters.eventCount", { count: total })}
           </div>
         </div>
+
+        {themes.length > 0 && (
+          <div
+            role="group"
+            aria-label={t("filters.themes")}
+            className="mt-3 flex flex-wrap items-center gap-2"
+          >
+            {themes.map((theme) => {
+              const pressed = selectedTheme === theme.slug
+              return (
+                <button
+                  key={theme.slug}
+                  onClick={() => handleThemeToggle(theme.slug)}
+                  aria-pressed={pressed}
+                  className={cn(
+                    "focus:ring-primary/50 flex min-h-10 items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium transition-colors focus:ring-2 focus:outline-none sm:text-sm",
+                    pressed
+                      ? "border-primary/30 bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:text-foreground border-white/10 bg-white/5 hover:bg-white/10"
+                  )}
+                >
+                  <span
+                    className="size-2.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: theme.color }}
+                    aria-hidden="true"
+                  />
+                  {theme.name}
+                  <span className="text-muted-foreground text-xs">({theme.count})</span>
+                </button>
+              )
+            })}
+          </div>
+        )}
 
         {/* Active filters chips */}
         {hasActiveFilters && (

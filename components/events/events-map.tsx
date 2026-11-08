@@ -16,6 +16,25 @@ type EventsMapProps = {
 const escapeHtml = (str: string): string =>
   str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")
 
+/** Rasterizes each marker image once; markers that fail to load fall back to a pin. */
+const loadMarkers = async (map: mapboxgl.Map, urls: string[]): Promise<Set<string>> => {
+  const loaded = await Promise.all(
+    urls.map(async (url) => {
+      try {
+        const img = new Image(64, 80)
+        img.crossOrigin = "anonymous"
+        img.src = url
+        await img.decode()
+        if (!map.hasImage(url)) map.addImage(url, img, { pixelRatio: 2 })
+        return url
+      } catch {
+        return null
+      }
+    })
+  )
+  return new Set(loaded.filter((url): url is string => url !== null))
+}
+
 const EventsMap = ({ events }: EventsMapProps) => {
   const locale = useLocale()
   const t = useTranslations()
@@ -46,7 +65,12 @@ const EventsMap = ({ events }: EventsMapProps) => {
 
     map.addControl(new mapboxgl.NavigationControl(), "top-right")
 
-    map.on("load", () => {
+    map.on("load", async () => {
+      const markers = await loadMarkers(map, [
+        ...new Set(validEvents.flatMap((event) => (event.pin.marker ? [event.pin.marker] : []))),
+      ])
+      // The component may have unmounted while the images loaded.
+      if (mapRef.current !== map) return
       const geojson: GeoJSON.FeatureCollection = {
         type: "FeatureCollection",
         features: validEvents.map((event) => ({
@@ -65,6 +89,10 @@ const EventsMap = ({ events }: EventsMapProps) => {
             dateStart: event.dateStart ? formatEventDate(event.dateStart, locale) : "",
             timeStart: event.timeStart?.slice(0, 5) || "",
             coverImage: event.coverImage || DEFAULT_EVENT_IMAGE,
+            pinColor: event.pin.color,
+            ...(event.pin.marker && markers.has(event.pin.marker)
+              ? { pinMarker: event.pin.marker }
+              : {}),
           },
         })),
       }
@@ -108,18 +136,31 @@ const EventsMap = ({ events }: EventsMapProps) => {
         },
       })
 
-      // Individual markers — amber pins
+      // Individual markers — pins in the colour of the event's theme (amber by default)
       map.addLayer({
         id: "unclustered-point",
         type: "circle",
         source: "events",
-        filter: ["!", ["has", "point_count"]],
+        filter: ["all", ["!", ["has", "point_count"]], ["!", ["has", "pinMarker"]]],
         paint: {
-          "circle-color": "#f59e0b",
+          "circle-color": ["get", "pinColor"],
           "circle-radius": 8,
           "circle-stroke-color": "#ffffff",
           "circle-stroke-width": 2.5,
           "circle-opacity": 0.9,
+        },
+      })
+
+      // Themed events with a custom marker image (e.g. Millennium)
+      map.addLayer({
+        id: "themed-point",
+        type: "symbol",
+        source: "events",
+        filter: ["all", ["!", ["has", "point_count"]], ["has", "pinMarker"]],
+        layout: {
+          "icon-image": ["get", "pinMarker"],
+          "icon-anchor": "bottom",
+          "icon-allow-overlap": true,
         },
       })
 
@@ -146,7 +187,7 @@ const EventsMap = ({ events }: EventsMapProps) => {
       })
 
       // Click on individual marker → rich popup
-      map.on("click", "unclustered-point", (e) => {
+      const openPopup = (e: mapboxgl.MapLayerMouseEvent) => {
         const feature = e.features?.[0]
         if (!feature) return
 
@@ -186,7 +227,9 @@ const EventsMap = ({ events }: EventsMapProps) => {
           `
           )
           .addTo(map)
-      })
+      }
+      map.on("click", "unclustered-point", openPopup)
+      map.on("click", "themed-point", openPopup)
 
       // Cursor pointer on hover
       map.on("mouseenter", "clusters", () => {
@@ -199,6 +242,12 @@ const EventsMap = ({ events }: EventsMapProps) => {
         map.getCanvas().style.cursor = "pointer"
       })
       map.on("mouseleave", "unclustered-point", () => {
+        map.getCanvas().style.cursor = ""
+      })
+      map.on("mouseenter", "themed-point", () => {
+        map.getCanvas().style.cursor = "pointer"
+      })
+      map.on("mouseleave", "themed-point", () => {
         map.getCanvas().style.cursor = ""
       })
     })

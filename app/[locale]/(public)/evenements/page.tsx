@@ -4,6 +4,7 @@ import { Suspense } from "react"
 import { getEvents, getFilterCounts, getAllFilteredEventsForMap } from "@/lib/queries/events"
 import { getEventCities } from "@/lib/queries/homepage"
 import { getCurrentEdition } from "@/lib/queries/edition"
+import { getFilterThemes } from "@/lib/queries/themes"
 import { formatNight } from "@/lib/festival/edition"
 import { EventListCard } from "@/components/events/event-list-card"
 import { Pagination } from "@/components/events/pagination"
@@ -75,6 +76,7 @@ const parseSearchParams = (params: Record<string, string | string[] | undefined>
     category: getString("category")?.toUpperCase() as Category | undefined,
     department: getString("dept")?.toUpperCase() as Department | undefined,
     accessible: getString("accessible") === "true",
+    theme: getString("theme")?.toLowerCase() || undefined,
     page: isNaN(page) || page < 1 ? 1 : page,
     lat: isNaN(lat) ? undefined : lat,
     lng: isNaN(lng) ? undefined : lng,
@@ -94,12 +96,14 @@ const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
     counts,
     mapEvents,
     edition,
+    themes,
   ] = await Promise.all([
     getEvents(filters, locale),
     getEventCities(),
     getFilterCounts(filters),
     view === "map" ? getAllFilteredEventsForMap(filters, locale) : Promise.resolve([]),
     getCurrentEdition(),
+    getFilterThemes(locale),
   ])
   const nights = edition.nights.map((night) => ({
     value: night.code,
@@ -133,7 +137,7 @@ const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
         {/* Filter bar */}
         <div className="mb-6">
           <Suspense>
-            <FilterBar nights={nights} total={total} counts={counts} />
+            <FilterBar nights={nights} total={total} counts={counts} themes={themes} />
           </Suspense>
         </div>
 

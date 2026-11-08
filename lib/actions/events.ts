@@ -72,7 +72,10 @@ export const getAdminEvents = async ({
 
 export const getAdminEventById = async (id: string) => {
   await requireRole("EDITOR")
-  return prisma.event.findUnique({ where: { id } })
+  return prisma.event.findUnique({
+    where: { id },
+    include: { themes: { select: { id: true } } },
+  })
 }
 
 export const createEvent = async (formData: FormData): Promise<EventActionResult> => {
@@ -132,6 +135,9 @@ export const createEvent = async (formData: FormData): Promise<EventActionResult
         accessible: data.accessible,
         published: data.published,
         publishedAt: data.published ? new Date() : null,
+        ...(data.themeIds?.length
+          ? { themes: { connect: data.themeIds.map((themeId) => ({ id: themeId })) } }
+          : {}),
       },
     })
 
@@ -218,6 +224,9 @@ export const updateEvent = async (id: string, formData: FormData): Promise<Event
         published: data.published,
         ...(isPublishing ? { publishedAt: new Date(), unpublishedAt: null } : {}),
         ...(isUnpublishing ? { unpublishedAt: new Date() } : {}),
+        ...(data.themeIds
+          ? { themes: { set: data.themeIds.map((themeId) => ({ id: themeId })) } }
+          : {}),
       },
     })
 
@@ -301,6 +310,10 @@ const extractFormData = (formData: FormData) => ({
   featured: formData.get("featured") === "true",
   accessible: formData.get("accessible") === "true",
   published: formData.get("published") !== "false",
+  // Comma-separated ids; absent means the form has no theme picker.
+  themeIds: formData.has("themeIds")
+    ? String(formData.get("themeIds")).split(",").filter(Boolean)
+    : undefined,
 })
 
 const revalidateEvents = (slugs: string[]) => {
