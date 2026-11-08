@@ -18,19 +18,11 @@ type EventMapWrapperProps = {
   longitude: number
   title: string
   locale: string
+  suggestions: NeighbourEvent[]
   neighbours: NeighbourEvent[]
+  labels: { youAreHere: string; map: string }
 }
 
-const EventMapWrapper = ({ latitude, longitude, title, locale, neighbours }: EventMapWrapperProps) => {
-  return (
-    <EventMap
-      latitude={latitude}
-      longitude={longitude}
-      title={title}
-      locale={locale}
-      neighbours={neighbours}
-    />
-  )
-}
+const EventMapWrapper = (props: EventMapWrapperProps) => <EventMap {...props} />
 
 export { EventMapWrapper }

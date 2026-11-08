@@ -96,7 +96,7 @@ export const LoginForm = ({ emailEnabled }: LoginFormProps) => {
             <CheckCircle className="h-12 w-12 text-green-500" />
             <div>
               <h2 className="text-lg font-semibold text-white">Email envoyé !</h2>
-              <p className="mt-1 text-sm text-slate-400">
+              <p className="text-muted-foreground mt-1 text-sm">
                 Un lien de connexion a été envoyé à{" "}
                 <span className="font-medium text-white">{email}</span>.
               </p>
@@ -121,7 +121,7 @@ export const LoginForm = ({ emailEnabled }: LoginFormProps) => {
     <Card className="border-white/10 bg-white/5 backdrop-blur-xl">
       <CardHeader>
         <CardTitle className="text-white">Connexion</CardTitle>
-        <CardDescription className="text-slate-400">
+        <CardDescription className="text-muted-foreground">
           {mode === "password"
             ? "Connectez-vous avec votre email et mot de passe."
             : "Recevez un lien de connexion par email."}
@@ -133,7 +133,7 @@ export const LoginForm = ({ emailEnabled }: LoginFormProps) => {
           className="space-y-4"
         >
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-slate-300">
+            <Label htmlFor="email" className="text-muted-foreground">
               Adresse email
             </Label>
             <Input
@@ -146,13 +146,13 @@ export const LoginForm = ({ emailEnabled }: LoginFormProps) => {
               required
               autoComplete="email"
               autoFocus
-              className="border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+              className="placeholder:text-muted-foreground border-white/10 bg-white/5 text-white"
             />
           </div>
 
           {mode === "password" && (
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-slate-300">
+              <Label htmlFor="password" className="text-muted-foreground">
                 Mot de passe
               </Label>
               <PasswordInput
@@ -163,7 +163,7 @@ export const LoginForm = ({ emailEnabled }: LoginFormProps) => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="current-password"
-                className="border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+                className="placeholder:text-muted-foreground border-white/10 bg-white/5 text-white"
               />
             </div>
           )}
@@ -171,7 +171,7 @@ export const LoginForm = ({ emailEnabled }: LoginFormProps) => {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-amber-500 text-slate-950 hover:bg-amber-400"
+            className="text-primary-foreground w-full bg-amber-500 hover:bg-amber-400"
           >
             {isLoading ? (
               <>
@@ -201,13 +201,13 @@ export const LoginForm = ({ emailEnabled }: LoginFormProps) => {
                 ? "Envoi d'email désactivé sur cet environnement"
                 : undefined
             }
-            className="text-sm text-slate-400 transition-colors hover:text-amber-500 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-slate-400"
+            className="text-muted-foreground disabled:hover:text-muted-foreground text-sm transition-colors hover:text-amber-500 disabled:cursor-not-allowed disabled:opacity-50"
             onClick={() => setMode(mode === "password" ? "magic-link" : "password")}
           >
             {mode === "password" ? "Utiliser un lien magique" : "Se connecter avec un mot de passe"}
           </button>
           {mode === "password" && !emailEnabled && (
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="text-muted-foreground mt-1 text-xs">
               L&apos;envoi d&apos;email est désactivé sur cet environnement.
             </p>
           )}
@@ -218,13 +218,13 @@ export const LoginForm = ({ emailEnabled }: LoginFormProps) => {
             {emailEnabled ? (
               <Link
                 href="/admin/forgot-password"
-                className="text-xs text-slate-400 underline-offset-2 transition-colors hover:text-amber-500 hover:underline"
+                className="text-muted-foreground text-xs underline-offset-2 transition-colors hover:text-amber-500 hover:underline"
               >
                 Mot de passe oublié ?
               </Link>
             ) : (
               <span
-                className="cursor-not-allowed text-xs text-slate-600"
+                className="text-muted-foreground cursor-not-allowed text-xs"
                 title="Envoi d'email désactivé sur cet environnement"
               >
                 Mot de passe oublié ?

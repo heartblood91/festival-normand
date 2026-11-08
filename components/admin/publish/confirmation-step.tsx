@@ -1,148 +1,142 @@
 "use client"
 
-import { CheckCircle2, AlertCircle } from "lucide-react"
+import { CheckCircle2, AlertCircle, CircleDashed } from "lucide-react"
 
 type ConfirmationStepProps = {
   contentType: string
   title: string
   locale: string
+  /** False when no AI key is configured: nothing was actually checked. */
+  aiChecked: boolean
   seoIssues: number
   a11yIssues: number
-  spellingCorrections: number
+  spellingAccepted: number
+  spellingRemaining: number
   translationApplied: boolean
+}
+
+type RowState = "ok" | "warning" | "unchecked"
+
+const ROW_STYLES: Record<RowState, { box: string; icon: string; Icon: typeof CheckCircle2 }> = {
+  ok: { box: "border-green-500/20 bg-green-500/10", icon: "text-green-400", Icon: CheckCircle2 },
+  warning: {
+    box: "border-amber-500/20 bg-amber-500/10",
+    icon: "text-amber-400",
+    Icon: AlertCircle,
+  },
+  unchecked: {
+    box: "border-white/10 bg-white/5",
+    icon: "text-muted-foreground",
+    Icon: CircleDashed,
+  },
+}
+
+const SummaryRow = ({
+  state,
+  label,
+  detail,
+}: {
+  state: RowState
+  label: string
+  detail: string
+}) => {
+  const { box, icon, Icon } = ROW_STYLES[state]
+  return (
+    <li className={`flex items-start gap-3 rounded-lg border p-3 ${box}`}>
+      <Icon className={`mt-0.5 h-5 w-5 shrink-0 ${icon}`} aria-hidden="true" />
+      <div>
+        <p className="text-sm font-medium text-white">{label}</p>
+        <p className="text-muted-foreground text-xs">{detail}</p>
+      </div>
+    </li>
+  )
+}
+
+const CONTENT_TYPES: Record<string, string> = {
+  event: "Événement",
+  news: "Actualité",
+  page: "Page",
 }
 
 export const ConfirmationStep = ({
   contentType,
   title,
   locale,
+  aiChecked,
   seoIssues,
   a11yIssues,
-  spellingCorrections,
+  spellingAccepted,
+  spellingRemaining,
   translationApplied,
 }: ConfirmationStepProps) => {
-  const allClear = seoIssues === 0 && a11yIssues === 0 && spellingCorrections === 0
+  const issueRow = (count: number, okDetail: string): { state: RowState; detail: string } =>
+    !aiChecked
+      ? { state: "unchecked", detail: "Non vérifié" }
+      : count === 0
+        ? { state: "ok", detail: okDetail }
+        : { state: "warning", detail: `${count} point(s) à revoir` }
+
+  const seo = issueRow(seoIssues, "Aucun point bloquant")
+  const a11y = issueRow(a11yIssues, "Aucun point bloquant")
+  const spelling: { state: RowState; detail: string } = !aiChecked
+    ? { state: "unchecked", detail: "Non vérifié" }
+    : {
+        state: spellingRemaining === 0 ? "ok" : "warning",
+        detail: `${spellingAccepted} correction(s) appliquée(s), ${spellingRemaining} ignorée(s)`,
+      }
+  const allClear = aiChecked && seoIssues === 0 && a11yIssues === 0 && spellingRemaining === 0
 
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="mb-2 font-semibold text-white">Ready to Publish</h3>
-        <p className="text-sm text-slate-400">Review the summary below and confirm to publish.</p>
+        <h3 className="mb-2 font-semibold text-white">Prêt à publier</h3>
+        <p className="text-muted-foreground text-sm">
+          Vérifiez le résumé puis confirmez la publication.
+        </p>
       </div>
 
-      <div className="space-y-3 rounded-lg border border-white/10 bg-white/5 p-4">
-        <div className="flex items-start justify-between">
-          <span className="text-sm text-slate-400">Content Type</span>
-          <span className="text-sm font-medium text-white capitalize">{contentType}</span>
+      <dl className="space-y-3 rounded-lg border border-white/10 bg-white/5 p-4">
+        <div className="flex items-start justify-between gap-4">
+          <dt className="text-muted-foreground text-sm">Type</dt>
+          <dd className="text-sm font-medium text-white">
+            {CONTENT_TYPES[contentType] ?? contentType}
+          </dd>
         </div>
-        <div className="flex items-start justify-between">
-          <span className="text-sm text-slate-400">Title</span>
-          <span className="max-w-xs text-right text-sm font-medium text-white">{title}</span>
+        <div className="flex items-start justify-between gap-4">
+          <dt className="text-muted-foreground text-sm">Titre</dt>
+          <dd className="max-w-xs text-right text-sm font-medium break-words text-white">
+            {title}
+          </dd>
         </div>
-        <div className="flex items-start justify-between">
-          <span className="text-sm text-slate-400">Locale</span>
-          <span className="text-sm font-medium text-white uppercase">{locale}</span>
+        <div className="flex items-start justify-between gap-4">
+          <dt className="text-muted-foreground text-sm">Langue</dt>
+          <dd className="text-sm font-medium text-white uppercase">{locale}</dd>
         </div>
-      </div>
+      </dl>
 
       <div className="space-y-2">
-        <h4 className="text-sm font-semibold text-white">Analysis Summary</h4>
-        <div className="grid gap-2">
-          <div
-            className={`flex items-start gap-3 rounded-lg border p-3 ${
-              seoIssues === 0
-                ? "border-green-500/20 bg-green-500/10"
-                : "border-amber-500/20 bg-amber-500/10"
-            }`}
-          >
-            <CheckCircle2
-              className={`mt-0.5 h-5 w-5 shrink-0 ${
-                seoIssues === 0 ? "text-green-400" : "text-amber-400"
-              }`}
-            />
-            <div>
-              <p className="text-sm font-medium text-white">SEO</p>
-              <p className="text-xs text-slate-300">
-                {seoIssues === 0 ? "All checks passed" : `${seoIssues} issues found`}
-              </p>
-            </div>
-          </div>
-
-          <div
-            className={`flex items-start gap-3 rounded-lg border p-3 ${
-              a11yIssues === 0
-                ? "border-green-500/20 bg-green-500/10"
-                : "border-amber-500/20 bg-amber-500/10"
-            }`}
-          >
-            <CheckCircle2
-              className={`mt-0.5 h-5 w-5 shrink-0 ${
-                a11yIssues === 0 ? "text-green-400" : "text-amber-400"
-              }`}
-            />
-            <div>
-              <p className="text-sm font-medium text-white">Accessibility</p>
-              <p className="text-xs text-slate-300">
-                {a11yIssues === 0 ? "WCAG 2.1 compliant" : `${a11yIssues} issues found`}
-              </p>
-            </div>
-          </div>
-
-          <div
-            className={`flex items-start gap-3 rounded-lg border p-3 ${
-              spellingCorrections === 0
-                ? "border-green-500/20 bg-green-500/10"
-                : "border-amber-500/20 bg-amber-500/10"
-            }`}
-          >
-            <CheckCircle2
-              className={`mt-0.5 h-5 w-5 shrink-0 ${
-                spellingCorrections === 0 ? "text-green-400" : "text-amber-400"
-              }`}
-            />
-            <div>
-              <p className="text-sm font-medium text-white">Spelling & Grammar</p>
-              <p className="text-xs text-slate-300">
-                {spellingCorrections === 0
-                  ? "No errors found"
-                  : `${spellingCorrections} corrections applied`}
-              </p>
-            </div>
-          </div>
-
+        <h4 className="text-sm font-semibold text-white">Résumé des vérifications</h4>
+        <ul className="grid gap-2">
+          <SummaryRow label="SEO" {...seo} />
+          <SummaryRow label="Accessibilité (RGAA)" {...a11y} />
+          <SummaryRow label="Orthographe" {...spelling} />
           {translationApplied && (
-            <div className="flex items-start gap-3 rounded-lg border border-amber-500/20 bg-amber-500/10 p-3">
-              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-amber-400" />
-              <div>
-                <p className="text-sm font-medium text-white">Translation</p>
-                <p className="text-xs text-slate-300">Content translated and reviewed</p>
-              </div>
-            </div>
+            <SummaryRow state="ok" label="Traduction" detail="Champs anglais vides pré-remplis" />
           )}
-        </div>
+        </ul>
       </div>
 
-      {allClear && (
-        <div className="flex items-start gap-3 rounded-lg border border-green-500/20 bg-green-500/10 p-4">
-          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-green-400" />
-          <div>
-            <p className="text-sm font-medium text-green-400">All checks passed!</p>
-            <p className="mt-1 text-xs text-green-300">Your content is ready for publication.</p>
-          </div>
-        </div>
-      )}
-
-      {!allClear && (
-        <div className="flex items-start gap-3 rounded-lg border border-amber-500/20 bg-amber-500/10 p-4">
-          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-400" />
-          <div>
-            <p className="text-sm font-medium text-amber-400">Some issues remain</p>
-            <p className="mt-1 text-xs text-amber-300">
-              You can still publish, but it&apos;s recommended to address the issues first.
-            </p>
-          </div>
-        </div>
-      )}
+      <p
+        className={`rounded-lg border p-4 text-sm ${
+          allClear
+            ? "border-green-500/20 bg-green-500/10 text-green-300"
+            : "border-amber-500/20 bg-amber-500/10 text-amber-300"
+        }`}
+      >
+        {allClear
+          ? "Tout est en ordre : le contenu peut être publié."
+          : "Vous pouvez publier, mais relisez d'abord les points signalés ou non vérifiés."}
+      </p>
     </div>
   )
 }

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache"
 import { prisma } from "@/lib/prisma"
+import { requireRole } from "@/lib/rbac"
 import { registrationLinkUrlSchema } from "@/lib/schemas/registration-link"
 
 export type RegistrationLinkActionResult = {
@@ -15,6 +16,7 @@ export const updateRegistrationLinks = async (
   formData: FormData
 ): Promise<RegistrationLinkActionResult> => {
   try {
+    await requireRole("EDITOR")
     const links = await prisma.registrationLink.findMany()
 
     const updates = links.map((link) => {
@@ -35,7 +37,8 @@ export const updateRegistrationLinks = async (
   } catch (error) {
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Une erreur est survenue lors de la mise à jour.",
+      message:
+        error instanceof Error ? error.message : "Une erreur est survenue lors de la mise à jour.",
     }
   }
 }

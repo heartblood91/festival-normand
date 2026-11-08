@@ -32,7 +32,8 @@ const compressImage = async (buffer: Buffer, preset: ImagePreset): Promise<Buffe
 }
 
 const persistImage = async (buffer: Buffer, filename: string): Promise<string> => {
-  if (process.env.NODE_ENV === "development") {
+  // Local disk when Vercel Blob is not configured (dev, CLI scripts, tests).
+  if (process.env.NODE_ENV === "development" || !process.env.BLOB_READ_WRITE_TOKEN) {
     const uploadsDir = join(process.cwd(), "public", "uploads")
     await mkdir(uploadsDir, { recursive: true })
     await writeFile(join(uploadsDir, filename), buffer)

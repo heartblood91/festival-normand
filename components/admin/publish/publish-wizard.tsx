@@ -19,13 +19,22 @@ import { A11yCheckStep } from "./a11y-check-step"
 import { SpellingCheckStep } from "./spelling-check-step"
 import { TranslationStep } from "./translation-step"
 import { ConfirmationStep } from "./confirmation-step"
+import { useAiAvailability } from "@/components/admin/shared/use-ai-availability"
+
+export type PublishWizardResult = {
+  translations: Record<string, string>
+  corrections: SpellingCorrection[]
+}
 
 type PublishWizardProps = {
   title: string
   content: string
   locale: string
   contentType: "event" | "news" | "page"
-  onComplete: (translatedFields?: Record<string, string>) => void
+  /** Source fields whose translation is still empty; existing ones are kept. */
+  translationSource: Record<string, string>
+  /** Saves the content; resolves to false when the server refused it. */
+  onComplete: (result: PublishWizardResult) => Promise<boolean>
   onCancel: () => void
 }
 
@@ -34,10 +43,10 @@ type Step = "seo" | "a11y" | "spelling" | "translation" | "confirmation"
 const STEPS: Step[] = ["seo", "a11y", "spelling", "translation", "confirmation"]
 
 const stepLabels: Record<Step, string> = {
-  seo: "SEO Check",
-  a11y: "Accessibility",
-  spelling: "Spelling",
-  translation: "Translation",
+  seo: "SEO",
+  a11y: "Accessibilité",
+  spelling: "Orthographe",
+  translation: "Traduction",
   confirmation: "Confirmation",
 }
 
@@ -46,6 +55,7 @@ export const PublishWizard = ({
   content,
   locale,
   contentType,
+  translationSource,
   onComplete,
   onCancel,
 }: PublishWizardProps) => {
@@ -65,38 +75,38 @@ export const PublishWizard = ({
   const [sourceFields, setSourceFields] = useState<Record<string, string>>({})
 
   const [isPublishing, setIsPublishing] = useState(false)
+  const aiAvailable = useAiAvailability()
 
   useEffect(() => {
     const runAnalysis = async () => {
       setIsLoading(true)
       try {
-        setSourceFields({ title, description: content })
+        setSourceFields(translationSource)
 
         const [seoResults, a11yResults, spellingResults, translationResults] = await Promise.all([
           checkSEO(title, content, locale),
           checkAccessibility(content),
           checkSpelling(content, locale),
-          translateMultipleFields(
-            { title, description: content },
-            locale,
-            locale === "fr" ? "en" : "fr"
-          ),
+          Object.keys(translationSource).length > 0
+            ? translateMultipleFields(translationSource, locale, locale === "fr" ? "en" : "fr")
+            : Promise.resolve({}),
         ])
 
         setSeoSuggestions(seoResults)
         setA11ySuggestions(a11yResults)
         setSpellingCorrections(spellingResults)
         setTranslatedFields(translationResults)
-      } catch (error) {
-        toast.error("Failed to analyze content")
-        console.error(error)
+      } catch {
+        toast.error("L'analyse du contenu a échoué.")
       } finally {
         setIsLoading(false)
       }
     }
 
     runAnalysis()
-  }, [title, content, locale])
+    // The analysis runs once, on the content the editor asked to publish.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleRegenerateSEO = async () => {
     setIsLoading(true)
@@ -105,7 +115,7 @@ export const PublishWizard = ({
       setSeoSuggestions(results)
       setSeoDismissed(new Set())
     } catch {
-      toast.error("Failed to regenerate SEO analysis")
+      toast.error("La nouvelle analyse SEO a échoué.")
     } finally {
       setIsLoading(false)
     }
@@ -118,7 +128,7 @@ export const PublishWizard = ({
       setA11ySuggestions(results)
       setA11yDismissed(new Set())
     } catch {
-      toast.error("Failed to regenerate accessibility check")
+      toast.error("La nouvelle vérification d'accessibilité a échoué.")
     } finally {
       setIsLoading(false)
     }
@@ -131,7 +141,7 @@ export const PublishWizard = ({
       setSpellingCorrections(results)
       setSpellingAccepted(new Set())
     } catch {
-      toast.error("Failed to regenerate spelling check")
+      toast.error("La nouvelle vérification orthographique a échoué.")
     } finally {
       setIsLoading(false)
     }
@@ -147,27 +157,22 @@ export const PublishWizard = ({
       )
       setTranslatedFields(results)
     } catch {
-      toast.error("Failed to regenerate translation")
+      toast.error("La nouvelle traduction a échoué.")
     } finally {
       setIsLoading(false)
     }
   }
 
+  // The form saves and reports the server result; the wizard only closes on success.
   const handlePublish = async () => {
     setIsPublishing(true)
     try {
-      const filteredTranslations: Record<string, string> = {}
-      Object.entries(translatedFields).forEach(([key, value]) => {
-        if (value?.trim()) {
-          filteredTranslations[key] = value
-        }
+      await onComplete({
+        translations: Object.fromEntries(
+          Object.entries(translatedFields).filter(([, value]) => value?.trim())
+        ),
+        corrections: spellingCorrections.filter((_, index) => spellingAccepted.has(index)),
       })
-
-      onComplete(filteredTranslations)
-      toast.success("Published successfully!")
-    } catch (error) {
-      toast.error("Failed to publish")
-      console.error(error)
     } finally {
       setIsPublishing(false)
     }
@@ -181,12 +186,12 @@ export const PublishWizard = ({
 
   return (
     <Dialog open={true} onOpenChange={onCancel}>
-      <DialogContent className="max-w-2xl border-white/10 bg-slate-950 text-white">
+      <DialogContent className="bg-background max-h-[90dvh] max-w-2xl overflow-y-auto border-white/10 text-white">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold">
-            Publish Content — {stepLabels[currentStep]}
+            Publier — {stepLabels[currentStep]}
           </DialogTitle>
-          <div className="mt-4 flex gap-2">
+          <div className="mt-4 flex flex-wrap gap-2">
             {STEPS.map((step) => (
               <button
                 key={step}
@@ -195,7 +200,7 @@ export const PublishWizard = ({
                 className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                   currentStep === step
                     ? "bg-amber-500 text-white"
-                    : "bg-white/10 text-slate-400 hover:bg-white/20 disabled:opacity-50"
+                    : "text-muted-foreground bg-white/10 hover:bg-white/20 disabled:opacity-50"
                 }`}
               >
                 {stepLabels[step]}
@@ -204,7 +209,17 @@ export const PublishWizard = ({
           </div>
         </DialogHeader>
 
-        <div className="min-h-[400px] py-6">
+        {aiAvailable === false && (
+          <p
+            role="status"
+            className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-200"
+          >
+            Vérifications IA indisponibles (clé OpenRouter non configurée) : aucune suggestion ni
+            traduction ne sera proposée. Vous pouvez tout de même publier.
+          </p>
+        )}
+
+        <div className="py-6">
           {currentStep === "seo" && (
             <SEOCheckStep
               suggestions={seoSuggestions}
@@ -275,25 +290,27 @@ export const PublishWizard = ({
               locale={locale}
               seoIssues={seoSuggestions.length - seoDismissed.size}
               a11yIssues={a11ySuggestions.length - a11yDismissed.size}
-              spellingCorrections={spellingCorrections.length - spellingAccepted.size}
+              aiChecked={aiAvailable !== false}
+              spellingAccepted={spellingAccepted.size}
+              spellingRemaining={spellingCorrections.length - spellingAccepted.size}
               translationApplied={Object.keys(translatedFields).length > 0}
             />
           )}
         </div>
 
-        <div className="flex items-center justify-between border-t border-white/10 pt-6">
-          <div className="text-xs text-slate-400">
-            Step {currentStepIndex + 1} of {STEPS.length}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-6">
+          <div className="text-muted-foreground text-xs">
+            Étape {currentStepIndex + 1} sur {STEPS.length}
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-2">
             <Button
               type="button"
               variant="ghost"
               onClick={onCancel}
               disabled={isLoading || isPublishing}
             >
-              Cancel
+              Annuler
             </Button>
 
             <Button
@@ -309,7 +326,7 @@ export const PublishWizard = ({
               className="gap-1.5"
             >
               <ChevronLeft className="h-4 w-4" />
-              Previous
+              Précédent
             </Button>
 
             {!isLastStep && (
@@ -324,7 +341,7 @@ export const PublishWizard = ({
                 disabled={!canGoNext || isLoading || isPublishing}
                 className="gap-1.5 bg-amber-600 hover:bg-amber-700"
               >
-                Next
+                Suivant
                 <ChevronRight className="h-4 w-4" />
               </Button>
             )}
@@ -337,7 +354,7 @@ export const PublishWizard = ({
                 className="gap-1.5 bg-green-600 hover:bg-green-700"
               >
                 {isPublishing && <Loader2 className="h-4 w-4 animate-spin" />}
-                Publish Now
+                Publier maintenant
               </Button>
             )}
           </div>

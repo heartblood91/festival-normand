@@ -1,4 +1,5 @@
 import { getAdminEvents } from "@/lib/actions/events"
+import { parseEventListParams } from "@/lib/admin/event-list"
 import { AdminEventsPage } from "@/components/admin/events/admin-events-page"
 
 export const metadata = {
@@ -7,30 +8,12 @@ export const metadata = {
 }
 
 type Props = {
-  searchParams: Promise<{
-    search?: string
-    page?: string
-    status?: string
-    department?: string
-    category?: string
-    featured?: string
-  }>
+  searchParams: Promise<Record<string, string | undefined>>
 }
 
 const AdminEventsRoute = async ({ searchParams }: Props) => {
-  const params = await searchParams
-  const page = params.page ? parseInt(params.page, 10) : 1
-  const limit = 25
-
-  const data = await getAdminEvents({
-    search: params.search,
-    page,
-    limit,
-    status: (params.status as "published" | "draft" | "depublished" | "all") || "all",
-    department: params.department,
-    category: params.category,
-    featured: params.featured,
-  })
+  const params = parseEventListParams(await searchParams)
+  const data = await getAdminEvents({ ...params, limit: 25 })
 
   return (
     <AdminEventsPage
@@ -38,11 +21,7 @@ const AdminEventsRoute = async ({ searchParams }: Props) => {
       total={data.total}
       page={data.page}
       totalPages={data.totalPages}
-      search={params.search}
-      status={params.status}
-      department={params.department}
-      category={params.category}
-      featured={params.featured}
+      params={params}
     />
   )
 }

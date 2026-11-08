@@ -16,7 +16,7 @@ export const PreviewDrawer = ({ url, open, onClose }: PreviewDrawerProps) => {
     <Sheet open={open} onOpenChange={onClose}>
       <SheetContent
         side="right"
-        className="!w-[70vw] !max-w-[70vw] border-white/10 bg-slate-950 p-0"
+        className="bg-background !w-[70vw] !max-w-[70vw] border-white/10 p-0"
       >
         <SheetHeader className="border-b border-white/10 px-6 py-4">
           <SheetTitle className="text-white">Aperçu</SheetTitle>

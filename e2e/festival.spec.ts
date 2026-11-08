@@ -7,12 +7,12 @@ test.describe("Festival page", () => {
     await expect(page).toHaveTitle(/Pierres en Lumières.*festival unique|Le Festival/)
   })
 
+  // Page copy is edited in the admin, so assert structure rather than wording.
   test("displays festival introduction", async ({ page }) => {
     await page.goto("/festival")
 
-    await expect(
-      page.getByText("Le festival Pierres en lumières est né dans l'Orne en 2009")
-    ).toBeVisible()
+    await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1)
+    await expect(page.locator("article p").filter({ hasText: /2009/ }).first()).toBeVisible()
   })
 
   test("renders all five department sections", async ({ page }) => {
@@ -35,12 +35,15 @@ test.describe("Festival page", () => {
     await expect(page.getByText("patrimoine@seinemaritime.fr")).toBeVisible()
   })
 
-  test("each department has an inscription link", async ({ page }) => {
+  test("does not repeat the page title as a content heading", async ({ page }) => {
     await page.goto("/festival")
 
-    const inscriptionLinks = page.getByRole("link", { name: /Inscrivez-vous ici/ })
-    const count = await inscriptionLinks.count()
-    expect(count).toBeGreaterThanOrEqual(4)
+    const title = (await page.getByRole("heading", { level: 1 }).textContent())?.trim() ?? ""
+    await expect(
+      page
+        .locator("article h2")
+        .filter({ hasText: new RegExp(`^${title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`) })
+    ).toHaveCount(0)
   })
 
   test("displays Fondation du Patrimoine section", async ({ page }) => {

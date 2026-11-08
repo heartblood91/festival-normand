@@ -186,3 +186,15 @@ export const htmlToMarkdown = (html: string): string => {
 
   return markdown.trim()
 }
+
+const normalizeHeading = (value: string) => value.trim().replace(/\s+/g, " ").toLocaleLowerCase()
+
+/**
+ * Editors often start a page body with `# <title>`; the page shell already
+ * renders the title as the h1, so that first heading would be read twice.
+ */
+export const stripLeadingTitle = (content: string, title: string): string => {
+  const match = content.match(/^\s*#\s+(.+)\n?/)
+  if (!match || normalizeHeading(match[1]) !== normalizeHeading(title)) return content
+  return content.slice(match[0].length).trimStart()
+}

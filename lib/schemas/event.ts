@@ -1,60 +1,105 @@
 import { z } from "zod"
+import { altTextField, checkImageAlts } from "@/lib/schemas/image-alt"
+import { isFundraisingImageUrl, isFundraisingUrl } from "@/lib/fundraising/fondation"
 
-export const eventSchema = z.object({
-  titleFr: z
-    .string()
-    .min(3, "Le titre doit contenir au moins 3 caractères")
-    .max(200, "Le titre ne peut pas dépasser 200 caractères"),
-  titleEn: z.string().optional().or(z.literal("")),
-  slug: z
-    .string()
-    .min(3, "Le slug doit contenir au moins 3 caractères")
-    .max(200, "Le slug ne peut pas dépasser 200 caractères")
-    .regex(
-      /^[a-z0-9-]+$/,
-      "Le slug ne peut contenir que des lettres minuscules, chiffres et tirets"
-    ),
-  descriptionFr: z.string().min(10, "La description doit contenir au moins 10 caractères"),
-  descriptionEn: z.string().optional().or(z.literal("")),
-  location: z.string().min(2, "Le lieu doit contenir au moins 2 caractères"),
-  city: z.string().min(2, "La ville doit contenir au moins 2 caractères"),
-  postalCode: z
-    .string()
-    .min(4, "Le code postal doit contenir au moins 4 caractères")
-    .max(10, "Le code postal ne peut pas dépasser 10 caractères"),
-  department: z.enum(["CALVADOS", "EURE", "MANCHE", "ORNE", "SEINE_MARITIME"], {
-    message: "Veuillez sélectionner un département",
-  }),
-  category: z.enum(["ILLUMINATIONS", "EXPOSITIONS", "ANIMATIONS", "VISITES"], {
-    message: "Veuillez sélectionner une catégorie",
-  }),
-  dateStart: z.string().min(1, "La date de début est requise"),
-  dateEnd: z.string().optional().or(z.literal("")),
-  timeStart: z.string().optional().or(z.literal("")),
-  timeEnd: z.string().optional().or(z.literal("")),
-  pricingFr: z.string().optional().or(z.literal("")),
-  pricingEn: z.string().optional().or(z.literal("")),
-  organizer: z.string().optional().or(z.literal("")),
-  email: z.string().email("Email invalide").optional().or(z.literal("")),
-  phone: z.string().optional().or(z.literal("")),
-  website: z.string().url("URL invalide").optional().or(z.literal("")),
-  latitude: z.coerce
-    .number()
-    .min(-90)
-    .max(90)
-    .optional()
-    .or(z.literal("").transform(() => undefined)),
-  longitude: z.coerce
-    .number()
-    .min(-180)
-    .max(180)
-    .optional()
-    .or(z.literal("").transform(() => undefined)),
-  coverImage: z.string().optional().or(z.literal("")),
-  featured: z.boolean().default(false),
-  accessible: z.boolean().default(false),
-  published: z.boolean().default(true),
-})
+export const eventSchema = z
+  .object({
+    titleFr: z
+      .string()
+      .min(3, "Le titre doit contenir au moins 3 caractères")
+      .max(200, "Le titre ne peut pas dépasser 200 caractères"),
+    titleEn: z.string().optional().or(z.literal("")),
+    slug: z
+      .string()
+      .min(3, "Le slug doit contenir au moins 3 caractères")
+      .max(200, "Le slug ne peut pas dépasser 200 caractères")
+      .regex(
+        /^[a-z0-9-]+$/,
+        "Le slug ne peut contenir que des lettres minuscules, chiffres et tirets"
+      ),
+    descriptionFr: z.string().min(10, "La description doit contenir au moins 10 caractères"),
+    descriptionEn: z.string().optional().or(z.literal("")),
+    location: z.string().min(2, "Le lieu doit contenir au moins 2 caractères"),
+    city: z.string().min(2, "La ville doit contenir au moins 2 caractères"),
+    postalCode: z
+      .string()
+      .min(4, "Le code postal doit contenir au moins 4 caractères")
+      .max(10, "Le code postal ne peut pas dépasser 10 caractères"),
+    department: z.enum(["CALVADOS", "EURE", "MANCHE", "ORNE", "SEINE_MARITIME"], {
+      message: "Veuillez sélectionner un département",
+    }),
+    category: z.enum(["ILLUMINATIONS", "EXPOSITIONS", "ANIMATIONS", "VISITES"], {
+      message: "Veuillez sélectionner une catégorie",
+    }),
+    dateStart: z.string().min(1, "La date de début est requise"),
+    dateEnd: z.string().optional().or(z.literal("")),
+    timeStart: z.string().optional().or(z.literal("")),
+    timeEnd: z.string().optional().or(z.literal("")),
+    pricingFr: z.string().optional().or(z.literal("")),
+    pricingEn: z.string().optional().or(z.literal("")),
+    organizer: z.string().optional().or(z.literal("")),
+    email: z.string().email("Email invalide").optional().or(z.literal("")),
+    phone: z.string().optional().or(z.literal("")),
+    website: z.string().url("URL invalide").optional().or(z.literal("")),
+    latitude: z.coerce
+      .number()
+      .min(-90)
+      .max(90)
+      .optional()
+      .or(z.literal("").transform(() => undefined)),
+    longitude: z.coerce
+      .number()
+      .min(-180)
+      .max(180)
+      .optional()
+      .or(z.literal("").transform(() => undefined)),
+    coverImage: z.string().optional().or(z.literal("")),
+    coverImageAltFr: altTextField,
+    coverImageAltEn: altTextField,
+    featured: z.boolean().default(false),
+    accessible: z.boolean().default(false),
+    published: z.boolean().default(true),
+    themeIds: z.array(z.string().min(1)).optional(),
+    fundraisingUrl: z
+      .string()
+      .trim()
+      .refine(
+        (value) => !value || isFundraisingUrl(value),
+        "Le lien doit pointer vers une collecte sur https://www.fondation-patrimoine.org"
+      )
+      .optional(),
+    fundraisingTitle: z
+      .string()
+      .trim()
+      .max(200, "Le titre de la collecte ne peut pas dépasser 200 caractères")
+      .optional(),
+    fundraisingImage: z
+      .string()
+      .trim()
+      .refine(
+        (value) => !value || isFundraisingImageUrl(value),
+        "L'image doit venir de fondation-patrimoine.org ou de la médiathèque du site"
+      )
+      .optional(),
+  })
+  .refine(
+    // ISO yyyy-mm-dd strings compare in date order. Times are not compared:
+    // a night can end after midnight (21:00 → 00:30).
+    ({ dateStart, dateEnd }) => !dateEnd || !dateStart || dateEnd >= dateStart,
+    {
+      path: ["dateEnd"],
+      message: "La date de fin doit être identique ou postérieure à la date de début",
+    }
+  )
+  .superRefine((data, ctx) =>
+    checkImageAlts(
+      {
+        ...data,
+        richText: { descriptionFr: data.descriptionFr, descriptionEn: data.descriptionEn },
+      },
+      ctx
+    )
+  )
 
 export type EventFormData = z.infer<typeof eventSchema>
 

@@ -2,18 +2,100 @@
   "meta": {
     "siteName": "Pierres en Lumières",
     "siteDescription": "Discover the magic of Normandy's heritage by night. May 29, 30 & 31, 2026.",
-    "festivalName": "Pierres en Lumières",
-    "festivalDates": "May 29, 30 & 31, 2026"
+    "festivalName": "Pierres en Lumières"
   },
   "nav": {
     "home": "Home",
-    "events": "Events",
+    "events": "Programme",
     "news": "News",
     "festival": "The Festival",
     "contact": "Contact",
-    "register": "Register your event",
+    "register": "Register an event",
     "legalNotice": "Legal notice",
     "accessibility": "Accessibility"
+  },
+  "editorial": {
+    "searchPlaceholder": "Search a town, a place…",
+    "discoverProgramme": "Explore the programme",
+    "viewMap": "View the map",
+    "viewAll": "View all {count} events →",
+    "allNews": "All news →",
+    "allPartners": "All partners →",
+    "readArticle": "Read the article",
+    "upcomingStatus": "D − {days} {days, plural, one {day} other {days}} · free entry",
+    "liveStatus": "The festival is on · tonight across Normandy",
+    "pastStatus": "{year} edition over · see you in {nextYear}",
+    "stats": {
+      "places": "lit-up places",
+      "departments": "departments",
+      "nights": "nights"
+    },
+    "threeNights": {
+      "marker": "{count, plural, =1 {One night, it's now} =2 {Two nights, it's now} =3 {Three nights, it's now} =4 {Four nights, it's now} other {# nights, it's now}}",
+      "title": "{count, plural, =1 {One evening, one mood.} =2 {Two evenings, two moods.} =3 {Three evenings, three moods.} =4 {Four evenings, four moods.} other {# evenings, # moods.}}",
+      "nightsLabel": "{count} events",
+      "see": "See →",
+      "roles": {
+        "opening": {
+          "sub": "The opening",
+          "desc": "Vigils, first illuminations, concerts in the abbeys."
+        },
+        "main": {
+          "sub": "The big night",
+          "desc": "Monumental mappings, torch-lit walks, light creations."
+        },
+        "closing": {
+          "sub": "The closing",
+          "desc": "Intimate recitals, silent walks, final lights."
+        }
+      }
+    },
+    "quote": {
+      "marker": "The festival",
+      "text": "The nocturnal festival of Norman heritage. Born in the Orne in 2009, it now shines across all five departments: light, as a metaphor, as a craft, as an invitation.",
+      "attribution": "— Co-organised by the Departments of Normandy & the Fondation du Patrimoine"
+    },
+    "newsSection": {
+      "markerUpcoming": "News",
+      "markerPast": "Review & press",
+      "titleUpcoming": "The latest from the festival.",
+      "titlePast": "A look back at the edition."
+    },
+    "highlights": {
+      "markerUpcoming": "Editor's picks",
+      "markerPast": "Highlights {year}",
+      "titleUpcoming": "The editorial selection.",
+      "titlePast": "Moments to remember.",
+      "ledeUpcoming": "A few moments chosen by the team — for those who don't know where to start.",
+      "ledePast": "The three evenings seen by the team — photos, recordings, feedback."
+    },
+    "programmeTeaser": {
+      "marker": "In the spotlight",
+      "title": "A glimpse of the programme."
+    },
+    "mapSection": {
+      "marker": "Five departments",
+      "title": "All of Normandy, lit up.",
+      "text": "{count, plural, =0 {Illuminations} other {# illuminations}} across Manche, Calvados, Seine-Maritime, Orne and Eure. Each point on the map is a place that opens, after dark.",
+      "places": "places"
+    },
+    "partnersSection": {
+      "marker": "They support us",
+      "title": "Partners & patrons.",
+      "note": "Pierres en Lumières is co-organised by the five Norman departments and the Fondation du Patrimoine, with the support of private patrons."
+    },
+    "past": {
+      "marker": "Past edition",
+      "title": "Relive the {year} edition.",
+      "text": "The three nights are over. Browse the editorial selection of this edition's highlights.",
+      "gallery": "{year} photo gallery",
+      "replays": "Mapping replays"
+    },
+    "theme": {
+      "marker": "{year} common thread",
+      "viewAll": "See the events",
+      "soon": "Participating places will be announced soon."
+    }
   },
   "a11y": {
     "skipToContent": "Skip to main content",
@@ -86,18 +168,21 @@
     "organizer": "Organizer",
     "free": "Free",
     "accessible": "Wheelchair accessible",
-    "nearbyFallback": "No events within 50 km of your location. Here are the closest events, around {distance} km away."
+    "nearbyFallback": "No events within 50 km of your location. Here are the closest events, around {distance} km away.",
+    "nearbySameDay": "Same day, nearby",
+    "nearbyClosest": "Closest sites",
+    "nearbySameDayHint": "Open the same day, within {radius} km. Numbers match the map.",
+    "nearbyClosestHint": "No other site is open the same day within {radius} km. Numbers match the map.",
+    "distanceKm": "{distance, number} km",
+    "mapYouAreHere": "You are here",
+    "mapLabel": "Map: {title} and {count, plural, =0 {no neighbouring site} one {# numbered neighbouring site} other {# numbered neighbouring sites}}",
+    "themes": "Themes"
   },
   "filters": {
     "department": "Department",
     "category": "Category",
-    "date29": "Fri 29",
-    "date30": "Sat 30",
-    "date31": "Sun 31",
-    "date29Full": "Fri May 29",
-    "date30Full": "Sat May 30",
-    "date31Full": "Sun May 31",
     "pmr": "Wheelchair accessible",
+    "filterBy": "Filter by {filter}",
     "removeFilter": "Remove {filter} filter",
     "clearAll": "Clear all",
     "eventCount": "{count} events",
@@ -110,7 +195,9 @@
     "geoUnavailable": "Your location could not be determined (GPS or Wi-Fi unavailable). Please try again in a moment.",
     "geoTimeout": "Locating took too long. Check your connection and try again.",
     "geoError": "Unable to locate you. Please try again in a moment.",
-    "dismissError": "Dismiss error message"
+    "dismissError": "Dismiss error message",
+    "theme": "Theme",
+    "themes": "Themes"
   },
   "categories": {
     "ILLUMINATIONS": "Light shows",
@@ -126,9 +213,27 @@
     "SEINE_MARITIME": "Seine-Maritime"
   },
   "registration": {
-    "byDepartmentTitle": "Register your event",
-    "byDepartmentIntro": "Select your department to access the registration form.",
-    "cta": "Register"
+    "byDepartmentTitle": "Choose your département",
+    "byDepartmentIntro": "The form opens in a new tab, on your département's website.",
+    "cta": "Open the form",
+    "stepsTitle": "Register your event in 3 steps",
+    "steps": {
+      "choose": {
+        "title": "Choose your département",
+        "text": "Each département handles registrations for its territory and supports you."
+      },
+      "fill": {
+        "title": "Fill in the online form",
+        "text": "Describe your site, activities and opening hours, and add one or more photos."
+      },
+      "publish": {
+        "title": "The département approves, the site publishes",
+        "text": "Your event joins the programme once approved. Registration is free."
+      }
+    },
+    "newTab": "(opens in a new tab)",
+    "comingSoon": "Form coming soon",
+    "departmentNumber": "Département {code}"
   },
   "news": {
     "title": "News",
@@ -163,7 +268,9 @@
     "contactQuestion": "Have a question about the festival?",
     "contactCta": "Contact us →",
     "manageCookies": "Manage cookies",
-    "copyright": "© {year} Pierres en Lumières. All rights reserved."
+    "copyright": "© {year} Pierres en Lumières. All rights reserved.",
+    "creditPrefix": "Site built by",
+    "creditRole": "volunteer lead developer — Normandy delegation"
   },
   "cookies": {
     "bannerAriaLabel": "Visit analytics consent",
@@ -219,12 +326,14 @@
     "sidebar": {
       "dashboard": "Dashboard",
       "events": "Events",
+      "themes": "Themes",
       "news": "News",
       "partners": "Partners",
       "pages": "Pages",
       "users": "Users",
       "settings": "Settings",
-      "registrationLinks": "Registrations"
+      "registrationLinks": "Registrations",
+      "edition": "Edition"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -243,7 +352,25 @@
       "quickActions": "Quick actions",
       "createEvent": "Create event",
       "createNews": "Create news article",
-      "managePartners": "Manage partners"
+      "managePartners": "Manage partners",
+      "sync": {
+        "title": "Tourinsoft sync",
+        "never": "No sync recorded yet.",
+        "lastRun": "Last run: {date}",
+        "counts": "{created} created · {updated} updated · {skipped} unchanged · {failed} failed",
+        "trigger": "Trigger: {trigger}",
+        "status": {
+          "RUNNING": "Running",
+          "SUCCESS": "Succeeded",
+          "PARTIAL": "Partial",
+          "FAILED": "Failed"
+        }
+      },
+      "todo": "To do",
+      "todoDescription": "Published or draft events to complete before the festival.",
+      "todoMissingEn": "Missing EN translation",
+      "todoMissingAlt": "Image without alt text",
+      "todoMissingGps": "Missing GPS coordinates"
     },
     "common": {
       "save": "Save",
@@ -272,11 +399,81 @@
       "deleteConfirm": "Are you sure you want to delete this user?",
       "soleAdmin": "Cannot delete the only administrator",
       "changeRole": "Change role"
+    },
+    "edition": {
+      "title": "Edition",
+      "embargo": {
+        "title": "Publication date per department",
+        "description": "Before this date, upcoming events imported from Tourinsoft for the department stay hidden on the public site (they remain visible here). Manually created events and past editions are not affected. Leave empty to publish immediately.",
+        "save": "Save",
+        "hiddenUntil": "Hidden until {date}",
+        "visible": "Published"
+      },
+      "dates": {
+        "title": "Edition dates",
+        "description": "These dates drive the public site: countdown, home page nights, programme date filters. On the switch date, the home page turns into the edition's review. Saving a new year makes it current.",
+        "provisional": "Provisional dates: no edition is saved yet, the site shows the defaults.",
+        "year": "Year",
+        "dateStart": "First night",
+        "dateEnd": "Last night",
+        "bilanFrom": "Switch to the review",
+        "bilanHint": "Leave empty to switch on {date}, the day after the last night.",
+        "save": "Save dates"
+      }
     }
   },
   "locale": {
     "fr": "Français",
     "en": "English",
     "switchTo": "Passer en français"
+  },
+  "travelBook": {
+    "nav": "{count, plural, =0 {My travel book} one {My travel book, # place} other {My travel book, # places}}",
+    "navShort": "Travel book",
+    "addNamed": "Add “{title}” to the travel book",
+    "removeNamed": "Remove “{title}” from the travel book",
+    "add": "Add to travel book",
+    "added": "In my travel book",
+    "title": "My travel book",
+    "lede": "The places you picked. They stay in this browser, with no account and no personal data.",
+    "sharedTitle": "Shared travel book",
+    "sharedLede": "A selection of places shared by a visitor, read-only.",
+    "metaDescription": "Plan your Pierres en Lumières route: your places by date and town, on a map, ready to print or share.",
+    "count": "{count, plural, one {# place} other {# places}}",
+    "loading": "Loading the travel book…",
+    "empty": "Your travel book is empty.",
+    "emptyHint": "Add places with the bookmark button on events.",
+    "browse": "Browse the programme",
+    "unavailable": "{count, plural, one {# place of your travel book is no longer online.} other {# places of your travel book are no longer online.}}",
+    "groupBy": "Group by",
+    "byDate": "Date",
+    "byPlace": "Town",
+    "unknownDate": "Date to be confirmed",
+    "unknownPlace": "Town not specified",
+    "mapTitle": "Travel book map",
+    "print": "Print",
+    "share": "Share the travel book",
+    "sharing": "Creating the link…",
+    "shareReady": "Link ready. It shows these places read-only.",
+    "shareLabel": "Share link",
+    "shareError": "The link could not be created. Please try again.",
+    "copy": "Copy the link",
+    "copied": "Link copied.",
+    "copyFailed": "Copy failed: select the link and copy it.",
+    "email": "Send by email",
+    "emailSubject": "My Pierres en Lumières travel book",
+    "emailBody": "Here are the places I picked for Pierres en Lumières: {url}",
+    "importAll": "Add these places to my travel book",
+    "imported": "Places added to your travel book.",
+    "openMine": "Open my travel book"
+  },
+  "fundraising": {
+    "badge": "Fundraising",
+    "badgeLabel": "Donation campaign under way for this site",
+    "marker": "Fondation du patrimoine",
+    "title": "Help restore this place",
+    "lede": "This heritage site has a fundraising campaign run by the Fondation du patrimoine. Every donation helps to save it.",
+    "cta": "Make a donation",
+    "newTab": "(opens a new tab, fondation-patrimoine.org)"
   }
 }

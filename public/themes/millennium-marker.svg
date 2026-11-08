@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 80" width="64" height="80" role="img" aria-label="Millénaire de Guillaume le Conquérant, 1027–2027">
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fbbf24"/>
+      <stop offset="1" stop-color="#d97706"/>
+    </linearGradient>
+  </defs>
+  <!-- Map pin -->
+  <path d="M32 78 C32 78 6 50 6 30 A26 26 0 0 1 58 30 C58 50 32 78 32 78 Z" fill="#0f172a" stroke="url(#gold)" stroke-width="3"/>
+  <circle cx="32" cy="30" r="20" fill="#1e1b4b" stroke="#f59e0b" stroke-width="1.5"/>
+  <!-- Ducal crown -->
+  <path d="M19 22 L23 13 L27.5 19 L32 10 L36.5 19 L41 13 L45 22 Z" fill="url(#gold)"/>
+  <rect x="19" y="22" width="26" height="3" rx="1" fill="#fbbf24"/>
+  <!-- Monogram and millennium years -->
+  <text x="32" y="42" text-anchor="middle" font-family="Georgia, 'Playfair Display', serif" font-size="14" font-weight="700" fill="#fbbf24">G</text>
+  <text x="32" y="59" text-anchor="middle" font-family="Georgia, serif" font-size="5.5" letter-spacing="0.2" fill="#fde68a">1027·2027</text>
+</svg>

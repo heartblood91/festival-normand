@@ -40,15 +40,15 @@ export const ImageUpload = ({
 
       if (!response.ok) {
         const error = await response.json()
-        throw new Error(error.error || "Upload failed")
+        throw new Error(error.error || "Le téléversement a échoué")
       }
 
       const data = await response.json()
       onChange(data.url)
       setProgress(100)
-      toast.success("Image uploaded successfully")
+      toast.success("Image téléversée")
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Upload failed"
+      const message = error instanceof Error ? error.message : "Le téléversement a échoué"
       toast.error(message)
     } finally {
       setIsUploading(false)
@@ -91,7 +91,7 @@ export const ImageUpload = ({
         className="relative flex cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-white/20 bg-white/5 px-6 py-8 transition-colors hover:border-amber-500/30 hover:bg-amber-500/5 focus-visible:ring-2 focus-visible:ring-amber-500/50 focus-visible:outline-none"
         role="button"
         tabIndex={0}
-        aria-label={value ? "Change image" : "Upload image"}
+        aria-label={value ? "Changer l'image" : "Téléverser une image"}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             fileInputRef.current?.click()
@@ -113,27 +113,27 @@ export const ImageUpload = ({
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-500/30 border-t-amber-500" />
             <div className="text-center">
               <p className="text-sm font-medium text-white">{progress}%</p>
-              <p className="text-xs text-slate-400">Uploading...</p>
+              <p className="text-muted-foreground text-xs">Téléversement…</p>
             </div>
           </>
         ) : value ? (
           <>
             <Image
               src={value}
-              alt="Uploaded"
+              alt=""
               width={256}
               height={128}
               className="max-h-32 max-w-full rounded-lg object-contain"
               unoptimized
             />
-            <p className="text-xs text-slate-400">Click to change</p>
+            <p className="text-muted-foreground text-xs">Cliquer pour changer</p>
           </>
         ) : (
           <>
-            <Upload className="h-8 w-8 text-slate-400" />
+            <Upload className="text-muted-foreground h-8 w-8" />
             <div className="text-center">
-              <p className="text-sm font-medium text-white">Drop image here or click</p>
-              <p className="text-xs text-slate-400">PNG, JPG, WebP, GIF (max 10MB)</p>
+              <p className="text-sm font-medium text-white">Déposez une image ici ou cliquez</p>
+              <p className="text-muted-foreground text-xs">PNG, JPG, WebP, GIF (max 10MB)</p>
             </div>
           </>
         )}
@@ -146,10 +146,10 @@ export const ImageUpload = ({
           size="sm"
           onClick={() => onChange("")}
           className="mt-2 text-red-400 hover:text-red-300"
-          aria-label="Remove image"
+          aria-label="Retirer l'image"
         >
           <X className="mr-1 h-4 w-4" />
-          Remove
+          Retirer
         </Button>
       )}
     </div>

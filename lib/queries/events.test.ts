@@ -78,6 +78,17 @@ describe("getEvents", () => {
     )
   })
 
+  it("orders with a unique tie-breaker so OFFSET pages never overlap", async () => {
+    prismaMock.event.findMany.mockResolvedValue([])
+    prismaMock.event.count.mockResolvedValue(0)
+
+    await getEvents({ page: 2 }, "fr")
+
+    expect(prismaMock.event.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ orderBy: [{ dateStart: "asc" }, { id: "asc" }] })
+    )
+  })
+
   it("filters by category", async () => {
     prismaMock.event.findMany.mockResolvedValue([])
     prismaMock.event.count.mockResolvedValue(0)
@@ -110,6 +121,19 @@ describe("getEvents", () => {
     )
   })
 
+  it("filters by theme slug", async () => {
+    prismaMock.event.findMany.mockResolvedValue([])
+    prismaMock.event.count.mockResolvedValue(0)
+
+    await getEvents({ theme: "millennium" }, "fr")
+
+    expect(prismaMock.event.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ themes: { some: { slug: "millennium" } } }),
+      })
+    )
+  })
+
   it("filters by accessibility", async () => {
     prismaMock.event.findMany.mockResolvedValue([])
     prismaMock.event.count.mockResolvedValue(0)
@@ -126,53 +150,77 @@ describe("getEvents", () => {
     )
   })
 
-  it("filters by date", async () => {
+  type DayClause = {
+    dateStart: { lte: Date }
+    OR: Array<{ dateEnd?: { gte: Date } | null; dateStart?: { gte: Date } }>
+  }
+
+  // Evaluates the night clause the way Postgres would, for one event.
+  const matchesNights = (
+    where: { AND?: Array<{ OR?: DayClause[] }> },
+    event: { dateStart: Date; dateEnd: Date | null }
+  ) => {
+    const clause = where.AND?.find((c) => c.OR?.[0]?.dateStart?.lte)
+    if (!clause?.OR) return true
+    return clause.OR.some(
+      (day) =>
+        event.dateStart <= day.dateStart.lte &&
+        day.OR.some((alt) =>
+          alt.dateEnd === null
+            ? event.dateEnd === null && event.dateStart >= alt.dateStart!.gte
+            : event.dateEnd !== null && event.dateEnd >= alt.dateEnd!.gte
+        )
+    )
+  }
+
+  const whereFor = async (dates: string[]) => {
     prismaMock.event.findMany.mockResolvedValue([])
     prismaMock.event.count.mockResolvedValue(0)
+    await getEvents({ dates }, "fr")
+    return prismaMock.event.findMany.mock.calls.at(-1)![0].where
+  }
 
-    await getEvents({ date: "29" }, "fr")
+  const oneNight = (day: string) => ({ dateStart: new Date(`${day}T20:00:00`), dateEnd: null })
 
-    const call = prismaMock.event.findMany.mock.calls[0][0]
-    expect(call.where.dateStart).toBeDefined()
-    expect(call.where.OR).toBeDefined()
+  it("ignores a day that is not a night of the current edition", async () => {
+    const where = await whereFor(["29"])
+    expect(matchesNights(where, oneNight("2027-05-29"))).toBe(true)
+    expect(where.AND).toBeUndefined()
   })
 
-  it.each([
-    ["29", new Date("2026-05-29T20:00:00")],
-    ["30", new Date("2026-05-30T20:00:00")],
-    ["31", new Date("2026-05-31T20:00:00")],
-  ])(
-    "filter day %s brackets the same calendar day (multi-day events match all 3)",
-    async (filterDay, sample) => {
-      prismaMock.event.findMany.mockResolvedValue([])
-      prismaMock.event.count.mockResolvedValue(0)
+  it.each(["21", "22", "23"])("filter night %s keeps only that night", async (code) => {
+    // Default edition (no saved row): 2027, nights 21–23 May.
+    const where = await whereFor([code])
+    expect(matchesNights(where, oneNight(`2027-05-${code}`))).toBe(true)
+    const other = code === "21" ? "22" : "21"
+    expect(matchesNights(where, oneNight(`2027-05-${other}`))).toBe(false)
+  })
 
-      await getEvents({ date: filterDay }, "fr")
-
-      const where = prismaMock.event.findMany.mock.calls[0][0].where as {
-        dateStart: { lte: Date }
-        OR: Array<{ dateEnd?: { gte: Date }; dateStart?: { gte: Date } }>
-      }
-
-      // Bounds must bracket a single calendar day (~24h apart, sample inside)
-      const dayEnd = where.dateStart.lte
-      const dayStart = (where.OR.find((c) => c.dateEnd?.gte)?.dateEnd?.gte ??
-        where.OR.find((c) => c.dateStart?.gte)?.dateStart?.gte) as Date
-      const spanMs = dayEnd.getTime() - dayStart.getTime()
-      expect(spanMs).toBeGreaterThan(23 * 60 * 60 * 1000 - 1000)
-      expect(spanMs).toBeLessThan(24 * 60 * 60 * 1000)
-
-      // A multi-day event spanning 29-31 (sample at 20:00 of the queried day)
-      // must satisfy: dateStart <= dayEnd AND dateEnd >= dayStart.
-      const multiDayStart = new Date("2026-05-29T20:00:00")
-      const multiDayEnd = new Date("2026-05-31T22:00:00")
-      expect(multiDayStart.getTime()).toBeLessThanOrEqual(dayEnd.getTime())
-      expect(multiDayEnd.getTime()).toBeGreaterThanOrEqual(dayStart.getTime())
-      // And the queried day's sample falls inside the bracket
-      expect(sample.getTime()).toBeGreaterThan(dayStart.getTime())
-      expect(sample.getTime()).toBeLessThan(dayEnd.getTime())
+  it("keeps multi-day events on every night they span", async () => {
+    const multiDay = {
+      dateStart: new Date("2027-05-21T20:00:00"),
+      dateEnd: new Date("2027-05-23T22:00:00"),
     }
-  )
+    for (const code of ["21", "22", "23"]) {
+      expect(matchesNights(await whereFor([code]), multiDay)).toBe(true)
+    }
+  })
+
+  it("matches events on any of several selected nights", async () => {
+    const where = await whereFor(["21", "23"])
+    expect(matchesNights(where, oneNight("2027-05-21"))).toBe(true)
+    expect(matchesNights(where, oneNight("2027-05-23"))).toBe(true)
+    expect(matchesNights(where, oneNight("2027-05-22"))).toBe(false)
+  })
+
+  it("combines the night filter with a text search", async () => {
+    prismaMock.$queryRawUnsafe.mockResolvedValue([{ id: "match-1" }])
+    prismaMock.event.findMany.mockResolvedValue([])
+    prismaMock.event.count.mockResolvedValue(0)
+    await getEvents({ dates: ["21"], search: "château" }, "fr")
+    const where = prismaMock.event.findMany.mock.calls.at(-1)![0].where
+    expect(where.AND).toHaveLength(2)
+  })
 
   it("selects dateEnd so cards can render the full range", async () => {
     prismaMock.event.findMany.mockResolvedValue([])
@@ -320,28 +368,33 @@ const mockEventDetail = {
   published: true,
   createdAt: new Date(),
   updatedAt: new Date(),
+  themes: [{ slug: "millennium", nameFr: "Millénaire", nameEn: "Millennium", color: "#d97706" }],
 }
 
 describe("getEventBySlug", () => {
   it("returns event by slug with published filter", async () => {
-    prismaMock.event.findUnique.mockResolvedValue(mockEventDetail)
+    prismaMock.event.findFirst.mockResolvedValue(mockEventDetail)
 
     const result = await getEventBySlug("illumination-abbaye", "fr")
 
-    expect(result).not.toBeNull()
-    expect(prismaMock.event.findUnique).toHaveBeenCalledWith({
-      where: { slug: "illumination-abbaye", published: true },
+    expect(result?.themes).toEqual([{ slug: "millennium", name: "Millénaire", color: "#d97706" }])
+    expect(prismaMock.event.findFirst).toHaveBeenCalledWith({
+      where: { published: true, slug: "illumination-abbaye" },
       include: {
         photos: {
           orderBy: { order: "asc" },
           select: { url: true, credit: true, title: true, order: true },
+        },
+        themes: {
+          orderBy: [{ order: "asc" }, { nameFr: "asc" }],
+          select: { slug: true, nameFr: true, nameEn: true, color: true },
         },
       },
     })
   })
 
   it("returns null for non-existent slug", async () => {
-    prismaMock.event.findUnique.mockResolvedValue(null)
+    prismaMock.event.findFirst.mockResolvedValue(null)
 
     const result = await getEventBySlug("non-existent", "fr")
 
@@ -349,17 +402,21 @@ describe("getEventBySlug", () => {
   })
 
   it("returns null for unpublished event", async () => {
-    prismaMock.event.findUnique.mockResolvedValue(null)
+    prismaMock.event.findFirst.mockResolvedValue(null)
 
     const result = await getEventBySlug("unpublished-event", "fr")
 
     expect(result).toBeNull()
-    expect(prismaMock.event.findUnique).toHaveBeenCalledWith({
-      where: { slug: "unpublished-event", published: true },
+    expect(prismaMock.event.findFirst).toHaveBeenCalledWith({
+      where: { published: true, slug: "unpublished-event" },
       include: {
         photos: {
           orderBy: { order: "asc" },
           select: { url: true, credit: true, title: true, order: true },
+        },
+        themes: {
+          orderBy: [{ order: "asc" }, { nameFr: "asc" }],
+          select: { slug: true, nameFr: true, nameEn: true, color: true },
         },
       },
     })
@@ -378,6 +435,17 @@ describe("getNeighbourEvents", () => {
     longitude: lng,
     city,
     category: "ILLUMINATIONS",
+    dateStart: new Date("2027-05-22T20:00:00"),
+    dateEnd: null,
+  })
+
+  it("returns the dates so the page can suggest same-day neighbours", async () => {
+    prismaMock.event.findMany.mockResolvedValue([makeEvent("close", 49.2, -0.4)])
+
+    const [neighbour] = await getNeighbourEvents("current", caenLat, caenLng, "fr")
+
+    expect(neighbour.dateStart).toBe(new Date("2027-05-22T20:00:00").toISOString())
+    expect(neighbour.dateEnd).toBeNull()
   })
 
   it("excludes the current event from neighbours and sorts by distance", async () => {

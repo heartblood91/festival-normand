@@ -68,7 +68,7 @@ export const SetupAccountForm = ({ token, email }: SetupAccountFormProps) => {
     return (
       <div className="w-full max-w-md rounded-xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
         <h1 className="mb-4 font-serif text-2xl font-bold text-amber-500">Lien invalide</h1>
-        <p className="text-slate-400">Ce lien d&apos;invitation est invalide ou a expiré.</p>
+        <p className="text-muted-foreground">Ce lien d&apos;invitation est invalide ou a expiré.</p>
       </div>
     )
   }
@@ -79,15 +79,15 @@ export const SetupAccountForm = ({ token, email }: SetupAccountFormProps) => {
         <h1 className="mb-2 font-serif text-2xl font-bold text-amber-500">
           Configurer votre compte
         </h1>
-        <p className="text-sm text-slate-400">
+        <p className="text-muted-foreground text-sm">
           Créez un mot de passe pour accéder à l&apos;administration.
         </p>
-        <p className="mt-1 text-sm text-slate-500">{email}</p>
+        <p className="text-muted-foreground mt-1 text-sm">{email}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <label htmlFor="password" className="block text-sm font-medium text-slate-200">
+          <label htmlFor="password" className="text-foreground block text-sm font-medium">
             Mot de passe
           </label>
           <PasswordInput
@@ -97,14 +97,14 @@ export const SetupAccountForm = ({ token, email }: SetupAccountFormProps) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={isSubmitting}
-            className="border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+            className="placeholder:text-muted-foreground border-white/10 bg-white/5 text-white"
             required
             minLength={8}
           />
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-200">
+          <label htmlFor="confirmPassword" className="text-foreground block text-sm font-medium">
             Confirmer le mot de passe
           </label>
           <PasswordInput
@@ -114,7 +114,7 @@ export const SetupAccountForm = ({ token, email }: SetupAccountFormProps) => {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             disabled={isSubmitting}
-            className="border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+            className="placeholder:text-muted-foreground border-white/10 bg-white/5 text-white"
             required
             minLength={8}
           />
@@ -125,7 +125,7 @@ export const SetupAccountForm = ({ token, email }: SetupAccountFormProps) => {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-xs text-slate-500">
+      <p className="text-muted-foreground mt-6 text-center text-xs">
         Cette page est sécurisée et utilise le chiffrement SSL.
       </p>
     </div>

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
-const { mockPrisma } = vi.hoisted(() => ({
+const { mockPrisma, mockRequireRole } = vi.hoisted(() => ({
   mockPrisma: {
     partner: {
       findMany: vi.fn(),
@@ -11,9 +11,21 @@ const { mockPrisma } = vi.hoisted(() => ({
     },
     $transaction: vi.fn(),
   },
+  mockRequireRole: vi.fn(),
 }))
 
+mockRequireRole.mockResolvedValue({
+  id: "admin-1",
+  name: "Admin",
+  email: "admin@test.fr",
+  role: "ADMIN",
+})
+
 vi.mock("@/lib/prisma", () => ({ prisma: mockPrisma }))
+vi.mock("@/lib/rbac", () => ({
+  requireRole: mockRequireRole,
+  getAuthenticatedUser: mockRequireRole,
+}))
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
 
 import {
@@ -208,5 +220,42 @@ describe("getAdminPartnerById", () => {
     const result = await getAdminPartnerById("non-existent")
 
     expect(result).toBeNull()
+  })
+})
+
+describe("auth guards", () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockRequireRole.mockResolvedValue({
+      id: "admin-1",
+      name: "Admin",
+      email: "admin@test.fr",
+      role: "ADMIN",
+    })
+  })
+
+  it("createPartner does not touch the DB when unauthenticated", async () => {
+    mockRequireRole.mockRejectedValueOnce(new Error("Unauthorized: not authenticated"))
+
+    const result = await createPartner(createFormData(validPartnerData))
+
+    expect(result.success).toBe(false)
+    expect(mockPrisma.partner.create).not.toHaveBeenCalled()
+  })
+
+  it("reorderPartners does not touch the DB when unauthenticated", async () => {
+    mockRequireRole.mockRejectedValueOnce(new Error("Unauthorized: not authenticated"))
+
+    const result = await reorderPartners(["a", "b"])
+
+    expect(result.success).toBe(false)
+    expect(mockPrisma.$transaction).not.toHaveBeenCalled()
+  })
+
+  it("getAdminPartners throws when unauthenticated", async () => {
+    mockRequireRole.mockRejectedValueOnce(new Error("Unauthorized: not authenticated"))
+
+    await expect(getAdminPartners()).rejects.toThrow("Unauthorized")
+    expect(mockPrisma.partner.findMany).not.toHaveBeenCalled()
   })
 })

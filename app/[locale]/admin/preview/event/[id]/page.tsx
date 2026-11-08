@@ -25,6 +25,10 @@ const EventPreviewPage = async ({ params }: EventPreviewPageProps) => {
         orderBy: { order: "asc" },
         select: { url: true, credit: true, title: true, order: true },
       },
+      themes: {
+        orderBy: [{ order: "asc" }, { nameFr: "asc" }],
+        select: { slug: true, nameFr: true, nameEn: true, color: true },
+      },
     },
   })
 
@@ -33,11 +37,16 @@ const EventPreviewPage = async ({ params }: EventPreviewPageProps) => {
   }
 
   const event = {
-    ...localizeEntity(rawEvent, locale, ["title", "description", "pricing"]),
+    ...localizeEntity(rawEvent, locale, ["title", "description", "pricing", "coverImageAlt"]),
     dateStart: rawEvent.dateStart?.toISOString() ?? null,
     dateEnd: rawEvent.dateEnd?.toISOString() ?? null,
     createdAt: rawEvent.createdAt.toISOString(),
     updatedAt: rawEvent.updatedAt.toISOString(),
+    themes: rawEvent.themes.map((theme) => ({
+      slug: theme.slug,
+      name: localizeEntity(theme, locale, ["name"]).name,
+      color: theme.color,
+    })),
   }
 
   const photos: CarouselPhoto[] =
@@ -89,7 +98,12 @@ const EventPreviewPage = async ({ params }: EventPreviewPageProps) => {
                   longitude={event.longitude as number}
                   title={event.title}
                   locale={locale}
+                  suggestions={[]}
                   neighbours={[]}
+                  labels={{
+                    youAreHere: t("events.mapYouAreHere"),
+                    map: t("events.mapLabel", { title: event.title, count: 0 }),
+                  }}
                 />
               </section>
             )}

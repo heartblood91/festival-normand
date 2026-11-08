@@ -158,7 +158,7 @@ export const AddressAutocomplete = ({ onSelect, defaultValue = "" }: AddressAuto
 
   return (
     <div className="relative">
-      <Label htmlFor="addressAutocomplete" className="text-slate-300">
+      <Label htmlFor="addressAutocomplete" className="text-muted-foreground">
         Lieu *
       </Label>
       <Input
@@ -186,7 +186,7 @@ export const AddressAutocomplete = ({ onSelect, defaultValue = "" }: AddressAuto
           ref={dropdownRef}
           id="address-suggestions"
           role="listbox"
-          className="absolute top-full right-0 left-0 z-50 mt-2 rounded-lg border border-white/10 bg-slate-900 shadow-lg"
+          className="bg-background absolute top-full right-0 left-0 z-50 mt-2 rounded-lg border border-white/10 shadow-lg"
         >
           {suggestions.map((suggestion, index) => (
             <button
@@ -199,11 +199,11 @@ export const AddressAutocomplete = ({ onSelect, defaultValue = "" }: AddressAuto
               className={`w-full px-4 py-3 text-left text-sm transition-colors ${
                 selectedIndex === index
                   ? "bg-amber-500/20 text-amber-100"
-                  : "text-slate-300 hover:bg-white/5"
+                  : "text-muted-foreground hover:bg-white/5"
               }`}
             >
               <div className="font-medium">{suggestion.name}</div>
-              <div className="text-xs text-slate-500">
+              <div className="text-muted-foreground text-xs">
                 {suggestion.postcode} {suggestion.city}
               </div>
             </button>

@@ -1,7 +1,8 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
+import { revalidatePublic } from "@/lib/revalidate-public"
 import { prisma } from "@/lib/prisma"
+import { requireRole } from "@/lib/rbac"
 import { newsSchema } from "@/lib/schemas/news"
 import { searchNewsIds } from "@/lib/search"
 
@@ -34,6 +35,8 @@ export const getAdminNews = async ({
   limit = 25,
   status = "all",
 }: GetAdminNewsParams = {}): Promise<GetAdminNewsResult> => {
+  await requireRole("EDITOR")
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {}
 
@@ -77,11 +80,13 @@ export const getAdminNews = async ({
 }
 
 export const getAdminNewsById = async (id: string) => {
+  await requireRole("EDITOR")
   return prisma.news.findUnique({ where: { id } })
 }
 
 export const createNews = async (formData: FormData): Promise<NewsActionResult> => {
   try {
+    await requireRole("EDITOR")
     const raw = extractNewsFormData(formData)
     const result = newsSchema.safeParse(raw)
 
@@ -114,14 +119,14 @@ export const createNews = async (formData: FormData): Promise<NewsActionResult> 
         excerptFr: data.excerptFr || null,
         excerptEn: data.excerptEn || null,
         coverImage: data.coverImage || null,
+        coverImageAltFr: data.coverImageAltFr?.trim() || null,
+        coverImageAltEn: data.coverImageAltEn?.trim() || null,
         published: data.published,
         publishedAt: new Date(data.publishedAt),
       },
     })
 
-    revalidatePath("/actualites")
-    revalidatePath(`/actualite/${news.slug}`)
-    revalidatePath("/")
+    revalidatePublic("/actualites", `/actualite/${news.slug}`, "/")
 
     return {
       success: true,
@@ -138,6 +143,7 @@ export const createNews = async (formData: FormData): Promise<NewsActionResult> 
 
 export const updateNews = async (id: string, formData: FormData): Promise<NewsActionResult> => {
   try {
+    await requireRole("EDITOR")
     const raw = extractNewsFormData(formData)
     const result = newsSchema.safeParse(raw)
 
@@ -173,14 +179,14 @@ export const updateNews = async (id: string, formData: FormData): Promise<NewsAc
         excerptFr: data.excerptFr || null,
         excerptEn: data.excerptEn || null,
         coverImage: data.coverImage || null,
+        coverImageAltFr: data.coverImageAltFr?.trim() || null,
+        coverImageAltEn: data.coverImageAltEn?.trim() || null,
         published: data.published,
         publishedAt: new Date(data.publishedAt),
       },
     })
 
-    revalidatePath("/actualites")
-    revalidatePath(`/actualite/${news.slug}`)
-    revalidatePath("/")
+    revalidatePublic("/actualites", `/actualite/${news.slug}`, "/")
 
     return {
       success: true,
@@ -197,11 +203,10 @@ export const updateNews = async (id: string, formData: FormData): Promise<NewsAc
 
 export const deleteNews = async (id: string): Promise<NewsActionResult> => {
   try {
+    await requireRole("EDITOR")
     const news = await prisma.news.delete({ where: { id } })
 
-    revalidatePath("/actualites")
-    revalidatePath(`/actualite/${news.slug}`)
-    revalidatePath("/")
+    revalidatePublic("/actualites", `/actualite/${news.slug}`, "/")
 
     return {
       success: true,
@@ -217,6 +222,7 @@ export const deleteNews = async (id: string): Promise<NewsActionResult> => {
 
 export const bulkDeleteNews = async (ids: string[]): Promise<NewsActionResult> => {
   try {
+    await requireRole("EDITOR")
     if (!ids.length) {
       return {
         success: false,
@@ -233,11 +239,7 @@ export const bulkDeleteNews = async (ids: string[]): Promise<NewsActionResult> =
       where: { id: { in: ids } },
     })
 
-    revalidatePath("/actualites")
-    articles.forEach((article) => {
-      revalidatePath(`/actualite/${article.slug}`)
-    })
-    revalidatePath("/")
+    revalidatePublic("/actualites", ...articles.map((article) => `/actualite/${article.slug}`), "/")
 
     return {
       success: true,
@@ -260,6 +262,8 @@ const extractNewsFormData = (formData: FormData) => ({
   excerptFr: (formData.get("excerptFr") as string) ?? "",
   excerptEn: (formData.get("excerptEn") as string) ?? "",
   coverImage: (formData.get("coverImage") as string) ?? "",
+  coverImageAltFr: (formData.get("coverImageAltFr") as string) ?? "",
+  coverImageAltEn: (formData.get("coverImageAltEn") as string) ?? "",
   published: formData.get("published") !== "false",
   publishedAt: (formData.get("publishedAt") as string) ?? "",
 })

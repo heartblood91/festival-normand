@@ -74,7 +74,7 @@ const SortablePartnerItem = ({
         className="flex shrink-0 cursor-grab items-center justify-center rounded-lg p-1 hover:bg-white/10 active:cursor-grabbing"
         aria-label={`Réordonner ${partner.nameFr}`}
       >
-        <GripVertical className="h-4 w-4 text-slate-600" aria-hidden="true" />
+        <GripVertical className="text-muted-foreground h-4 w-4" aria-hidden="true" />
       </button>
 
       {partner.logo && (
@@ -90,12 +90,14 @@ const SortablePartnerItem = ({
         </div>
       )}
 
-      <div className="flex-1">
-        <p className="font-medium text-white">{partner.nameFr}</p>
-        {partner.website && <p className="truncate text-xs text-slate-500">{partner.website}</p>}
+      <div className="min-w-0 flex-1">
+        <p className="font-medium break-words text-white">{partner.nameFr}</p>
+        {partner.website && (
+          <p className="text-muted-foreground truncate text-xs">{partner.website}</p>
+        )}
       </div>
 
-      <span className="hidden text-xs text-slate-600 md:inline">#{index + 1}</span>
+      <span className="text-muted-foreground hidden text-xs md:inline">#{index + 1}</span>
 
       <div className="flex items-center gap-1">
         <Link href={`/admin/partners/${partner.id}/edit`}>
@@ -192,11 +194,11 @@ export const AdminPartnersPage = ({ partners: initialPartners }: AdminPartnersPa
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl p-4 md:p-8">
+    <div className="mx-auto w-full max-w-6xl">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-baseline gap-x-3">
           <h1 className="font-serif text-2xl font-bold text-amber-500">Partenaires</h1>
-          <span className="text-sm text-slate-400">
+          <span className="text-muted-foreground text-sm">
             ({partners.length} partenaire{partners.length !== 1 ? "s" : ""})
           </span>
         </div>
@@ -210,7 +212,7 @@ export const AdminPartnersPage = ({ partners: initialPartners }: AdminPartnersPa
 
       {partners.length === 0 ? (
         <div className="rounded-xl border border-white/10 bg-white/5 p-12 text-center">
-          <p className="text-slate-400">Aucun partenaire pour le moment.</p>
+          <p className="text-muted-foreground">Aucun partenaire pour le moment.</p>
         </div>
       ) : (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>

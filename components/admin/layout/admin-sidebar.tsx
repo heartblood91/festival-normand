@@ -5,10 +5,12 @@ import { useLocale, useTranslations } from "next-intl"
 import {
   LayoutDashboard,
   Calendar,
+  Tags,
   Newspaper,
   Handshake,
   FileText,
   UserPlus,
+  CalendarRange,
   Users,
   Settings,
   LogOut,
@@ -29,9 +31,20 @@ type AdminSidebarProps = {
     role: string
   }
   pathname: string
+  /** Closes the mobile drawer after a link is followed. */
+  onNavigate?: () => void
+  /** Extra control in the header, e.g. the drawer's close button. */
+  headerAction?: React.ReactNode
+  className?: string
 }
 
-const AdminSidebar = ({ user, pathname }: AdminSidebarProps) => {
+const AdminSidebar = ({
+  user,
+  pathname,
+  onNavigate,
+  headerAction,
+  className,
+}: AdminSidebarProps) => {
   const locale = useLocale()
   const t = useTranslations("admin")
   const tA11y = useTranslations("a11y")
@@ -57,6 +70,11 @@ const AdminSidebar = ({ user, pathname }: AdminSidebarProps) => {
       labelKey: "sidebar.events",
     },
     {
+      href: `/${locale}/admin/themes`,
+      icon: Tags,
+      labelKey: "sidebar.themes",
+    },
+    {
       href: `/${locale}/admin/news`,
       icon: Newspaper,
       labelKey: "sidebar.news",
@@ -77,6 +95,11 @@ const AdminSidebar = ({ user, pathname }: AdminSidebarProps) => {
       labelKey: "sidebar.registrationLinks",
     },
     {
+      href: `/${locale}/admin/edition`,
+      icon: CalendarRange,
+      labelKey: "sidebar.edition",
+    },
+    {
       href: `/${locale}/admin/users`,
       icon: Users,
       labelKey: "sidebar.users",
@@ -89,13 +112,19 @@ const AdminSidebar = ({ user, pathname }: AdminSidebarProps) => {
   ]
 
   return (
-    <aside className="flex w-64 flex-col border-r border-white/10 bg-white/5 backdrop-blur-xl">
+    <aside
+      className={cn(
+        "flex w-64 flex-col border-r border-white/10 bg-white/5 backdrop-blur-xl",
+        className
+      )}
+    >
       {/* Header */}
       <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-4">
         <div className="flex items-center gap-2">
           <SparkleIcon className="size-5" />
-          <span className="text-sm font-bold text-white">{t("title")}</span>
+          <span className="text-foreground text-sm font-bold">{t("title")}</span>
         </div>
+        {headerAction}
       </div>
 
       {/* Tools */}
@@ -108,7 +137,8 @@ const AdminSidebar = ({ user, pathname }: AdminSidebarProps) => {
       <div className="border-b border-white/10 px-3 py-2">
         <Link
           href={`/${locale}`}
-          className="flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 transition-all hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-amber-500/50 focus-visible:outline-none"
+          onClick={onNavigate}
+          className="text-muted-foreground flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-amber-500/50 focus-visible:outline-none"
         >
           <ArrowLeft className="size-4 flex-shrink-0" />
           <span>{t("backToSite")}</span>
@@ -126,6 +156,7 @@ const AdminSidebar = ({ user, pathname }: AdminSidebarProps) => {
               icon={item.icon}
               label={t(item.labelKey)}
               pathname={pathname}
+              onNavigate={onNavigate}
             />
           ))}
       </nav>
@@ -133,8 +164,8 @@ const AdminSidebar = ({ user, pathname }: AdminSidebarProps) => {
       {/* User info */}
       <div className="space-y-3 border-t border-white/10 px-3 py-4">
         <div className="rounded-lg bg-white/5 px-3 py-3">
-          <p className="truncate text-sm font-medium text-white">{user.name}</p>
-          <p className="truncate text-xs text-slate-400">{user.email}</p>
+          <p className="text-foreground truncate text-sm font-medium">{user.name}</p>
+          <p className="text-muted-foreground truncate text-xs">{user.email}</p>
           <div
             className={cn(
               "mt-2 inline-block rounded px-2 py-1 text-xs font-medium",
@@ -151,7 +182,7 @@ const AdminSidebar = ({ user, pathname }: AdminSidebarProps) => {
           variant="ghost"
           size="sm"
           onClick={handleSignOut}
-          className="w-full justify-start gap-2 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+          className="text-muted-foreground hover:text-foreground w-full justify-start gap-2 hover:bg-white/5"
         >
           <LogOut className="size-4" />
           <span>{t("common.logout")}</span>

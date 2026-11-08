@@ -48,16 +48,18 @@ export const RegistrationLinksForm = ({ links }: RegistrationLinksFormProps) => 
 
       <Card className="border-white/10 bg-white/5">
         <CardHeader>
-          <CardTitle className="text-white">Formulaire d&apos;inscription par département</CardTitle>
+          <CardTitle className="text-white">
+            Formulaire d&apos;inscription par département
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-slate-400">
+          <p className="text-muted-foreground text-sm">
             URL du formulaire d&apos;inscription de chaque département. Laisser vide pour masquer le
             département sur la page publique.
           </p>
           {links.map((link) => (
             <div key={link.id}>
-              <Label htmlFor={link.id} className="text-slate-300">
+              <Label htmlFor={link.id} className="text-muted-foreground">
                 {t(link.department)}
               </Label>
               <Input
@@ -66,7 +68,7 @@ export const RegistrationLinksForm = ({ links }: RegistrationLinksFormProps) => 
                 type="url"
                 defaultValue={link.url}
                 placeholder="https://..."
-                className="mt-1 border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+                className="placeholder:text-muted-foreground mt-1 border-white/10 bg-white/5 text-white"
               />
             </div>
           ))}

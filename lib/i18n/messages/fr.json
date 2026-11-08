@@ -2,18 +2,100 @@
   "meta": {
     "siteName": "Pierres en Lumières",
     "siteDescription": "Découvrez la magie du patrimoine normand en nocturne. 29, 30 & 31 mai 2026.",
-    "festivalName": "Pierres en Lumières",
-    "festivalDates": "29, 30 & 31 mai 2026"
+    "festivalName": "Pierres en Lumières"
   },
   "nav": {
     "home": "Accueil",
-    "events": "Événements",
+    "events": "Programme",
     "news": "Actualités",
     "festival": "Le Festival",
     "contact": "Contact",
-    "register": "Inscrivez votre événement",
+    "register": "Inscrire un événement",
     "legalNotice": "Mentions légales",
     "accessibility": "Accessibilité"
+  },
+  "editorial": {
+    "searchPlaceholder": "Chercher une ville, un lieu…",
+    "discoverProgramme": "Découvrir le programme",
+    "viewMap": "Voir la carte",
+    "viewAll": "Voir les {count} animations →",
+    "allNews": "Toutes les actualités →",
+    "allPartners": "Tous les partenaires →",
+    "readArticle": "Lire l'article",
+    "upcomingStatus": "J − {days} {days, plural, one {jour} other {jours}} · entrée libre",
+    "liveStatus": "Le festival est en cours · ce soir en Normandie",
+    "pastStatus": "Édition {year} terminée · rendez-vous en {nextYear}",
+    "stats": {
+      "places": "lieux illuminés",
+      "departments": "départements",
+      "nights": "nuits"
+    },
+    "threeNights": {
+      "marker": "{count, plural, =1 {Une nuit, c'est maintenant} =2 {Deux nuits, c'est maintenant} =3 {Trois nuits, c'est maintenant} =4 {Quatre nuits, c'est maintenant} other {# nuits, c'est maintenant}}",
+      "title": "{count, plural, =1 {Un soir, une ambiance.} =2 {Deux soirs, deux ambiances.} =3 {Trois soirs, trois ambiances.} =4 {Quatre soirs, quatre ambiances.} other {# soirs, # ambiances.}}",
+      "nightsLabel": "{count} animations",
+      "see": "Voir →",
+      "roles": {
+        "opening": {
+          "sub": "L'ouverture",
+          "desc": "Veillées, premières illuminations, concerts dans les abbayes."
+        },
+        "main": {
+          "sub": "Le grand soir",
+          "desc": "Mappings monumentaux, balades aux flambeaux, créations lumière."
+        },
+        "closing": {
+          "sub": "La clôture",
+          "desc": "Récitals intimes, marches silencieuses, derniers feux."
+        }
+      }
+    },
+    "quote": {
+      "marker": "Le festival",
+      "text": "Le festival nocturne du patrimoine normand. Né dans l'Orne en 2009, il rayonne aujourd'hui dans les cinq départements : la lumière, comme métaphore, comme métier, comme invitation.",
+      "attribution": "— Co-organisé par les Départements de Normandie & la Fondation du Patrimoine"
+    },
+    "newsSection": {
+      "markerUpcoming": "Actualités",
+      "markerPast": "Bilan & presse",
+      "titleUpcoming": "Les nouvelles du festival.",
+      "titlePast": "Le bilan de l'édition."
+    },
+    "highlights": {
+      "markerUpcoming": "Coups de cœur",
+      "markerPast": "Temps forts {year}",
+      "titleUpcoming": "La sélection éditoriale.",
+      "titlePast": "Les moments à retenir.",
+      "ledeUpcoming": "Des moments choisis par l'équipe — pour celles et ceux qui ne savent pas par où commencer.",
+      "ledePast": "Les trois soirs vus par l'équipe — photos, captations, retours."
+    },
+    "programmeTeaser": {
+      "marker": "En lumière",
+      "title": "Un aperçu du programme."
+    },
+    "mapSection": {
+      "marker": "Cinq départements",
+      "title": "Toute la Normandie, allumée.",
+      "text": "{count, plural, =0 {Des illuminations} other {# illuminations}} à travers Manche, Calvados, Seine-Maritime, Orne et Eure. Chaque point sur la carte est un lieu qui s'ouvre, à la nuit tombée.",
+      "places": "lieux"
+    },
+    "partnersSection": {
+      "marker": "Ils nous soutiennent",
+      "title": "Partenaires & mécènes.",
+      "note": "Pierres en Lumières est co-organisé par les cinq départements normands et la Fondation du Patrimoine, avec le soutien de mécènes privés."
+    },
+    "past": {
+      "marker": "Édition passée",
+      "title": "Revivez l'édition {year}.",
+      "text": "Les trois nuits sont terminées. Retrouvez la sélection éditoriale des temps forts de cette édition.",
+      "gallery": "Galerie photos {year}",
+      "replays": "Replays des mappings"
+    },
+    "theme": {
+      "marker": "Fil rouge {year}",
+      "viewAll": "Voir les événements",
+      "soon": "Les lieux participants seront annoncés prochainement."
+    }
   },
   "a11y": {
     "skipToContent": "Aller au contenu principal",
@@ -86,18 +168,21 @@
     "organizer": "Organisateur",
     "free": "Gratuit",
     "accessible": "Accessible PMR",
-    "nearbyFallback": "Aucun événement à moins de 50 km de votre position. Voici les événements les plus proches, à environ {distance} km."
+    "nearbyFallback": "Aucun événement à moins de 50 km de votre position. Voici les événements les plus proches, à environ {distance} km.",
+    "nearbySameDay": "Le même jour, à proximité",
+    "nearbyClosest": "Les sites les plus proches",
+    "nearbySameDayHint": "Ouverts le même jour, à moins de {radius} km. Les numéros renvoient à la carte.",
+    "nearbyClosestHint": "Aucun autre site ouvert le même jour à moins de {radius} km. Les numéros renvoient à la carte.",
+    "distanceKm": "{distance, number} km",
+    "mapYouAreHere": "Vous êtes ici",
+    "mapLabel": "Carte : {title} et {count, plural, =0 {aucun site voisin} one {# site voisin numéroté} other {# sites voisins numérotés}}",
+    "themes": "Thématiques"
   },
   "filters": {
     "department": "Département",
     "category": "Catégorie",
-    "date29": "Ven 29",
-    "date30": "Sam 30",
-    "date31": "Dim 31",
-    "date29Full": "Ven 29 mai",
-    "date30Full": "Sam 30 mai",
-    "date31Full": "Dim 31 mai",
     "pmr": "Accessible PMR",
+    "filterBy": "Filtrer par {filter}",
     "removeFilter": "Retirer le filtre {filter}",
     "clearAll": "Tout effacer",
     "eventCount": "{count} événements",
@@ -110,7 +195,9 @@
     "geoUnavailable": "Votre position n'a pas pu être déterminée (GPS ou Wi-Fi indisponibles). Réessayez dans quelques instants.",
     "geoTimeout": "La localisation a pris trop de temps. Vérifiez votre connexion et réessayez.",
     "geoError": "Impossible de vous localiser. Réessayez dans quelques instants.",
-    "dismissError": "Fermer le message d'erreur"
+    "dismissError": "Fermer le message d'erreur",
+    "theme": "Thématique",
+    "themes": "Thématiques"
   },
   "categories": {
     "ILLUMINATIONS": "Illuminations",
@@ -126,9 +213,27 @@
     "SEINE_MARITIME": "Seine-Maritime"
   },
   "registration": {
-    "byDepartmentTitle": "Inscrivez votre événement",
-    "byDepartmentIntro": "Sélectionnez votre département pour accéder au formulaire d'inscription.",
-    "cta": "S'inscrire"
+    "byDepartmentTitle": "Choisissez votre département",
+    "byDepartmentIntro": "Le formulaire s'ouvre dans un nouvel onglet, sur le site de votre département.",
+    "cta": "Accéder au formulaire",
+    "stepsTitle": "Inscrire votre événement en 3 étapes",
+    "steps": {
+      "choose": {
+        "title": "Choisissez votre département",
+        "text": "Chaque département gère les inscriptions de son territoire et vous accompagne."
+      },
+      "fill": {
+        "title": "Remplissez le formulaire en ligne",
+        "text": "Décrivez votre site, vos animations et vos horaires, ajoutez une ou plusieurs photos."
+      },
+      "publish": {
+        "title": "Le département valide, le site publie",
+        "text": "Votre événement rejoint le programme après validation. L'inscription est gratuite."
+      }
+    },
+    "newTab": "(nouvel onglet)",
+    "comingSoon": "Formulaire bientôt en ligne",
+    "departmentNumber": "Département {code}"
   },
   "news": {
     "title": "Actualités",
@@ -163,7 +268,9 @@
     "contactQuestion": "Une question sur le festival ?",
     "contactCta": "Nous contacter →",
     "manageCookies": "Gérer les cookies",
-    "copyright": "© {year} Pierres en Lumières. Tous droits réservés."
+    "copyright": "© {year} Pierres en Lumières. Tous droits réservés.",
+    "creditPrefix": "Site développé par",
+    "creditRole": "lead dev bénévole — Délégation Normandie"
   },
   "cookies": {
     "bannerAriaLabel": "Consentement aux statistiques de visite",
@@ -219,12 +326,14 @@
     "sidebar": {
       "dashboard": "Tableau de bord",
       "events": "Événements",
+      "themes": "Thématiques",
       "news": "Actualités",
       "partners": "Partenaires",
       "pages": "Pages",
       "users": "Utilisateurs",
       "settings": "Paramètres",
-      "registrationLinks": "Inscriptions"
+      "registrationLinks": "Inscriptions",
+      "edition": "Édition"
     },
     "dashboard": {
       "title": "Tableau de bord",
@@ -243,7 +352,25 @@
       "quickActions": "Actions rapides",
       "createEvent": "Créer un événement",
       "createNews": "Créer une actualité",
-      "managePartners": "Gérer les partenaires"
+      "managePartners": "Gérer les partenaires",
+      "sync": {
+        "title": "Synchro Tourinsoft",
+        "never": "Aucune synchronisation enregistrée.",
+        "lastRun": "Dernière exécution : {date}",
+        "counts": "{created} créés · {updated} mis à jour · {skipped} inchangés · {failed} en échec",
+        "trigger": "Déclencheur : {trigger}",
+        "status": {
+          "RUNNING": "En cours",
+          "SUCCESS": "Réussie",
+          "PARTIAL": "Partielle",
+          "FAILED": "Échec"
+        }
+      },
+      "todo": "À traiter",
+      "todoDescription": "Événements publiés ou non à compléter avant le festival.",
+      "todoMissingEn": "Traduction EN manquante",
+      "todoMissingAlt": "Image sans texte alternatif",
+      "todoMissingGps": "Coordonnées GPS manquantes"
     },
     "common": {
       "save": "Enregistrer",
@@ -272,11 +399,81 @@
       "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cet utilisateur ?",
       "soleAdmin": "Impossible de supprimer le seul administrateur",
       "changeRole": "Modifier le rôle"
+    },
+    "edition": {
+      "title": "Édition",
+      "embargo": {
+        "title": "Date de publication par département",
+        "description": "Avant cette date, les événements à venir importés de Tourinsoft pour le département restent masqués sur le site public (ils restent visibles ici). Les événements créés à la main et les éditions passées ne sont pas concernés. Laisser vide pour publier immédiatement.",
+        "save": "Enregistrer",
+        "hiddenUntil": "Masqué jusqu'au {date}",
+        "visible": "Publié"
+      },
+      "dates": {
+        "title": "Dates de l'édition",
+        "description": "Ces dates pilotent le site public : compte à rebours, nuits de la page d'accueil, filtres par date du programme. À la date de bascule, l'accueil passe au bilan de l'édition. Enregistrer une nouvelle année la rend courante.",
+        "provisional": "Dates provisoires : aucune édition n'est encore enregistrée, le site affiche les valeurs par défaut.",
+        "year": "Année",
+        "dateStart": "Première nuit",
+        "dateEnd": "Dernière nuit",
+        "bilanFrom": "Bascule vers le bilan",
+        "bilanHint": "Laisser vide pour basculer le {date}, lendemain de la dernière nuit.",
+        "save": "Enregistrer les dates"
+      }
     }
   },
   "locale": {
     "fr": "Français",
     "en": "English",
     "switchTo": "Switch to English"
+  },
+  "travelBook": {
+    "nav": "{count, plural, =0 {Mon carnet de voyage} one {Mon carnet de voyage, # lieu} other {Mon carnet de voyage, # lieux}}",
+    "navShort": "Carnet",
+    "addNamed": "Ajouter « {title} » au carnet de voyage",
+    "removeNamed": "Retirer « {title} » du carnet de voyage",
+    "add": "Ajouter au carnet",
+    "added": "Dans mon carnet",
+    "title": "Mon carnet de voyage",
+    "lede": "Les lieux que vous avez retenus. Ils restent dans ce navigateur, sans compte ni donnée personnelle.",
+    "sharedTitle": "Carnet de voyage partagé",
+    "sharedLede": "Une sélection de lieux partagée par un visiteur, en lecture seule.",
+    "metaDescription": "Préparez votre parcours Pierres en Lumières : vos lieux par date et par commune, sur une carte, à imprimer ou à partager.",
+    "count": "{count, plural, one {# lieu} other {# lieux}}",
+    "loading": "Chargement du carnet…",
+    "empty": "Votre carnet est vide.",
+    "emptyHint": "Ajoutez des lieux avec le bouton marque-page des événements.",
+    "browse": "Parcourir le programme",
+    "unavailable": "{count, plural, one {# lieu de votre carnet n'est plus en ligne.} other {# lieux de votre carnet ne sont plus en ligne.}}",
+    "groupBy": "Classer par",
+    "byDate": "Date",
+    "byPlace": "Commune",
+    "unknownDate": "Date à préciser",
+    "unknownPlace": "Commune non précisée",
+    "mapTitle": "Carte du carnet",
+    "print": "Imprimer",
+    "share": "Partager le carnet",
+    "sharing": "Création du lien…",
+    "shareReady": "Lien prêt. Il montre ces lieux en lecture seule.",
+    "shareLabel": "Lien de partage",
+    "shareError": "Le lien n'a pas pu être créé. Réessayez.",
+    "copy": "Copier le lien",
+    "copied": "Lien copié.",
+    "copyFailed": "Copie impossible : sélectionnez le lien et copiez-le.",
+    "email": "Envoyer par e-mail",
+    "emailSubject": "Mon carnet Pierres en Lumières",
+    "emailBody": "Voici les lieux que j'ai retenus pour Pierres en Lumières : {url}",
+    "importAll": "Ajouter ces lieux à mon carnet",
+    "imported": "Lieux ajoutés à votre carnet.",
+    "openMine": "Ouvrir mon carnet"
+  },
+  "fundraising": {
+    "badge": "Collecte",
+    "badgeLabel": "Collecte de dons en cours pour ce lieu",
+    "marker": "Fondation du patrimoine",
+    "title": "Soutenir la restauration de ce lieu",
+    "lede": "Ce patrimoine fait l'objet d'une collecte de la Fondation du patrimoine. Chaque don, déductible des impôts, aide à le sauvegarder.",
+    "cta": "Faire un don",
+    "newTab": "(nouvel onglet, fondation-patrimoine.org)"
   }
 }

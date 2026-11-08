@@ -45,16 +45,16 @@ test.describe("Event detail page", () => {
 
   test("shows description section", async ({ page }) => {
     await openFirstEvent(page)
-    await expect(page.getByRole("heading", { name: "Description" })).toBeVisible()
+    await expect(page.getByText("Description").first()).toBeVisible()
   })
 
-  test("has back link that returns to events list", async ({ page }) => {
+  test("breadcrumb links back to the programme list", async ({ page }) => {
     await openFirstEvent(page)
-    const backLink = page.getByRole("link", {
-      name: /Retour aux événements/i,
-    })
-    await expect(backLink).toBeVisible()
-    await expect(backLink).toHaveAttribute("href", /\/evenements$/)
+    const breadcrumbLink = page
+      .locator('nav[aria-label="Fil d\'Ariane"]')
+      .getByRole("link", { name: "Programme" })
+    await expect(breadcrumbLink).toBeVisible()
+    await expect(breadcrumbLink).toHaveAttribute("href", /\/evenements$/)
   })
 
   test("displays category badge", async ({ page }) => {
@@ -70,6 +70,20 @@ test.describe("Event detail page", () => {
     const locHeading = page.getByRole("heading", { name: "Localisation" })
     const count = await locHeading.count()
     expect(count).toBeGreaterThanOrEqual(0)
+  })
+
+  test("lists nearby sites as numbered links matching the map", async ({ page }) => {
+    await openFirstEvent(page)
+    const locHeading = page.getByRole("heading", { name: "Localisation" })
+    test.skip((await locHeading.count()) === 0, "first event has no Normandy coordinates")
+
+    const nearby = page.getByRole("region", { name: /Le même jour, à proximité|plus proches/ })
+    await expect(nearby).toBeVisible()
+    const links = nearby.getByRole("link")
+    expect(await links.count()).toBeGreaterThanOrEqual(1)
+    expect(await links.count()).toBeLessThanOrEqual(6)
+    await expect(links.first()).toHaveAttribute("href", /\/evenement\//)
+    await expect(links.first()).toContainText(/\d+([.,]\d)? km/)
   })
 
   test("has proper SEO meta tags", async ({ page }) => {

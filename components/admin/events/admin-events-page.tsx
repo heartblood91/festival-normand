@@ -3,7 +3,17 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Plus, Search, Pencil, Trash2, Star, Eye, EyeOff, Accessibility } from "lucide-react"
+import {
+  Plus,
+  Search,
+  Pencil,
+  Star,
+  StarOff,
+  Eye,
+  EyeOff,
+  Accessibility,
+  RefreshCw,
+} from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,7 +28,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { deleteEvent, bulkDeleteEvents } from "@/lib/actions/events"
+import {
+  publishEvents,
+  setEventsFeatured,
+  unpublishEvents,
+  type EventActionResult,
+} from "@/lib/actions/events"
+import { buildListUrl, type EventListParams } from "@/lib/admin/event-list"
 import type { AdminEventListItem } from "@/lib/types/admin"
 import { AdminFilters, type FilterConfig } from "@/components/admin/shared/admin-filters"
 import { AdminPagination } from "@/components/admin/shared/admin-pagination"
@@ -28,12 +44,10 @@ type AdminEventsPageProps = {
   total: number
   page: number
   totalPages: number
-  search?: string
-  status?: string
-  department?: string
-  category?: string
-  featured?: string
+  params: EventListParams
 }
+
+const BASE_URL = "/admin/events"
 
 const DEPARTMENT_LABELS: Record<string, string> = {
   CALVADOS: "Calvados",
@@ -70,27 +84,21 @@ export const AdminEventsPage = ({
   total,
   page,
   totalPages,
-  search = "",
-  status = "all",
-  department = "",
-  category = "",
-  featured = "",
+  params,
 }: AdminEventsPageProps) => {
   const router = useRouter()
+  const search = params.search ?? ""
   const [searchQuery, setSearchQuery] = useState(search)
-  const [isDeleting, setIsDeleting] = useState<string | null>(null)
+  const [isUnpublishing, setIsUnpublishing] = useState<string | null>(null)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
-  const [isBulkDeleting, setIsBulkDeleting] = useState(false)
+  const [bulkAction, setBulkAction] = useState<string | null>(null)
+
+  const listUrl = (changes: Record<string, string | number | undefined>) =>
+    buildListUrl(BASE_URL, params, changes)
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    const params = new URLSearchParams()
-    if (searchQuery) params.set("search", searchQuery)
-    if (status && status !== "all") params.set("status", status)
-    if (department) params.set("department", department)
-    if (category) params.set("category", category)
-    params.set("page", "1")
-    router.push(`/admin/events${params.toString() ? `?${params}` : ""}`)
+    router.push(listUrl({ search: searchQuery.trim() }))
   }
 
   const filterConfigs: FilterConfig[] = [
@@ -114,6 +122,14 @@ export const AdminEventsPage = ({
       options: CATEGORY_VALUES,
     },
     {
+      key: "source",
+      label: "Source",
+      options: [
+        { value: "tourinsoft", label: "Tourinsoft" },
+        { value: "manual", label: "Saisie manuelle" },
+      ],
+    },
+    {
       key: "featured",
       label: "À la une",
       options: [
@@ -121,19 +137,42 @@ export const AdminEventsPage = ({
         { value: "false", label: "Non" },
       ],
     },
+    {
+      key: "when",
+      label: "Période",
+      options: [
+        { value: "upcoming", label: "À venir" },
+        { value: "past", label: "Passés" },
+      ],
+    },
+    {
+      key: "todo",
+      label: "À traiter",
+      options: [
+        { value: "missing-en", label: "Traduction EN manquante" },
+        { value: "missing-alt", label: "Image sans texte alternatif" },
+        { value: "missing-gps", label: "Coordonnées GPS manquantes" },
+      ],
+    },
+    {
+      key: "sort",
+      label: "Tri",
+      options: [
+        { value: "date-asc", label: "Date (plus proche d'abord)" },
+        { value: "date-desc", label: "Date (plus lointaine d'abord)" },
+        { value: "title", label: "Titre (A → Z)" },
+      ],
+    },
   ]
 
-  const currentFilterValues = {
-    status: status || "all",
-    department: department || "",
-    featured: featured || "",
-    category: category || "",
-  }
+  const currentFilterValues = Object.fromEntries(
+    filterConfigs.map(({ key }) => [key, String(params[key as keyof EventListParams] ?? "")])
+  )
 
-  const handleDelete = async (id: string) => {
-    setIsDeleting(id)
-    const result = await deleteEvent(id)
-    setIsDeleting(null)
+  const handleUnpublish = async (id: string) => {
+    setIsUnpublishing(id)
+    const result = await unpublishEvents([id])
+    setIsUnpublishing(null)
 
     if (result.success) {
       toast.success(result.message)
@@ -161,10 +200,10 @@ export const AdminEventsPage = ({
     setSelectedIds(newSelected)
   }
 
-  const handleBulkDelete = async () => {
-    setIsBulkDeleting(true)
-    const result = await bulkDeleteEvents(Array.from(selectedIds))
-    setIsBulkDeleting(false)
+  const runBulk = async (name: string, action: (ids: string[]) => Promise<EventActionResult>) => {
+    setBulkAction(name)
+    const result = await action(Array.from(selectedIds))
+    setBulkAction(null)
 
     if (result.success) {
       toast.success(result.message)
@@ -184,11 +223,11 @@ export const AdminEventsPage = ({
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl p-4 md:p-8">
+    <div className="mx-auto w-full max-w-6xl">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
           <h1 className="font-serif text-2xl font-bold text-amber-500">Événements</h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="text-muted-foreground mt-1 text-sm">
             {total} résultat{total !== 1 ? "s" : ""}
           </p>
         </div>
@@ -202,23 +241,18 @@ export const AdminEventsPage = ({
 
       <form onSubmit={handleSearch} className="mb-6">
         <div className="relative">
-          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <Input
             type="search"
             placeholder="Rechercher par titre, ville ou lieu..."
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value)
-              if (e.target.value === "") {
-                const params = new URLSearchParams()
-                if (status && status !== "all") params.set("status", status)
-                if (department) params.set("department", department)
-                if (category) params.set("category", category)
-                params.set("page", "1")
-                router.push(`/admin/events${params.toString() ? `?${params}` : ""}`)
+              if (e.target.value === "" && search) {
+                router.push(listUrl({ search: undefined }))
               }
             }}
-            className="border-white/10 bg-white/5 pr-10 pl-10 text-white placeholder:text-slate-500"
+            className="placeholder:text-muted-foreground border-white/10 bg-white/5 pr-10 pl-10 text-white"
             aria-label="Rechercher des événements"
           />
           {searchQuery && (
@@ -226,14 +260,9 @@ export const AdminEventsPage = ({
               type="button"
               onClick={() => {
                 setSearchQuery("")
-                const params = new URLSearchParams()
-                if (status && status !== "all") params.set("status", status)
-                if (department) params.set("department", department)
-                if (category) params.set("category", category)
-                params.set("page", "1")
-                router.push(`/admin/events${params.toString() ? `?${params}` : ""}`)
+                router.push(listUrl({ search: undefined }))
               }}
-              className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+              className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
               aria-label="Effacer la recherche"
             >
               ×
@@ -244,14 +273,14 @@ export const AdminEventsPage = ({
 
       <AdminFilters
         filters={filterConfigs}
-        baseUrl="/admin/events"
+        baseUrl={BASE_URL}
         currentValues={currentFilterValues}
       />
 
       {items.length === 0 ? (
         <div className="rounded-xl border border-white/10 bg-white/5 p-12 text-center">
-          <p className="text-slate-400">
-            {search
+          <p className="text-muted-foreground">
+            {search || Object.keys(params).some((key) => key !== "page")
               ? "Aucun événement ne correspond à votre recherche."
               : "Aucun événement pour le moment."}
           </p>
@@ -271,21 +300,25 @@ export const AdminEventsPage = ({
                       aria-label="Sélectionner tous les événements"
                     />
                   </th>
-                  <th className="px-4 py-3 text-left font-medium text-slate-300">Titre</th>
-                  <th className="hidden px-4 py-3 text-left font-medium text-slate-300 md:table-cell">
+                  <th className="text-muted-foreground px-4 py-3 text-left font-medium">Titre</th>
+                  <th className="text-muted-foreground hidden px-4 py-3 text-left font-medium md:table-cell">
                     Ville
                   </th>
-                  <th className="hidden px-4 py-3 text-left font-medium text-slate-300 lg:table-cell">
+                  <th className="text-muted-foreground hidden px-4 py-3 text-left font-medium lg:table-cell">
                     Département
                   </th>
-                  <th className="hidden px-4 py-3 text-left font-medium text-slate-300 md:table-cell">
+                  <th className="text-muted-foreground hidden px-4 py-3 text-left font-medium md:table-cell">
                     Catégorie
                   </th>
-                  <th className="hidden px-4 py-3 text-left font-medium text-slate-300 lg:table-cell">
+                  <th className="text-muted-foreground hidden px-4 py-3 text-left font-medium lg:table-cell">
                     Date
                   </th>
-                  <th className="px-4 py-3 text-center font-medium text-slate-300">Statut</th>
-                  <th className="px-4 py-3 text-right font-medium text-slate-300">Actions</th>
+                  <th className="text-muted-foreground px-4 py-3 text-center font-medium">
+                    Statut
+                  </th>
+                  <th className="text-muted-foreground px-4 py-3 text-right font-medium">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -314,6 +347,19 @@ export const AdminEventsPage = ({
                             <Star className="size-3 fill-amber-400" aria-hidden="true" />À la une
                           </span>
                         )}
+                        {event.tourinsoftId && (
+                          <span
+                            className="inline-flex items-center gap-1 rounded-full bg-violet-500/20 px-2 py-0.5 text-xs font-medium text-violet-300"
+                            title={
+                              event.tourinsoftUpdatedAt
+                                ? `Fiche Tourinsoft mise à jour le ${formatDate(event.tourinsoftUpdatedAt)}`
+                                : undefined
+                            }
+                          >
+                            <RefreshCw className="size-3" aria-hidden="true" />
+                            Tourinsoft
+                          </span>
+                        )}
                         {event.accessible && (
                           <span
                             className="inline-flex items-center gap-1 rounded-full bg-blue-500/20 px-2 py-0.5 text-xs font-medium text-blue-400"
@@ -325,14 +371,16 @@ export const AdminEventsPage = ({
                         )}
                       </div>
                     </td>
-                    <td className="hidden px-4 py-3 text-slate-400 md:table-cell">{event.city}</td>
-                    <td className="hidden px-4 py-3 text-slate-400 lg:table-cell">
+                    <td className="text-muted-foreground hidden px-4 py-3 md:table-cell">
+                      {event.city}
+                    </td>
+                    <td className="text-muted-foreground hidden px-4 py-3 lg:table-cell">
                       {DEPARTMENT_LABELS[event.department] || event.department}
                     </td>
-                    <td className="hidden px-4 py-3 text-slate-400 md:table-cell">
+                    <td className="text-muted-foreground hidden px-4 py-3 md:table-cell">
                       {CATEGORY_LABELS[event.category] || event.category}
                     </td>
-                    <td className="hidden px-4 py-3 text-slate-400 lg:table-cell">
+                    <td className="text-muted-foreground hidden px-4 py-3 lg:table-cell">
                       {formatDate(event.dateStart)}
                     </td>
                     <td className="px-4 py-3 text-center">
@@ -354,7 +402,7 @@ export const AdminEventsPage = ({
                         </span>
                       ) : (
                         <span
-                          className="inline-flex items-center gap-1 text-slate-500"
+                          className="text-muted-foreground inline-flex items-center gap-1"
                           aria-label="Brouillon"
                         >
                           <EyeOff className="h-3.5 w-3.5" />
@@ -373,39 +421,40 @@ export const AdminEventsPage = ({
                             <Pencil className="h-3.5 w-3.5" />
                           </Button>
                         </Link>
-                        <AlertDialog>
-                          <AlertDialogTrigger
-                            render={
-                              <Button
-                                variant="ghost"
-                                size="icon-sm"
-                                className="text-red-400 hover:text-red-300"
-                                aria-label={`Supprimer ${event.titleFr}`}
-                              />
-                            }
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Supprimer l&apos;événement</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Êtes-vous sûr de vouloir supprimer &quot;{event.titleFr}&quot; ?
-                                Cette action est irréversible.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Annuler</AlertDialogCancel>
-                              <AlertDialogAction
-                                variant="destructive"
-                                onClick={() => handleDelete(event.id)}
-                                disabled={isDeleting === event.id}
-                              >
-                                {isDeleting === event.id ? "Suppression..." : "Supprimer"}
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                        {event.published && (
+                          <AlertDialog>
+                            <AlertDialogTrigger
+                              render={
+                                <Button
+                                  variant="ghost"
+                                  size="icon-sm"
+                                  className="text-orange-400 hover:text-orange-300"
+                                  aria-label={`Dépublier ${event.titleFr}`}
+                                />
+                              }
+                            >
+                              <EyeOff className="h-3.5 w-3.5" />
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Dépublier l&apos;événement</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  &quot;{event.titleFr}&quot; ne sera plus visible sur le site. Il
+                                  reste dans l&apos;administration et peut être republié.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleUnpublish(event.id)}
+                                  disabled={isUnpublishing === event.id}
+                                >
+                                  {isUnpublishing === event.id ? "Dépublication…" : "Dépublier"}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -417,23 +466,20 @@ export const AdminEventsPage = ({
           <AdminPagination
             currentPage={page}
             totalPages={totalPages}
-            baseUrl="/admin/events"
-            searchParams={{
-              search: search || "",
-              status: status || "",
-              department: department || "",
-              category: category || "",
-            }}
+            baseUrl={BASE_URL}
+            searchParams={Object.fromEntries(
+              Object.entries(params).map(([key, value]) => [key, String(value)])
+            )}
           />
         </>
       )}
 
       {selectedIds.size > 0 && (
-        <div className="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-4 rounded-xl border border-white/10 bg-slate-900/95 px-6 py-3 shadow-2xl backdrop-blur-xl">
+        <div className="bg-background/95 fixed bottom-6 left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-max -translate-x-1/2 flex-wrap items-center justify-center gap-3 rounded-xl border border-white/10 px-4 py-3 shadow-2xl backdrop-blur-xl">
           <span className="text-sm font-medium text-white">
             {selectedIds.size} sélectionné{selectedIds.size > 1 ? "s" : ""}
           </span>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap justify-center gap-2">
             <Button
               type="button"
               variant="outline"
@@ -443,30 +489,59 @@ export const AdminEventsPage = ({
             >
               Annuler
             </Button>
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => runBulk("publish", publishEvents)}
+              disabled={bulkAction !== null}
+              className="bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30"
+            >
+              <Eye className="size-3.5" aria-hidden="true" />
+              {bulkAction === "publish" ? "Publication…" : "Publier"}
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => runBulk("feature", (ids) => setEventsFeatured(ids, true))}
+              disabled={bulkAction !== null}
+              className="bg-amber-500/20 text-amber-300 hover:bg-amber-500/30"
+            >
+              <Star className="size-3.5" aria-hidden="true" />
+              Mettre à la une
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => runBulk("unfeature", (ids) => setEventsFeatured(ids, false))}
+              disabled={bulkAction !== null}
+              className="bg-white/10 text-white hover:bg-white/20"
+            >
+              <StarOff className="size-3.5" aria-hidden="true" />
+              Retirer de la une
+            </Button>
             <AlertDialog>
               <AlertDialogTrigger
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90 inline-flex h-7 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium disabled:opacity-50"
-                disabled={isBulkDeleting}
+                className="inline-flex h-7 items-center gap-1.5 rounded-md bg-orange-500/20 px-2.5 text-sm font-medium text-orange-300 hover:bg-orange-500/30 disabled:opacity-50"
+                disabled={bulkAction !== null}
               >
-                <Trash2 className="size-3.5" />
-                Supprimer
+                <EyeOff className="size-3.5" aria-hidden="true" />
+                Dépublier
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Supprimer les événements</AlertDialogTitle>
+                  <AlertDialogTitle>Dépublier les événements</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Êtes-vous sûr de vouloir supprimer {selectedIds.size} événement
-                    {selectedIds.size > 1 ? "s" : ""} ? Cette action est irréversible.
+                    Les événements publiés de la sélection ne seront plus visibles sur le site. Ils
+                    restent dans l&apos;administration et peuvent être republiés.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Annuler</AlertDialogCancel>
                   <AlertDialogAction
-                    variant="destructive"
-                    onClick={handleBulkDelete}
-                    disabled={isBulkDeleting}
+                    onClick={() => runBulk("unpublish", unpublishEvents)}
+                    disabled={bulkAction !== null}
                   >
-                    {isBulkDeleting ? "Suppression..." : "Supprimer"}
+                    {bulkAction === "unpublish" ? "Dépublication…" : "Dépublier"}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

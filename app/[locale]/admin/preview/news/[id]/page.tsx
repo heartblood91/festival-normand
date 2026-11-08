@@ -35,7 +35,7 @@ const NewsPreviewPage = async ({ params }: NewsPreviewPageProps) => {
   }
 
   const article = {
-    ...localizeEntity(rawArticle, locale, ["title", "excerpt", "content"]),
+    ...localizeEntity(rawArticle, locale, ["title", "excerpt", "content", "coverImageAlt"]),
     publishedAt: rawArticle.publishedAt?.toISOString() ?? null,
   }
 
@@ -71,7 +71,7 @@ const NewsPreviewPage = async ({ params }: NewsPreviewPageProps) => {
           <div className="from-primary/20 to-primary/5 relative mb-8 aspect-[16/9] w-full overflow-hidden rounded-xl bg-gradient-to-br">
             <Image
               src={article.coverImage}
-              alt={article.title}
+              alt={article.coverImageAlt || article.title}
               fill
               sizes="(max-width: 1024px) 100vw, 896px"
               className="object-cover"

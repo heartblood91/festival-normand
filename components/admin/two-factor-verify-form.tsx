@@ -38,7 +38,7 @@ export const TwoFactorVerifyForm = () => {
         <CardTitle className="text-white">
           {mode === "totp" ? "Code à 6 chiffres" : "Code de secours"}
         </CardTitle>
-        <CardDescription className="text-slate-400">
+        <CardDescription className="text-muted-foreground">
           {mode === "totp"
             ? "Ouvrez votre application d'authentification et saisissez le code."
             : "Utilisez l'un des codes de secours sauvegardés lors de l'activation."}
@@ -47,7 +47,7 @@ export const TwoFactorVerifyForm = () => {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="code" className="text-slate-300">
+            <Label htmlFor="code" className="text-muted-foreground">
               {mode === "totp" ? "Code" : "Code de secours"}
             </Label>
             <Input
@@ -68,7 +68,7 @@ export const TwoFactorVerifyForm = () => {
           <Button
             type="submit"
             disabled={loading || !code}
-            className="w-full bg-amber-500 text-slate-950 hover:bg-amber-400"
+            className="text-primary-foreground w-full bg-amber-500 hover:bg-amber-400"
           >
             {loading ? "Vérification…" : "Valider"}
           </Button>
@@ -80,7 +80,7 @@ export const TwoFactorVerifyForm = () => {
               setMode(mode === "totp" ? "backup" : "totp")
               setCode("")
             }}
-            className="text-sm text-slate-400 transition-colors hover:text-amber-500"
+            className="text-muted-foreground text-sm transition-colors hover:text-amber-500"
           >
             {mode === "totp"
               ? "Utiliser un code de secours à la place"

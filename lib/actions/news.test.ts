@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
-const { mockPrisma } = vi.hoisted(() => ({
+const { mockPrisma, mockRequireRole } = vi.hoisted(() => ({
   mockPrisma: {
     news: {
       findMany: vi.fn(),
@@ -13,9 +13,21 @@ const { mockPrisma } = vi.hoisted(() => ({
     },
     $queryRawUnsafe: vi.fn().mockResolvedValue([]),
   },
+  mockRequireRole: vi.fn(),
 }))
 
+mockRequireRole.mockResolvedValue({
+  id: "admin-1",
+  name: "Admin",
+  email: "admin@test.fr",
+  role: "ADMIN",
+})
+
 vi.mock("@/lib/prisma", () => ({ prisma: mockPrisma }))
+vi.mock("@/lib/rbac", () => ({
+  requireRole: mockRequireRole,
+  getAuthenticatedUser: mockRequireRole,
+}))
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
 
 import { createNews, updateNews, deleteNews, getAdminNews, getAdminNewsById } from "./news"
@@ -227,5 +239,42 @@ describe("getAdminNewsById", () => {
     const result = await getAdminNewsById("non-existent")
 
     expect(result).toBeNull()
+  })
+})
+
+describe("auth guards", () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockRequireRole.mockResolvedValue({
+      id: "admin-1",
+      name: "Admin",
+      email: "admin@test.fr",
+      role: "ADMIN",
+    })
+  })
+
+  it("createNews does not touch the DB when unauthenticated", async () => {
+    mockRequireRole.mockRejectedValueOnce(new Error("Unauthorized: not authenticated"))
+
+    const result = await createNews(createFormData(validNewsData))
+
+    expect(result.success).toBe(false)
+    expect(mockPrisma.news.create).not.toHaveBeenCalled()
+  })
+
+  it("deleteNews does not touch the DB when unauthenticated", async () => {
+    mockRequireRole.mockRejectedValueOnce(new Error("Unauthorized: not authenticated"))
+
+    const result = await deleteNews("any-id")
+
+    expect(result.success).toBe(false)
+    expect(mockPrisma.news.delete).not.toHaveBeenCalled()
+  })
+
+  it("getAdminNews throws when unauthenticated", async () => {
+    mockRequireRole.mockRejectedValueOnce(new Error("Unauthorized: not authenticated"))
+
+    await expect(getAdminNews()).rejects.toThrow("Unauthorized")
+    expect(mockPrisma.news.findMany).not.toHaveBeenCalled()
   })
 })

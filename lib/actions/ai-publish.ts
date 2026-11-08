@@ -1,5 +1,9 @@
 "use server"
 
+import { requireRole } from "@/lib/rbac"
+import { chatCompletion, extractJson, isAiConfigured } from "@/lib/ai/openrouter"
+import { cleanAltProposal, resolveImageUrl } from "@/lib/admin/alt-text"
+
 export type SEOSuggestion = {
   type: "heading" | "meta" | "keyword" | "structure"
   message: string
@@ -18,28 +22,14 @@ export type SpellingCorrection = {
   context: string
 }
 
-const callOpenRouter = async (prompt: string): Promise<string> => {
-  const apiKey = process.env.OPENROUTER_API_KEY
-  if (!apiKey) throw new Error("OPENROUTER_API_KEY not configured")
-
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "google/gemini-flash-2.0",
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.2,
-    }),
-  })
-
-  if (!response.ok) throw new Error(`OpenRouter API error: ${response.status}`)
-
-  const data = await response.json()
-  return data.choices[0].message.content.trim()
+/** Lets the admin say "AI unavailable" instead of silently showing no issues. */
+export const getAiAvailability = async (): Promise<{ available: boolean }> => {
+  await requireRole("EDITOR")
+  return { available: isAiConfigured() }
 }
+
+const callOpenRouter = (prompt: string): Promise<string> =>
+  chatCompletion([{ role: "user", content: prompt }])
 
 export const checkSEO = async (
   title: string,
@@ -47,6 +37,7 @@ export const checkSEO = async (
   locale: string
 ): Promise<SEOSuggestion[]> => {
   try {
+    await requireRole("EDITOR")
     const prompt = `Analyze this ${locale === "fr" ? "French" : "English"} content for SEO issues. Check: heading hierarchy (should not have h1, should start at h2 minimum), meta description quality (50-160 characters), keyword usage, content structure (proper sections, clear hierarchy).
 
 Title: ${title}
@@ -63,7 +54,7 @@ Example format:
 Return empty array [] if no issues found.`
 
     const response = await callOpenRouter(prompt)
-    const parsed = JSON.parse(response)
+    const parsed = extractJson<unknown>(response)
     return Array.isArray(parsed) ? parsed : []
   } catch {
     return []
@@ -72,6 +63,7 @@ Return empty array [] if no issues found.`
 
 export const checkAccessibility = async (content: string): Promise<A11ySuggestion[]> => {
   try {
+    await requireRole("EDITOR")
     const prompt = `Analyze this HTML/markdown content for WCAG 2.1 accessibility issues. Check:
 1. Heading order (h1 should be first, then h2, h3 in sequence - no skipping levels)
 2. Images have alt text descriptions
@@ -92,7 +84,7 @@ Example format:
 Return empty array [] if no issues found.`
 
     const response = await callOpenRouter(prompt)
-    const parsed = JSON.parse(response)
+    const parsed = extractJson<unknown>(response)
     return Array.isArray(parsed) ? parsed : []
   } catch {
     return []
@@ -104,6 +96,7 @@ export const checkSpelling = async (
   locale: string
 ): Promise<SpellingCorrection[]> => {
   try {
+    await requireRole("EDITOR")
     const prompt = `Check this ${locale === "fr" ? "French" : "English"} text for spelling and grammar errors.
 
 Text: ${content}
@@ -119,7 +112,7 @@ Example format:
 Return empty array [] if no errors found.`
 
     const response = await callOpenRouter(prompt)
-    const parsed = JSON.parse(response)
+    const parsed = extractJson<unknown>(response)
     return Array.isArray(parsed) ? parsed : []
   } catch {
     return []
@@ -132,6 +125,7 @@ export const translateMultipleFields = async (
   toLang: string
 ): Promise<Record<string, string>> => {
   try {
+    await requireRole("EDITOR")
     const entries = Object.entries(fields)
       .filter(([_, v]) => v?.trim())
       .map(([k, v]) => `${k}: ${v}`)
@@ -152,9 +146,49 @@ Example format:
 Return ONLY valid JSON, no other text.`
 
     const response = await callOpenRouter(prompt)
-    const parsed = JSON.parse(response)
-    return typeof parsed === "object" ? parsed : {}
+    const parsed = extractJson<unknown>(response)
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? (parsed as Record<string, string>)
+      : {}
   } catch {
     return {}
+  }
+}
+
+export type AltTextProposal = { alt: string } | { error: string }
+
+/**
+ * Proposes a French text alternative for an image; the editor reviews it
+ * before it is used. The model fetches the image itself: only public web URLs
+ * are sent, never local files.
+ */
+export const proposeAltText = async (
+  imageUrl: string,
+  context: string
+): Promise<AltTextProposal> => {
+  await requireRole("EDITOR")
+  if (!isAiConfigured()) return { error: "IA indisponible (clé OpenRouter non configurée)" }
+  const url = resolveImageUrl(imageUrl, process.env.NEXT_PUBLIC_SITE_URL ?? "")
+  if (!url) return { error: "Cette image n'est pas accessible publiquement." }
+
+  try {
+    const answer = await chatCompletion([
+      {
+        role: "system",
+        content:
+          "Tu rédiges des textes alternatifs d'images pour un site public (RGAA). Réponds uniquement par le texte alternatif, en français, une phrase de moins de 150 caractères, sans commencer par « Image de » ou « Photo de ». Décris ce qui est utile pour comprendre la page : lieu, monument, ambiance lumineuse. Ne devine pas de nom de lieu qui n'est pas dans le contexte.",
+      },
+      {
+        role: "user",
+        content: [
+          { type: "text", text: `Contexte de la page : ${context.slice(0, 500)}` },
+          { type: "image_url", image_url: { url } },
+        ],
+      },
+    ])
+    const alt = cleanAltProposal(answer)
+    return alt ? { alt } : { error: "Aucune proposition n'a été générée." }
+  } catch {
+    return { error: "La proposition a échoué. Réessayez plus tard." }
   }
 }

@@ -7,44 +7,49 @@ test.describe("Inscription page", () => {
     await expect(page).toHaveTitle(/Comment vous inscrire|Inscr/)
   })
 
-  test("displays inscription heading", async ({ page }) => {
+  // Page copy is edited in the admin, so assert structure rather than wording.
+  test("displays a single inscription heading", async ({ page }) => {
     await page.goto("/inscription")
 
-    await expect(
-      page.getByRole("heading", { name: /Comment vous inscrire/, level: 1 })
-    ).toBeVisible()
+    await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1)
+    await expect(page.getByRole("heading", { level: 1, name: /inscri/i })).toBeVisible()
   })
 
-  test("displays inscription details", async ({ page }) => {
+  test("explains how to register", async ({ page }) => {
     await page.goto("/inscription")
 
-    await expect(page.getByText(/Vous êtes un particulier/)).toBeVisible()
+    await expect(page.getByRole("heading", { level: 2, name: /inscri/i }).first()).toBeVisible()
   })
 
-  test("displays registration opening date", async ({ page }) => {
+  test("shows the three registration steps first", async ({ page }) => {
     await page.goto("/inscription")
 
-    await expect(page.getByText(/17 novembre 2025/)).toBeVisible()
+    const steps = page.getByRole("region", { name: /en 3 étapes/ })
+    await expect(steps.getByRole("listitem")).toHaveCount(3)
+    await steps.getByRole("link", { name: /Choisissez votre département/ }).click()
+    await expect(page).toHaveURL(/#registration-links-heading/)
   })
 
-  test("renders tools section", async ({ page }) => {
+  test("offers one card per department, opening its form in a new tab", async ({ page }) => {
     await page.goto("/inscription")
 
-    await expect(
-      page.getByRole("heading", { name: /Différents outils pour organiser votre manifestation/ })
-    ).toBeVisible()
-  })
-
-  test("renders inscription section heading", async ({ page }) => {
-    await page.goto("/inscription")
-
-    await expect(page.getByRole("heading", { name: /Inscrivez-vous/ })).toBeVisible()
+    const departments = page.getByRole("region", { name: "Choisissez votre département" })
+    const cards = departments.getByRole("listitem")
+    await expect(cards).toHaveCount(5)
+    for (const name of ["Calvados", "Eure", "Manche", "Orne", "Seine-Maritime"]) {
+      await expect(cards.filter({ hasText: name })).toHaveCount(1)
+    }
+    const links = departments.getByRole("link")
+    expect(await links.count()).toBeGreaterThanOrEqual(1)
+    await expect(links.first()).toHaveAttribute("href", /^https?:\/\//)
+    await expect(links.first()).toHaveAttribute("target", "_blank")
+    await expect(links.first()).toHaveAccessibleName(/nouvel onglet/)
   })
 
   test("page is accessible via header CTA button", async ({ page }) => {
     await page.goto("/")
 
-    const ctaLink = page.locator("header").getByRole("link", { name: /Inscrivez votre événement/ })
+    const ctaLink = page.locator("header").getByRole("link", { name: /Inscrire un événement/ })
     await ctaLink.click()
 
     await expect(page).toHaveURL(/\/inscription/)

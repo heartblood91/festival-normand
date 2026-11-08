@@ -246,7 +246,10 @@ export const setupAccount = async (input: {
     return { success: true, message: "Mot de passe défini. Vous pouvez vous connecter." }
   } catch (error) {
     console.error("Setup account error:", error)
-    return { success: false, message: "Une erreur est survenue lors de la configuration du compte." }
+    return {
+      success: false,
+      message: "Une erreur est survenue lors de la configuration du compte.",
+    }
   }
 }
 

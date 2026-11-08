@@ -11,8 +11,14 @@ import {
   FileEdit,
   EyeOff,
   Info,
+  ListTodo,
+  Languages,
+  ImageOff,
+  MapPinOff,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { SyncStatusCard } from "@/components/admin/sync-status-card"
+import type { SyncRunSummary } from "@/lib/tourinsoft/sync"
 
 type AdminDashboardProps = {
   user: {
@@ -30,7 +36,15 @@ type AdminDashboardProps = {
     depublishedEvents: number
     depublishedNews: number
   }
+  todo: { missingEn: number; missingAlt: number; missingGps: number }
+  lastSyncRun: SyncRunSummary | null
 }
+
+const todoRows = [
+  { key: "missingEn", filter: "missing-en", label: "todoMissingEn", icon: Languages },
+  { key: "missingAlt", filter: "missing-alt", label: "todoMissingAlt", icon: ImageOff },
+  { key: "missingGps", filter: "missing-gps", label: "todoMissingGps", icon: MapPinOff },
+] as const
 
 const statCards = [
   { key: "totalEvents", icon: Calendar, color: "text-amber-500", bgColor: "bg-amber-500/10" },
@@ -44,7 +58,7 @@ const statCards = [
   { key: "totalPages", icon: FileText, color: "text-purple-400", bgColor: "bg-purple-400/10" },
 ] as const
 
-export const AdminDashboard = ({ user, stats }: AdminDashboardProps) => {
+export const AdminDashboard = ({ user, stats, todo, lastSyncRun }: AdminDashboardProps) => {
   const t = useTranslations("admin")
   const locale = useLocale()
 
@@ -201,6 +215,38 @@ export const AdminDashboard = ({ user, stats }: AdminDashboardProps) => {
           </div>
         </div>
       </div>
+
+      {/* Events to complete — each row opens the matching list filter */}
+      <section
+        aria-labelledby="dashboard-todo"
+        className="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl"
+      >
+        <h2
+          id="dashboard-todo"
+          className="text-foreground mb-2 flex items-center gap-2 font-serif text-lg font-bold"
+        >
+          <ListTodo className="size-5 text-amber-500" aria-hidden="true" />
+          {t("dashboard.todo")}
+        </h2>
+        <p className="text-muted-foreground mb-4 text-xs">{t("dashboard.todoDescription")}</p>
+        <div className="grid gap-3 md:grid-cols-3">
+          {todoRows.map(({ key, filter, label, icon: Icon }) => (
+            <Link
+              key={key}
+              href={`/${locale}/admin/events?todo=${filter}`}
+              className="flex min-h-11 items-center justify-between gap-3 rounded-lg bg-white/5 px-4 py-3 transition-all hover:bg-white/10"
+            >
+              <span className="text-foreground flex items-center gap-3 text-sm">
+                <Icon className="size-4 text-amber-500" aria-hidden="true" />
+                {t(`dashboard.${label}`)}
+              </span>
+              <span className="text-sm font-bold text-amber-500">{todo[key]}</span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <SyncStatusCard lastRun={lastSyncRun} />
     </div>
   )
 }

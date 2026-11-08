@@ -104,11 +104,11 @@ export const AdminUsersPage = ({ users, currentUserId, emailEnabled }: AdminUser
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl p-4 md:p-8">
+    <div className="mx-auto w-full max-w-6xl">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
           <h1 className="font-serif text-2xl font-bold text-amber-500">Utilisateurs</h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="text-muted-foreground mt-1 text-sm">
             {users.length} résultat{users.length !== 1 ? "s" : ""}
           </p>
         </div>
@@ -128,22 +128,22 @@ export const AdminUsersPage = ({ users, currentUserId, emailEnabled }: AdminUser
 
       {users.length === 0 ? (
         <div className="rounded-xl border border-white/10 bg-white/5 p-12 text-center">
-          <p className="text-slate-400">Aucun utilisateur pour le moment.</p>
+          <p className="text-muted-foreground">Aucun utilisateur pour le moment.</p>
         </div>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-white/10">
           <table className="w-full text-sm" role="table">
             <thead>
               <tr className="border-b border-white/10 bg-white/5">
-                <th className="px-4 py-3 text-left font-medium text-slate-300">Nom</th>
-                <th className="hidden px-4 py-3 text-left font-medium text-slate-300 md:table-cell">
+                <th className="text-muted-foreground px-4 py-3 text-left font-medium">Nom</th>
+                <th className="text-muted-foreground hidden px-4 py-3 text-left font-medium md:table-cell">
                   Email
                 </th>
-                <th className="px-4 py-3 text-left font-medium text-slate-300">Rôle</th>
-                <th className="hidden px-4 py-3 text-left font-medium text-slate-300 lg:table-cell">
+                <th className="text-muted-foreground px-4 py-3 text-left font-medium">Rôle</th>
+                <th className="text-muted-foreground hidden px-4 py-3 text-left font-medium lg:table-cell">
                   Créé le
                 </th>
-                <th className="px-4 py-3 text-right font-medium text-slate-300">Actions</th>
+                <th className="text-muted-foreground px-4 py-3 text-right font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -160,7 +160,9 @@ export const AdminUsersPage = ({ users, currentUserId, emailEnabled }: AdminUser
                       )}
                     </div>
                   </td>
-                  <td className="hidden px-4 py-3 text-slate-400 md:table-cell">{user.email}</td>
+                  <td className="text-muted-foreground hidden px-4 py-3 md:table-cell">
+                    {user.email}
+                  </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       {user.role === "ADMIN" ? (
@@ -176,7 +178,7 @@ export const AdminUsersPage = ({ users, currentUserId, emailEnabled }: AdminUser
                       )}
                     </div>
                   </td>
-                  <td className="hidden px-4 py-3 text-slate-400 lg:table-cell">
+                  <td className="text-muted-foreground hidden px-4 py-3 lg:table-cell">
                     {formatDate(user.createdAt)}
                   </td>
                   <td className="px-4 py-3 text-right">

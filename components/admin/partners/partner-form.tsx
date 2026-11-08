@@ -85,7 +85,7 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
                 className={`rounded px-3 py-1 text-sm font-medium transition-colors ${
                   formLocale === "fr"
                     ? "bg-amber-500 text-white"
-                    : "text-slate-400 hover:text-slate-300"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 FR
@@ -96,7 +96,7 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
                 className={`rounded px-3 py-1 text-sm font-medium transition-colors ${
                   formLocale === "en"
                     ? "bg-amber-500 text-white"
-                    : "text-slate-400 hover:text-slate-300"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 EN
@@ -107,7 +107,7 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
         <CardContent className="space-y-4">
           {formLocale === "fr" ? (
             <div>
-              <Label htmlFor="nameFr" className="text-slate-300">
+              <Label htmlFor="nameFr" className="text-muted-foreground">
                 Nom *
               </Label>
               <Input
@@ -129,7 +129,7 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
           ) : (
             <>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-300">Traduction automatique</span>
+                <span className="text-muted-foreground text-sm">Traduction automatique</span>
                 <TranslateButton
                   sourceFields={{
                     nameFr,
@@ -139,7 +139,7 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
               </div>
 
               <div>
-                <Label htmlFor="nameEn" className="text-slate-300">
+                <Label htmlFor="nameEn" className="text-muted-foreground">
                   Name
                 </Label>
                 <Input
@@ -160,12 +160,12 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
           )}
 
           <div>
-            <Label className="mb-2 block text-slate-300">Logo</Label>
+            <Label className="text-muted-foreground mb-2 block">Logo</Label>
             <ImageUpload value={logo} onChange={setLogo} preset="logo" />
           </div>
 
           <div>
-            <Label htmlFor="website" className="text-slate-300">
+            <Label htmlFor="website" className="text-muted-foreground">
               Site web
             </Label>
             <Input
@@ -174,7 +174,7 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
               type="url"
               defaultValue={partner?.website ?? ""}
               placeholder="https://..."
-              className="mt-1 border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+              className="placeholder:text-muted-foreground mt-1 border-white/10 bg-white/5 text-white"
               aria-invalid={!!errors.website}
               aria-describedby={errors.website ? "website-error" : undefined}
             />
@@ -186,7 +186,7 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
           </div>
 
           <div>
-            <Label htmlFor="order" className="text-slate-300">
+            <Label htmlFor="order" className="text-muted-foreground">
               Ordre d&apos;affichage
             </Label>
             <Input

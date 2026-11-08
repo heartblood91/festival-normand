@@ -1,8 +1,12 @@
 import { cachedQuery } from "@/lib/cache"
 import { prisma } from "@/lib/prisma"
+import { publicEventWhere } from "@/lib/queries/visibility"
 import { localizeEntity } from "@/lib/i18n/db"
 import { searchEventIds } from "@/lib/search"
 import { isInNormandyBounds, normandyBoundsWhere } from "@/lib/geo/normandy"
+import { getCurrentEdition } from "@/lib/queries/edition"
+import { parseNightCodes } from "@/lib/festival/edition"
+import { themePin } from "@/lib/themes/marker"
 import type { Locale } from "@/lib/i18n/config"
 import type { Department, Category, Prisma } from "@prisma/client"
 
@@ -11,18 +15,15 @@ const ITEMS_PER_PAGE = 12
 /** Within this distance from the user, "Près de moi" is a strict filter. */
 export const NEARBY_RADIUS_KM = 50
 
-const FESTIVAL_DATES: Record<string, string> = {
-  "29": "2026-05-29",
-  "30": "2026-05-30",
-  "31": "2026-05-31",
-}
-
 export type EventFilters = {
   search?: string
-  date?: string
+  /** Night codes (day of month) of the current edition, e.g. ["21", "23"] */
+  dates?: string[]
   category?: Category
   department?: Department
   accessible?: boolean
+  /** Theme slug */
+  theme?: string
   page?: number
   lat?: number
   lng?: number
@@ -38,7 +39,7 @@ const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
 
-const EVENT_LIST_SELECT = {
+export const EVENT_LIST_SELECT = {
   id: true,
   titleFr: true,
   titleEn: true,
@@ -52,17 +53,32 @@ const EVENT_LIST_SELECT = {
   timeStart: true,
   timeEnd: true,
   coverImage: true,
+  coverImageAltFr: true,
+  coverImageAltEn: true,
   accessible: true,
   latitude: true,
   longitude: true,
+  fundraisingUrl: true,
 } as const
+
+/** Events overlapping at least one of the given local calendar days. */
+const overlapsAnyDay = (days: string[]): Prisma.EventWhereInput => ({
+  OR: days.map((day) => {
+    const dayStart = new Date(`${day}T00:00:00`)
+    const dayEnd = new Date(`${day}T23:59:59`)
+    return {
+      dateStart: { lte: dayEnd },
+      OR: [{ dateEnd: { gte: dayStart } }, { dateEnd: null, dateStart: { gte: dayStart } }],
+    }
+  }),
+})
 
 const buildFilterWhere = async (
   filters: EventFilters,
   overrides?: { key: string; value: string }
 ): Promise<Prisma.EventWhereInput> => {
-  const { search, date, accessible } = filters
-  const where: Prisma.EventWhereInput = { published: true }
+  const { search, dates, accessible, theme } = filters
+  const where: Prisma.EventWhereInput = await publicEventWhere()
 
   const dept =
     overrides?.key === "dept"
@@ -80,23 +96,24 @@ const buildFilterWhere = async (
   if (cat) where.category = cat as Category
   if (dept) where.department = dept as Department
   if (accessible) where.accessible = true
+  if (theme) where.themes = { some: { slug: theme } }
 
-  if (date) {
-    const dateStr = FESTIVAL_DATES[date]
-    if (dateStr) {
-      const dayStart = new Date(`${dateStr}T00:00:00`)
-      const dayEnd = new Date(`${dateStr}T23:59:59`)
-      where.dateStart = { lte: dayEnd }
-      where.OR = [{ dateEnd: { gte: dayStart } }, { dateEnd: null, dateStart: { gte: dayStart } }]
-    }
+  const and: Prisma.EventWhereInput[] = []
+
+  if (dates?.length) {
+    const edition = await getCurrentEdition()
+    const days = edition.nights
+      .filter((night) => parseNightCodes(dates, edition).includes(night.code))
+      .map((night) => night.date)
+    if (days.length) and.push(overlapsAnyDay(days))
   }
 
   if (search) {
-    const matchedIds = await searchEventIds(search)
-    where.AND = [
-      ...(Array.isArray(where.AND) ? where.AND : where.AND ? [where.AND] : []),
-      { id: { in: matchedIds } },
-    ]
+    and.push({ id: { in: await searchEventIds(search) } })
+  }
+
+  if (and.length) {
+    where.AND = [...(Array.isArray(where.AND) ? where.AND : where.AND ? [where.AND] : []), ...and]
   }
 
   return where
@@ -115,7 +132,9 @@ export const getEvents = async (filters: EventFilters = {}, locale: Locale = "fr
       const [rawEvents, total] = await Promise.all([
         prisma.event.findMany({
           where,
-          orderBy: isNearby ? undefined : { dateStart: "asc" },
+          // Many events share the same night: without a unique tie-breaker,
+          // OFFSET pagination returns overlapping pages and some events never show.
+          orderBy: isNearby ? undefined : [{ dateStart: "asc" }, { id: "asc" }],
           ...(isNearby ? {} : { skip, take: ITEMS_PER_PAGE }),
           select: EVENT_LIST_SELECT,
         }),
@@ -140,7 +159,7 @@ export const getEvents = async (filters: EventFilters = {}, locale: Locale = "fr
         : rawEvents
 
       const serialized = events.map((e) => ({
-        ...localizeEntity(e, locale, ["title"]),
+        ...localizeEntity(e, locale, ["title", "coverImageAlt"]),
         dateStart: e.dateStart?.toISOString() ?? null,
         dateEnd: e.dateEnd?.toISOString() ?? null,
       }))
@@ -184,7 +203,7 @@ export const getNeighbourEvents = async (
     async () => {
       const candidates = await prisma.event.findMany({
         where: {
-          published: true,
+          ...(await publicEventWhere()),
           slug: { not: excludeSlug },
           ...normandyBoundsWhere,
           NOT: [{ latitude: null }, { longitude: null }],
@@ -197,6 +216,8 @@ export const getNeighbourEvents = async (
           longitude: true,
           city: true,
           category: true,
+          dateStart: true,
+          dateEnd: true,
         },
       })
 
@@ -221,6 +242,8 @@ export const getNeighbourEvents = async (
         longitude: e.longitude as number,
         city: e.city,
         category: e.category,
+        dateStart: e.dateStart?.toISOString() ?? null,
+        dateEnd: e.dateEnd?.toISOString() ?? null,
         distanceKm: Math.round(e.distance * 10) / 10,
       }))
     },
@@ -233,18 +256,27 @@ export type NeighbourEvent = Awaited<ReturnType<typeof getNeighbourEvents>>[numb
 export const getEventBySlug = async (slug: string, locale: Locale = "fr") =>
   cachedQuery(
     async () => {
-      const event = await prisma.event.findUnique({
-        where: { slug, published: true },
+      const event = await prisma.event.findFirst({
+        where: { ...(await publicEventWhere()), slug },
         include: {
           photos: {
             orderBy: { order: "asc" },
             select: { url: true, credit: true, title: true, order: true },
           },
+          themes: {
+            orderBy: [{ order: "asc" }, { nameFr: "asc" }],
+            select: { slug: true, nameFr: true, nameEn: true, color: true },
+          },
         },
       })
       if (!event) return null
       return {
-        ...localizeEntity(event, locale, ["title", "description", "pricing"]),
+        ...localizeEntity(event, locale, ["title", "description", "pricing", "coverImageAlt"]),
+        themes: event.themes.map((theme) => ({
+          slug: theme.slug,
+          name: localizeEntity(theme, locale, ["name"]).name,
+          color: theme.color,
+        })),
         dateStart: event.dateStart?.toISOString() ?? null,
         dateEnd: event.dateEnd?.toISOString() ?? null,
         createdAt: event.createdAt.toISOString(),
@@ -284,12 +316,14 @@ export const getAllFilteredEventsForMap = async (
           timeStart: true,
           city: true,
           coverImage: true,
+          themes: { select: { order: true, color: true, markerImage: true } },
         },
       })
-      return events.map((e) => ({
+      return events.map(({ themes, ...e }) => ({
         ...localizeEntity(e, locale, ["title"]),
         dateStart: e.dateStart?.toISOString() ?? null,
         dateEnd: e.dateEnd?.toISOString() ?? null,
+        pin: themePin(themes),
       }))
     },
     ["events-map", locale, cacheKey],

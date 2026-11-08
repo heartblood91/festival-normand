@@ -1,16 +1,30 @@
 import type { Metadata } from "next"
 import type { Locale } from "@/lib/i18n/config"
-import { HeroSection } from "@/components/home/hero-section"
-import { SearchBar } from "@/components/home/search-bar"
-import { FeaturedEvents } from "@/components/home/featured-events"
-import { NewsCarousel } from "@/components/home/news-carousel"
-import { PartnersSection } from "@/components/home/partners-section"
 import {
   getFeaturedEvents,
   getLatestNews,
   getPartners,
-  getEventCities,
+  getProgrammeTeaser,
+  getHomeStats,
 } from "@/lib/queries/homepage"
+import {
+  editionDateRange,
+  getEditionMode,
+  getCountdownDays,
+  isDuringFestival,
+} from "@/lib/festival/edition"
+import { getCurrentEdition } from "@/lib/queries/edition"
+import { getHomeThemes } from "@/lib/queries/themes"
+import { Hero } from "@/components/home/editorial/hero"
+import { ThreeNights } from "@/components/home/editorial/three-nights"
+import { Quote } from "@/components/home/editorial/quote"
+import { NewsRow } from "@/components/home/editorial/news-row"
+import { Highlights } from "@/components/home/editorial/highlights"
+import { ProgrammeTeaser } from "@/components/home/editorial/programme-teaser"
+import { NormandySection } from "@/components/home/editorial/normandy-section"
+import { Partners } from "@/components/home/editorial/partners"
+import { PastRevive } from "@/components/home/editorial/past-revive"
+import { ThemeSpotlight } from "@/components/home/editorial/theme-spotlight"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
@@ -22,10 +36,11 @@ export const generateMetadata = async ({
   params: Promise<{ locale: string }>
 }): Promise<Metadata> => {
   const { locale } = (await params) as { locale: Locale }
+  const dates = editionDateRange(await getCurrentEdition(), locale)
   const frenchTitle = "Pierres en Lumières — Festival du Patrimoine Normand"
   const englishTitle = "Pierres en Lumières — Festival of Norman Heritage"
-  const frenchDesc = "Découvrez la magie du patrimoine normand en nocturne. 29, 30 & 31 mai 2026."
-  const englishDesc = "Discover the magic of Norman heritage by night. May 29, 30 & 31, 2026."
+  const frenchDesc = `Découvrez la magie du patrimoine normand en nocturne. ${dates}.`
+  const englishDesc = `Discover the magic of Norman heritage by night. ${dates}.`
 
   const title = locale === "en" ? englishTitle : frenchTitle
   const description = locale === "en" ? englishDesc : frenchDesc
@@ -33,16 +48,9 @@ export const generateMetadata = async ({
   return {
     title,
     description,
-    openGraph: {
-      title,
-      description,
-      type: "website",
-    },
+    openGraph: { title, description, type: "website" },
     alternates: {
-      languages: {
-        fr: `${BASE_URL}/fr`,
-        en: `${BASE_URL}/en`,
-      },
+      languages: { fr: `${BASE_URL}/fr`, en: `${BASE_URL}/en` },
     },
   }
 }
@@ -53,20 +61,91 @@ type HomePageProps = {
 
 const HomePage = async ({ params }: HomePageProps) => {
   const { locale } = (await params) as { locale: Locale }
-  const [events, news, partners, cities] = await Promise.all([
-    getFeaturedEvents(locale),
+  const edition = await getCurrentEdition()
+  const mode = getEditionMode(edition)
+
+  const [featured, news, partners, programme, stats, themes] = await Promise.all([
+    getFeaturedEvents(locale, edition),
     getLatestNews(locale),
     getPartners(locale),
-    getEventCities(),
+    getProgrammeTeaser(locale, edition),
+    getHomeStats(edition),
+    getHomeThemes(locale, edition),
   ])
+
+  const hero = (
+    <Hero
+      edition={edition}
+      mode={mode}
+      totalPlaces={stats.totalPlaces}
+      countdownDays={getCountdownDays(edition)}
+      live={isDuringFestival(edition)}
+    />
+  )
+
+  // Sequential editorial markers — advance only for sections that actually
+  // render, so the ¶ NN numbers never skip a number across edition modes.
+  let markerCount = 0
+  const nextMarker = () => String(++markerCount).padStart(2, "0")
+  const hasNews = news.length > 0
+  const hasFeatured = featured.length > 0
+  const hasProgramme = programme.length > 0
+  const hasPartners = partners.length > 0
+  const themeSections = () =>
+    themes.map((theme) => (
+      <ThemeSpotlight
+        key={theme.slug}
+        theme={theme}
+        year={edition.year}
+        markerIndex={nextMarker()}
+      />
+    ))
+
+  if (mode === "bilan") {
+    return (
+      <>
+        {hero}
+        <PastRevive year={edition.year} markerIndex={nextMarker()} />
+        <Quote markerIndex={nextMarker()} />
+        {themeSections()}
+        {hasNews ? <NewsRow news={news} mode={mode} markerIndex={nextMarker()} /> : null}
+        {hasFeatured ? (
+          <Highlights
+            events={featured}
+            mode={mode}
+            year={edition.year}
+            markerIndex={nextMarker()}
+          />
+        ) : null}
+        <NormandySection
+          byDepartment={stats.byDepartment}
+          totalPlaces={stats.totalPlaces}
+          markerIndex={nextMarker()}
+        />
+        {hasPartners ? <Partners partners={partners} markerIndex={nextMarker()} /> : null}
+      </>
+    )
+  }
 
   return (
     <>
-      <HeroSection />
-      <SearchBar cities={cities} />
-      <FeaturedEvents events={events} />
-      <NewsCarousel news={news} />
-      <PartnersSection partners={partners} />
+      {hero}
+      <ThreeNights nights={edition.nights} byNight={stats.byNight} markerIndex={nextMarker()} />
+      <Quote markerIndex={nextMarker()} />
+      {themeSections()}
+      {hasNews ? <NewsRow news={news} mode={mode} markerIndex={nextMarker()} /> : null}
+      {hasFeatured ? (
+        <Highlights events={featured} mode={mode} year={edition.year} markerIndex={nextMarker()} />
+      ) : null}
+      {hasProgramme ? (
+        <ProgrammeTeaser events={programme} total={stats.totalPlaces} markerIndex={nextMarker()} />
+      ) : null}
+      <NormandySection
+        byDepartment={stats.byDepartment}
+        totalPlaces={stats.totalPlaces}
+        markerIndex={nextMarker()}
+      />
+      {hasPartners ? <Partners partners={partners} markerIndex={nextMarker()} /> : null}
     </>
   )
 }

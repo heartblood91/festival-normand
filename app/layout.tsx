@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Inter, Playfair_Display } from "next/font/google"
+import { Inter, Playfair_Display, Fraunces, Cormorant_Garamond, DM_Mono } from "next/font/google"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/react"
 import { cn } from "@/lib/utils"
@@ -17,6 +17,29 @@ const playfair = Playfair_Display({
   display: "swap",
 })
 
+// Editorial "Édito" type system (public pages only).
+// Fraunces = display, Cormorant Garamond = serif body, DM Mono = labels/meta.
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
+  display: "swap",
+  style: ["normal", "italic"],
+  axes: ["opsz", "SOFT"],
+})
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--font-cormorant",
+  weight: ["300", "400", "500", "600"],
+  style: ["normal", "italic"],
+  display: "swap",
+})
+const dmMono = DM_Mono({
+  subsets: ["latin"],
+  variable: "--font-dm-mono",
+  weight: ["300", "400", "500"],
+  display: "swap",
+})
+
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
 export const metadata: Metadata = {
@@ -25,13 +48,13 @@ export const metadata: Metadata = {
     default: "Pierres en Lumières - Festival du Patrimoine Normand",
     template: "%s | Pierres en Lumières",
   },
-  description: "Découvrez la magie du patrimoine normand en nocturne. 29, 30 & 31 mai 2026.",
+  description: "Découvrez la magie du patrimoine normand en nocturne.",
   openGraph: {
     type: "website",
     siteName: "Pierres en Lumières",
     title: "Pierres en Lumières - Festival du Patrimoine Normand",
     description:
-      "Découvrez la magie du patrimoine normand en nocturne. Illuminations, expositions, animations et visites du patrimoine normand. 29, 30 & 31 mai 2026.",
+      "Découvrez la magie du patrimoine normand en nocturne. Illuminations, expositions, animations et visites du patrimoine normand.",
   },
   twitter: {
     card: "summary_large_image",
@@ -49,7 +72,13 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => (
     lang="fr"
     dir="ltr"
     suppressHydrationWarning
-    className={cn(inter.variable, playfair.variable)}
+    className={cn(
+      inter.variable,
+      playfair.variable,
+      fraunces.variable,
+      cormorant.variable,
+      dmMono.variable
+    )}
   >
     <head>
       <link rel="preconnect" href="https://pierresenlumieres.fr" />

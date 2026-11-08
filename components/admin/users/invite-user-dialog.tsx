@@ -105,7 +105,7 @@ export const InviteUserDialog = ({ open, onOpenChange, emailEnabled }: InviteUse
       )}
 
       <div className="space-y-2">
-        <label htmlFor="invite-email" className="block text-sm font-medium text-slate-200">
+        <label htmlFor="invite-email" className="text-foreground block text-sm font-medium">
           Email
         </label>
         <Input
@@ -115,14 +115,14 @@ export const InviteUserDialog = ({ open, onOpenChange, emailEnabled }: InviteUse
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
           disabled={isSubmitting}
-          className="border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+          className="placeholder:text-muted-foreground border-white/10 bg-white/5 text-white"
           required
           autoComplete="email"
         />
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="invite-role" className="block text-sm font-medium text-slate-200">
+        <label htmlFor="invite-role" className="text-foreground block text-sm font-medium">
           Rôle
         </label>
         <Select
@@ -141,12 +141,7 @@ export const InviteUserDialog = ({ open, onOpenChange, emailEnabled }: InviteUse
       </div>
 
       <DialogFooter className="gap-2 sm:gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleClose}
-          disabled={isSubmitting}
-        >
+        <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting}>
           Annuler
         </Button>
         <Button type="submit" disabled={isSubmitting}>
@@ -166,11 +161,11 @@ export const InviteUserDialog = ({ open, onOpenChange, emailEnabled }: InviteUse
   const renderSetupUrl = () => (
     <div className="space-y-4">
       <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-100">
-        Compte créé. Partagez le lien ci-dessous à <strong>{form.email}</strong>{" "}
-        — il expire dans 24 heures.
+        Compte créé. Partagez le lien ci-dessous à <strong>{form.email}</strong> — il expire dans 24
+        heures.
       </div>
       <div className="space-y-2">
-        <label htmlFor="setup-url" className="block text-sm font-medium text-slate-200">
+        <label htmlFor="setup-url" className="text-foreground block text-sm font-medium">
           Lien de configuration
         </label>
         <div className="flex items-stretch gap-2">

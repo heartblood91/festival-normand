@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { publicEventWhere } from "@/lib/queries/visibility"
+import { getCurrentEdition } from "@/lib/queries/edition"
+import { editionDateRange } from "@/lib/festival/edition"
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pierresenlumieres.fr"
 const isProduction = process.env.VERCEL_ENV === "production"
@@ -25,10 +28,11 @@ export const GET = async () => {
     return new NextResponse("Not available in preview/staging.", { status: 404 })
   }
 
+  const eventWhere = await publicEventWhere().catch(() => ({ published: true }))
   const [featuredEvents, upcomingEvents, news, pages] = await Promise.all([
     prisma.event
       .findMany({
-        where: { published: true, featured: true },
+        where: { ...eventWhere, featured: true },
         select: {
           titleFr: true,
           slug: true,
@@ -43,7 +47,7 @@ export const GET = async () => {
       .catch(() => []),
     prisma.event
       .findMany({
-        where: { published: true },
+        where: eventWhere,
         select: {
           titleFr: true,
           slug: true,
@@ -80,13 +84,14 @@ export const GET = async () => {
     SEINE_MARITIME: "Seine-Maritime",
   }
 
+  const edition = await getCurrentEdition()
   const lines = [
     "# Pierres en Lumières",
     "> Festival du patrimoine normand en nocturne. Chaque année fin mai, des centaines de sites patrimoniaux s'illuminent à travers les 5 départements de Normandie.",
     "",
     `Site: ${SITE_URL}`,
     "Langues: Français, English",
-    "Dates: 29, 30 & 31 mai 2026",
+    `Dates: ${editionDateRange(edition, "fr")}`,
     "Région: Normandie (Calvados, Eure, Manche, Orne, Seine-Maritime)",
     "",
     "## Pages",

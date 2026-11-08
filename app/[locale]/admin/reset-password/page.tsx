@@ -20,7 +20,7 @@ const ResetPasswordPage = async ({ searchParams }: Props) => {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <h1 className="font-serif text-3xl font-bold text-amber-500">Pierres en Lumières</h1>
-          <p className="mt-2 text-sm text-slate-400">Définir un nouveau mot de passe</p>
+          <p className="text-muted-foreground mt-2 text-sm">Définir un nouveau mot de passe</p>
         </div>
         <Suspense>
           <ResetPasswordForm token={token} />

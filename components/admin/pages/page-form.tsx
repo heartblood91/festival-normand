@@ -9,12 +9,27 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TiptapEditor } from "@/components/admin/tiptap-editor"
 import { FormActionBar } from "@/components/admin/shared/form-action-bar"
+import { DraftBanner } from "@/components/admin/shared/draft-banner"
+import {
+  LocaleTabs,
+  localePanelProps,
+  type FormLocale,
+} from "@/components/admin/shared/locale-tabs"
+import { useFormDraft } from "@/components/admin/shared/use-form-draft"
 import { createPage, updatePage } from "@/lib/actions/pages"
 import { slugify } from "@/lib/schemas/event"
 import { markdownToHtml, htmlToMarkdown } from "@/lib/utils/markdown"
+import { translateMissingFields } from "@/lib/admin/translate-missing"
+import { draftKey } from "@/lib/admin/form-draft"
+import { localeTabStatus } from "@/lib/admin/form-status"
 import type { Page } from "@prisma/client"
 
 const SYSTEM_SLUGS = ["festival", "inscription", "mentions-legales"]
+
+const LOCALE_FIELDS = {
+  fr: ["titleFr", "contentFr"],
+  en: ["titleEn", "contentEn"],
+}
 
 type PageFormProps = {
   page?: Page
@@ -26,7 +41,7 @@ export const PageForm = ({ page }: PageFormProps) => {
   const formRef = useRef<HTMLFormElement>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string[]>>({})
-  const [formLocale, setFormLocale] = useState<"fr" | "en">("fr")
+  const [formLocale, setFormLocale] = useState<FormLocale>("fr")
   const [slug, setSlug] = useState(page?.slug ?? "")
   const [autoSlug] = useState(!page)
   const [titleFr, setTitleFr] = useState(page?.titleFr ?? "")
@@ -35,6 +50,23 @@ export const PageForm = ({ page }: PageFormProps) => {
   const [contentEn, setContentEn] = useState(markdownToHtml(page?.contentEn ?? ""))
 
   const isSystemPage = page ? SYSTEM_SLUGS.includes(page.slug) : false
+
+  const draftValues: Record<string, string> = { slug, titleFr, titleEn, contentFr, contentEn }
+
+  const { dirty, draft, restoreDraft, discardDraft, markSaved } = useFormDraft({
+    storageKey: draftKey("page", page?.id),
+    formRef,
+    values: draftValues,
+    onRestore: (values) => {
+      setSlug(values.slug ?? slug)
+      setTitleFr(values.titleFr ?? "")
+      setTitleEn(values.titleEn ?? "")
+      setContentFr(values.contentFr ?? "")
+      setContentEn(values.contentEn ?? "")
+    },
+  })
+
+  const tabStatus = localeTabStatus({ fields: LOCALE_FIELDS, errors, values: draftValues })
 
   const handleTitleFrChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,6 +99,7 @@ export const PageForm = ({ page }: PageFormProps) => {
     setIsSubmitting(false)
 
     if (result.success) {
+      markSaved()
       toast.success(result.message)
       router.push("/admin/pages")
       router.refresh()
@@ -74,99 +107,101 @@ export const PageForm = ({ page }: PageFormProps) => {
       toast.error(result.message)
       if (result.errors) {
         setErrors(result.errors)
+        const failed = localeTabStatus({
+          fields: LOCALE_FIELDS,
+          errors: result.errors,
+          values: draftValues,
+        })
+        if (failed.en === "error" && failed.fr !== "error") setFormLocale("en")
       }
     }
   }
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
+    <form ref={formRef} onSubmit={handleSubmit} className="space-y-6 pb-20 md:pb-0">
       <FormActionBar
         previewUrl={page ? `/${locale}/admin/preview/page/${page.id}` : undefined}
-        isPublished={true}
-        onTogglePublish={() => {}}
+        isDirty={dirty}
+        ai={{
+          title: titleFr,
+          content: contentFr,
+          translateMissing: async () => {
+            const filled = await translateMissingFields({
+              title: [titleFr, titleEn],
+              content: [contentFr, contentEn],
+            })
+            if (filled.title) setTitleEn(filled.title)
+            if (filled.content) setContentEn(filled.content)
+            return Object.keys(filled).length
+          },
+        }}
         onSubmit={handleSaveClick}
         isSubmitting={isSubmitting}
         saveLabel={page ? "Mettre à jour" : "Créer la page"}
         backUrl="/admin/pages"
       />
 
+      {draft && <DraftBanner draft={draft} onRestore={restoreDraft} onDiscard={discardDraft} />}
+
       <Card className="border-white/10 bg-white/5">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-white">Informations</CardTitle>
-          <div className="flex items-center gap-2">
-            <div className="inline-flex gap-1 rounded-lg border border-white/10 p-1">
-              <button
-                type="button"
-                onClick={() => setFormLocale("fr")}
-                className={`rounded px-3 py-1 text-sm font-medium transition-colors ${
-                  formLocale === "fr"
-                    ? "bg-amber-500 text-white"
-                    : "text-slate-400 hover:text-slate-300"
-                }`}
-              >
-                FR
-              </button>
-              <button
-                type="button"
-                onClick={() => setFormLocale("en")}
-                className={`rounded px-3 py-1 text-sm font-medium transition-colors ${
-                  formLocale === "en"
-                    ? "bg-amber-500 text-white"
-                    : "text-slate-400 hover:text-slate-300"
-                }`}
-              >
-                EN
-              </button>
-            </div>
-          </div>
+          <LocaleTabs
+            value={formLocale}
+            onChange={setFormLocale}
+            status={tabStatus}
+            panelIds={["page-panel-general", "page-panel-content"]}
+          />
         </CardHeader>
         <CardContent className="space-y-4">
-          {formLocale === "fr" ? (
-            <div>
-              <Label htmlFor="titleFr" className="text-slate-300">
-                Titre *
-              </Label>
-              <Input
-                id="titleFr"
-                name="titleFr"
-                value={titleFr}
-                onChange={handleTitleFrChange}
-                required
-                className="mt-1 border-white/10 bg-white/5 text-white"
-                aria-invalid={!!errors.titleFr}
-                aria-describedby={errors.titleFr ? "titleFr-error" : undefined}
-              />
-              {errors.titleFr && (
-                <p id="titleFr-error" className="mt-1 text-sm text-red-400">
-                  {errors.titleFr[0]}
-                </p>
-              )}
-            </div>
-          ) : (
-            <>
+          <div {...localePanelProps("page-panel-general", formLocale)}>
+            {formLocale === "fr" ? (
               <div>
-                <Label htmlFor="titleEn" className="text-slate-300">
-                  Title
+                <Label htmlFor="titleFr" className="text-muted-foreground">
+                  Titre *
                 </Label>
                 <Input
-                  id="titleEn"
-                  name="titleEn"
-                  value={titleEn}
-                  onChange={(e) => setTitleEn(e.target.value)}
+                  id="titleFr"
+                  name="titleFr"
+                  value={titleFr}
+                  onChange={handleTitleFrChange}
+                  required
                   className="mt-1 border-white/10 bg-white/5 text-white"
-                  aria-describedby={errors.titleEn ? "titleEn-error" : undefined}
+                  aria-invalid={!!errors.titleFr}
+                  aria-describedby={errors.titleFr ? "titleFr-error" : undefined}
                 />
-                {errors.titleEn && (
-                  <p id="titleEn-error" className="mt-1 text-sm text-red-400">
-                    {errors.titleEn[0]}
+                {errors.titleFr && (
+                  <p id="titleFr-error" className="mt-1 text-sm text-red-400">
+                    {errors.titleFr[0]}
                   </p>
                 )}
               </div>
-            </>
-          )}
+            ) : (
+              <>
+                <div>
+                  <Label htmlFor="titleEn" className="text-muted-foreground">
+                    Title
+                  </Label>
+                  <Input
+                    id="titleEn"
+                    name="titleEn"
+                    value={titleEn}
+                    onChange={(e) => setTitleEn(e.target.value)}
+                    className="mt-1 border-white/10 bg-white/5 text-white"
+                    aria-describedby={errors.titleEn ? "titleEn-error" : undefined}
+                  />
+                  {errors.titleEn && (
+                    <p id="titleEn-error" className="mt-1 text-sm text-red-400">
+                      {errors.titleEn[0]}
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
 
           <div>
-            <Label htmlFor="slug" className="mb-2 block text-slate-300">
+            <Label htmlFor="slug" className="text-muted-foreground mb-2 block">
               Slug
             </Label>
             <Input
@@ -175,7 +210,7 @@ export const PageForm = ({ page }: PageFormProps) => {
               value={slug}
               readOnly
               required
-              className="cursor-not-allowed border-white/10 bg-slate-900 text-slate-400 opacity-60"
+              className="bg-background text-muted-foreground cursor-not-allowed border-white/10 opacity-60"
               aria-invalid={!!errors.slug}
               aria-describedby={errors.slug ? "slug-error" : undefined}
             />
@@ -192,7 +227,7 @@ export const PageForm = ({ page }: PageFormProps) => {
         <CardHeader>
           <CardTitle className="text-white">Contenu</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent {...localePanelProps("page-panel-content", formLocale)}>
           {formLocale === "fr" ? (
             <>
               <TiptapEditor content={contentFr} onChange={setContentFr} />

@@ -1,11 +1,12 @@
 import { Link } from "@/lib/i18n/routing"
-import NextImage from "next/image"
 import { getLocale, getTranslations } from "next-intl/server"
-import { MapPin, Calendar, Clock, Accessibility } from "lucide-react"
+import { Accessibility, HandHeart } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { formatEventDateRange, formatTime } from "@/lib/utils/format-date"
-import type { EventListItem } from "@/lib/queries/events"
 import { DEFAULT_EVENT_IMAGE } from "@/lib/events/default-image"
+import { EventThumb } from "@/components/editorial/event-thumb"
+import { FavoriteButton } from "@/components/travel-book/favorite-button"
+import type { EventListItem } from "@/lib/queries/events"
 
 type EventListCardProps = {
   event: EventListItem
@@ -16,75 +17,66 @@ type EventListCardProps = {
 const EventListCard = async ({ event, className, priority = false }: EventListCardProps) => {
   const locale = await getLocale()
   const t = await getTranslations()
-  const coverImage = event.coverImage ?? DEFAULT_EVENT_IMAGE
+
+  // The favourite button is a sibling of the link: a button inside a link is invalid.
   return (
-    <Link
-      href={`/evenement/${event.slug}`}
-      className={cn(
-        "group hover:border-primary/30 hover:shadow-primary/5 focus-visible:ring-primary/50 animate-fade-in-up relative flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all hover:bg-white/10 hover:shadow-[0_0_30px_rgba(245,158,11,0.15)] hover:shadow-lg focus-visible:ring-2 focus-visible:outline-none",
-        className
-      )}
-    >
-      {/* Cover image */}
-      <div
-        className={cn(
-          "relative flex aspect-[16/10] w-full items-center justify-center overflow-hidden",
-          "from-primary/20 to-primary/5 bg-gradient-to-br"
-        )}
+    <div className={cn("animate-fade-in-up relative", className)}>
+      <Link
+        href={`/evenement/${event.slug}`}
+        className="group bg-ed-bg-soft border-primary/20 hover:border-primary/50 focus-visible:ring-primary/50 flex h-full flex-col border transition-colors focus-visible:ring-2 focus-visible:outline-none"
       >
-        <NextImage
-          src={coverImage}
-          alt={event.title}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-          priority={priority}
-        />
-        {/* Category badge */}
-        <span className="border-primary/30 bg-background/80 text-primary absolute top-3 left-3 rounded-full border px-2.5 py-1 text-xs font-medium backdrop-blur-sm">
-          {t(`categories.${event.category}`) ?? event.category}
-        </span>
-        {/* Accessibility badge */}
-        {event.accessible && (
-          <span
-            className="bg-background/80 absolute top-3 right-3 flex size-7 items-center justify-center rounded-full border border-white/20 backdrop-blur-sm"
-            title={t("events.accessible")}
-            aria-label={t("events.accessible")}
-          >
-            <Accessibility className="text-primary size-3.5" />
+        <div className="relative">
+          <EventThumb
+            coverImage={event.coverImage ?? DEFAULT_EVENT_IMAGE}
+            coverImageAlt={event.coverImage ? event.coverImageAlt : undefined}
+            category={event.category}
+            title={event.title}
+            seed={event.slug}
+            priority={priority}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="border-primary/30 aspect-[16/10] w-full border-0 border-b"
+          />
+          <span className="border-primary/40 bg-ed-bg-deep/85 text-primary absolute top-3 left-3 border px-2.5 py-1 font-sans text-[10px] tracking-[0.14em] uppercase backdrop-blur-sm">
+            {t(`categories.${event.category}`)}
           </span>
-        )}
-      </div>
-
-      {/* Content */}
-      <div className="flex flex-1 flex-col p-4">
-        <h3 className="text-foreground group-hover:text-primary line-clamp-2 font-serif text-lg leading-snug font-bold transition-colors">
-          {event.title}
-        </h3>
-
-        <div className="text-muted-foreground mt-auto flex flex-col gap-1.5 pt-3 text-sm">
-          <div className="flex items-center gap-1.5">
-            <Calendar className="size-3.5 shrink-0" aria-hidden="true" />
-            <span>{formatEventDateRange(event.dateStart, event.dateEnd, locale)}</span>
-          </div>
-          {event.timeStart && (
-            <div className="flex items-center gap-1.5">
-              <Clock className="size-3.5 shrink-0" aria-hidden="true" />
-              <span>
-                {formatTime(event.timeStart)}
-                {event.timeEnd ? ` – ${formatTime(event.timeEnd)}` : ""}
-              </span>
-            </div>
-          )}
-          {event.city && (
-            <div className="flex items-center gap-1.5">
-              <MapPin className="size-3.5 shrink-0" aria-hidden="true" />
-              <span>{event.city}</span>
-            </div>
-          )}
+          {event.accessible ? (
+            <span
+              className="bg-ed-bg-deep/85 border-primary/40 text-primary absolute bottom-3 left-3 flex size-7 items-center justify-center border backdrop-blur-sm"
+              title={t("events.accessible")}
+              aria-label={t("events.accessible")}
+            >
+              <Accessibility className="size-3.5" aria-hidden="true" />
+            </span>
+          ) : null}
+          {event.fundraisingUrl ? (
+            <span
+              className="bg-primary text-primary-foreground absolute right-3 bottom-3 flex items-center gap-1.5 px-2.5 py-1 font-sans text-[10px] font-semibold tracking-[0.14em] uppercase"
+              title={t("fundraising.badgeLabel")}
+            >
+              <HandHeart className="size-3.5" aria-hidden="true" />
+              {t("fundraising.badge")}
+            </span>
+          ) : null}
         </div>
-      </div>
-    </Link>
+
+        <div className="flex flex-1 flex-col gap-3 p-5">
+          <h3 className="text-foreground group-hover:text-primary font-display text-xl leading-snug font-normal tracking-tight transition-colors">
+            {event.title}
+          </h3>
+          <p className="text-ed-bone font-serif text-sm italic opacity-85">
+            {event.location}
+            {event.city ? `, ${event.city}` : ""}
+          </p>
+          <p className="border-primary/20 text-ed-mute mt-auto flex items-center justify-between border-t pt-3 font-mono text-[11px] tracking-[0.12em] uppercase">
+            <span>{formatEventDateRange(event.dateStart, event.dateEnd, locale)}</span>
+            {formatTime(event.timeStart ?? undefined) ? (
+              <span className="text-primary">{formatTime(event.timeStart ?? undefined)}</span>
+            ) : null}
+          </p>
+        </div>
+      </Link>
+      <FavoriteButton eventId={event.id} title={event.title} className="absolute top-2 right-2" />
+    </div>
   )
 }
 

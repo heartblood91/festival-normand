@@ -6,7 +6,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 2,
   workers: process.env.CI ? 1 : undefined,
-  reporter: "html",
+  reporter: process.env.CI ? "html" : [["list"], ["html", { open: "never" }]],
   use: {
     baseURL: process.env.BASE_URL || "http://localhost:3010",
     locale: "fr-FR",
@@ -22,10 +22,13 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-  webServer: {
-    command: "pnpm dev",
-    url: "http://localhost:3010",
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
+  // When BASE_URL is set the target server is managed externally (e.g. a production build).
+  webServer: process.env.BASE_URL
+    ? undefined
+    : {
+        command: "pnpm dev",
+        url: "http://localhost:3010",
+        reuseExistingServer: !process.env.CI,
+        timeout: 120_000,
+      },
 })

@@ -47,6 +47,29 @@ This project uses Ralph (autonomous AI coding loop). When running as Ralph (`cla
 - Seed: `pnpm db:seed`
 - Migrations: `pnpm prisma migrate dev`
 
+## Deployments
+
+- Production tracks the `main` branch. Staging tracks the `staging` branch.
+- **Staging URL: use the native Vercel branch URL**
+  `https://pierres-en-lumieres-git-staging-<team>.vercel.app` — it auto-updates
+  on every push to `staging`.
+- Do NOT rely on `pel-staging.vercel.app`: it is a manual alias that does NOT
+  follow the branch, so it silently serves a stale deploy until someone runs
+  `vercel alias set` by hand. Treat it as deprecated. (If a stable staging
+  domain is wanted, attach a custom domain to the `staging` branch in the
+  Vercel project settings instead of a manual alias.)
+
+## Security
+
+- All admin server actions (`lib/actions/{events,news,partners,pages,edition,department-settings,
+ai-publish,translate,registration-links}.ts`) call `requireRole("EDITOR")`
+  first — `"use server"` exposes them as public HTTP endpoints, so the guard is
+  the real authorization boundary (middleware only protects page navigation).
+  `lib/actions/users.ts` requires `ADMIN`. Keep this invariant when adding new
+  admin actions.
+- `app/api/upload` checks `getAuthenticatedUser()` and returns 401 for anonymous
+  callers before touching storage.
+
 ## Ralph
 
 - PRD: `.claude/ralph/tasks/01-full-site-rebuild/prd.json`

@@ -5,17 +5,19 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { ChevronDown, Accessibility, X } from "lucide-react"
 import { cn } from "@/lib/utils"
+import type { FilterTheme } from "@/lib/queries/themes"
 
 type FilterCounts = {
   departments: Record<string, number>
   categories: Record<string, number>
 }
 
-const DATE_OPTIONS = [
-  { value: "29", labelKey: "date29" },
-  { value: "30", labelKey: "date30" },
-  { value: "31", labelKey: "date31" },
-]
+/** One chip per night of the current edition, labels formatted server-side. */
+export type NightOption = {
+  value: string
+  short: string
+  long: string
+}
 
 const CATEGORY_OPTIONS = [
   { value: "illuminations", labelKey: "ILLUMINATIONS" },
@@ -34,7 +36,14 @@ const DEPARTMENT_OPTIONS = [
 
 type DropdownState = "dept" | "category" | null
 
-const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCounts }) => {
+type FilterBarProps = {
+  nights: NightOption[]
+  total?: number
+  counts?: FilterCounts
+  themes?: FilterTheme[]
+}
+
+const FilterBar = ({ nights, total = 0, counts, themes = [] }: FilterBarProps) => {
   const router = useRouter()
   const t = useTranslations()
   const searchParams = useSearchParams()
@@ -42,9 +51,10 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
   const [selectedDept, setSelectedDept] = useState(searchParams.get("dept") ?? "")
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") ?? "")
   const [selectedDates, setSelectedDates] = useState<string[]>(
-    searchParams.get("date") ? [searchParams.get("date")!] : []
+    (searchParams.get("date") ?? "").split(",").filter(Boolean)
   )
   const [pmrEnabled, setPmrEnabled] = useState(searchParams.get("accessible") === "true")
+  const [selectedTheme, setSelectedTheme] = useState(searchParams.get("theme") ?? "")
 
   const deptRef = useRef<HTMLDivElement>(null)
   const categoryRef = useRef<HTMLDivElement>(null)
@@ -63,7 +73,13 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [openDropdown])
 
-  const updateUrl = (dept?: string, category?: string, dates?: string[], pmr?: boolean) => {
+  const updateUrl = (
+    dept?: string,
+    category?: string,
+    dates?: string[],
+    pmr?: boolean,
+    theme = selectedTheme
+  ) => {
     const params = new URLSearchParams(searchParams.toString())
 
     if (dept) {
@@ -79,7 +95,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
     }
 
     if (dates && dates.length > 0) {
-      params.set("date", dates[0])
+      params.set("date", dates.join(","))
     } else {
       params.delete("date")
     }
@@ -88,6 +104,12 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
       params.set("accessible", "true")
     } else {
       params.delete("accessible")
+    }
+
+    if (theme) {
+      params.set("theme", theme)
+    } else {
+      params.delete("theme")
     }
 
     params.delete("page")
@@ -110,10 +132,12 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
     updateUrl(selectedDept, newCategory, selectedDates, pmrEnabled)
   }
 
+  // Several nights can be combined; the URL keeps them in night order.
   const handleDateToggle = (value: string) => {
-    const newDates = selectedDates.includes(value)
+    const toggled = selectedDates.includes(value)
       ? selectedDates.filter((d) => d !== value)
-      : [value]
+      : [...selectedDates, value]
+    const newDates = nights.map((night) => night.value).filter((code) => toggled.includes(code))
     setSelectedDates(newDates)
     updateUrl(selectedDept, selectedCategory, newDates, pmrEnabled)
   }
@@ -122,6 +146,12 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
     const newPmr = !pmrEnabled
     setPmrEnabled(newPmr)
     updateUrl(selectedDept, selectedCategory, selectedDates, newPmr)
+  }
+
+  const handleThemeToggle = (slug: string) => {
+    const newTheme = selectedTheme === slug ? "" : slug
+    setSelectedTheme(newTheme)
+    updateUrl(selectedDept, selectedCategory, selectedDates, pmrEnabled, newTheme)
   }
 
   const clearAll = () => {
@@ -134,10 +164,13 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
     setSelectedCategory("")
     setSelectedDates([])
     setPmrEnabled(false)
+    setSelectedTheme("")
   }
 
+  const activeTheme = themes.find((theme) => theme.slug === selectedTheme)
+
   const hasActiveFilters =
-    selectedDept || selectedCategory || selectedDates.length > 0 || pmrEnabled
+    selectedDept || selectedCategory || selectedDates.length > 0 || pmrEnabled || activeTheme
 
   const getFilterLabel = (type: string, value: string): string => {
     switch (type) {
@@ -150,7 +183,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
           `categories.${CATEGORY_OPTIONS.find((c) => c.value === value)?.labelKey || "ILLUMINATIONS"}`
         )
       case "date":
-        return t(`filters.${DATE_OPTIONS.find((d) => d.value === value)?.labelKey || "date29"}Full`)
+        return nights.find((night) => night.value === value)?.long ?? value
       default:
         return value
     }
@@ -182,6 +215,10 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
     })
   })
 
+  if (activeTheme) {
+    activeFilters.push({ key: "theme", label: activeTheme.name, type: "theme" })
+  }
+
   if (pmrEnabled) {
     activeFilters.push({
       key: "accessible",
@@ -199,6 +236,8 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
       handleDateToggle(value)
     } else if (type === "accessible") {
       handlePmrToggle()
+    } else if (type === "theme") {
+      handleThemeToggle(selectedTheme)
     }
   }
 
@@ -337,7 +376,7 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
 
           {/* Date chips */}
           <div className="flex gap-2 sm:flex-wrap">
-            {DATE_OPTIONS.map((option) => (
+            {nights.map((option) => (
               <button
                 key={option.value}
                 onClick={() => handleDateToggle(option.value)}
@@ -348,9 +387,14 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
                     : "text-muted-foreground hover:text-foreground border-white/10 bg-white/5 hover:bg-white/10"
                 )}
                 aria-pressed={selectedDates.includes(option.value)}
-                aria-label={`${t("filters.removeFilter", { filter: t(`filters.${option.labelKey}`) })}`}
+                aria-label={t(
+                  selectedDates.includes(option.value)
+                    ? "filters.removeFilter"
+                    : "filters.filterBy",
+                  { filter: option.long }
+                )}
               >
-                {t(`filters.${option.labelKey}`)}
+                {option.short}
               </button>
             ))}
           </div>
@@ -381,6 +425,39 @@ const FilterBar = ({ total = 0, counts }: { total?: number; counts?: FilterCount
             {t("filters.eventCount", { count: total })}
           </div>
         </div>
+
+        {themes.length > 0 && (
+          <div
+            role="group"
+            aria-label={t("filters.themes")}
+            className="mt-3 flex flex-wrap items-center gap-2"
+          >
+            {themes.map((theme) => {
+              const pressed = selectedTheme === theme.slug
+              return (
+                <button
+                  key={theme.slug}
+                  onClick={() => handleThemeToggle(theme.slug)}
+                  aria-pressed={pressed}
+                  className={cn(
+                    "focus:ring-primary/50 flex min-h-10 items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium transition-colors focus:ring-2 focus:outline-none sm:text-sm",
+                    pressed
+                      ? "border-primary/30 bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:text-foreground border-white/10 bg-white/5 hover:bg-white/10"
+                  )}
+                >
+                  <span
+                    className="size-2.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: theme.color }}
+                    aria-hidden="true"
+                  />
+                  {theme.name}
+                  <span className="text-muted-foreground text-xs">({theme.count})</span>
+                </button>
+              )
+            })}
+          </div>
+        )}
 
         {/* Active filters chips */}
         {hasActiveFilters && (

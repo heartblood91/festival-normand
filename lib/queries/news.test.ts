@@ -24,6 +24,8 @@ const mockNewsArticles = [
     excerptFr: "Découvrez le programme complet",
     excerptEn: null,
     coverImage: "/images/news-1.jpg",
+    coverImageAltFr: "Chapelle illuminée au crépuscule",
+    coverImageAltEn: "Chapel lit up at dusk",
     publishedAt: new Date("2026-03-10"),
   },
   {
@@ -34,6 +36,8 @@ const mockNewsArticles = [
     excerptFr: "Rencontre avec les bénévoles",
     excerptEn: null,
     coverImage: null,
+    coverImageAltFr: null,
+    coverImageAltEn: null,
     publishedAt: new Date("2026-03-01"),
   },
 ]
@@ -56,9 +60,21 @@ describe("getNews", () => {
         excerptFr: true,
         excerptEn: true,
         coverImage: true,
+        coverImageAltFr: true,
+        coverImageAltEn: true,
         publishedAt: true,
       },
     })
+  })
+
+  it("localizes the cover alt text", async () => {
+    prismaMock.news.findMany.mockResolvedValue(mockNewsArticles)
+
+    const [fr] = await getNews("fr")
+    const [en] = await getNews("en")
+
+    expect(fr.coverImageAlt).toBe("Chapelle illuminée au crépuscule")
+    expect(en.coverImageAlt).toBe("Chapel lit up at dusk")
   })
 
   it("returns empty array when no news", async () => {

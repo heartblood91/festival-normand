@@ -440,7 +440,7 @@ const seedEvents = async () => {
   ]
 
   for (const event of events) {
-    await prisma.event.create({ data: event })
+    await prisma.event.create({ data: { ...event, published: true } })
   }
   console.log(`${events.length} events seeded.`)
 }
@@ -581,7 +581,7 @@ See the full list of accessible sites on our [events page](/evenements?accessibl
   ]
 
   for (const article of articles) {
-    await prisma.news.create({ data: article })
+    await prisma.news.create({ data: { ...article, published: true } })
   }
   console.log(`${articles.length} news articles seeded.`)
 }
@@ -816,25 +816,11 @@ Thanks to its network of volunteers and patrons, the Foundation supports hundred
       slug: "inscription",
       contentFr: `# Inscrivez votre événement
 
-Vous êtes propriétaire ou gestionnaire d'un site patrimonial en Normandie ? Participez à Pierres en Lumières 2026 !
+Vous êtes propriétaire ou gestionnaire d'un site patrimonial en Normandie ? Participez à Pierres en Lumières !
 
 ## Découvrez le festival en vidéo
 
 [Pierres en Lumières 2025 - Retour en images](https://www.youtube.com/embed/AHnGhy1o0pA)
-
-## Comment s'inscrire ?
-
-L'inscription est gratuite et ouverte à tous les sites patrimoniaux normands : châteaux, églises, manoirs, sites industriels, jardins...
-
-Chaque département dispose de son propre formulaire d'inscription. Cliquez sur le lien de votre département ci-dessous pour accéder au formulaire.
-
-## Formulaires d'inscription par département
-
-- [Calvados — Formulaire d'inscription](https://inscription.calvados.pierresenlumieres.fr)
-- [Eure — Formulaire d'inscription](https://inscription.eure.pierresenlumieres.fr)
-- [Manche — Formulaire d'inscription](https://inscription.manche.pierresenlumieres.fr)
-- [Orne — Formulaire d'inscription](https://inscription.orne.pierresenlumieres.fr)
-- [Seine-Maritime — Formulaire d'inscription](https://inscription.seine-maritime.pierresenlumieres.fr)
 
 ## Critères de participation
 
@@ -845,28 +831,14 @@ Chaque département dispose de son propre formulaire d'inscription. Cliquez sur 
 
 ## Dates limites
 
-Les inscriptions pour l'édition 2026 sont ouvertes jusqu'au **15 avril 2026**.`,
+Chaque département fixe sa date limite d'inscription ; elle est indiquée sur son formulaire.`,
       contentEn: `# Register your event
 
-Are you the owner or manager of a heritage site in Normandy? Take part in Pierres en Lumières 2026!
+Are you the owner or manager of a heritage site in Normandy? Take part in Pierres en Lumières!
 
 ## Discover the festival on video
 
 [Pierres en Lumières 2025 — highlights](https://www.youtube.com/embed/AHnGhy1o0pA)
-
-## How to register
-
-Registration is free and open to all Norman heritage sites: châteaux, churches, manors, industrial sites, gardens and more.
-
-Each département has its own registration form. Click your département's link below to access the form.
-
-## Registration forms by département
-
-- [Calvados — Registration form](https://inscription.calvados.pierresenlumieres.fr)
-- [Eure — Registration form](https://inscription.eure.pierresenlumieres.fr)
-- [Manche — Registration form](https://inscription.manche.pierresenlumieres.fr)
-- [Orne — Registration form](https://inscription.orne.pierresenlumieres.fr)
-- [Seine-Maritime — Registration form](https://inscription.seine-maritime.pierresenlumieres.fr)
 
 ## Eligibility criteria
 
@@ -877,7 +849,7 @@ Each département has its own registration form. Click your département's link 
 
 ## Deadlines
 
-Registrations for the 2026 edition are open until **15 April 2026**.`,
+Each département sets its own registration deadline, shown on its form.`,
     },
     {
       titleFr: "Mentions légales",
@@ -937,6 +909,79 @@ In accordance with GDPR, you have the right to access, rectify and erase your pe
 ## Cookies
 
 This website uses technical cookies required for its operation. No advertising cookies are used.`,
+    },
+    {
+      titleFr: "Déclaration d'accessibilité",
+      titleEn: "Accessibility statement",
+      slug: "accessibilite",
+      contentFr: `# Déclaration d'accessibilité
+
+Pierres en Lumières s'engage à rendre son site internet accessible conformément à l'article 47 de la loi n° 2005-102 du 11 février 2005.
+
+## État de conformité
+
+Ce site est **non conforme** avec le référentiel général d'amélioration de l'accessibilité (RGAA), version 4.1. Aucun audit de conformité n'a encore été réalisé.
+
+## Contenus non accessibles
+
+- Certaines images importées depuis des sources externes peuvent ne pas disposer d'alternatives textuelles optimales.
+- La carte interactive (Mapbox) dispose d'une accessibilité limitée pour les utilisateurs de lecteurs d'écran.
+
+## Mesures d'accessibilité mises en œuvre
+
+- Lien d'évitement vers le contenu principal
+- Navigation complète au clavier
+- Hiérarchie de titres cohérente
+- Zones de navigation identifiées (landmarks ARIA)
+- Ratios de contraste conformes (minimum 4.5:1)
+- Alternatives textuelles sur les images
+- Formulaires avec étiquettes associées
+- Fil d'Ariane sur les pages de détail
+- Respect du paramètre prefers-reduced-motion
+
+## Retour d'information et contact
+
+Si vous n'arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable du site pour être orienté vers une alternative accessible ou obtenir le contenu sous une autre forme. Contactez-nous via notre [formulaire de contact](/fr/contact).
+
+## Voies de recours
+
+Si vous constatez un défaut d'accessibilité vous empêchant d'accéder à un contenu ou une fonctionnalité du site, que vous nous le signalez et que vous ne parvenez pas à obtenir une réponse de notre part, vous êtes en droit de faire parvenir vos doléances ou une demande de saisine au Défenseur des droits.
+
+Dernière mise à jour : mars 2026`,
+      contentEn: `# Accessibility statement
+
+Pierres en Lumières is committed to making its website accessible in accordance with Article 47 of French Law No. 2005-102 of 11 February 2005.
+
+## Conformity status
+
+This website is **non-conformant** with the General Reference for Digital Accessibility Improvement (RGAA), version 4.1. No conformity audit has been conducted yet.
+
+## Non-accessible content
+
+- Some externally sourced images may lack optimal text alternatives.
+- The interactive map (Mapbox) has limited accessibility for screen reader users.
+
+## Accessibility measures implemented
+
+- Skip link to main content
+- Complete keyboard navigation
+- Consistent heading hierarchy
+- Identified navigation zones (ARIA landmarks)
+- Compliant contrast ratios (minimum 4.5:1)
+- Text alternatives for images
+- Forms with associated labels
+- Breadcrumbs on detail pages
+- Respect for prefers-reduced-motion setting
+
+## Feedback and contact
+
+If you are unable to access content or a service, you can contact the site administrator to be directed to an accessible alternative or to obtain the content in another format. Contact us via our [contact form](/en/contact).
+
+## Legal recourse
+
+If you encounter an accessibility problem preventing you from accessing content or a site feature, report it to us, and you are unable to obtain a response, you have the right to file a complaint with the Defender of Rights (Défenseur des droits).
+
+Last updated: March 2026`,
     },
   ]
 

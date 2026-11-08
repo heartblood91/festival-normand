@@ -56,10 +56,10 @@ export const ForgotPasswordForm = ({ emailEnabled }: ForgotPasswordFormProps) =>
           <CardTitle className="text-white">Mot de passe oublié</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-slate-300">
+          <p className="text-muted-foreground text-sm">
             L&apos;envoi d&apos;email est désactivé sur cet environnement. Cette fonctionnalité
-            n&apos;est pas disponible — contactez un administrateur pour réinitialiser votre mot
-            de passe manuellement.
+            n&apos;est pas disponible — contactez un administrateur pour réinitialiser votre mot de
+            passe manuellement.
           </p>
           <Button asChild variant="outline" className="w-full">
             <Link href="/admin/login">Retour à la connexion</Link>
@@ -77,10 +77,10 @@ export const ForgotPasswordForm = ({ emailEnabled }: ForgotPasswordFormProps) =>
             <CheckCircle className="h-12 w-12 text-green-500" />
             <div>
               <h2 className="text-lg font-semibold text-white">Email envoyé !</h2>
-              <p className="mt-1 text-sm text-slate-400">
+              <p className="text-muted-foreground mt-1 text-sm">
                 Si un compte existe avec l&apos;adresse{" "}
-                <span className="font-medium text-white">{email}</span>, un lien de
-                réinitialisation vient de lui être envoyé.
+                <span className="font-medium text-white">{email}</span>, un lien de réinitialisation
+                vient de lui être envoyé.
               </p>
             </div>
             <Button asChild variant="outline" className="w-full">
@@ -96,14 +96,14 @@ export const ForgotPasswordForm = ({ emailEnabled }: ForgotPasswordFormProps) =>
     <Card className="border-white/10 bg-white/5 backdrop-blur-xl">
       <CardHeader>
         <CardTitle className="text-white">Mot de passe oublié</CardTitle>
-        <CardDescription className="text-slate-400">
+        <CardDescription className="text-muted-foreground">
           Recevez un lien de réinitialisation par email.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-slate-300">
+            <Label htmlFor="email" className="text-muted-foreground">
               Adresse email
             </Label>
             <Input
@@ -116,14 +116,14 @@ export const ForgotPasswordForm = ({ emailEnabled }: ForgotPasswordFormProps) =>
               required
               autoComplete="email"
               autoFocus
-              className="border-white/10 bg-white/5 text-white placeholder:text-slate-500"
+              className="placeholder:text-muted-foreground border-white/10 bg-white/5 text-white"
             />
           </div>
 
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-amber-500 text-slate-950 hover:bg-amber-400"
+            className="text-primary-foreground w-full bg-amber-500 hover:bg-amber-400"
           >
             {isLoading ? (
               <>
@@ -142,7 +142,7 @@ export const ForgotPasswordForm = ({ emailEnabled }: ForgotPasswordFormProps) =>
         <div className="mt-4 text-center">
           <Link
             href="/admin/login"
-            className="text-sm text-slate-400 underline-offset-2 transition-colors hover:text-amber-500 hover:underline"
+            className="text-muted-foreground text-sm underline-offset-2 transition-colors hover:text-amber-500 hover:underline"
           >
             Retour à la connexion
           </Link>

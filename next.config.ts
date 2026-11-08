@@ -15,6 +15,8 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { hostname: "*.public.blob.vercel-storage.com" },
       { hostname: "pierresenlumieres.fr" },
+      // Collect images attached from the Fondation du patrimoine.
+      { protocol: "https", hostname: "strapi-upload.cdn.fondation-patrimoine.org" },
     ],
   },
 }

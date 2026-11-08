@@ -1,0 +1,515 @@
+{
+  "generatedAt": "2026-11-08T00:43:43.988Z",
+  "source": "fondation-patrimoine.org search (snapshot of 2026-11-08)",
+  "projects": 247,
+  "events": 20,
+  "eventsWithSuggestions": 19,
+  "radiusKm": 10,
+  "results": [
+    {
+      "event": {
+        "slug": "animations-chateau-dieppe",
+        "title": "Animations au Château de Dieppe",
+        "city": "Dieppe",
+        "published": true
+      },
+      "suggestions": [
+        {
+          "reason": "distance",
+          "distanceKm": 7.7,
+          "title": "Château de Miromesnil",
+          "city": "TOURVILLE SUR ARQUES",
+          "url": "https://www.fondation-patrimoine.org/les-projets/chateau-de-miromesnil/79650"
+        }
+      ]
+    },
+    {
+      "event": {
+        "slug": "animations-chateau-pirou",
+        "title": "Animations au Château de Pirou",
+        "city": "Pirou",
+        "published": true
+      },
+      "suggestions": [
+        {
+          "reason": "distance",
+          "distanceKm": 8,
+          "title": "Chapelle Saint-Roch dans la Manche",
+          "city": "MILLIERES",
+          "url": "https://www.fondation-patrimoine.org/les-projets/chapelle-saint-roch-manche/102618"
+        },
+        {
+          "reason": "distance",
+          "distanceKm": 8.9,
+          "title": "EGLISE MILLIERES",
+          "city": "MILLIERES",
+          "url": "https://www.fondation-patrimoine.org/les-projets/eglise-millieres/59355"
+        }
+      ]
+    },
+    {
+      "event": {
+        "slug": "animations-medievales-bec-hellouin",
+        "title": "Animations médiévales à l'Abbaye du Bec-Hellouin",
+        "city": "Le Bec-Hellouin",
+        "published": true
+      },
+      "suggestions": [
+        {
+          "reason": "distance",
+          "distanceKm": 4.3,
+          "title": "Moulin Sainte-Marie de Livet-sur-Authou",
+          "city": "LIVET SUR AUTHOU",
+          "url": "https://www.fondation-patrimoine.org/les-projets/moulin-sainte-marie-de-livet-sur-authou/102043"
+        },
+        {
+          "reason": "distance",
+          "distanceKm": 6.7,
+          "title": "Eglise Notre-Dame et Saint-Jacques à Ecaquelon",
+          "city": "ECAQUELON",
+          "url": "https://www.fondation-patrimoine.org/les-projets/eglise-notre-dame-et-saint-jacques-a-ecaquelon/102468"
+        },
+        {
+          "reason": "distance",
+          "distanceKm": 10,
+          "title": "Eglise Saint-Aubin de Boisney dans l'Eure",
+          "city": "BOISNEY",
+          "url": "https://www.fondation-patrimoine.org/les-projets/eglise-saint-aubin-de-boisney/100699"
+        }
+      ]
+    },
+    {
+      "event": {
+        "slug": "exposition-art-sacre-sees",
+        "title": "Exposition d'art sacré à Sées",
+        "city": "Sées",
+        "published": true
+      },
+      "suggestions": [
+        {
+          "reason": "distance",
+          "distanceKm": 7.9,
+          "title": "Abbatiale Sainte-Opportune à Almenêches",
+          "city": "ALMENECHES",
+          "url": "https://www.fondation-patrimoine.org/les-projets/abbatiale-sainte-opportune-a-almeneches/1780"
+        },
+        {
+          "reason": "distance",
+          "distanceKm": 9.5,
+          "title": "L'église de Saint-Léonard-des-Parcs",
+          "city": "ST LEONARD DES PARCS",
+          "url": "https://www.fondation-patrimoine.org/les-projets/eglise-de-saint-leonard-des-parcs/88225"
+        }
+      ]
+    },
+    {
+      "event": {
+        "slug": "exposition-lumieres-bessin",
+        "title": "Exposition 'Lumières sur le Bessin'",
+        "city": "Bayeux",
+        "published": true
+      },
+      "suggestions": [
+        {
+          "reason": "distance",
+          "distanceKm": 5.4,
+          "title": "L'église Saint-Martin de Subles à Calvados",
+          "city": "SUBLES",
+          "url": "https://www.fondation-patrimoine.org/les-projets/eglise-saint-martinsubles/90866"
+        },
+        {
+          "reason": "distance",
+          "distanceKm": 6,
+          "title": "Tableau du retable de l'église d'Agy",
+          "city": "AGY",
+          "url": "https://www.fondation-patrimoine.org/les-projets/tableau-du-retable-de-leglise-dagy/104126"
+        },
+        {
+          "reason": "distance",
+          "distanceKm": 8.6,
+          "title": "Le bateau Les Deux Amis à Port-en-Bessin",
+          "city": "PORT EN BESSIN HUPPAIN",
+          "url": "https://www.fondation-patrimoine.org/les-projets/barque-les-deux-amis-port-en-bessin/101738"
+        }
+      ]
+    },
+    {
+      "event": {
+        "slug": "exposition-patrimoine-maritime-cherbourg",
+        "title": "Exposition 'Patrimoine Maritime' à Cherbourg",
+        "city": "Cherbourg-en-Cotentin",
+        "published": true
+      },
+      "suggestions": [
+        {
+          "reason": "commune",
+          "distanceKm": 1.3,
+          "title": "Tableaux de la chapelle du collège Saint-Paul de Cherbourg",
+          "city": "CHERBOURG EN COTENTIN",
+          "url": "https://www.fondation-patrimoine.org/les-projets/chapelle-du-college-saint-paul-cherbourg/42840"
+        },
+        {
+          "reason": "commune",
+          "distanceKm": 1.8,
+          "title": "Jardin Botanique de la Roche Fauconnière à Cherbourg-en-Cotentin",
+          "city": "CHERBOURG EN COTENTIN",
+          "url": "https://www.fondation-patrimoine.org/les-projets/parc-de-la-roche-fauconniere-de-cherbourg/103414"
+        },
+        {
+          "reason": "distance",
+          "distanceKm": 1.8,
+          "title": "Le canot à misaine \"Le Kierborg\"",
+          "city": "BARFLEUR",
+          "url": "https://www.fondation-patrimoine.org/les-projets/le-canot-a-misaine-le-kierborg/87770"
+        }
+      ]
+    },
+    {
+      "event": {
+        "slug": "illumination-abbatiale-fecamp",
+        "title": "Illumination de l'Abbatiale de Fécamp",
+        "city": "Fécamp",
+        "published": true
+      },
+      "suggestions": [
+        {
+          "reason": "commune",
+          "distanceKm": 0.5,
+          "title": "La chapelle Notre-Dame de Salut à Fécamp",
+          "city": "FECAMP",
+          "url": "https://www.fondation-patrimoine.org/les-projets/la-chapelle-notre-dame-de-salut-a-fecamp/104354"
+        },
+        {
+          "reason": "commune",
+          "distanceKm": 1,
+          "title": "Les estacades du port de Fécamp",
+          "city": "FECAMP",
+          "url": "https://www.fondation-patrimoine.org/les-projets/les-estacades-du-port-de-fecamp/104358"
+        },
+        {
+          "reason": "commune",
+          "distanceKm": 1.7,
+          "title": "Canot de sauvetage Onésime Frebourg à Fécamp",
+          "city": "FECAMP",
+          "url": "https://www.fondation-patrimoine.org/les-projets/canot-de-sauvetage-onesime-frebourg-a-fecamp/103290"
+        }
+      ]
+    },
+    {
+      "event": {
+        "slug": "illumination-abbaye-aux-hommes",
+        "title": "Illumination de l'Abbaye aux Hommes",
+        "city": "Caen",
+        "published": true
+      },
+      "suggestions": [
+        {
+          "reason": "distance",
+          "distanceKm": 3.9,
+          "title": "Le Petit Lourdes",
+          "city": "HEROUVILLE ST CLAIR",
+          "url": "https://www.fondation-patrimoine.org/les-projets/le-petit-lourdes-herouville-saint-clair/88097"
+        },
+        {
+          "reason": "distance",
+          "distanceKm": 9.1,
+          "title": "église Saint-Martin - Feuguerolles-Bully",
+          "city": "FEUGUEROLLES BULLY",
+          "url": "https://www.fondation-patrimoine.org/les-projets/eglise-saint-martin-feuguerolles-bully-projet/101034"
+        }
+      ]
+    },
+    {
+      "event": {
+        "slug": "illumination-haras-du-pin",
+        "title": "Illumination du Haras du Pin",
+        "city": "Le Pin-au-Haras",
+        "published": true
+      },
+      "suggestions": [
+        {
+          "reason": "distance",
+          "distanceKm": 6.8,
+          "title": "Ensemble, ressuscitons le Château de Médavy !",
+          "city": "MEDAVY",
+          "url": "https://www.fondation-patrimoine.org/les-projets/le-chateau-de-medavy/79121"
+        }
+      ]
+    },
+    {
+      "event": {
+        "slug": "illumination-mont-saint-michel",
+        "title": "Illumination du Mont-Saint-Michel",
+        "city": "Le Mont-Saint-Michel",
+        "published": true
+      },
+      "suggestions": [
+        {
+          "reason": "commune",
+          "distanceKm": 0.1,
+          "title": "La Chapelle Saint-Aubert du Mont Saint-Michel",
+          "city": "LE MONT ST MICHEL",
+          "url": "https://www.fondation-patrimoine.org/les-projets/la-chapelle-saint-aubert-du-mont-saint-michel/104278"
+        },
+        {
+          "reason": "distance",
+          "distanceKm": 9,
+          "title": "La restauration de l'église Saint-Médard de Dragey-Ronthon",
+          "city": "DRAGEY RONTHON",
+          "url": "https://www.fondation-patrimoine.org/les-projets/la-restauration-de-leglise-saint-medard-de-dragey-ronthon/104879"
+        }
+      ]
+    },
+    {
+      "event": {
+        "slug": "le-chateau-de-colombieres-illumine-pour-pierres-en-lumieres",
+        "title": "Le Château de Colombières illuminé pour Pierres en Lumières",
+        "city": "Colombieres",
+        "published": true
+      },
+      "suggestions": [
+        {
+          "reason": "distance",
+          "distanceKm": 9.2,
+          "title": "L'église de Saint-Laurent-sur-Mer (Calvados)",
+          "city": "ST LAURENT SUR MER",
+          "url": "https://www.fondation-patrimoine.org/les-projets/eglise-de-saint-laurent-sur-mer/70867"
+        },
+        {
+          "reason": "distance",
+          "distanceKm": 9.4,
+          "title": "L'église Saint-André de Vierville-sur-Mer",
+          "city": "VIERVILLE SUR MER",
+          "url": "https://www.fondation-patrimoine.org/les-projets/vierville-eglise-saint-andre/47875"
+        },
+        {
+          "reason": "distance",
+          "distanceKm": 9.4,
+          "title": "Les passerelles Whale d'Omaha Beach",
+          "city": "VIERVILLE SUR MER",
+          "url": "https://www.fondation-patrimoine.org/les-projets/passerelles-whale-vierville-sur-mer-projet/100174"
+        }
+      ]
+    },
+    {
+      "event": {
+        "slug": "lumieres-au-chateau-de-pontecoulant",
+        "title": "Lumières au château de Pontécoulant",
+        "city": "Pontecoulant",
+        "published": true
+      },
+      "suggestions": [
+        {
+          "reason": "distance",
+          "distanceKm": 4,
+          "title": "Commanderie de Courval",
+          "city": "VALDALLIERE",
+          "url": "https://www.fondation-patrimoine.org/les-projets/commanderie-de-courval/103693"
+        },
+        {
+          "reason": "distance",
+          "distanceKm": 8.6,
+          "title": "Le Moulin de l'Hydre à Saint-Pierre-d'Entremont",
+          "city": "ST PIERRE D ENTREMONT",
+          "url": "https://www.fondation-patrimoine.org/les-projets/le-moulin-de-lhydre-a-saint-pierre-dentremont/103588"
+        },
+        {
+          "reason": "distance",
+          "distanceKm": 9.5,
+          "title": "Restauration du Manoir de Placy",
+          "city": "CLECY",
+          "url": "https://www.fondation-patrimoine.org/les-projets/truffer-clecy/77399"
+        }
+      ]
+    },
+    {
+      "event": {
+        "slug": "pierres-en-lumieres-au-chateau-de-canon",
+        "title": "Pierres en lumières au château de Canon",
+        "city": "Mézidon Vallée D'Auge",
+        "published": true
+      },
+      "suggestions": [
+        {
+          "reason": "commune",
+          "distanceKm": 0.1,
+          "title": "Un centre d'interprétation sur la rose normande au Château de Canon",
+          "city": "MEZIDON VALLEE D AUGE",
+          "url": "https://www.fondation-patrimoine.org/les-projets/musee-de-la-rose-normande-dependance-du-chateau-de-canon/101968"
+        },
+        {
+          "reason": "commune",
+          "distanceKm": 5.6,
+          "title": "La chapelle Sainte-Marie aux Anglais à Mézidon-Vallée d'Auge",
+          "city": "MEZIDON VALLEE D AUGE",
+          "url": "https://www.fondation-patrimoine.org/les-projets/chapelle-de-sainte-marie-aux-anglais-a-mezidon-vallee-d-auge/30545"
+        },
+        {
+          "reason": "commune",
+          "distanceKm": 12.7,
+          "title": "Eglise Notre-Dame de Lécaude à Mézidon-Vallée-d'Auge",
+          "city": "MEZIDON VALLEE D AUGE",
+          "url": "https://www.fondation-patrimoine.org/les-projets/eglise-notre-dame-de-lecaude-a-mezidon-vallee-dauge/104573"
+        }
+      ]
+    },
+    {
+      "event": {
+        "slug": "pierres-en-lumieres-au-chateau-de-pontecoulant",
+        "title": "Pierres en lumières au Château de Pontécoulant",
+        "city": "Pontecoulant",
+        "published": true
+      },
+      "suggestions": [
+        {
+          "reason": "distance",
+          "distanceKm": 5,
+          "title": "Commanderie de Courval",
+          "city": "VALDALLIERE",
+          "url": "https://www.fondation-patrimoine.org/les-projets/commanderie-de-courval/103693"
+        },
+        {
+          "reason": "distance",
+          "distanceKm": 8.7,
+          "title": "Restauration du Manoir de Placy",
+          "city": "CLECY",
+          "url": "https://www.fondation-patrimoine.org/les-projets/truffer-clecy/77399"
+        }
+      ]
+    },
+    {
+      "event": {
+        "slug": "son-lumiere-chateau-gaillard",
+        "title": "Son et Lumière au Château Gaillard",
+        "city": "Les Andelys",
+        "published": true
+      },
+      "suggestions": [
+        {
+          "reason": "commune",
+          "distanceKm": 2.1,
+          "title": "Collégiale Notre-Dame des Andelys",
+          "city": "LES ANDELYS",
+          "url": "https://www.fondation-patrimoine.org/les-projets/collegiale-notre-dame-du-grand-andely-les-andelys/61678"
+        },
+        {
+          "reason": "distance",
+          "distanceKm": 2.6,
+          "title": "Église Saint-Pierre de Bouafles dans l'Eure",
+          "city": "BOUAFLES",
+          "url": "https://www.fondation-patrimoine.org/les-projets/eglise-saint-pierre-bouafles/63747"
+        },
+        {
+          "reason": "distance",
+          "distanceKm": 6.8,
+          "title": "L'église de la Sainte-Trinité de Corny",
+          "city": "FRENELLES EN VEXIN",
+          "url": "https://www.fondation-patrimoine.org/les-projets/eglise-de-la-ste-trinite-de-corny/349"
+        }
+      ]
+    },
+    {
+      "event": {
+        "slug": "visite-maison-oze-alencon",
+        "title": "Visite de la Maison d'Oze à Alençon",
+        "city": "Alençon",
+        "published": true
+      },
+      "suggestions": [
+        {
+          "reason": "distance",
+          "distanceKm": 9.8,
+          "title": "Chapelle funéraire Saillant à Saint-Denis-sur-Sarthon",
+          "city": "ST DENIS SUR SARTHON",
+          "url": "https://www.fondation-patrimoine.org/les-projets/chapelle-funeraire-saillant-a-saint-denis-sur-sarthon/102230"
+        }
+      ]
+    },
+    {
+      "event": {
+        "slug": "visite-guidee-moulin-ande",
+        "title": "Visite guidée du Moulin d'Andé",
+        "city": "Andé",
+        "published": true
+      },
+      "suggestions": [
+        {
+          "reason": "commune",
+          "distanceKm": 2.8,
+          "title": "Le Moulin d'Andé",
+          "city": "ANDE",
+          "url": "https://www.fondation-patrimoine.org/les-projets/moulin-dande/90922"
+        },
+        {
+          "reason": "distance",
+          "distanceKm": 0.8,
+          "title": "L'église Notre-Dame du Vaudreuil",
+          "city": "LE VAUDREUIL",
+          "url": "https://www.fondation-patrimoine.org/les-projets/eglise-notre-dame-du-vaudreuil/14026"
+        },
+        {
+          "reason": "distance",
+          "distanceKm": 2.7,
+          "title": "Bannières de Charitons de Porte-Joie",
+          "city": "PORTE DE SEINE",
+          "url": "https://www.fondation-patrimoine.org/les-projets/bannieres-de-charitons-de-porte-joie/59153"
+        }
+      ]
+    },
+    {
+      "event": {
+        "slug": "visite-nocturne-cathedrale-rouen",
+        "title": "Visite nocturne de la Cathédrale de Rouen",
+        "city": "Rouen",
+        "published": true
+      },
+      "suggestions": [
+        {
+          "reason": "commune",
+          "distanceKm": 0.5,
+          "title": "Ancienne église Sainte-Croix-des-Pelletiers de Rouen",
+          "city": "ROUEN",
+          "url": "https://www.fondation-patrimoine.org/les-projets/ancienne-eglise-sainte-croix-des-pelletiers-de-rouen/105332"
+        },
+        {
+          "reason": "commune",
+          "distanceKm": 0.7,
+          "title": "Le Monastère des Bénédictines de Rouen",
+          "city": "ROUEN",
+          "url": "https://www.fondation-patrimoine.org/les-projets/monastere-des-benedictines-rouen/55234"
+        },
+        {
+          "reason": "commune",
+          "distanceKm": 1.3,
+          "title": "CAMPUS ICP DE ROUEN",
+          "city": "ROUEN",
+          "url": "https://www.fondation-patrimoine.org/les-projets/campus-icp-de-rouen/90809"
+        }
+      ]
+    },
+    {
+      "event": {
+        "slug": "visite-nocturne-chateau-falaise",
+        "title": "Visite nocturne du Château de Falaise",
+        "city": "Falaise",
+        "published": true
+      },
+      "suggestions": [
+        {
+          "reason": "distance",
+          "distanceKm": 6.3,
+          "title": "Les retables de l'église Saint-Martin de Martigny-sur-l'Ante",
+          "city": "MARTIGNY SUR L ANTE",
+          "url": "https://www.fondation-patrimoine.org/les-projets/retables-martigny-sur-lante/101856"
+        },
+        {
+          "reason": "distance",
+          "distanceKm": 6.6,
+          "title": "La chapelle de Torp à Villers-Canivet",
+          "city": "VILLERS CANIVET",
+          "url": "https://www.fondation-patrimoine.org/les-projets/chapelle-de-torp-a-villers-canivet/152"
+        }
+      ]
+    }
+  ]
+}

@@ -30,7 +30,7 @@ const EditNewsRoute = async ({ params }: Props) => {
   }
 
   return (
-    <div className="mx-auto w-full max-w-4xl p-4 md:p-8">
+    <div className="mx-auto w-full max-w-4xl">
       <h1 className="mb-6 font-serif text-2xl font-bold text-amber-500">Modifier l&apos;article</h1>
       <NewsForm article={article} />
     </div>

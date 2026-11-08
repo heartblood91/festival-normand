@@ -1,10 +1,19 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
+import { revalidatePublic } from "@/lib/revalidate-public"
 import { prisma } from "@/lib/prisma"
-import { eventSchema } from "@/lib/schemas/event"
+import { requireRole } from "@/lib/rbac"
+import { eventSchema, type EventFormData } from "@/lib/schemas/event"
 import { searchEventIds } from "@/lib/search"
-import type { Category, Department, Prisma } from "@prisma/client"
+import type { AdminEventListItem } from "@/lib/types/admin"
+import {
+  eventListOrderBy,
+  eventListWhere,
+  parisToday,
+  publishBlocker,
+  type EventListParams,
+} from "@/lib/admin/event-list"
+import type { Category, Department } from "@prisma/client"
 
 export type EventActionResult = {
   success: boolean
@@ -13,17 +22,7 @@ export type EventActionResult = {
   eventId?: string
 }
 
-type GetAdminEventsParams = {
-  search?: string
-  page?: number
-  limit?: number
-  status?: "published" | "draft" | "depublished" | "all"
-  department?: string
-  category?: string
-  featured?: string
-}
-
-import type { AdminEventListItem } from "@/lib/types/admin"
+type GetAdminEventsParams = EventListParams & { limit?: number }
 
 type GetAdminEventsResult = {
   items: AdminEventListItem[]
@@ -33,54 +32,22 @@ type GetAdminEventsResult = {
 }
 
 export const getAdminEvents = async ({
-  search,
-  page = 1,
   limit = 25,
-  status = "all",
-  department,
-  category,
-  featured,
+  ...params
 }: GetAdminEventsParams = {}): Promise<GetAdminEventsResult> => {
-  const where: Prisma.EventWhereInput = {}
+  await requireRole("EDITOR")
 
-  if (search) {
-    const matchedIds = await searchEventIds(search)
-    where.id = { in: matchedIds }
-  }
-
-  if (status === "published") {
-    where.published = true
-  } else if (status === "draft") {
-    where.published = false
-    where.publishedAt = null
-    where.unpublishedAt = null
-  } else if (status === "depublished") {
-    where.published = false
-    where.unpublishedAt = { not: null }
-  }
-
-  if (department && department !== "all") {
-    where.department = department as Department
-  }
-
-  if (category && category !== "all") {
-    where.category = category as Category
-  }
-
-  if (featured === "true") {
-    where.featured = true
-  } else if (featured === "false") {
-    where.featured = false
-  }
+  const page = params.page ?? 1
+  const searchIds = params.search ? await searchEventIds(params.search) : undefined
+  const where = eventListWhere(params, parisToday(), searchIds)
 
   const total = await prisma.event.count({ where })
   const totalPages = Math.ceil(total / limit)
-  const skip = (page - 1) * limit
 
   const items = await prisma.event.findMany({
     where,
-    orderBy: { createdAt: "desc" },
-    skip,
+    orderBy: eventListOrderBy(params.sort),
+    skip: (page - 1) * limit,
     take: limit,
     select: {
       id: true,
@@ -95,6 +62,8 @@ export const getAdminEvents = async ({
       publishedAt: true,
       unpublishedAt: true,
       accessible: true,
+      tourinsoftId: true,
+      tourinsoftUpdatedAt: true,
     },
   })
 
@@ -102,11 +71,16 @@ export const getAdminEvents = async ({
 }
 
 export const getAdminEventById = async (id: string) => {
-  return prisma.event.findUnique({ where: { id } })
+  await requireRole("EDITOR")
+  return prisma.event.findUnique({
+    where: { id },
+    include: { themes: { select: { id: true } } },
+  })
 }
 
 export const createEvent = async (formData: FormData): Promise<EventActionResult> => {
   try {
+    await requireRole("EDITOR")
     const raw = extractFormData(formData)
     const result = eventSchema.safeParse(raw)
 
@@ -155,16 +129,20 @@ export const createEvent = async (formData: FormData): Promise<EventActionResult
         latitude: data.latitude ?? null,
         longitude: data.longitude ?? null,
         coverImage: data.coverImage || null,
+        coverImageAltFr: data.coverImageAltFr?.trim() || null,
+        coverImageAltEn: data.coverImageAltEn?.trim() || null,
         featured: data.featured,
         accessible: data.accessible,
         published: data.published,
         publishedAt: data.published ? new Date() : null,
+        ...(data.themeIds?.length
+          ? { themes: { connect: data.themeIds.map((themeId) => ({ id: themeId })) } }
+          : {}),
+        ...fundraisingData(data),
       },
     })
 
-    revalidatePath("/evenements")
-    revalidatePath(`/evenement/${event.slug}`)
-    revalidatePath("/")
+    revalidatePublic("/evenements", `/evenement/${event.slug}`, "/")
 
     return {
       success: true,
@@ -181,6 +159,7 @@ export const createEvent = async (formData: FormData): Promise<EventActionResult
 
 export const updateEvent = async (id: string, formData: FormData): Promise<EventActionResult> => {
   try {
+    await requireRole("EDITOR")
     const raw = extractFormData(formData)
     const result = eventSchema.safeParse(raw)
 
@@ -237,17 +216,21 @@ export const updateEvent = async (id: string, formData: FormData): Promise<Event
         latitude: data.latitude ?? null,
         longitude: data.longitude ?? null,
         coverImage: data.coverImage || null,
+        coverImageAltFr: data.coverImageAltFr?.trim() || null,
+        coverImageAltEn: data.coverImageAltEn?.trim() || null,
         featured: data.featured,
         accessible: data.accessible,
         published: data.published,
         ...(isPublishing ? { publishedAt: new Date(), unpublishedAt: null } : {}),
         ...(isUnpublishing ? { unpublishedAt: new Date() } : {}),
+        ...(data.themeIds
+          ? { themes: { set: data.themeIds.map((themeId) => ({ id: themeId })) } }
+          : {}),
+        ...fundraisingData(data),
       },
     })
 
-    revalidatePath("/evenements")
-    revalidatePath(`/evenement/${event.slug}`)
-    revalidatePath("/")
+    revalidatePublic("/evenements", `/evenement/${event.slug}`, "/")
 
     return {
       success: true,
@@ -262,58 +245,34 @@ export const updateEvent = async (id: string, formData: FormData): Promise<Event
   }
 }
 
-export const deleteEvent = async (id: string): Promise<EventActionResult> => {
+// Events are never deleted, only unpublished: the row, its URL history and the
+// Tourinsoft link stay, so the sync cannot recreate it and editors can undo.
+export const unpublishEvents = async (ids: string[]): Promise<EventActionResult> => {
   try {
-    const event = await prisma.event.delete({ where: { id } })
-
-    revalidatePath("/evenements")
-    revalidatePath(`/evenement/${event.slug}`)
-    revalidatePath("/")
-
-    return {
-      success: true,
-      message: "Événement supprimé avec succès.",
-    }
-  } catch {
-    return {
-      success: false,
-      message: "Une erreur est survenue lors de la suppression de l'événement.",
-    }
-  }
-}
-
-export const bulkDeleteEvents = async (ids: string[]): Promise<EventActionResult> => {
-  try {
+    await requireRole("EDITOR")
     if (!ids.length) {
-      return {
-        success: false,
-        message: "Aucun événement sélectionné.",
-      }
+      return { success: false, message: "Aucun événement sélectionné." }
     }
 
     const events = await prisma.event.findMany({
-      where: { id: { in: ids } },
+      where: { id: { in: ids }, published: true },
       select: { slug: true },
     })
-
-    await prisma.event.deleteMany({
-      where: { id: { in: ids } },
+    const { count } = await prisma.event.updateMany({
+      where: { id: { in: ids }, published: true },
+      data: { published: false, unpublishedAt: new Date() },
     })
 
-    revalidatePath("/evenements")
-    events.forEach((event) => {
-      revalidatePath(`/evenement/${event.slug}`)
-    })
-    revalidatePath("/")
+    revalidatePublic("/evenements", ...events.map((event) => `/evenement/${event.slug}`), "/")
 
     return {
       success: true,
-      message: `${ids.length} événement${ids.length > 1 ? "s" : ""} supprimé${ids.length > 1 ? "s" : ""} avec succès.`,
+      message: count > 1 ? `${count} événements dépubliés.` : `${count} événement dépublié.`,
     }
   } catch {
     return {
       success: false,
-      message: "Une erreur est survenue lors de la suppression des événements.",
+      message: "Une erreur est survenue lors de la dépublication.",
     }
   }
 }
@@ -342,7 +301,114 @@ const extractFormData = (formData: FormData) => ({
   latitude: (formData.get("latitude") as string) ?? "",
   longitude: (formData.get("longitude") as string) ?? "",
   coverImage: (formData.get("coverImage") as string) ?? "",
+  coverImageAltFr: (formData.get("coverImageAltFr") as string) ?? "",
+  coverImageAltEn: (formData.get("coverImageAltEn") as string) ?? "",
   featured: formData.get("featured") === "true",
   accessible: formData.get("accessible") === "true",
   published: formData.get("published") !== "false",
+  // Comma-separated ids; absent means the form has no theme picker.
+  themeIds: formData.has("themeIds")
+    ? String(formData.get("themeIds")).split(",").filter(Boolean)
+    : undefined,
+  // Absent means the form has no collect section: the attached collect is kept.
+  ...(formData.has("fundraisingUrl")
+    ? {
+        fundraisingUrl: String(formData.get("fundraisingUrl")),
+        fundraisingTitle: String(formData.get("fundraisingTitle") ?? ""),
+        fundraisingImage: String(formData.get("fundraisingImage") ?? ""),
+      }
+    : {}),
 })
+
+/** Clearing the link clears its title and image: they only describe the link. */
+const fundraisingData = (data: EventFormData) => {
+  if (data.fundraisingUrl === undefined) return {}
+  const url = data.fundraisingUrl || null
+  return {
+    fundraisingUrl: url,
+    fundraisingTitle: url ? data.fundraisingTitle || null : null,
+    fundraisingImage: url ? data.fundraisingImage || null : null,
+  }
+}
+
+const revalidateEvents = (slugs: string[]) => {
+  revalidatePublic("/evenements", ...slugs.map((slug) => `/evenement/${slug}`), "/")
+}
+
+const plural = (count: number, one: string, many: string) => `${count} ${count > 1 ? many : one}`
+
+/**
+ * Bulk publish skips the AI review but never the RGAA alt rule: blocked drafts
+ * stay unpublished and are named in the message.
+ */
+export const publishEvents = async (ids: string[]): Promise<EventActionResult> => {
+  try {
+    await requireRole("EDITOR")
+    if (!ids.length) return { success: false, message: "Aucun événement sélectionné." }
+
+    const drafts = await prisma.event.findMany({
+      where: { id: { in: ids }, published: false },
+      select: {
+        id: true,
+        slug: true,
+        titleFr: true,
+        coverImage: true,
+        coverImageAltFr: true,
+        descriptionFr: true,
+        descriptionEn: true,
+      },
+    })
+    const blocked = drafts.flatMap((event) => {
+      const reason = publishBlocker(event)
+      return reason ? [`${event.titleFr} (${reason})`] : []
+    })
+    const ready = drafts.filter((event) => !publishBlocker(event))
+    const skipped = blocked.length ? ` Non publié(s) : ${blocked.join(", ")}.` : ""
+
+    if (!ready.length) {
+      return { success: false, message: `Aucun événement publié.${skipped}` }
+    }
+
+    const { count } = await prisma.event.updateMany({
+      where: { id: { in: ready.map((event) => event.id) }, published: false },
+      data: { published: true, publishedAt: new Date(), unpublishedAt: null },
+    })
+    revalidateEvents(ready.map((event) => event.slug))
+
+    return {
+      success: true,
+      message: `${plural(count, "événement publié", "événements publiés")}.${skipped}`,
+    }
+  } catch {
+    return { success: false, message: "Une erreur est survenue lors de la publication." }
+  }
+}
+
+export const setEventsFeatured = async (
+  ids: string[],
+  featured: boolean
+): Promise<EventActionResult> => {
+  try {
+    await requireRole("EDITOR")
+    if (!ids.length) return { success: false, message: "Aucun événement sélectionné." }
+
+    const events = await prisma.event.findMany({
+      where: { id: { in: ids } },
+      select: { slug: true },
+    })
+    const { count } = await prisma.event.updateMany({
+      where: { id: { in: ids } },
+      data: { featured },
+    })
+    revalidateEvents(events.map((event) => event.slug))
+
+    return {
+      success: true,
+      message: featured
+        ? `${plural(count, "événement mis", "événements mis")} à la une.`
+        : `${plural(count, "événement retiré", "événements retirés")} de la une.`,
+    }
+  } catch {
+    return { success: false, message: "Une erreur est survenue lors de la mise à jour." }
+  }
+}
