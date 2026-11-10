@@ -136,8 +136,8 @@ test.describe("Admin event lists", () => {
           `1 événement publié. Non publié(s) : ${blocked} (image de couverture sans texte alternatif).`
         )
       ).toBeVisible()
-      await expect(row(page, NO_COVER_EVENT).getByLabel("Publié")).toBeVisible()
-      await expect(row(page, blocked).getByLabel("Dépublié")).toBeVisible()
+      await expect(row(page, NO_COVER_EVENT).getByText("Publié", { exact: true })).toBeVisible()
+      await expect(row(page, blocked).getByText("Dépublié", { exact: true })).toBeVisible()
     } finally {
       await republishEvent(page, `/fr${blockedEdit}`)
       await republishEvent(page, `/fr${noCoverEdit}`)

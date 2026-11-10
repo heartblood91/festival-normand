@@ -1,6 +1,19 @@
 import { test, expect } from "@playwright/test"
 
 test.describe("Inscription page", () => {
+  test("loads the YouTube player only when asked, with a real title", async ({ page }) => {
+    await page.goto("/inscription")
+    const play = page.getByRole("button", { name: /^Lire la vidéo : / })
+    test.skip((await play.count()) === 0, "page content has no video")
+
+    await expect(page.locator('iframe[src*="youtube"]')).toHaveCount(0)
+    await play.focus()
+    await page.keyboard.press("Enter")
+    const player = page.locator('iframe[src*="youtube-nocookie.com/embed/"]')
+    await expect(player).toHaveCount(1)
+    await expect(player).not.toHaveAttribute("title", /^https?:/)
+  })
+
   test("has correct title", async ({ page }) => {
     await page.goto("/inscription")
 

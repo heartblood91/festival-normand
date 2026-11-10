@@ -248,20 +248,14 @@ export const AdminNewsPage = ({
                     </td>
                     <td className="px-4 py-3 text-center">
                       {article.published ? (
-                        <span
-                          className="inline-flex items-center gap-1 text-emerald-400"
-                          aria-label="Publié"
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                          <span className="hidden md:inline">Publié</span>
+                        <span className="inline-flex items-center gap-1 text-emerald-400">
+                          <Eye className="h-3.5 w-3.5" aria-hidden="true" />
+                          <span className="sr-only md:not-sr-only">Publié</span>
                         </span>
                       ) : (
-                        <span
-                          className="text-muted-foreground inline-flex items-center gap-1"
-                          aria-label="Brouillon"
-                        >
-                          <EyeOff className="h-3.5 w-3.5" />
-                          <span className="hidden md:inline">Brouillon</span>
+                        <span className="text-muted-foreground inline-flex items-center gap-1">
+                          <EyeOff className="h-3.5 w-3.5" aria-hidden="true" />
+                          <span className="sr-only md:not-sr-only">Brouillon</span>
                         </span>
                       )}
                     </td>

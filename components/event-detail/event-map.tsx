@@ -45,8 +45,10 @@ const popupHtml = (rawTitle: string, rawBody: string, href?: string) => {
   return `<div style="background:#1e293b;border-radius:8px;padding:10px 12px;min-width:180px;font-family:Inter,sans-serif;color:#e2e8f0;"><p style="margin:0 0 4px;font-size:14px;font-weight:700;line-height:1.3;">${title}</p>${link}</div>`
 }
 
-const buildMarker = (color: string, size: number, ring: string, label?: string) => {
+const buildMarker = (name: string, color: string, size: number, ring: string, label?: string) => {
   const el = document.createElement("div")
+  // Mapbox keeps an existing aria-label instead of its generic "Map marker".
+  el.setAttribute("aria-label", label ? `${label}. ${name}` : name)
   el.style.cssText = `width:${size}px;height:${size}px;background:${color};border:${size > 12 ? 3 : 1}px solid ${ring};border-radius:50%;box-shadow:0 2px 12px rgba(0,0,0,0.5);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#0f172a;font:700 12px Inter,sans-serif;`
   if (label) el.textContent = label
   return el
@@ -101,14 +103,19 @@ const EventMap = ({
     neighbours
       .filter((n) => !suggested.has(n.slug))
       .forEach((n) =>
-        addNeighbour(n, buildMarker("rgba(245,158,11,0.55)", 10, "rgba(15,23,42,0.8)"))
+        addNeighbour(n, buildMarker(n.title, "rgba(245,158,11,0.55)", 10, "rgba(15,23,42,0.8)"))
       )
     suggestions.forEach((n, index) =>
-      addNeighbour(n, buildMarker("#f59e0b", 24, "rgba(255,255,255,0.9)", String(index + 1)))
+      addNeighbour(
+        n,
+        buildMarker(n.title, "#f59e0b", 24, "rgba(255,255,255,0.9)", String(index + 1))
+      )
     )
 
     // Current event — bigger red marker
-    new mapboxgl.Marker({ element: buildMarker("#ef4444", 30, "#fff") })
+    new mapboxgl.Marker({
+      element: buildMarker(`${title} — ${labels.youAreHere}`, "#ef4444", 30, "#fff"),
+    })
       .setLngLat([longitude, latitude])
       .setPopup(
         new mapboxgl.Popup({ offset: 22, closeButton: false }).setHTML(
@@ -136,7 +143,7 @@ const EventMap = ({
     <div
       ref={mapRef}
       className="h-[300px] w-full rounded-xl md:h-[400px]"
-      role="img"
+      role="region"
       aria-label={labels.map}
     />
   )

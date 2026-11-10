@@ -475,5 +475,10 @@
     "lede": "This heritage site has a fundraising campaign run by the Fondation du patrimoine. Every donation helps to save it.",
     "cta": "Make a donation",
     "newTab": "(opens a new tab, fondation-patrimoine.org)"
+  },
+  "video": {
+    "play": "Play video: {title}",
+    "fallbackTitle": "presentation video",
+    "thirdParty": "The video is hosted by YouTube and loads when you click."
   }
 }

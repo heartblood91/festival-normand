@@ -387,14 +387,9 @@ const FilterBar = ({ nights, total = 0, counts, themes = [] }: FilterBarProps) =
                     : "text-muted-foreground hover:text-foreground border-white/10 bg-white/5 hover:bg-white/10"
                 )}
                 aria-pressed={selectedDates.includes(option.value)}
-                aria-label={t(
-                  selectedDates.includes(option.value)
-                    ? "filters.removeFilter"
-                    : "filters.filterBy",
-                  { filter: option.long }
-                )}
               >
                 {option.short}
+                <span className="sr-only">, {option.long}</span>
               </button>
             ))}
           </div>

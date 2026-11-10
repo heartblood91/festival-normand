@@ -475,5 +475,10 @@
     "lede": "Ce patrimoine fait l'objet d'une collecte de la Fondation du patrimoine. Chaque don, déductible des impôts, aide à le sauvegarder.",
     "cta": "Faire un don",
     "newTab": "(nouvel onglet, fondation-patrimoine.org)"
+  },
+  "video": {
+    "play": "Lire la vidéo : {title}",
+    "fallbackTitle": "vidéo de présentation",
+    "thirdParty": "La vidéo est hébergée par YouTube et se charge au clic."
   }
 }

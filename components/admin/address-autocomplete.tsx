@@ -175,6 +175,7 @@ export const AddressAutocomplete = ({ onSelect, defaultValue = "" }: AddressAuto
         placeholder="Saisissez une adresse..."
         required
         className="mt-1 border-white/10 bg-white/5 text-white"
+        role="combobox"
         aria-autocomplete="list"
         aria-expanded={isOpen}
         aria-controls="address-suggestions"

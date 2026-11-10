@@ -22,11 +22,9 @@ const LocaleSwitcher = () => {
       type="button"
       onClick={switchLocale}
       className="focus-visible:ring-primary/50 inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-2 py-1.5 text-sm font-medium transition-colors hover:bg-white/5 focus-visible:ring-2 focus-visible:outline-none"
-      aria-label={`FR / EN — ${t("switchTo")}`}
     >
       <Globe className="text-primary size-3.5" aria-hidden="true" />
       <span
-        aria-hidden="true"
         className={cn(
           "rounded px-1.5 py-0.5 text-xs font-bold transition-colors",
           locale === "fr" ? "bg-primary text-primary-foreground" : "text-muted-foreground"
@@ -35,13 +33,15 @@ const LocaleSwitcher = () => {
         FR
       </span>
       <span
-        aria-hidden="true"
         className={cn(
           "rounded px-1.5 py-0.5 text-xs font-bold transition-colors",
           locale === "en" ? "bg-primary text-primary-foreground" : "text-muted-foreground"
         )}
       >
         EN
+      </span>
+      <span className="sr-only" lang={locale === "fr" ? "en" : "fr"}>
+        {t("switchTo")}
       </span>
     </button>
   )

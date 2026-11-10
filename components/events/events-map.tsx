@@ -278,7 +278,7 @@ const EventsMap = ({ events }: EventsMapProps) => {
       <div
         ref={mapContainer}
         className="h-[500px] w-full rounded-xl md:h-[650px]"
-        role="img"
+        role="region"
         aria-label={t("a11y.mapDescription")}
       />
       <p className="sr-only">{t("a11y.mapSrOnly")}</p>

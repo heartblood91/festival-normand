@@ -4,13 +4,7 @@ import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import rehypeRaw from "rehype-raw"
 import type { Components } from "react-markdown"
-
-const YOUTUBE_REGEX = /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]+)/
-
-const extractYouTubeId = (url: string): string | null => {
-  const match = url.match(YOUTUBE_REGEX)
-  return match ? match[1] : null
-}
+import { extractYouTubeId, YouTubeEmbed } from "@/components/news/youtube-embed"
 
 const components: Components = {
   // Page already has an h1, so markdown headings start at h2.
@@ -33,10 +27,10 @@ const components: Components = {
     const hasBlockChildren = node?.children?.some(
       (child: { type?: string; tagName?: string; properties?: { href?: string } }) =>
         child.type === "element" &&
-        (["img"].includes(child.tagName ?? "") ||
+        (["img", "iframe"].includes(child.tagName ?? "") ||
           (child.tagName === "a" &&
-            child.properties?.href &&
-            YOUTUBE_REGEX.test(child.properties.href)))
+            !!child.properties?.href &&
+            !!extractYouTubeId(child.properties.href)))
     )
     const Tag = hasBlockChildren ? "div" : "p"
     return (
@@ -63,16 +57,10 @@ const components: Components = {
       const youtubeId = extractYouTubeId(href)
       if (youtubeId) {
         return (
-          <div className="border-primary/20 my-7 aspect-video w-full overflow-hidden border">
-            <iframe
-              src={`https://www.youtube-nocookie.com/embed/${youtubeId}`}
-              title={typeof children === "string" ? children : "YouTube video"}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="h-full w-full"
-              loading="lazy"
-            />
-          </div>
+          <YouTubeEmbed
+            videoId={youtubeId}
+            title={typeof children === "string" ? children : undefined}
+          />
         )
       }
     }
@@ -84,6 +72,20 @@ const components: Components = {
       >
         {children}
       </a>
+    )
+  },
+  iframe: ({ src, title }) => {
+    const youtubeId = typeof src === "string" ? extractYouTubeId(src) : null
+    if (youtubeId) return <YouTubeEmbed videoId={youtubeId} title={title} />
+    return (
+      <div className="border-primary/20 my-7 aspect-video w-full overflow-hidden border">
+        <iframe
+          src={src}
+          title={title || "Contenu intégré"}
+          className="h-full w-full"
+          loading="lazy"
+        />
+      </div>
     )
   },
   img: ({ src, alt }) => (

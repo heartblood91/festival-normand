@@ -23,11 +23,11 @@ const Footer = async ({ editionDates }: FooterProps) => {
             <Link
               href="/"
               className="text-foreground hover:text-primary focus-visible:ring-primary/50 inline-flex items-center gap-3 rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
-              aria-label={`${t("meta.festivalName")} — ${t("a11y.backToHome")}`}
             >
               <LanternLogo className="size-7" />
               <span className="font-display text-xl font-medium italic">
                 {t("meta.festivalName")}
+                <span className="sr-only"> — {t("a11y.backToHome")}</span>
               </span>
             </Link>
             <p className="text-ed-bone max-w-sm font-serif text-base font-light opacity-75">

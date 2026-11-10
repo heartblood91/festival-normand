@@ -84,7 +84,7 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
                 onClick={() => setFormLocale("fr")}
                 className={`rounded px-3 py-1 text-sm font-medium transition-colors ${
                   formLocale === "fr"
-                    ? "bg-amber-500 text-white"
+                    ? "bg-amber-500 text-slate-950"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -95,7 +95,7 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
                 onClick={() => setFormLocale("en")}
                 className={`rounded px-3 py-1 text-sm font-medium transition-colors ${
                   formLocale === "en"
-                    ? "bg-amber-500 text-white"
+                    ? "bg-amber-500 text-slate-950"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >

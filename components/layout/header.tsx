@@ -97,12 +97,12 @@ const Header = ({ kicker }: HeaderProps) => {
         <Link
           href="/"
           className="focus-visible:ring-primary/50 group flex items-center gap-3 rounded-sm focus-visible:ring-2 focus-visible:outline-none"
-          aria-label={`${t("meta.festivalName")} — ${t("a11y.backToHome")}`}
         >
           <LanternLogo className="size-7 shrink-0" />
           <span className="flex flex-col leading-none">
             <span className="text-foreground font-display group-hover:text-primary text-lg font-medium transition-colors md:text-xl">
               {t("meta.festivalName")}
+              <span className="sr-only"> — {t("a11y.backToHome")}</span>
             </span>
             <span
               className="text-primary mt-1 hidden font-mono text-[9px] tracking-[0.2em] uppercase sm:block"
