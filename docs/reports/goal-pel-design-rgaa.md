@@ -43,6 +43,27 @@ Seule erreur console dans les captures : le statut 404 attendu de `/fr/page-inex
 
 `booster-capacity` refusait d'abord le build : disque à 92,7 %. Avec l'accord de Cédric, j'ai purgé le cache de build Docker inutilisé (`docker builder prune`), ce qui a libéré 13,6 Go. Le disque est passé à 89,7 % (21,5 Gio libres) et les travaux lourds sont de nouveau autorisés. J'ai ensuite fait un build neuf, puis lancé `next start` et l'e2e complet.
 
+## Rejeu par item (build de HEAD `0a90e8f`, 2026-11-11)
+
+`pnpm build` sous `flock`, puis `next start` sur 127.0.0.1:3013, `playwright --retries=0 --reporter=json` et `vitest run --reporter=json`. Chaque cellule indique « réussis / échecs ».
+
+| Item | e2e | Unitaires |
+| --- | --- | --- |
+| D1 | `http-status.spec.ts` 3/0 ; audit `docs/reports/design-audit.md` ; captures `before/` | – |
+| A1 | `a11y-axe.spec.ts` 6/0 (0 violation grave ou critique) | `design-tokens-contrast.test.ts` 15/0 |
+| A2 | `a11y-screen-reader.spec.ts` 20/0 ; `not-found.spec.ts` 12/0 | – |
+| D2 | `design-states.spec.ts` 7/0 ; `programme-edition.spec.ts` 5/0 ; `contact.spec.ts` 10/0 | `hero-video` 3/0 ; `programme-edition` 4/0 ; `contact` 9/0 |
+| A3 | `a11y-keyboard.spec.ts` 8/0 | – |
+| D3 | `motion.spec.ts` 8/0 | `tween.test.ts` 6/0 |
+| D4 | `admin-dashboard.spec.ts` 2/0 ; `admin-mobile.spec.ts` 6/0 ; `admin-publish.spec.ts` 5/0 | – |
+| F1 | `themes` 2/0 ; `travel-book` 4/0 ; `fundraising` 3/0 ; `layout` 11/0 ; `embargo` 1/0 | `edition` 3/0 ; `department-settings` 4/0 |
+| F2 | `event-history.spec.ts` 2/0 | `event` 25/0 ; `events` 30/0 ; `synced-fields` 3/0 |
+| R1 | `recovery.spec.ts` 2/0 | `recovery` 6/0 ; `import` 5/0 |
+| A4 | `accessibility-statement.spec.ts` 3/0 | `declaration.test.ts` 4/0 |
+| P1 | Preview reconstruite sur `0a90e8f` (build de 11:12). En HTTPS avec le lien `#access=` : `/fr`, `/en` (`lang=en`), `/fr/evenements`, la fiche Pontécoulant, `/fr/accessibilite` et `/fr/admin/login` répondent 200, et aucune requête n'échoue. | – |
+
+Total : e2e 243 réussis, 0 échec, 0 instable ; unitaires 472 réussis, 0 échec. La base locale est propre ensuite : 0 réglage de département, 0 événement dépublié, 0 `history_url`.
+
 ## Avant / après
 
 - **Captures** : `docs/screenshots/design/before/` (prod, 2026-11-11) et `docs/screenshots/design/after/`. Mêmes noms, préfixe `before-` ou `after-`, largeurs 1440 et 390.
@@ -63,7 +84,7 @@ Seule erreur console dans les captures : le statut 404 attendu de `/fr/page-inex
 - **Preview** : `pel-design-rgaa` tourne en mode figé sur `a0aec64`, avec la base locale `pel-audit-db:5435`.
 - **Contrôle** : vérification en headless à 1920×1080 en ouvrant le lien `#access=`. `/fr`, `/en/accessibilite` et `/fr/evenement/lumieres-au-chateau-de-pontecoulant` répondent 200. Le fragment disparaît de l'URL et aucune requête n'échoue. Capture : `docs/screenshots/design/p1/p1-preview-https-1920.png`.
 - **Images locales** : les images envoyées en local (`public/uploads/`, ignoré par git) manquaient au worktree de la preview. Je les ai copiées, puis j'ai redémarré seulement `next start`.
-- **Pas de reconstruction de la preview** : quand je l'ai mise à jour, `booster-capacity` refusait les travaux lourds. Elle sert le build de `a0aec64`, qui a le même code source que HEAD.
+- **Preview reconstruite** : après la purge du cache Docker, la preview a été reconstruite sur `0a90e8f`, la même version que le rejeu ci-dessus.
 - **Le lien** : il est donné à Cédric dans la conversation et n'est écrit dans aucun fichier. Pour en obtenir un nouveau : `wtn preview pel-design-rgaa`. Le jeton d'ouverture vaut 15 minutes ; une fois le lien ouvert, le cookie dure une journée.
 
 ## Valeurs provisoires (configurables, à confirmer)
