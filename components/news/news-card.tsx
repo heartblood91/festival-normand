@@ -2,6 +2,7 @@ import { Link } from "@/lib/i18n/routing"
 import Image from "next/image"
 import { getLocale } from "next-intl/server"
 import { cn } from "@/lib/utils"
+import { EventThumb } from "@/components/editorial/event-thumb"
 import { formatNewsDate } from "@/lib/utils/format-date"
 import type { NewsListItem } from "@/lib/queries/news"
 
@@ -33,7 +34,16 @@ const NewsCard = async ({ article, className, priority = false }: NewsCardProps)
             className="object-cover"
             priority={priority}
           />
-        ) : null}
+        ) : (
+          <div data-testid="news-thumb-fallback" className="absolute inset-0">
+            <EventThumb
+              category="ILLUMINATIONS"
+              title={article.title}
+              seed={article.slug}
+              className="h-full w-full border-0"
+            />
+          </div>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col gap-3 p-6">

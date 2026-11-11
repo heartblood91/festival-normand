@@ -5,6 +5,7 @@ import { Link } from "@/lib/i18n/routing"
 import { getTranslations } from "next-intl/server"
 import { getNews, type NewsListItem } from "@/lib/queries/news"
 import { NewsCard } from "@/components/news/news-card"
+import { EventThumb } from "@/components/editorial/event-thumb"
 import { Marker } from "@/components/editorial/primitives"
 import { formatNewsDate } from "@/lib/utils/format-date"
 
@@ -85,7 +86,16 @@ const NewsListPage = async ({ params }: NewsListPageProps) => {
                       className="object-cover"
                       priority
                     />
-                  ) : null}
+                  ) : (
+                    <div data-testid="news-thumb-fallback" className="absolute inset-0">
+                      <EventThumb
+                        category="ILLUMINATIONS"
+                        title={featured.title}
+                        seed={featured.slug}
+                        className="h-full w-full border-0"
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="flex flex-col justify-center gap-5 p-8 md:p-10">
                   <span className="bg-primary text-primary-foreground w-fit px-3 py-1 font-sans text-xs font-semibold tracking-[0.16em] uppercase">

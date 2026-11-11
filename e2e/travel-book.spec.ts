@@ -47,7 +47,7 @@ test.describe("Travel book", () => {
     await expect(page.getByRole("button", { name: "Dans mon carnet" })).toBeVisible()
     await expect(travelBookLink(page)).toHaveAccessibleName("Mon carnet de voyage, 1 lieu")
 
-    await page.goto("/fr/evenements?search=Caen")
+    await page.goto("/fr/evenements?edition=all&search=Caen")
     await pressUntilOn(
       page.getByRole("button", { name: `Ajouter « ${CAEN.title} » au carnet de voyage` })
     )

@@ -6,6 +6,7 @@ import { searchEventIds } from "@/lib/search"
 import { isInNormandyBounds, normandyBoundsWhere } from "@/lib/geo/normandy"
 import { getCurrentEdition } from "@/lib/queries/edition"
 import { parseNightCodes } from "@/lib/festival/edition"
+import { programmeEditionWhere, type ProgrammeEdition } from "@/lib/festival/programme-edition"
 import { themePin } from "@/lib/themes/marker"
 import type { Locale } from "@/lib/i18n/config"
 import type { Department, Category, Prisma } from "@prisma/client"
@@ -24,6 +25,8 @@ export type EventFilters = {
   accessible?: boolean
   /** Theme slug */
   theme?: string
+  /** Current edition, earlier editions or both; no condition when omitted. */
+  edition?: ProgrammeEdition
   page?: number
   lat?: number
   lng?: number
@@ -99,6 +102,11 @@ const buildFilterWhere = async (
   if (theme) where.themes = { some: { slug: theme } }
 
   const and: Prisma.EventWhereInput[] = []
+
+  if (filters.edition) {
+    const condition = programmeEditionWhere(filters.edition, (await getCurrentEdition()).year)
+    if (condition) and.push(condition)
+  }
 
   if (dates?.length) {
     const edition = await getCurrentEdition()
@@ -332,6 +340,14 @@ export const getAllFilteredEventsForMap = async (
 }
 
 export type MapEventItem = Awaited<ReturnType<typeof getAllFilteredEventsForMap>>[number]
+
+/** Published events of one edition, before any visitor filter: decides the default programme. */
+export const countEditionEvents = async (edition: ProgrammeEdition) =>
+  cachedQuery(
+    async () => prisma.event.count({ where: await buildFilterWhere({ edition }) }),
+    ["edition-events-count", edition],
+    { revalidate: 300, tags: ["events"] }
+  )()
 
 export const getFilterCounts = async (filters: EventFilters = {}) => {
   const cacheKey = JSON.stringify(filters)

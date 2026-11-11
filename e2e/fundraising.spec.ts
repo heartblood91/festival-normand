@@ -100,7 +100,7 @@ test.describe("Fondation du patrimoine collects", () => {
     await expect(donate).toHaveAttribute("target", "_blank")
     await expect(donate).toHaveAttribute("rel", /noopener/)
 
-    await page.goto(`/fr/evenements?search=${encodeURIComponent(event.title_fr)}`)
+    await page.goto(`/fr/evenements?edition=all&search=${encodeURIComponent(event.title_fr)}`)
     const card = page.locator(`a[href$="/evenement/${event.slug}"]`).first()
     await expect(card.getByText("Collecte", { exact: true })).toBeVisible()
   })

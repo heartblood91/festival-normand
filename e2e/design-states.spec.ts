@@ -1,4 +1,11 @@
 import { test, expect, type Page } from "@playwright/test"
+import {
+  describeCoverIfMissing,
+  editorCredentials,
+  loginAsEditor,
+  MISSING_EDITOR,
+} from "./helpers/admin"
+import { hasDatabase, query } from "./helpers/db"
 
 // Design audit follow-ups (docs/reports/design-audit.md): broken assets, unreadable
 // mobile labels, partner grid filler and the contact form when no mailer is configured.
@@ -122,5 +129,48 @@ test.describe("design: contact without a mailer", () => {
     await expect(page.getByLabel(/Nom complet/)).toHaveValue("Jean Dupont")
     await expect(page.getByLabel(/Département/)).toHaveValue("CALVADOS")
     await expect(page.getByLabel(/Message/)).toHaveValue(/horaires du festival/)
+  })
+})
+
+test.describe("design: news without a cover", () => {
+  test.skip(!editorCredentials(), MISSING_EDITOR)
+  test.skip(!hasDatabase(), "Needs DATABASE_URL to clear a news cover")
+
+  /** Saving from the admin is what refreshes the cached public news lists. */
+  const saveFromAdmin = async (page: Page, id: string) => {
+    await page.goto(`/fr/admin/news/${id}/edit`)
+    // Seed covers have no alt text, which the form requires once a cover is set.
+    await describeCoverIfMissing(page)
+    await page.getByRole("button", { name: "Mettre à jour" }).first().click()
+    await expect(page).toHaveURL(/\/admin\/news$/, { timeout: 15_000 })
+  }
+
+  test("news without a cover show the illustrated fallback, lead and grid", async ({ page }) => {
+    test.setTimeout(120_000)
+    // The latest article is the lead; the next one opens the grid.
+    const articles = await query<{ id: string; slug: string; cover_image: string | null }>(
+      "select id, slug, cover_image from news where published = true and cover_image is not null order by published_at desc limit 2"
+    )
+    test.skip(articles.length < 2, "Needs two published news with a cover")
+    await loginAsEditor(page)
+    try {
+      for (const article of articles) {
+        await query("update news set cover_image = null where id = $1", [article.id])
+        await saveFromAdmin(page, article.id)
+      }
+      await page.goto("/fr/actualites")
+      for (const article of articles) {
+        const card = page.locator(`a[href$="/actualite/${article.slug}"]`)
+        await expect(card.getByTestId("news-thumb-fallback")).toBeVisible()
+      }
+    } finally {
+      for (const article of articles) {
+        await query("update news set cover_image = $2 where id = $1", [
+          article.id,
+          article.cover_image,
+        ])
+        await saveFromAdmin(page, article.id)
+      }
+    }
   })
 })

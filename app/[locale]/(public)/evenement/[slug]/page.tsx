@@ -19,6 +19,8 @@ import { DEFAULT_EVENT_IMAGE } from "@/lib/events/default-image"
 import { isInNormandyBounds } from "@/lib/geo/normandy"
 import { FavoriteButton } from "@/components/travel-book/favorite-button"
 import { FundraisingCallout } from "@/components/events/fundraising-callout"
+import { archivedEditionYear } from "@/lib/festival/programme-edition"
+import { getCurrentEdition } from "@/lib/queries/edition"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
@@ -80,6 +82,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
     ? await getNeighbourEvents(slug, event.latitude as number, event.longitude as number, locale)
     : []
   const nearby = pickNearbySuggestions(event, neighbours)
+  const archivedYear = archivedEditionYear(event.dateStart, (await getCurrentEdition()).year)
 
   // Prefer the relational photos (with credit); fall back to coverImage/images
   // for legacy/seed events that predate the Tourinsoft import.
@@ -149,6 +152,14 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
               {event.accessible ? (
                 <span className="bg-primary text-primary-foreground px-3 py-1.5 font-sans text-xs font-semibold tracking-[0.16em] uppercase">
                   {t("events.accessible")}
+                </span>
+              ) : null}
+              {archivedYear ? (
+                <span
+                  data-testid="edition-archive"
+                  className="border-ed-mute text-ed-bone border px-3 py-1.5 font-sans text-xs tracking-[0.16em] uppercase"
+                >
+                  {t("events.archivedEdition", { year: archivedYear })}
                 </span>
               ) : null}
             </div>

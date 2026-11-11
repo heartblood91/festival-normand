@@ -62,7 +62,7 @@ test.describe("Themes", () => {
           "1 événement"
         )
 
-        await page.goto("/fr/evenements")
+        await page.goto("/fr/evenements?edition=all")
         const chip = page.getByRole("group", { name: "Thématiques" }).getByRole("button", {
           name: new RegExp(THEME.name),
         })

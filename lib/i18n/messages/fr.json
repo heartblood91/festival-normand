@@ -180,7 +180,14 @@
     "distanceKm": "{distance, number} km",
     "mapYouAreHere": "Vous êtes ici",
     "mapLabel": "Carte : {title} et {count, plural, =0 {aucun site voisin} one {# site voisin numéroté} other {# sites voisins numérotés}}",
-    "themes": "Thématiques"
+    "themes": "Thématiques",
+    "editionNav": "Édition",
+    "editionCurrent": "Édition {year}",
+    "editionPast": "Éditions précédentes",
+    "pastSubtitle": "Les {count} événements des éditions précédentes, pour mémoire",
+    "editionFallback": "Le programme {year} n'est pas encore publié : voici les lieux des éditions précédentes.",
+    "archivedEdition": "Édition {year} · archive",
+    "searchPast": "Chercher dans les éditions précédentes"
   },
   "filters": {
     "department": "Département",

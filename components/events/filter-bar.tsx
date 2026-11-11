@@ -156,8 +156,11 @@ const FilterBar = ({ nights, total = 0, counts, themes = [] }: FilterBarProps) =
 
   const clearAll = () => {
     const params = new URLSearchParams()
-    const search = searchParams.get("search")
-    if (search) params.set("search", search)
+    // Clearing filters keeps the search and the edition being browsed.
+    for (const key of ["search", "edition"]) {
+      const value = searchParams.get(key)
+      if (value) params.set(key, value)
+    }
     const qs = params.toString()
     router.push(`/evenements${qs ? `?${qs}` : ""}`)
     setSelectedDept("")
