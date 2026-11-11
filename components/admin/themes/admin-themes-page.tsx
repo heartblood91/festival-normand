@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Link } from "@/lib/i18n/routing"
-import { Home, Pencil, Plus, Trash2 } from "lucide-react"
+import { CalendarDays, Home, Palette, Pencil, Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
@@ -18,6 +18,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { deleteTheme, type AdminThemeListItem } from "@/lib/actions/themes"
+import { SKINS, isSkinKey } from "@/lib/skins/registry"
 
 type AdminThemesPageProps = {
   themes: AdminThemeListItem[]
@@ -88,6 +89,16 @@ export const AdminThemesPage = ({ themes }: AdminThemesPageProps) => {
                     <span className="inline-flex items-center gap-1 text-amber-400">
                       <Home className="h-3 w-3" aria-hidden="true" />
                       Sur l&apos;accueil
+                    </span>
+                  )}
+                  <span className="inline-flex items-center gap-1">
+                    <CalendarDays className="h-3 w-3" aria-hidden="true" />
+                    {theme.years.length ? theme.years.join(", ") : "Toutes les éditions"}
+                  </span>
+                  {isSkinKey(theme.skin) && (
+                    <span className="inline-flex items-center gap-1 text-amber-400">
+                      <Palette className="h-3 w-3" aria-hidden="true" />
+                      Habillage : {SKINS[theme.skin]}
                     </span>
                   )}
                 </p>

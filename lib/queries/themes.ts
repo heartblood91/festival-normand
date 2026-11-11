@@ -3,15 +3,19 @@ import { prisma } from "@/lib/prisma"
 import { publicEventWhere } from "@/lib/queries/visibility"
 import { localizeEntity } from "@/lib/i18n/db"
 import { editionYearRange, type Edition } from "@/lib/festival/edition"
+import { getCurrentEdition } from "@/lib/queries/edition"
+import { activeThemeWhere } from "@/lib/themes/active"
 import type { Locale } from "@/lib/i18n/config"
 
 const THEME_ORDER = [{ order: "asc" as const }, { nameFr: "asc" as const }]
 
 /** Theme chips of the public filter: only themes with a visible event. */
-export const getFilterThemes = async (locale: Locale = "fr") =>
-  cachedQuery(
+export const getFilterThemes = async (locale: Locale = "fr") => {
+  const { year } = await getCurrentEdition()
+  return cachedQuery(
     async () => {
       const themes = await prisma.theme.findMany({
+        where: activeThemeWhere(year),
         orderBy: THEME_ORDER,
         select: {
           slug: true,
@@ -30,9 +34,10 @@ export const getFilterThemes = async (locale: Locale = "fr") =>
           count: theme._count.events,
         }))
     },
-    ["filter-themes", locale],
+    ["filter-themes", locale, String(year)],
     { revalidate: 300, tags: ["events", "themes"] }
   )()
+}
 
 export type FilterTheme = Awaited<ReturnType<typeof getFilterThemes>>[number]
 
@@ -41,7 +46,7 @@ export const getHomeThemes = async (locale: Locale = "fr", edition: Edition) =>
   cachedQuery(
     async () => {
       const themes = await prisma.theme.findMany({
-        where: { showOnHome: true },
+        where: { showOnHome: true, ...activeThemeWhere(edition.year) },
         orderBy: THEME_ORDER,
         select: {
           id: true,

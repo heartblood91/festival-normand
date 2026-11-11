@@ -1,9 +1,10 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
+import { revalidatePath, updateTag } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
 import { themeSchema } from "@/lib/schemas/theme"
+import { parseThemeYears } from "@/lib/themes/active"
 
 export type ThemeActionResult = {
   success: boolean
@@ -26,6 +27,8 @@ export const getAdminThemes = async () => {
       markerImage: true,
       showOnHome: true,
       order: true,
+      years: true,
+      skin: true,
       _count: { select: { events: true } },
     },
   })
@@ -59,6 +62,8 @@ const extractThemeFormData = (formData: FormData) => ({
   markerImage: (formData.get("markerImage") as string) ?? "",
   showOnHome: formData.get("showOnHome") === "true",
   order: (formData.get("order") as string) || "0",
+  years: (formData.get("years") as string) ?? "",
+  skin: (formData.get("skin") as string) ?? "",
 })
 
 const parseTheme = async (formData: FormData, id?: string) => {
@@ -97,11 +102,16 @@ const parseTheme = async (formData: FormData, id?: string) => {
       markerImage: data.markerImage || null,
       showOnHome: data.showOnHome,
       order: data.order,
+      years: parseThemeYears(data.years) ?? [],
+      skin: data.skin || null,
     },
   }
 }
 
+// Theme years and skins change the public layout, pins and filters at once.
 const revalidateThemes = () => {
+  updateTag("themes")
+  updateTag("events")
   revalidatePath("/", "layout")
 }
 

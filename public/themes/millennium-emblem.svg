@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="Millénaire de Guillaume le Conquérant : écu normand, château et flamme de lumière">
+  <title>Millénaire de Guillaume le Conquérant — Pierres en Lumières</title>
+  <!-- A broad Norman kite shield; the central candle illuminates the keep. -->
+  <path fill="#f59e0b" d="M28 20H228V111C228 169 186 213 128 244C70 213 28 169 28 111Z"/>
+  <path fill="#9b1c1c" d="M40 32H216V111C216 161 180 201 128 230C76 201 40 161 40 111Z"/>
+  <!-- Two castellated towers, joined by the wall of the keep. -->
+  <path fill="#f4ebd9" d="M64 103H76V115H88V103H100V127H156V103H168V115H180V103H192V171H64Z"/>
+  <!-- A straight-sided candle keeps the light distinct from a crown. -->
+  <path fill="#f59e0b" d="M116 101H140V171H116Z"/>
+  <path fill="#f59e0b" d="M128 45C127 61 112 66 112 80C112 90 119 96 128 96C138 96 145 89 145 80C145 66 134 61 128 45Z"/>
+  <path fill="#f4ebd9" d="M128 72C128 78 122 81 122 86C122 90 125 92 128 92C132 92 135 89 134 85Z"/>
+  <!-- Narrow tower openings and a square gateway: no ogive motif. -->
+  <path fill="#9b1c1c" d="M78 133H88V150H78ZM168 133H178V150H168Z"/>
+  <path fill="#9b1c1c" d="M116 149H140V171H116Z"/>
+  <path fill="#f59e0b" d="M84 185H172V193H84Z"/>
+</svg>

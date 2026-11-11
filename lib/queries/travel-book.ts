@@ -3,6 +3,8 @@ import { publicEventWhere } from "@/lib/queries/visibility"
 import { EVENT_LIST_SELECT } from "@/lib/queries/events"
 import { localizeEntity } from "@/lib/i18n/db"
 import { themePin } from "@/lib/themes/marker"
+import { activeThemeWhere } from "@/lib/themes/active"
+import { getCurrentEdition } from "@/lib/queries/edition"
 import { normalizeEventIds } from "@/lib/travel-book/favorites"
 import type { Locale } from "@/lib/i18n/config"
 
@@ -13,12 +15,16 @@ export const getTravelBookEvents = async (ids: unknown[], locale: Locale) => {
   const eventIds = normalizeEventIds(ids)
   if (eventIds.length === 0) return []
 
+  const { year } = await getCurrentEdition()
   const events = await prisma.event.findMany({
     where: { ...(await publicEventWhere()), id: { in: eventIds } },
     orderBy: [{ dateStart: "asc" }, { id: "asc" }],
     select: {
       ...EVENT_LIST_SELECT,
-      themes: { select: { order: true, color: true, markerImage: true } },
+      themes: {
+        where: activeThemeWhere(year),
+        select: { order: true, color: true, markerImage: true },
+      },
     },
   })
 

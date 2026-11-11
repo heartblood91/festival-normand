@@ -8,6 +8,7 @@ import { getCurrentEdition } from "@/lib/queries/edition"
 import { parseNightCodes } from "@/lib/festival/edition"
 import { programmeEditionWhere, type ProgrammeEdition } from "@/lib/festival/programme-edition"
 import { themePin } from "@/lib/themes/marker"
+import { activeThemeWhere } from "@/lib/themes/active"
 import type { Locale } from "@/lib/i18n/config"
 import type { Department, Category, Prisma } from "@prisma/client"
 
@@ -99,7 +100,9 @@ const buildFilterWhere = async (
   if (cat) where.category = cat as Category
   if (dept) where.department = dept as Department
   if (accessible) where.accessible = true
-  if (theme) where.themes = { some: { slug: theme } }
+  if (theme) {
+    where.themes = { some: { slug: theme, ...activeThemeWhere((await getCurrentEdition()).year) } }
+  }
 
   const and: Prisma.EventWhereInput[] = []
 
@@ -129,6 +132,7 @@ const buildFilterWhere = async (
 
 export const getEvents = async (filters: EventFilters = {}, locale: Locale = "fr") => {
   const cacheKey = JSON.stringify(filters)
+  const { year } = await getCurrentEdition()
 
   return cachedQuery(
     async () => {
@@ -261,8 +265,9 @@ export const getNeighbourEvents = async (
 
 export type NeighbourEvent = Awaited<ReturnType<typeof getNeighbourEvents>>[number]
 
-export const getEventBySlug = async (slug: string, locale: Locale = "fr") =>
-  cachedQuery(
+export const getEventBySlug = async (slug: string, locale: Locale = "fr") => {
+  const { year } = await getCurrentEdition()
+  return cachedQuery(
     async () => {
       const event = await prisma.event.findFirst({
         where: { ...(await publicEventWhere()), slug },
@@ -272,6 +277,7 @@ export const getEventBySlug = async (slug: string, locale: Locale = "fr") =>
             select: { url: true, credit: true, title: true, order: true },
           },
           themes: {
+            where: activeThemeWhere(year),
             orderBy: [{ order: "asc" }, { nameFr: "asc" }],
             select: { slug: true, nameFr: true, nameEn: true, color: true },
           },
@@ -291,9 +297,10 @@ export const getEventBySlug = async (slug: string, locale: Locale = "fr") =>
         updatedAt: event.updatedAt.toISOString(),
       }
     },
-    ["event-detail", slug, locale],
-    { revalidate: 1800, tags: ["events"] }
+    ["event-detail", slug, locale, String(year)],
+    { revalidate: 1800, tags: ["events", "themes"] }
   )()
+}
 
 export type EventDetail = NonNullable<Awaited<ReturnType<typeof getEventBySlug>>>
 
@@ -302,6 +309,7 @@ export const getAllFilteredEventsForMap = async (
   locale: Locale = "fr"
 ) => {
   const cacheKey = JSON.stringify(filters)
+  const { year } = await getCurrentEdition()
 
   return cachedQuery(
     async () => {
@@ -324,7 +332,10 @@ export const getAllFilteredEventsForMap = async (
           timeStart: true,
           city: true,
           coverImage: true,
-          themes: { select: { order: true, color: true, markerImage: true } },
+          themes: {
+            where: activeThemeWhere(year),
+            select: { order: true, color: true, markerImage: true },
+          },
         },
       })
       return events.map(({ themes, ...e }) => ({
@@ -334,8 +345,8 @@ export const getAllFilteredEventsForMap = async (
         pin: themePin(themes),
       }))
     },
-    ["events-map", locale, cacheKey],
-    { revalidate: 300, tags: ["events"] }
+    ["events-map", locale, cacheKey, String(year)],
+    { revalidate: 300, tags: ["events", "themes"] }
   )()
 }
 
@@ -351,6 +362,7 @@ export const countEditionEvents = async (edition: ProgrammeEdition) =>
 
 export const getFilterCounts = async (filters: EventFilters = {}) => {
   const cacheKey = JSON.stringify(filters)
+  const { year } = await getCurrentEdition()
 
   return cachedQuery(
     async () => {

@@ -16,7 +16,7 @@ const { mockPrisma, mockRequireRole } = vi.hoisted(() => ({
 
 vi.mock("@/lib/prisma", () => ({ prisma: mockPrisma }))
 vi.mock("@/lib/rbac", () => ({ requireRole: mockRequireRole }))
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: vi.fn() }))
 
 import { createTheme, deleteTheme, getAdminThemes, updateTheme } from "./themes"
 
@@ -95,6 +95,37 @@ describe("theme actions", () => {
     const result = await createTheme(form({ ...valid, color: "red" }))
     expect(result.success).toBe(false)
     expect(result.errors?.color).toBeDefined()
+  })
+
+  it("stores the years and the skin of a yearly theme", async () => {
+    mockPrisma.theme.findFirst.mockResolvedValue(null)
+    mockPrisma.theme.create.mockResolvedValue({ id: "t1" })
+
+    await createTheme(form({ ...valid, years: "2028, 2027", skin: "millennium" }))
+
+    expect(mockPrisma.theme.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({ years: [2027, 2028], skin: "millennium" }),
+    })
+  })
+
+  it("stores no years and no skin when the fields are empty", async () => {
+    mockPrisma.theme.findFirst.mockResolvedValue(null)
+    mockPrisma.theme.create.mockResolvedValue({ id: "t1" })
+
+    await createTheme(form({ ...valid, years: "", skin: "" }))
+
+    expect(mockPrisma.theme.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({ years: [], skin: null }),
+    })
+  })
+
+  it("refuses invalid years and unknown skins", async () => {
+    const result = await createTheme(form({ ...valid, years: "27", skin: "christmas" }))
+
+    expect(result.success).toBe(false)
+    expect(result.errors?.years).toBeDefined()
+    expect(result.errors?.skin).toBeDefined()
+    expect(mockPrisma.theme.create).not.toHaveBeenCalled()
   })
 
   it("deleting a theme only removes the theme, never its events", async () => {

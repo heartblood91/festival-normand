@@ -114,6 +114,10 @@ model Theme {
   color         String   @default("#f59e0b")
   /// Map marker / emblem image, replaceable by upload in admin.
   markerImage   String?  @map("marker_image")
+  /// Festival years the theme is shown for; empty means every edition.
+  years         Int[]    @default([])
+  /// Site-wide skin (lib/skins) applied while the theme is shown.
+  skin          String?
   showOnHome    Boolean  @default(false) @map("show_on_home")
   order         Int      @default(0)
   events        Event[]  @relation("event_themes")

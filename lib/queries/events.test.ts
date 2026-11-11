@@ -129,7 +129,14 @@ describe("getEvents", () => {
 
     expect(prismaMock.event.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: expect.objectContaining({ themes: { some: { slug: "millennium" } } }),
+        where: expect.objectContaining({
+          themes: {
+            some: {
+              slug: "millennium",
+              OR: [{ years: { isEmpty: true } }, { years: { has: 2027 } }],
+            },
+          },
+        }),
       })
     )
   })
@@ -386,6 +393,7 @@ describe("getEventBySlug", () => {
           select: { url: true, credit: true, title: true, order: true },
         },
         themes: {
+          where: { OR: [{ years: { isEmpty: true } }, { years: { has: 2027 } }] },
           orderBy: [{ order: "asc" }, { nameFr: "asc" }],
           select: { slug: true, nameFr: true, nameEn: true, color: true },
         },
@@ -415,6 +423,7 @@ describe("getEventBySlug", () => {
           select: { url: true, credit: true, title: true, order: true },
         },
         themes: {
+          where: { OR: [{ years: { isEmpty: true } }, { years: { has: 2027 } }] },
           orderBy: [{ order: "asc" }, { nameFr: "asc" }],
           select: { slug: true, nameFr: true, nameEn: true, color: true },
         },

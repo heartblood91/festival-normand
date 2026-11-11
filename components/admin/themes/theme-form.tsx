@@ -14,6 +14,7 @@ import { ImageUpload } from "@/components/admin/image-upload"
 import { createTheme, updateTheme } from "@/lib/actions/themes"
 import { slugify } from "@/lib/schemas/event"
 import { DEFAULT_PIN_COLOR } from "@/lib/themes/marker"
+import { SKINS } from "@/lib/skins/registry"
 import type { Theme } from "@prisma/client"
 
 type ThemeFormProps = {
@@ -239,6 +240,63 @@ export const ThemeForm = ({ theme }: ThemeFormProps) => {
               </span>
             </span>
           </label>
+        </CardContent>
+      </Card>
+
+      <Card className="border-white/10 bg-white/5">
+        <CardHeader>
+          <CardTitle className="text-white">Période et habillage</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="years" className="text-muted-foreground">
+              Années d&apos;affichage
+            </Label>
+            <Input
+              id="years"
+              name="years"
+              defaultValue={theme?.years.join(", ") ?? ""}
+              placeholder="2027"
+              inputMode="numeric"
+              className={`${FIELD_CLASS} max-w-xs`}
+              aria-invalid={!!errors.years}
+              aria-describedby={["years-hint", describedBy("years")].filter(Boolean).join(" ")}
+            />
+            <p id="years-hint" className="text-muted-foreground mt-1 text-xs">
+              Vide = toutes les éditions. Sinon, la thématique (filtre, accueil, épingles,
+              habillage) n&apos;apparaît que les années indiquées, par exemple « 2027 » ou « 2027,
+              2028 ».
+            </p>
+            <FieldError id="years" messages={errors.years} />
+          </div>
+
+          <div>
+            <Label htmlFor="skin" className="text-muted-foreground">
+              Habillage du site
+            </Label>
+            <select
+              id="skin"
+              name="skin"
+              defaultValue={theme?.skin ?? ""}
+              className="mt-1 block h-11 w-full max-w-md rounded-md border border-white/10 bg-white/5 px-3 text-white"
+              aria-invalid={!!errors.skin}
+              aria-describedby={["skin-hint", describedBy("skin")].filter(Boolean).join(" ")}
+            >
+              <option value="" className="bg-slate-900">
+                Aucun habillage
+              </option>
+              {Object.entries(SKINS).map(([key, label]) => (
+                <option key={key} value={key} className="bg-slate-900">
+                  {label}
+                </option>
+              ))}
+            </select>
+            <p id="skin-hint" className="text-muted-foreground mt-1 text-xs">
+              Décor appliqué à tout le site public tant que la thématique est affichée. Il disparaît
+              de lui-même hors des années indiquées.
+            </p>
+            <FieldError id="skin" messages={errors.skin} />
+          </div>
         </CardContent>
       </Card>
 

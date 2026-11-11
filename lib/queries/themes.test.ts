@@ -74,7 +74,10 @@ describe("getHomeThemes", () => {
       ],
     })
     const call = prismaMock.theme.findMany.mock.calls[0][0]
-    expect(call.where).toEqual({ showOnHome: true })
+    expect(call.where).toEqual({
+      showOnHome: true,
+      OR: [{ years: { isEmpty: true } }, { years: { has: 2027 } }],
+    })
     expect(call.select.events.take).toBe(3)
     expect(call.select.events.where).toMatchObject({
       published: true,
