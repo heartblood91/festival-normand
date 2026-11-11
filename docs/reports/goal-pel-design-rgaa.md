@@ -25,23 +25,23 @@ Les 12 items du fichier d'objectif (les 11 prévus, plus F2 ajouté depuis la r�
 
 Le détail des preuves de chaque item est dans `.claude/goals/pel-design-rgaa.md`.
 
-## Vérification finale (HEAD `a0aec64` + documents)
+## Vérification finale (rejouée sur HEAD `f29c83b`)
 
 | Contrôle | Résultat |
 | --- | --- |
 | `pnpm tsc --noEmit` | 0 erreur |
 | `pnpm lint` | 0 erreur, 4 avertissements antérieurs à la branche |
 | `pnpm test` | 70 fichiers, **472/472** |
-| `pnpm build` + `next start` (127.0.0.1:3013) + `pnpm test:e2e --retries=0` | **243/243** en 2,0 min |
+| `pnpm build` + `next start` (127.0.0.1:3013) + `pnpm test:e2e --retries=0` | **243/243** en 1,8 min |
 | Balayage axe (inclus dans l'e2e) | 0 violation grave ou critique : 13 pages publiques en FR/EN à 1440/390, et 13 écrans admin à 1440/390 |
 | Parcours clavier (inclus dans l'e2e) | 8/8 |
 | `prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma` | `-- This is an empty migration.` |
-| Captures après, `docs/screenshots/design/after/` | 42 captures, 40 pages mesurées : 0 débordement horizontal, 1 h1 par page, 0 image sans alt, 0 image cassée |
+| Captures après, `docs/screenshots/design/after/` | 21 captures à 1440 et 21 à 390 (comme `before/`) ; 20 pages mesurées à chaque largeur : 0 débordement horizontal, 1 h1 par page, 0 image sans alt, 0 image cassée |
 | Base locale après les tests | aucun réglage de département, aucun événement dépublié, `history_url` partout null |
 
 Seule erreur console dans les captures : le statut 404 attendu de `/fr/page-inexistante`.
 
-Depuis le run e2e, seuls des documents ont changé. Le code testé est celui de `a0aec64`.
+Le build `.next` n'a pas été refait, parce que `booster-capacity` refuse les travaux lourds (disque à 92,7 %). Il correspond pourtant au code actuel : depuis `a0aec64`, seuls des fichiers de `docs/` ont changé, et aucun fichier source suivi par git n'est plus récent que `.next/BUILD_ID`. Les e2e ont été rejoués sur ce build avec `next start`.
 
 ## Avant / après
 
