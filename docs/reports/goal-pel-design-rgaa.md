@@ -25,14 +25,14 @@ Les 12 items du fichier d'objectif (les 11 prévus, plus F2 ajouté depuis la r�
 
 Le détail des preuves de chaque item est dans `.claude/goals/pel-design-rgaa.md`.
 
-## Vérification finale (rejouée sur HEAD `f29c83b`)
+## Vérification finale (build neuf de HEAD `94ab261`)
 
 | Contrôle | Résultat |
 | --- | --- |
 | `pnpm tsc --noEmit` | 0 erreur |
 | `pnpm lint` | 0 erreur, 4 avertissements antérieurs à la branche |
 | `pnpm test` | 70 fichiers, **472/472** |
-| `pnpm build` + `next start` (127.0.0.1:3013) + `pnpm test:e2e --retries=0` | **243/243** en 1,8 min |
+| `pnpm build` + `next start` (127.0.0.1:3013) + `pnpm test:e2e --retries=0` | build neuf sous `flock` (compilé en 13,0 s, 56 pages statiques) ; **243/243** en 1,9 min |
 | Balayage axe (inclus dans l'e2e) | 0 violation grave ou critique : 13 pages publiques en FR/EN à 1440/390, et 13 écrans admin à 1440/390 |
 | Parcours clavier (inclus dans l'e2e) | 8/8 |
 | `prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma` | `-- This is an empty migration.` |
@@ -41,7 +41,7 @@ Le détail des preuves de chaque item est dans `.claude/goals/pel-design-rgaa.md
 
 Seule erreur console dans les captures : le statut 404 attendu de `/fr/page-inexistante`.
 
-Le build `.next` n'a pas été refait, parce que `booster-capacity` refuse les travaux lourds (disque à 92,7 %). Il correspond pourtant au code actuel : depuis `a0aec64`, seuls des fichiers de `docs/` ont changé, et aucun fichier source suivi par git n'est plus récent que `.next/BUILD_ID`. Les e2e ont été rejoués sur ce build avec `next start`.
+`booster-capacity` refusait d'abord le build : disque à 92,7 %. Avec l'accord de Cédric, j'ai purgé le cache de build Docker inutilisé (`docker builder prune`), ce qui a libéré 13,6 Go. Le disque est passé à 89,7 % (21,5 Gio libres) et les travaux lourds sont de nouveau autorisés. J'ai ensuite fait un build neuf, puis lancé `next start` et l'e2e complet.
 
 ## Avant / après
 
@@ -63,7 +63,7 @@ Le build `.next` n'a pas été refait, parce que `booster-capacity` refuse les t
 - **Preview** : `pel-design-rgaa` tourne en mode figé sur `a0aec64`, avec la base locale `pel-audit-db:5435`.
 - **Contrôle** : vérification en headless à 1920×1080 en ouvrant le lien `#access=`. `/fr`, `/en/accessibilite` et `/fr/evenement/lumieres-au-chateau-de-pontecoulant` répondent 200. Le fragment disparaît de l'URL et aucune requête n'échoue. Capture : `docs/screenshots/design/p1/p1-preview-https-1920.png`.
 - **Images locales** : les images envoyées en local (`public/uploads/`, ignoré par git) manquaient au worktree de la preview. Je les ai copiées, puis j'ai redémarré seulement `next start`.
-- **Pas de reconstruction possible** : `booster-capacity` refuse les travaux lourds, disque à 92,7 % et 9,1 Gio libres. Un nouveau build de la preview demandera de libérer de la place sur le disque.
+- **Pas de reconstruction de la preview** : quand je l'ai mise à jour, `booster-capacity` refusait les travaux lourds. Elle sert le build de `a0aec64`, qui a le même code source que HEAD.
 - **Le lien** : il est donné à Cédric dans la conversation et n'est écrit dans aucun fichier. Pour en obtenir un nouveau : `wtn preview pel-design-rgaa`. Le jeton d'ouverture vaut 15 minutes ; une fois le lien ouvert, le cookie dure une journée.
 
 ## Valeurs provisoires (configurables, à confirmer)
