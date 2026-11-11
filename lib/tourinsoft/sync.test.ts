@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import type { TourinsoftOffer } from "./types"
 
-const { mockPrisma, translateTextMock, requireRoleMock } = vi.hoisted(() => ({
+const { mockPrisma, translateTextMock, requireRoleMock, correctMock } = vi.hoisted(() => ({
   mockPrisma: {
     event: {
       findMany: vi.fn(),
@@ -15,6 +15,7 @@ const { mockPrisma, translateTextMock, requireRoleMock } = vi.hoisted(() => ({
   },
   translateTextMock: vi.fn(),
   requireRoleMock: vi.fn(),
+  correctMock: vi.fn(),
 }))
 
 vi.mock("@/lib/prisma", () => ({ prisma: mockPrisma }))
@@ -26,10 +27,16 @@ vi.mock("@/lib/ai/openrouter", () => ({
   isAiConfigured: () => true,
   translateText: translateTextMock,
 }))
+vi.mock("@/lib/ai/correct-texts", () => ({ correctImportedTexts: correctMock }))
 // The cron has no session: if the sync ever goes through an auth-guarded action again, this throws.
 vi.mock("@/lib/rbac", () => ({ requireRole: requireRoleMock }))
 
-import { ensureUniqueSlug, runTourinsoftSync, translateChangedFields } from "./sync"
+import {
+  correctChangedTexts,
+  ensureUniqueSlug,
+  runTourinsoftSync,
+  translateChangedFields,
+} from "./sync"
 
 const offer = (id: string, title: string, updated = "2026-11-01T10:00:00"): TourinsoftOffer =>
   ({
@@ -49,6 +56,7 @@ describe("tourinsoft sync", () => {
     vi.clearAllMocks()
     requireRoleMock.mockRejectedValue(new Error("Unauthorized: not authenticated"))
     translateTextMock.mockImplementation(async (text: string) => `EN ${text}`)
+    correctMock.mockImplementation(async (texts: { title: string; description: string }) => texts)
     mockPrisma.syncRun.findFirst.mockResolvedValue(null)
     mockPrisma.syncRun.create.mockResolvedValue({ id: "run-1" })
     mockPrisma.syncRun.update.mockResolvedValue({})
@@ -107,6 +115,84 @@ describe("tourinsoft sync", () => {
     })
     expect(result).toMatchObject({ stats: { skipped: 1, created: 0, updated: 0 } })
     expect(mockPrisma.event.update).not.toHaveBeenCalled()
+  })
+})
+
+describe("imported text correction", () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    translateTextMock.mockImplementation(async (text: string) => `EN ${text}`)
+    mockPrisma.syncRun.findFirst.mockResolvedValue(null)
+    mockPrisma.syncRun.create.mockResolvedValue({ id: "run-1" })
+    mockPrisma.syncRun.update.mockResolvedValue({})
+    mockPrisma.event.findMany.mockResolvedValue([])
+    mockPrisma.event.create.mockResolvedValue({})
+  })
+
+  it("publishes the corrected text, keeps the source and translates the correction", async () => {
+    correctMock.mockResolvedValue({ title: "Visite du château", description: "Une visite." })
+    await runTourinsoftSync({
+      trigger: "cli",
+      fetchOffers: async () => [offer("FMA1", "VISITE DU CHATEAU")],
+    })
+    const data = mockPrisma.event.create.mock.calls[0][0].data
+    expect(data).toMatchObject({
+      titleFr: "Visite du château",
+      descriptionFr: "Une visite.",
+      sourceTitleFr: "VISITE DU CHATEAU",
+      sourceDescriptionFr: "Description de VISITE DU CHATEAU",
+      titleEn: "EN Visite du château",
+    })
+    expect(data.textsCorrectedAt).toBeInstanceOf(Date)
+  })
+
+  it("keeps the current copy while the source is unchanged", async () => {
+    const current = {
+      titleFr: "Visite du château (relue)",
+      descriptionFr: "Relue.",
+      sourceTitleFr: "VISITE",
+      sourceDescriptionFr: "brut",
+      textsCorrectedAt: new Date("2026-11-01"),
+    }
+    const result = await correctChangedTexts({ titleFr: "VISITE", descriptionFr: "brut" }, current)
+    expect(result).toEqual(current)
+    expect(correctMock).not.toHaveBeenCalled()
+  })
+
+  it("re-corrects when the source changes", async () => {
+    correctMock.mockResolvedValue({ title: "Nouveau titre", description: "Nouveau texte." })
+    const result = await correctChangedTexts(
+      { titleFr: "NOUVEAU TITRE", descriptionFr: "nouveau texte" },
+      {
+        titleFr: "Ancien",
+        descriptionFr: "Ancien.",
+        sourceTitleFr: "ANCIEN",
+        sourceDescriptionFr: "ancien",
+        textsCorrectedAt: new Date("2026-11-01"),
+      }
+    )
+    expect(result).toMatchObject({ titleFr: "Nouveau titre", sourceTitleFr: "NOUVEAU TITRE" })
+  })
+
+  it("falls back to the raw text and stays pending when the model fails", async () => {
+    correctMock.mockRejectedValue(new Error("OpenRouter API error: 502"))
+    vi.spyOn(console, "error").mockImplementation(() => {})
+    const result = await correctChangedTexts({ titleFr: "BRUT", descriptionFr: "brut" }, null)
+    expect(result).toEqual({
+      titleFr: "BRUT",
+      descriptionFr: "brut",
+      sourceTitleFr: "BRUT",
+      sourceDescriptionFr: "brut",
+      textsCorrectedAt: null,
+    })
+  })
+
+  it("does not call the model when AI is off for the import", async () => {
+    const result = await correctChangedTexts({ titleFr: "BRUT", descriptionFr: "" }, null, {
+      useAi: false,
+    })
+    expect(result.textsCorrectedAt).toBeNull()
+    expect(correctMock).not.toHaveBeenCalled()
   })
 })
 

@@ -62,6 +62,11 @@ model Event {
   tourinsoftId           String?                 @unique @map("tourinsoft_id")
   tourinsoftCategories   String?                 @map("tourinsoft_categories")
   tourinsoftUpdatedAt    DateTime?               @map("tourinsoft_updated_at")
+  /// Raw French texts as imported (Tourinsoft or v1). The public title and
+  /// description are an AI-corrected copy; a sync only re-corrects when these change.
+  sourceTitleFr          String?                 @map("source_title_fr")
+  sourceDescriptionFr    String?                 @map("source_description_fr") @db.Text
+  textsCorrectedAt       DateTime?               @map("texts_corrected_at")
   featured               Boolean                 @default(false)
   accessible             Boolean                 @default(false)
   published              Boolean                 @default(false)
