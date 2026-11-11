@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/routing"
 import { Plus, Search, Pencil, Trash2, Eye, EyeOff, X } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -133,12 +133,12 @@ export const AdminNewsPage = ({
             {total} article{total !== 1 ? "s" : ""}
           </p>
         </div>
-        <Link href="/admin/news/new">
-          <Button className="w-full md:w-auto">
+        <Button asChild className="w-full md:w-auto">
+          <Link href="/admin/news/new">
             <Plus className="mr-2 h-4 w-4" />
             Nouvel article
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       <form onSubmit={handleSearch} className="mb-6">
@@ -261,15 +261,16 @@ export const AdminNewsPage = ({
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <Link href={`/admin/news/${article.id}/edit`}>
-                          <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            aria-label={`Modifier ${article.titleFr}`}
-                          >
+                        <Button
+                          asChild
+                          variant="ghost"
+                          size="icon-sm"
+                          aria-label={`Modifier ${article.titleFr}`}
+                        >
+                          <Link href={`/admin/news/${article.id}/edit`}>
                             <Pencil className="h-3.5 w-3.5" />
-                          </Button>
-                        </Link>
+                          </Link>
+                        </Button>
                         <AlertDialog>
                           <AlertDialogTrigger
                             render={

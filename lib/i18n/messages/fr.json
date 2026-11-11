@@ -77,7 +77,8 @@
       "marker": "Cinq départements",
       "title": "Toute la Normandie, allumée.",
       "text": "{count, plural, =0 {Des illuminations} other {# illuminations}} à travers Manche, Calvados, Seine-Maritime, Orne et Eure. Chaque point sur la carte est un lieu qui s'ouvre, à la nuit tombée.",
-      "places": "lieux"
+      "places": "lieux",
+      "soon": "Programme à venir"
     },
     "partnersSection": {
       "marker": "Ils nous soutiennent",
@@ -119,7 +120,8 @@
     "mapDescription": "Carte des événements du festival en Normandie. Utilisez la vue liste pour une navigation accessible.",
     "mapSrOnly": "Cette carte interactive n'est pas entièrement accessible aux lecteurs d'écran. Utilisez la vue grille pour naviguer les événements.",
     "noGpsEvents": "Aucun événement avec coordonnées GPS trouvé",
-    "breadcrumb": "Fil d'Ariane"
+    "breadcrumb": "Fil d'Ariane",
+    "newTab": "(nouvel onglet)"
   },
   "hero": {
     "badge": "Festival du Patrimoine Normand",
@@ -480,5 +482,13 @@
     "play": "Lire la vidéo : {title}",
     "fallbackTitle": "vidéo de présentation",
     "thirdParty": "La vidéo est hébergée par YouTube et se charge au clic."
+  },
+  "notFound": {
+    "marker": "Erreur 404",
+    "title": "Page introuvable",
+    "text": "La page que vous recherchez n'existe pas ou a été déplacée. Le programme, lui, est toujours allumé.",
+    "home": "Retour à l'accueil",
+    "programme": "Voir les événements",
+    "metaTitle": "Page introuvable"
   }
 }

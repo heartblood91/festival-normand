@@ -53,6 +53,7 @@ const EventContact = async ({ event }: EventContactProps) => {
             >
               <Globe className="text-primary size-4 shrink-0" aria-hidden="true" />
               {event.website.replace(/^https?:\/\//, "")}
+              <span className="sr-only"> {t("a11y.newTab")}</span>
             </a>
           </li>
         ) : null}

@@ -139,8 +139,8 @@ test.describe("Admin event lists", () => {
       await expect(row(page, NO_COVER_EVENT).getByText("Publié", { exact: true })).toBeVisible()
       await expect(row(page, blocked).getByText("Dépublié", { exact: true })).toBeVisible()
     } finally {
-      await republishEvent(page, `/fr${blockedEdit}`)
-      await republishEvent(page, `/fr${noCoverEdit}`)
+      await republishEvent(page, blockedEdit ?? "")
+      await republishEvent(page, noCoverEdit ?? "")
       await query(`update events set cover_image_alt_fr = $2 where id = $1`, [
         fixture.id,
         fixture.alt,

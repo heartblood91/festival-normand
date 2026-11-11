@@ -23,7 +23,8 @@ const PublicLayout = async ({ children, params }: PublicLayoutProps) => {
     <div className="editorial bg-background text-foreground flex min-h-dvh flex-col font-serif">
       <SkipNav />
       <Header kicker={editionKicker(edition, mode, locale)} />
-      <main id="main-content" className="flex-1">
+      {/* tabIndex lets the skip link move focus, not only the scroll position */}
+      <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-none">
         {children}
       </main>
       <Footer editionDates={editionDateRange(edition, locale)} />

@@ -38,11 +38,16 @@ export const loginAsEditor = async (page: Page) => {
   await page.context().storageState({ path: SESSION_FILE })
 }
 
+/** count() does not wait: read the event form only once it is past the admin loading boundary. */
+const waitForEventForm = (page: Page) =>
+  expect(page.getByText(/^(Brouillon|Publié)$/).first()).toBeVisible({ timeout: 15_000 })
+
 /**
  * Seeded events predate the cover alt rule: describe the cover so a published
  * event can be saved again.
  */
 export const describeCoverIfMissing = async (page: Page) => {
+  await waitForEventForm(page)
   const alt = page.getByLabel("Texte alternatif (FR) *")
   if ((await alt.count()) === 0 || (await alt.inputValue()) !== "") return
   await alt.fill("Monument illuminé de nuit pendant le festival")
@@ -51,6 +56,7 @@ export const describeCoverIfMissing = async (page: Page) => {
 /** Publishes an event again through the review, so specs leave the seed published. */
 export const republishEvent = async (page: Page, editUrl: string) => {
   await page.goto(editUrl)
+  await waitForEventForm(page)
   if ((await page.getByText("Brouillon", { exact: true }).count()) === 0) return
   await describeCoverIfMissing(page)
   await page.getByRole("button", { name: "Publier", exact: true }).click()

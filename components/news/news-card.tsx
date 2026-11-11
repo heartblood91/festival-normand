@@ -24,9 +24,10 @@ const NewsCard = async ({ article, className, priority = false }: NewsCardProps)
     >
       <div className="bg-ed-bg-deep relative aspect-[16/10] w-full overflow-hidden">
         {article.coverImage ? (
+          // Decorative: the card link is named by the article title.
           <Image
             src={article.coverImage}
-            alt={article.coverImageAlt || article.title}
+            alt=""
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover"

@@ -74,7 +74,7 @@ const MobileNav = ({ open, onOpenChange, pathname }: MobileNavProps) => {
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-primary focus-visible:ring-primary/50 inline-flex size-11 items-center justify-center rounded-lg transition-colors hover:bg-white/5 focus-visible:ring-2 focus-visible:outline-none"
-              aria-label="Facebook"
+              aria-label={`Facebook ${t("a11y.newTab")}`}
             >
               <Facebook className="size-5" />
             </a>
@@ -83,7 +83,7 @@ const MobileNav = ({ open, onOpenChange, pathname }: MobileNavProps) => {
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-primary focus-visible:ring-primary/50 inline-flex size-11 items-center justify-center rounded-lg transition-colors hover:bg-white/5 focus-visible:ring-2 focus-visible:outline-none"
-              aria-label="Instagram"
+              aria-label={`Instagram ${t("a11y.newTab")}`}
             >
               <Instagram className="size-5" />
             </a>

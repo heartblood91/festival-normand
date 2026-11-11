@@ -5,6 +5,11 @@ import { prisma } from "@/lib/prisma"
 import { ChangePasswordForm } from "@/components/admin/settings/change-password-form"
 import { TwoFactorSection } from "@/components/admin/settings/two-factor-section"
 
+export const metadata = {
+  title: "Paramètres - Administration",
+  robots: { index: false, follow: false },
+}
+
 const SettingsPage = async () => {
   const session = await auth.api.getSession({ headers: await headers() })
   if (!session) redirect("/fr/admin/login")

@@ -44,7 +44,11 @@ const ThreeNights = async ({ nights, byNight, markerIndex }: ThreeNightsProps) =
                 href={`/evenements?date=${night.code}`}
                 className="bg-ed-bg-soft border-primary/20 hover:border-primary/50 focus-visible:ring-primary/50 group flex flex-col border p-8 transition-colors focus-visible:ring-2 focus-visible:outline-none"
               >
-                <div className="mb-6 flex items-baseline gap-3.5">
+                {/* The visual date reads « 21 Vendredi mai 2027 »: give screen readers the natural order. */}
+                <span className="sr-only">
+                  {`${formatNight(night, locale, "weekday")} ${night.code} ${formatNight(night, locale, "monthYear")}`}
+                </span>
+                <div className="mb-6 flex items-baseline gap-3.5" aria-hidden="true">
                   <span className="text-primary font-display text-7xl leading-none font-normal italic md:text-8xl">
                     {night.code}
                   </span>

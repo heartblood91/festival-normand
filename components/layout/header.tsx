@@ -74,7 +74,7 @@ const Header = ({ kicker }: HeaderProps) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-ed-bone hover:text-primary focus-visible:ring-primary/50 inline-flex size-8 items-center justify-center rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
-                aria-label="Facebook"
+                aria-label={`Facebook ${t("a11y.newTab")}`}
               >
                 <Facebook className="size-4" />
               </a>
@@ -83,7 +83,7 @@ const Header = ({ kicker }: HeaderProps) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-ed-bone hover:text-primary focus-visible:ring-primary/50 inline-flex size-8 items-center justify-center rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
-                aria-label="Instagram"
+                aria-label={`Instagram ${t("a11y.newTab")}`}
               >
                 <Instagram className="size-4" />
               </a>

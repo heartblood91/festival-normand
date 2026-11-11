@@ -76,9 +76,10 @@ const NewsListPage = async ({ params }: NewsListPageProps) => {
               >
                 <div className="bg-ed-bg-deep relative aspect-[16/10] w-full overflow-hidden lg:aspect-auto lg:min-h-[22rem]">
                   {featured.coverImage ? (
+                    // Decorative: the card link is named by the article title.
                     <Image
                       src={featured.coverImage}
-                      alt={featured.coverImageAlt || featured.title}
+                      alt=""
                       fill
                       sizes="(max-width: 1024px) 100vw, 55vw"
                       className="object-cover"

@@ -55,7 +55,6 @@ const Highlights = async ({ events, mode, year, markerIndex }: HighlightsProps) 
                   <div className="relative">
                     <EventThumb
                       coverImage={event.coverImage}
-                      coverImageAlt={event.coverImageAlt}
                       category={event.category}
                       title={event.title}
                       seed={event.slug}

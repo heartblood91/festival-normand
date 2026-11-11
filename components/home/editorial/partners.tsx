@@ -67,7 +67,7 @@ const Partners = async ({ partners, markerIndex }: PartnersProps) => {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="focus-visible:ring-primary/50 hover:bg-ed-bg-soft block transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:outline-none"
-                    aria-label={partner.name}
+                    aria-label={`${partner.name} ${t("a11y.newTab")}`}
                   >
                     {cell}
                   </a>

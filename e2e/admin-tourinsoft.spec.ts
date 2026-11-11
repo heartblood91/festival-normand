@@ -40,7 +40,7 @@ test.describe("Admin Tourinsoft events and unpublishing", () => {
     const row = page.locator("tbody tr").nth(1)
     const title = (await row.locator("td").nth(1).locator("span").first().textContent())!.trim()
     const editHref = await row.getByRole("link", { name: /^Modifier / }).getAttribute("href")
-    const editUrl = `/fr${editHref}`
+    const editUrl = editHref ?? ""
 
     try {
       await row.getByRole("button", { name: `Dépublier ${title}` }).click()

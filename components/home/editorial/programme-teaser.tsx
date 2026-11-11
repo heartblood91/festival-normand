@@ -46,7 +46,6 @@ const ProgrammeTeaser = async ({ events, total, markerIndex }: ProgrammeTeaserPr
                 </span>
                 <EventThumb
                   coverImage={event.coverImage}
-                  coverImageAlt={event.coverImageAlt}
                   category={event.category}
                   title={event.title}
                   seed={event.slug}

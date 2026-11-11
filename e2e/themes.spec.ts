@@ -6,6 +6,9 @@ const EVENT = { title: "Visite guidée du Moulin d'Andé", slug: "visite-guidee-
 
 const deleteThemeIfPresent = async (page: Page) => {
   await page.goto("/fr/admin/themes")
+  // count() does not wait: behind the admin loading boundary the list may not be there yet,
+  // and a skipped delete left the theme on the event page.
+  await expect(page.getByRole("heading", { level: 1, name: "Thématiques" })).toBeVisible()
   const remove = page.getByRole("button", { name: `Supprimer ${THEME.name}` })
   if ((await remove.count()) === 0) return
   const dialog = page.getByRole("alertdialog")

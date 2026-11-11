@@ -39,7 +39,7 @@ const Footer = async ({ editionDates }: FooterProps) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-ed-bone hover:text-primary hover:border-primary/50 focus-visible:ring-primary/50 border-primary/25 inline-flex size-11 items-center justify-center border transition-colors focus-visible:ring-2 focus-visible:outline-none"
-                aria-label="Facebook"
+                aria-label={`Facebook ${t("a11y.newTab")}`}
               >
                 <Facebook className="size-5" />
               </a>
@@ -48,7 +48,7 @@ const Footer = async ({ editionDates }: FooterProps) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-ed-bone hover:text-primary hover:border-primary/50 focus-visible:ring-primary/50 border-primary/25 inline-flex size-11 items-center justify-center border transition-colors focus-visible:ring-2 focus-visible:outline-none"
-                aria-label="Instagram"
+                aria-label={`Instagram ${t("a11y.newTab")}`}
               >
                 <Instagram className="size-5" />
               </a>

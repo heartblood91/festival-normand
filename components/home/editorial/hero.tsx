@@ -64,13 +64,14 @@ const Hero = async ({ edition, mode, totalPlaces, countdownDays, live }: HeroPro
         {/* Key stats */}
         <dl className="border-primary/25 mx-auto mt-12 flex max-w-xl items-start justify-center gap-10 border-y py-8 md:gap-16">
           {stats.map((s) => (
-            <div key={s.l} className="text-center">
-              <dd className="text-primary font-display text-4xl leading-none font-normal tracking-tight md:text-5xl">
-                {s.n}
-              </dd>
+            // Term before value in the DOM (read « lieux illuminés : 4 »), number on top visually.
+            <div key={s.l} className="flex flex-col-reverse text-center">
               <dt className="text-ed-mute mt-2.5 font-mono text-[10px] tracking-[0.2em] uppercase">
                 {s.l}
               </dt>
+              <dd className="text-primary font-display text-4xl leading-none font-normal tracking-tight md:text-5xl">
+                {s.n}
+              </dd>
             </div>
           ))}
         </dl>

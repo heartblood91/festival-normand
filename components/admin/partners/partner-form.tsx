@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/routing"
 import { ArrowLeft, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -62,12 +62,12 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex items-center justify-between">
-        <Link href="/admin/partners">
-          <Button type="button" variant="ghost">
+        <Button asChild variant="ghost">
+          <Link href="/admin/partners">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Retour
-          </Button>
-        </Link>
+          </Link>
+        </Button>
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {partner ? "Mettre à jour" : "Créer le partenaire"}
@@ -202,11 +202,9 @@ export const PartnerForm = ({ partner }: PartnerFormProps) => {
       </Card>
 
       <div className="flex justify-end gap-3">
-        <Link href="/admin/partners">
-          <Button type="button" variant="ghost">
-            Annuler
-          </Button>
-        </Link>
+        <Button asChild variant="ghost">
+          <Link href="/admin/partners">Annuler</Link>
+        </Button>
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {partner ? "Mettre à jour" : "Créer le partenaire"}

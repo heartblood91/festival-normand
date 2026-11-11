@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/routing"
 import { useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { Mail, Loader2, CheckCircle, LogIn } from "lucide-react"
