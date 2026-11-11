@@ -123,7 +123,9 @@
     "mapSrOnly": "Cette carte interactive n'est pas entièrement accessible aux lecteurs d'écran. Utilisez la vue grille pour naviguer les événements.",
     "noGpsEvents": "Aucun événement avec coordonnées GPS trouvé",
     "breadcrumb": "Fil d'Ariane",
-    "newTab": "(nouvel onglet)"
+    "newTab": "(nouvel onglet)",
+    "calloutInfo": "À noter",
+    "calloutImportant": "Important"
   },
   "hero": {
     "badge": "Festival du Patrimoine Normand",

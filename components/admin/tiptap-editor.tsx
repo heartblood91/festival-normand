@@ -34,11 +34,17 @@ import {
   Table as TableIcon,
   Trash2,
   TextCursorInput,
+  Info,
+  TriangleAlert,
+  MousePointerClick,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ImageUploadDialog } from "@/components/admin/image-upload-dialog"
 import { ImageAltDialog } from "@/components/admin/editor/image-alt-dialog"
 import { UrlDialog } from "@/components/admin/editor/url-dialog"
+import { CtaDialog } from "@/components/admin/editor/cta-dialog"
+import { Callout, CtaButton } from "@/components/admin/editor/blocks"
+import type { CalloutVariant } from "@/lib/admin/editor-blocks"
 import { imagesWithoutAlt } from "@/lib/admin/alt-text"
 import { isYoutubeUrl, normalizeLinkUrl } from "@/lib/admin/editor-urls"
 
@@ -72,7 +78,7 @@ const ToolbarButton = ({
   </Button>
 )
 
-type EditorDialog = "link" | "youtube" | "alt" | null
+type EditorDialog = "link" | "youtube" | "alt" | "cta" | null
 
 const MenuBar = ({ editor }: { editor: Editor | null }) => {
   const [dialog, setDialog] = useState<EditorDialog>(null)
@@ -98,6 +104,21 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
   }
 
   const inTable = editor.isActive("table")
+
+  // Same variant toggles the box off, the other variant switches it.
+  const toggleCallout = (variant: CalloutVariant) => {
+    if (editor.isActive("callout", { variant })) {
+      editor.chain().focus().lift("callout").run()
+    } else if (editor.isActive("callout")) {
+      editor.chain().focus().updateAttributes("callout", { variant }).run()
+    } else {
+      editor.chain().focus().wrapIn("callout", { variant }).run()
+    }
+  }
+
+  const selectedCta = editor.isActive("ctaButton")
+    ? (editor.getAttributes("ctaButton") as { href: string; label: string })
+    : undefined
 
   return (
     <>
@@ -176,6 +197,29 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
             action={() => editor.chain().focus().setHorizontalRule().run()}
             active={false}
             label="Séparateur"
+          />
+        </div>
+
+        <div className="mx-1 h-6 w-px bg-white/10" aria-hidden="true" />
+
+        <div className="flex gap-0.5">
+          <ToolbarButton
+            icon={Info}
+            action={() => toggleCallout("info")}
+            active={editor.isActive("callout", { variant: "info" })}
+            label="Encadré « À noter »"
+          />
+          <ToolbarButton
+            icon={TriangleAlert}
+            action={() => toggleCallout("important")}
+            active={editor.isActive("callout", { variant: "important" })}
+            label="Encadré « Important »"
+          />
+          <ToolbarButton
+            icon={MousePointerClick}
+            action={() => setDialog("cta")}
+            active={!!selectedCta}
+            label={selectedCta ? "Modifier le bouton" : "Bouton d'action"}
           />
         </div>
 
@@ -307,6 +351,19 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           onSubmit={(src) => editor.chain().focus().setYoutubeVideo({ src }).run()}
         />
       )}
+      {dialog === "cta" && (
+        <CtaDialog
+          open
+          onOpenChange={closeDialog}
+          initialValue={selectedCta}
+          onSubmit={(attrs) =>
+            selectedCta
+              ? editor.chain().focus().updateAttributes("ctaButton", attrs).run()
+              : editor.chain().focus().insertContent({ type: "ctaButton", attrs }).run()
+          }
+          onRemove={selectedCta ? () => editor.chain().focus().deleteSelection().run() : undefined}
+        />
+      )}
       {dialog === "alt" && selectedImage.src && (
         <ImageAltDialog
           open
@@ -335,6 +392,8 @@ export const TiptapEditor = ({ content, onChange }: TiptapEditorProps) => {
       TableRow,
       TableHeader,
       TableCell,
+      Callout,
+      CtaButton,
       Link.configure({
         openOnClick: false,
         HTMLAttributes: { class: "text-amber-400 underline" },
@@ -377,6 +436,42 @@ export const TiptapEditor = ({ content, onChange }: TiptapEditorProps) => {
         .ProseMirror th {
           border: 1px solid rgba(255, 255, 255, 0.1);
           padding: 8px;
+        }
+        .ProseMirror div[data-block="callout"] {
+          border-left: 3px solid #f59e0b;
+          background: rgba(245, 158, 11, 0.08);
+          padding: 4px 16px;
+          margin: 12px 0;
+        }
+        .ProseMirror div[data-block="callout"][data-variant="important"] {
+          border-left-color: #f87171;
+          background: rgba(248, 113, 113, 0.08);
+        }
+        .ProseMirror div[data-block="callout"]::before {
+          content: "À noter";
+          display: block;
+          font-size: 11px;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #fbbf24;
+        }
+        .ProseMirror div[data-block="callout"][data-variant="important"]::before {
+          content: "Important";
+          color: #fca5a5;
+        }
+        .ProseMirror p[data-block="cta"] a {
+          display: inline-block;
+          pointer-events: none;
+          background: #f59e0b;
+          color: #0f172a;
+          padding: 8px 16px;
+          border-radius: 6px;
+          text-decoration: none;
+          font-weight: 600;
+        }
+        .ProseMirror p[data-block="cta"].ProseMirror-selectednode a {
+          outline: 2px solid #fbbf24;
+          outline-offset: 3px;
         }
         .ProseMirror img:not([alt]),
         .ProseMirror img[alt=""] {

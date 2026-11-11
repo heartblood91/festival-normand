@@ -1,10 +1,60 @@
 "use client"
 
+import type { ReactNode } from "react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import rehypeRaw from "rehype-raw"
 import type { Components } from "react-markdown"
+import { useTranslations } from "next-intl"
 import { extractYouTubeId, YouTubeEmbed } from "@/components/news/youtube-embed"
+import { parseCalloutVariant, type CalloutVariant } from "@/lib/admin/editor-blocks"
+
+type HastNode = { properties?: Record<string, unknown> }
+
+// Blocks inserted by the page editor carry a data-block attribute.
+const blockOf = (node: HastNode | undefined) => node?.properties?.dataBlock
+
+const Callout = ({ variant, children }: { variant: CalloutVariant; children: ReactNode }) => {
+  const t = useTranslations("a11y")
+  const label = variant === "important" ? t("calloutImportant") : t("calloutInfo")
+  return (
+    <div
+      role="note"
+      aria-label={label}
+      data-block="callout"
+      data-variant={variant}
+      className={
+        variant === "important"
+          ? "border-primary bg-ed-bg-soft my-8 border-2 px-6 pt-5 pb-1"
+          : "border-primary/60 bg-ed-bg-soft my-8 border-l-2 px-6 pt-5 pb-1"
+      }
+    >
+      <p
+        aria-hidden="true"
+        className="text-primary mb-3 font-mono text-xs tracking-[0.16em] uppercase"
+      >
+        {label}
+      </p>
+      {children}
+    </div>
+  )
+}
+
+const CtaLink = ({ href, children }: { href?: string; children: ReactNode }) => {
+  const t = useTranslations("a11y")
+  const external = !!href?.startsWith("http")
+  return (
+    <a
+      href={href}
+      data-block="cta-link"
+      className="bg-primary text-primary-foreground hover:bg-ed-amber-deep focus-visible:ring-ring inline-flex min-h-11 items-center justify-center px-8 py-4 font-sans text-xs font-semibold tracking-[0.14em] uppercase no-underline transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+    >
+      {children}
+      {external && <span className="sr-only"> {t("newTab")}</span>}
+    </a>
+  )
+}
 
 const components: Components = {
   // Page already has an h1, so markdown headings start at h2.
@@ -23,7 +73,18 @@ const components: Components = {
       {children}
     </h3>
   ),
+  div: ({ children, node, ...props }) =>
+    blockOf(node) === "callout" ? (
+      <Callout variant={parseCalloutVariant(String(node?.properties?.dataVariant ?? ""))}>
+        {children}
+      </Callout>
+    ) : (
+      <div {...props}>{children}</div>
+    ),
   p: ({ children, node }) => {
+    if (blockOf(node) === "cta") {
+      return <div className="my-8">{children}</div>
+    }
     const hasBlockChildren = node?.children?.some(
       (child: { type?: string; tagName?: string; properties?: { href?: string } }) =>
         child.type === "element" &&
@@ -57,7 +118,8 @@ const components: Components = {
   ),
   strong: ({ children }) => <strong className="text-foreground font-medium">{children}</strong>,
   em: ({ children }) => <em className="italic">{children}</em>,
-  a: ({ href, children }) => {
+  a: ({ href, children, node }) => {
+    if (blockOf(node) === "cta-link") return <CtaLink href={href}>{children}</CtaLink>
     if (href) {
       const youtubeId = extractYouTubeId(href)
       if (youtubeId) {

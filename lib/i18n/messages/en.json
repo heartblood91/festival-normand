@@ -123,7 +123,9 @@
     "mapSrOnly": "This interactive map is not fully accessible to screen readers. Use the grid view to browse events.",
     "noGpsEvents": "No events with GPS coordinates found",
     "breadcrumb": "Breadcrumb",
-    "newTab": "(new tab)"
+    "newTab": "(new tab)",
+    "calloutInfo": "Note",
+    "calloutImportant": "Important"
   },
   "hero": {
     "badge": "Normandy Heritage Festival",
