@@ -346,7 +346,8 @@
       "users": "Utilisateurs",
       "settings": "Paramètres",
       "registrationLinks": "Inscriptions",
-      "edition": "Édition"
+      "edition": "Édition",
+      "recovery": "Sites à récupérer"
     },
     "dashboard": {
       "title": "Tableau de bord",

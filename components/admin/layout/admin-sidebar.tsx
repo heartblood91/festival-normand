@@ -11,6 +11,7 @@ import {
   FileText,
   UserPlus,
   CalendarRange,
+  ArchiveRestore,
   Users,
   Settings,
   LogOut,
@@ -98,6 +99,11 @@ const AdminSidebar = ({
       href: `/${locale}/admin/edition`,
       icon: CalendarRange,
       labelKey: "sidebar.edition",
+    },
+    {
+      href: `/${locale}/admin/recovery`,
+      icon: ArchiveRestore,
+      labelKey: "sidebar.recovery",
     },
     {
       href: `/${locale}/admin/users`,

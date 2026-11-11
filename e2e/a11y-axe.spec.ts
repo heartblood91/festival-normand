@@ -36,6 +36,7 @@ const ADMIN_PATHS = [
   "/fr/admin/partners",
   "/fr/admin/pages",
   "/fr/admin/edition",
+  "/fr/admin/recovery",
   "/fr/admin/inscription",
   "/fr/admin/settings",
 ]

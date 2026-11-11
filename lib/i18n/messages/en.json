@@ -346,7 +346,8 @@
       "users": "Users",
       "settings": "Settings",
       "registrationLinks": "Registrations",
-      "edition": "Edition"
+      "edition": "Edition",
+      "recovery": "Sites to recover"
     },
     "dashboard": {
       "title": "Dashboard",

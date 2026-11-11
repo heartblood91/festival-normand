@@ -63,6 +63,10 @@ const toTitleCase = (value: string): string =>
 export const directusAssetUrl = (fileId: string) => `${DIRECTUS_BASE_URL}/assets/${fileId}`
 
 // Edition = year of the first date slot.
+/** Both sites import the same feed: v1 keeps the Tourinsoft id as syndic_object_id. */
+export const directusTourinsoftId = (event: DirectusEvent): string =>
+  clean(event.syndic_object_id) ?? `directus-${event.id}`
+
 export const directusEdition = (event: DirectusEvent): string | null =>
   clean(event.datehorairess?.[0]?.Datedebut)?.slice(0, 4) ?? null
 
@@ -89,7 +93,7 @@ export const mapDirectusEvent = (event: DirectusEvent): MappedOffer => {
   })
 
   return {
-    tourinsoftId: clean(event.syndic_object_id) ?? `directus-${event.id}`,
+    tourinsoftId: directusTourinsoftId(event),
     titleFr,
     slug: slugify(titleFr) || "evenement",
     descriptionFr: clean(event.description) ?? titleFr,

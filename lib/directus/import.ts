@@ -1,5 +1,6 @@
 // Recovery import of legacy v1 events into the new site's database. Never
 // updates, unpublishes or deletes: it only creates what the target is missing.
+import type { Department } from "@prisma/client"
 import { prisma } from "@/lib/prisma"
 import { createEventFromOffer, withGeocodedCoordinates } from "@/lib/tourinsoft/sync"
 import type { MappedOffer } from "@/lib/tourinsoft/map"
@@ -21,7 +22,13 @@ export type DirectusImportReport = {
   knownBySite: Partial<Record<MatchVia, number>>
   created: number
   failed: number
-  planned: { tourinsoftId: string; title: string; city: string }[]
+  planned: {
+    tourinsoftId: string
+    title: string
+    city: string
+    department: Department
+    dateStart: string
+  }[]
 }
 
 // Dedupe on the target first by Tourinsoft id (both sites import the same
@@ -89,6 +96,8 @@ export const importDirectusEvents = async (
         tourinsoftId: offer.tourinsoftId,
         title: offer.titleFr,
         city: offer.city,
+        department: offer.department,
+        dateStart: offer.dateStart.toISOString(),
       })
       continue
     }

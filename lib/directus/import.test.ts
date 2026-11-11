@@ -89,7 +89,13 @@ describe("importDirectusEvents", () => {
     expect(mockCreate).not.toHaveBeenCalled()
     expect(report.created).toBe(0)
     expect(report.planned).toEqual([
-      { tourinsoftId: "FMANOR1", title: "Lumières à Agy", city: "Agy" },
+      {
+        tourinsoftId: "FMANOR1",
+        title: "Lumières à Agy",
+        city: "Agy",
+        department: "EURE",
+        dateStart: new Date("2026-05-29T00:00:00").toISOString(),
+      },
     ])
   })
 
