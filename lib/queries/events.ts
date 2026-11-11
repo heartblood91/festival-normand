@@ -194,7 +194,7 @@ export const getEvents = async (filters: EventFilters = {}, locale: Locale = "fr
             : null,
       }
     },
-    ["events-list", locale, cacheKey],
+    ["events-list", locale, cacheKey, String(year)],
     { revalidate: 300, tags: ["events"] }
   )()
 }
@@ -397,7 +397,7 @@ export const getFilterCounts = async (filters: EventFilters = {}) => {
 
       return { departments, categories }
     },
-    ["filter-counts", cacheKey],
+    ["filter-counts", cacheKey, String(year)],
     { revalidate: 300, tags: ["events"] }
   )()
 }
