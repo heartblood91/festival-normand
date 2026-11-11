@@ -6,10 +6,7 @@ qu'en GET public.
 
 ## Résultat
 
-Les 11 items du fichier d'objectif ont été traités :
-
-- **10 sont terminés**, avec leurs preuves.
-- **1 est bloqué en partie (P1)** : la preview tourne, mais la passerelle HTTPS est arrêtée.
+Les 12 items du fichier d'objectif (les 11 prévus, plus F2 ajouté depuis la réunion) sont terminés, avec leurs preuves.
 
 | Item | Statut | Commit(s) | Preuve principale |
 | --- | --- | --- | --- |
@@ -24,7 +21,7 @@ Les 11 items du fichier d'objectif ont été traités :
 | F2 Lien « Histoire du lieu » | fait | `059e2fb` | `event-history.spec.ts`, migration `20261111010000_add_event_history_url` |
 | R1 Sites manquants en prod | fait | `b5bcbdc`, `ae397e0` | 100 sites manquants ; page admin « Sites à récupérer » ; `docs/reports/ops-recovery.md` |
 | A4 Déclaration d'accessibilité | fait | `a0aec64` | `accessibility-statement.spec.ts` (3), `declaration.test.ts` (4) |
-| P1 Preview pour le test VoiceOver | **bloqué (partiel)** | ce commit | checklist `docs/reports/voiceover-checklist.md` ; passerelle HTTPS arrêtée (voir Bloquants) |
+| P1 Preview pour le test VoiceOver | fait | `b9164fa`, ce commit | checklist `docs/reports/voiceover-checklist.md` ; preview HTTPS vérifiée, capture `p1/p1-preview-https-1920.png` |
 
 Le détail des preuves de chaque item est dans `.claude/goals/pel-design-rgaa.md`.
 
@@ -60,19 +57,14 @@ Depuis le run e2e, seuls des documents ont changé. Le code testé est celui de 
   - galerie photo accessible.
 - **axe** : 51 couples page × règle graves ou critiques avant, sur 6 règles : `label-content-name-mismatch`, `button-name`, `aria-allowed-attr`, `aria-prohibited-attr`, `color-contrast` et `nested-interactive`. **0 après.**
 
-## Bloquants
+## Preview pour le test VoiceOver
 
-### Passerelle HTTPS des previews arrêtée (P1)
-
-- **Constat** : la preview `pel-design-rgaa` tourne en mode figé sur `a0aec64`, avec la base locale `pel-audit-db:5435`. `wtn check pel-design-rgaa` répond `httpStatus 200`. En local, à travers l'hôte de la passerelle, `/fr`, `/en/accessibilite`, `/fr/evenements` et `/fr/admin/login` répondent 200.
-- **Cause** : le service `booster-preview-gateway.service` est inactif depuis le 2026-11-11 à 02:17:08 UTC. Il a reçu un SIGTERM pendant une session SSH de l'utilisateur `codex`, à la même seconde que la preview `booster-native-a11y-audioguide`. L'adresse https://wtn-71ce9f1fa7b1.preview-booster.my-dev-box.ovh renvoie donc 502.
-- **Pourquoi je ne l'ai pas relancé** : l'arrêt paraît volontaire, et relancer la passerelle rouvrirait l'accès à toutes les autres previews.
-- **Pour débloquer** :
-  ```bash
-  systemctl --user start booster-preview-gateway.service
-  wtn preview pel-design-rgaa   # affiche le lien complet avec #access=
-  ```
-  Le jeton d'ouverture vaut 15 minutes. Une fois le lien ouvert, le cookie reste valable une journée.
+- **Passerelle** : `booster-preview-gateway.service` était arrêté depuis le 2026-11-11 à 02:17:08 UTC. Il a reçu un SIGTERM pendant une session SSH, à la même seconde que la preview `a11y-audioguide`. Cédric a autorisé sa relance. Le service est actif sur 127.0.0.1:18080, et la preview répond 401 sans cookie d'accès.
+- **Preview** : `pel-design-rgaa` tourne en mode figé sur `a0aec64`, avec la base locale `pel-audit-db:5435`.
+- **Contrôle** : vérification en headless à 1920×1080 en ouvrant le lien `#access=`. `/fr`, `/en/accessibilite` et `/fr/evenement/lumieres-au-chateau-de-pontecoulant` répondent 200. Le fragment disparaît de l'URL et aucune requête n'échoue. Capture : `docs/screenshots/design/p1/p1-preview-https-1920.png`.
+- **Images locales** : les images envoyées en local (`public/uploads/`, ignoré par git) manquaient au worktree de la preview. Je les ai copiées, puis j'ai redémarré seulement `next start`.
+- **Pas de reconstruction possible** : `booster-capacity` refuse les travaux lourds, disque à 92,7 % et 9,1 Gio libres. Un nouveau build de la preview demandera de libérer de la place sur le disque.
+- **Le lien** : il est donné à Cédric dans la conversation et n'est écrit dans aucun fichier. Pour en obtenir un nouveau : `wtn preview pel-design-rgaa`. Le jeton d'ouverture vaut 15 minutes ; une fois le lien ouvert, le cookie dure une journée.
 
 ## Valeurs provisoires (configurables, à confirmer)
 
@@ -102,4 +94,4 @@ Depuis le run e2e, seuls des documents ont changé. Le code testé est celui de 
 
 ## Test VoiceOver
 
-La checklist est dans `docs/reports/voiceover-checklist.md`. Elle couvre Mac et iPhone avec Safari, les pages publiques et, en option, l'admin. Le lien de la preview sera donné dans la conversation dès que la passerelle sera relancée. Le jeton n'est écrit dans aucun fichier.
+La checklist est dans `docs/reports/voiceover-checklist.md`. Elle couvre Mac et iPhone avec Safari, les pages publiques et, en option, l'admin. Le lien de la preview est donné dans la conversation ; le jeton n'est écrit dans aucun fichier.
