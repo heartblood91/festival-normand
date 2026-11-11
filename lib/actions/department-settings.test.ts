@@ -1,17 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
-const { mockPrisma, mockRequireRole, mockRevalidateTag } = vi.hoisted(() => ({
+const { mockPrisma, mockRequireRole, mockUpdateTag, mockRevalidatePath } = vi.hoisted(() => ({
   mockPrisma: {
     departmentSetting: { upsert: vi.fn() },
     $transaction: vi.fn(),
   },
   mockRequireRole: vi.fn(),
-  mockRevalidateTag: vi.fn(),
+  mockUpdateTag: vi.fn(),
+  mockRevalidatePath: vi.fn(),
 }))
 
 vi.mock("@/lib/prisma", () => ({ prisma: mockPrisma }))
 vi.mock("@/lib/rbac", () => ({ requireRole: mockRequireRole }))
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), revalidateTag: mockRevalidateTag }))
+vi.mock("next/cache", () => ({ revalidatePath: mockRevalidatePath, updateTag: mockUpdateTag }))
 
 import { updateDepartmentEmbargo } from "./department-settings"
 
@@ -46,7 +47,12 @@ describe("updateDepartmentEmbargo", () => {
     expect(calvados.update.publishFrom).toEqual(new Date("2027-03-15T00:00:00"))
     const orne = upserts.find((args) => args.where.department === "ORNE")
     expect(orne.update.publishFrom).toBeNull()
-    expect(mockRevalidateTag).toHaveBeenCalledWith("events", expect.anything())
+    expect(mockUpdateTag).toHaveBeenCalledWith("events")
+  })
+
+  it("refreshes event pages cached while they answered 404", async () => {
+    await updateDepartmentEmbargo(form({ CALVADOS: "" }))
+    expect(mockRevalidatePath).toHaveBeenCalledWith("/[locale]/(public)/evenement/[slug]", "page")
   })
 
   it("rejects a malformed date", async () => {
