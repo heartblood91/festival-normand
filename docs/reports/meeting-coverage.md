@@ -70,9 +70,9 @@ Captures : `docs/screenshots/design/f1/f1-embargo-admin-1920.png` et
 Quatre sujets suivis par Cédric ne figurent pas dans la transcription : la barre de
 crédit du pied de page, « la connexion sur mes comptes », les sites oubliés et le carnet
 partagé en lecture seule. Ils sont couverts quand même : pied de page et carnet ci-dessus,
-sites oubliés par l'item R1. Pour les comptes, le code a l'invitation, le mot de passe
-oublié, la 2FA et la connexion sans clé Resend (`d465163`), mais la demande reste
-**à préciser par Cédric**.
+sites oubliés par l'item R1. « La connexion sur mes comptes » était une dictée qui
+visait la barre de crédit du pied de page (liens vers les comptes de Cédric) : couverte
+par la ligne « Crédit discret du développeur » (précision de Cédric, 11/11/2026).
 
 ## Décisions
 
