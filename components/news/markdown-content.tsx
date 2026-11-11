@@ -49,7 +49,12 @@ const components: Components = {
       {children}
     </ol>
   ),
-  li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+  // Links in a list item sit in a sentence: inline links, exempt from target size (WCAG 2.5.8).
+  li: ({ children }) => (
+    <li data-inline-links className="leading-relaxed">
+      {children}
+    </li>
+  ),
   strong: ({ children }) => <strong className="text-foreground font-medium">{children}</strong>,
   em: ({ children }) => <em className="italic">{children}</em>,
   a: ({ href, children }) => {

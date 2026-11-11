@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react"
 import Image from "next/image"
+import { useTranslations } from "next-intl"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -28,6 +29,7 @@ const PhotoCredit = ({ credit }: { credit?: string | null }) => {
 }
 
 const PhotoCarousel = ({ photos, alt }: PhotoCarouselProps) => {
+  const t = useTranslations("a11y")
   const [currentIndex, setCurrentIndex] = useState(0)
 
   const goTo = useCallback((index: number) => {
@@ -64,14 +66,14 @@ const PhotoCarousel = ({ photos, alt }: PhotoCarouselProps) => {
     <figure
       className="relative m-0 overflow-hidden rounded-xl"
       role="region"
-      aria-label="Galerie photos"
+      aria-label={t("photoGallery")}
       aria-roledescription="carousel"
     >
       {/* Current image with scroll snap support */}
       <div className="relative aspect-[16/9] w-full snap-center">
         <Image
           src={photos[currentIndex].url}
-          alt={`${alt} - Photo ${currentIndex + 1} sur ${photos.length}`}
+          alt={alt}
           fill
           sizes="(max-width: 1024px) 100vw, 66vw"
           className="object-cover"
@@ -82,31 +84,38 @@ const PhotoCarousel = ({ photos, alt }: PhotoCarouselProps) => {
 
       {/* Previous button */}
       <button
+        type="button"
         onClick={goPrev}
-        className="bg-background/80 hover:bg-background focus-visible:ring-primary/50 absolute top-1/2 left-3 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 backdrop-blur-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
-        aria-label="Photo précédente"
+        className="bg-background/80 hover:bg-background focus-visible:ring-primary/50 absolute top-1/2 left-3 flex size-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 backdrop-blur-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
+        aria-label={t("previousPhoto")}
       >
         <ChevronLeft className="size-5" aria-hidden="true" />
       </button>
 
       {/* Next button */}
       <button
+        type="button"
         onClick={goNext}
-        className="bg-background/80 hover:bg-background focus-visible:ring-primary/50 absolute top-1/2 right-3 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 backdrop-blur-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
-        aria-label="Photo suivante"
+        className="bg-background/80 hover:bg-background focus-visible:ring-primary/50 absolute top-1/2 right-3 flex size-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 backdrop-blur-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
+        aria-label={t("nextPhoto")}
       >
         <ChevronRight className="size-5" aria-hidden="true" />
       </button>
 
       {/* Dot indicators */}
-      <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2" role="tablist">
+      {/* Announces the photo shown after Previous/Next, which keep focus */}
+      <p role="status" className="sr-only">
+        {t("photo", { current: currentIndex + 1, total: photos.length })}
+      </p>
+
+      <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2">
         {photos.map((_, index) => (
           <button
             key={index}
             onClick={() => goTo(index)}
-            role="tab"
-            aria-selected={index === currentIndex}
-            aria-label={`Photo ${index + 1}`}
+            type="button"
+            aria-current={index === currentIndex ? "true" : undefined}
+            aria-label={t("photo", { current: index + 1, total: photos.length })}
             className={cn(
               "focus-visible:ring-primary/50 flex size-6 items-center justify-center rounded-full transition-all focus-visible:ring-2 focus-visible:outline-none",
               "before:block before:size-2.5 before:rounded-full before:transition-all",

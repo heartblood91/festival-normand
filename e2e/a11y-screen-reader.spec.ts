@@ -1,5 +1,6 @@
 import { test, expect, type Page } from "@playwright/test"
 import { editorCredentials, loginAsEditor, MISSING_EDITOR } from "./helpers/admin"
+import { hasDatabase, query } from "./helpers/db"
 
 // What a screen reader announces, beyond what axe checks: page language (RGAA 8.3),
 // landmarks and skip links (12.6, 12.7), definition lists (9.3) and link names (6.1).
@@ -157,5 +158,37 @@ test.describe("screen reader: admin", () => {
     const create = page.getByRole("link", { name: "Nouvel événement" })
     await expect(create).toHaveAttribute("href", "/fr/admin/events/new")
     await expect(create.locator("button")).toHaveCount(0)
+  })
+})
+
+test.describe("screen reader: event photo gallery", () => {
+  test.skip(!hasDatabase(), "Needs DATABASE_URL to find an event with several photos")
+
+  test("speaks the page language, announces the photo shown and has 44px buttons", async ({
+    page,
+  }) => {
+    const [event] = await query<{ slug: string; total: number }>(
+      `select e.slug, count(p.id)::int as total from events e join photos p on p.event_id = e.id
+       where e.published group by e.slug having count(p.id) > 1 order by e.slug limit 1`
+    )
+    test.skip(!event, "No published event with several photos")
+    await page.goto(`/en/evenement/${event.slug}`)
+
+    const gallery = page.getByRole("region", { name: "Photo gallery" })
+    const next = gallery.getByRole("button", { name: "Next photo" })
+    await expect(gallery.getByRole("button", { name: "Previous photo" })).toBeVisible()
+    for (const button of [next, gallery.getByRole("button", { name: "Previous photo" })]) {
+      const box = await button.boundingBox()
+      expect(box?.width).toBeGreaterThanOrEqual(44)
+      expect(box?.height).toBeGreaterThanOrEqual(44)
+    }
+    await expect(gallery.getByRole("tab")).toHaveCount(0)
+
+    await next.click()
+    await expect(gallery.getByRole("status")).toHaveText(`Photo 2 of ${event.total}`)
+    await expect(
+      gallery.getByRole("button", { name: `Photo 2 of ${event.total}` })
+    ).toHaveAttribute("aria-current", "true")
+    await expect(gallery.locator("text=/ sur /")).toHaveCount(0)
   })
 })
