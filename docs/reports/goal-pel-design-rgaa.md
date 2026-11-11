@@ -109,7 +109,7 @@ Total : e2e 243 réussis, 0 échec, 0 instable ; unitaires 472 réussis, 0 éche
 
 1. **« Connexion sur mes comptes »** : c'était une dictée vocale. Elle visait la barre de crédit du pied de page, qui renvoie vers les comptes de Cédric (« Site développé par Cédric Freret, lead dev bénévole — Délégation Normandie · LinkedIn »). C'est déjà en place. Clos.
 2. **La demande oubliée** : introuvable, de l'avis de Cédric aussi. Clos.
-3. **Logo du Millénaire** (réunion #11) : la Région Normandie a une identité graphique officielle « MILLENIUM – 2027 », mais je n'ai trouvé ni charte téléchargeable ni règles d'usage. Le logo co-marqué « Fondation du patrimoine Millennium » cité par Marc n'est pas publié. On garde donc le marqueur provisoire `public/themes/millennium-marker.svg` (couronne, G, 1027·2027), qui ne copie pas le logo officiel. Le fichier officiel se téléverse dans le formulaire du thème dès que Marc ou la Région l'envoie (contact Région : millenaireguillaumeleconquerant@normandie.fr).
+3. **Logo du Millénaire** (réunion #11) : la Région Normandie a une identité graphique officielle « MILLENIUM – 2027 », sans charte publiée. À la demande de Cédric, un logo propre au site a été dessiné : écu rouge, donjon crénelé, bougie dorée. Il ne reprend pas le logo officiel. Il existe en trois fichiers dans `public/themes/` : repère de carte, emblème et logotype. Il se remplace dans le formulaire du thème si Marc ou la Région envoient le logo officiel (contact Région : millenaireguillaumeleconquerant@normandie.fr). Voir la section « Thématiques par année et habillage ».
 4. **« Petits blocs » pour les pages** (réunion #18) : fait. L'éditeur a deux nouveaux blocs, qui servent aussi pour les événements et les actualités. Voir la section « Blocs de l'éditeur ».
 5. **Déclaration d'accessibilité** : aucune déclaration n'a été validée, donc l'état reste « non conforme ». L'éditeur légal et la date restent des valeurs provisoires, à valider avant toute publication officielle.
 
@@ -120,6 +120,14 @@ Total : e2e 243 réussis, 0 échec, 0 instable ; unitaires 472 réussis, 0 éche
 - **Preuve** : aperçu admin d'une page temporaire de la base locale, en 1920×1080. Deux notes, « À noter » et « Important » ; deux boutons de 48 px ; l'externe s'ouvre dans un nouvel onglet et l'annonce. Aucune erreur console. Capture : `docs/screenshots/design/blocks/blocks-preview-1920.png`. La page temporaire a été supprimée ensuite.
 - **Suite complète** sur un build neuf : unit 478/0, e2e 245/0, tsc 0. Un premier passage a donné 1 échec : `event-detail` avait cliqué une carte du département que `embargo.spec` masquait au même moment. Ce test passe seul (10/10), puis la suite complète est repassée à 245/0. Cette course entre tests existait déjà ; pour l'éviter, il faudrait isoler `embargo.spec` dans un projet Playwright joué à part.
 - **Tests** : `components/news/markdown-content.test.tsx` (6 tests de rendu) et deux tests e2e dans `e2e/admin-images.spec.ts` (encadré et bouton dans l'éditeur).
+
+## Thématiques par année et habillage
+
+- **Années** : une thématique peut être limitée à une ou plusieurs éditions (« 2027 »). Hors de ces années, elle disparaît du site public : filtre, accueil, fiches, carte, carnet. Vide = toutes les éditions. Le thème Millénaire est réglé sur 2027 par la migration `20261111180000_add_theme_years_and_skin`.
+- **Habillage** : une thématique peut habiller tout le site pendant ses années. L'habillage Millénaire ajoute un bandeau rouge au-dessus de l'en-tête et deux frises brodées façon Tapisserie de Bayeux. Il se retire dans l'admin (« Aucun habillage ») ou dans le code, en supprimant un dossier et deux lignes. Mode d'emploi : `docs/habillages.md`.
+- **Preuve** : build de production local, 1920×1080 et 390 px, aucune erreur console. Captures dans `docs/screenshots/design/skin/` : accueil (bandeau et frise), pied de page, programme en mobile anglais, liste et formulaire de l'admin.
+- **Tests** : `lib/themes/active.test.ts`, `lib/skins/registry.test.ts`, `lib/queries/skin.test.ts`, `components/skins/index.test.tsx`, nouveaux cas dans `lib/actions/themes.test.ts`, et `e2e/skins.spec.ts` (bandeau et frises ; thème de test hors année puis dans l'année, saisie invalide, nettoyage).
+- **Mise en production** : appliquer la migration avant ou juste après le déploiement. Si l'image arrive avant la migration, l'habillage reste absent mais le site s'affiche (erreur P2022 interceptée).
 
 ## Test VoiceOver
 

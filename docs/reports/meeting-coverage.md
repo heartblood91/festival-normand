@@ -42,7 +42,7 @@ Captures : `docs/screenshots/design/f1/f1-embargo-admin-1920.png` et
 | 8 | Partager la liste entre téléphone et ordinateur | fait, sans compte | Lien partagé en lecture seule et importable |
 | 9 | « Infos en plus » dans le carnet imprimé | partiel | Contenu « à déterminer » en réunion : backlog M19 |
 | 10 | Thème Millénaire filtrable, choisi depuis l'admin | fait | `37be1ad`, `themes.spec` |
-| 11 | Logo Millénaire sur la carte à la place du rond | fait côté code | Upload dans le formulaire de thème. **Logo attendu de Marc** |
+| 11 | Logo Millénaire sur la carte à la place du rond | fait | Repère, emblème et logotype dessinés pour le site (`public/themes/`), sans copier le logo officiel de la Région. Remplaçables dans le formulaire du thème. Thème limité à 2027 et habillage du site : `docs/habillages.md`, `skins.spec` |
 | 12 | Bloquer les offres d'un département jusqu'à sa conférence de presse | fait | `777a7cc`, `dd75c59`, `embargo.spec` |
 | 13 | Lien vers la collecte en cours d'un site | fait | `2c00a3e`, `fundraising.spec` |
 | 14 | Bannière PEL / Millénaire sur les pages don de la Fondation | hors dépôt | CMS de la Fondation : backlog M5 |
