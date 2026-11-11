@@ -700,6 +700,33 @@ export const EventForm = ({
                   className="placeholder:text-muted-foreground mt-1 border-white/10 bg-white/5 text-white"
                 />
               </div>
+
+              <div className="md:col-span-3">
+                <Label htmlFor="historyUrl" className="text-muted-foreground">
+                  Histoire du lieu
+                </Label>
+                <Input
+                  id="historyUrl"
+                  name="historyUrl"
+                  type="url"
+                  defaultValue={event?.historyUrl ?? ""}
+                  placeholder="https://fr.wikipedia.org/wiki/..."
+                  className="placeholder:text-muted-foreground mt-1 border-white/10 bg-white/5 text-white"
+                  aria-invalid={!!errors.historyUrl}
+                  aria-describedby={
+                    errors.historyUrl ? "historyUrl-hint historyUrl-error" : "historyUrl-hint"
+                  }
+                />
+                <p id="historyUrl-hint" className="text-muted-foreground mt-1 text-xs">
+                  Page Wikipédia ou site officiel du monument. La synchronisation Tourinsoft ne
+                  modifie jamais ce lien.
+                </p>
+                {errors.historyUrl && (
+                  <p id="historyUrl-error" className="mt-1 text-sm text-red-400">
+                    {errors.historyUrl[0]}
+                  </p>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>

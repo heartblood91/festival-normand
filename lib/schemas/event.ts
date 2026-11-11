@@ -41,6 +41,14 @@ export const eventSchema = z
     email: z.string().email("Email invalide").optional().or(z.literal("")),
     phone: z.string().optional().or(z.literal("")),
     website: z.string().url("URL invalide").optional().or(z.literal("")),
+    historyUrl: z
+      .string()
+      .trim()
+      .refine(
+        (value) => !value || /^https?:\/\/[^\s/]+\.[^\s]+$/.test(value),
+        "Le lien doit être une adresse web complète (https://…)"
+      )
+      .optional(),
     latitude: z.coerce
       .number()
       .min(-90)

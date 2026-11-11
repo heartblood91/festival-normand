@@ -170,6 +170,7 @@
     "venue": "Venue",
     "pricing": "Pricing",
     "organizer": "Organizer",
+    "history": "History of the place",
     "free": "Free",
     "accessible": "Wheelchair accessible",
     "nearbyFallback": "No events within 50 km of your location. Here are the closest events, around {distance} km away.",

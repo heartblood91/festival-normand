@@ -54,6 +54,8 @@ model Event {
   fundraisingUrl         String?                 @map("fundraising_url")
   fundraisingTitle       String?                 @map("fundraising_title")
   fundraisingImage       String?                 @map("fundraising_image")
+  /// History of the place (Wikipedia or official site). Editor-owned: the Tourinsoft sync never writes it.
+  historyUrl             String?                 @map("history_url")
   fundraisingSuggestions FundraisingSuggestion[]
   photos                 Photo[]
   themes                 Theme[]                 @relation("event_themes")

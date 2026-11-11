@@ -19,6 +19,7 @@ import { DEFAULT_EVENT_IMAGE } from "@/lib/events/default-image"
 import { isInNormandyBounds } from "@/lib/geo/normandy"
 import { FavoriteButton } from "@/components/travel-book/favorite-button"
 import { FundraisingCallout } from "@/components/events/fundraising-callout"
+import { HistoryLink } from "@/components/event-detail/history-link"
 import { archivedEditionYear } from "@/lib/festival/programme-edition"
 import { getCurrentEdition } from "@/lib/queries/edition"
 
@@ -205,6 +206,8 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
                 </p>
               ))}
             </div>
+
+            <HistoryLink url={event.historyUrl} />
 
             {photos.length > 1 ? (
               <div className="mt-10">

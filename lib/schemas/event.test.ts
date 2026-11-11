@@ -66,6 +66,14 @@ describe("eventSchema", () => {
     expect(result.success).toBe(false)
   })
 
+  it("accepts a web link for the place history, never another scheme", () => {
+    const ok = (historyUrl: string) => eventSchema.safeParse({ ...validData, historyUrl }).success
+    expect(ok("https://fr.wikipedia.org/wiki/Abbaye_aux_Hommes")).toBe(true)
+    expect(ok("")).toBe(true)
+    expect(ok("javascript:alert(1)")).toBe(false)
+    expect(ok("wikipedia.org")).toBe(false)
+  })
+
   it("accepts only a fondation-patrimoine.org link for the collect", () => {
     const url = "https://www.fondation-patrimoine.org/les-projets/abbaye/123"
     expect(eventSchema.safeParse({ ...validData, fundraisingUrl: url }).success).toBe(true)
