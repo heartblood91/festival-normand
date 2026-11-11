@@ -94,11 +94,12 @@ test.describe("Admin publish workflow", () => {
   test("AI tools are real buttons that say when no AI key is configured", async ({ page }) => {
     test.skip(!!process.env.OPENROUTER_API_KEY, "Checks the no-key state")
     await page.goto("/fr/admin/events/new")
-    await expect(page.getByText(/^IA indisponible/)).toBeVisible()
+    // Design audit #19: say why, in words, not only in a mouse tooltip.
+    await expect(page.getByText(/^IA non configurée/)).toBeVisible()
     for (const name of ["Traduire", "SEO", "RGAA"]) {
       const button = page.getByRole("button", { name, exact: true })
       await expect(button).toBeDisabled()
-      await expect(button).toHaveAccessibleDescription(/clé OpenRouter non configurée/)
+      await expect(button).toHaveAccessibleDescription(/clé OpenRouter absente/)
     }
     await expect(page.getByText(/À venir/)).toHaveCount(0)
   })

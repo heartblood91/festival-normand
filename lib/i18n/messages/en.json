@@ -354,6 +354,7 @@
       "totalNews": "News",
       "totalPartners": "Partners",
       "totalPages": "Pages",
+      "none": "None",
       "drafts": "Drafts",
       "draftsDescription": "Work in progress, never published",
       "draftsTooltip": "Drafts are content you are currently creating that has never been published on the site.",

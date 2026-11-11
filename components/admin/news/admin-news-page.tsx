@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Link } from "@/lib/i18n/routing"
-import { Plus, Search, Pencil, Trash2, Eye, EyeOff, X } from "lucide-react"
+import { Plus, Search, Pencil, Trash2, X } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -21,6 +21,7 @@ import {
 import { deleteNews, bulkDeleteNews } from "@/lib/actions/news"
 import type { AdminNewsListItem } from "@/lib/types/admin"
 import { AdminFilters, type FilterConfig } from "@/components/admin/shared/admin-filters"
+import { StatusBadge } from "@/components/admin/shared/status-badge"
 import { AdminPagination } from "@/components/admin/shared/admin-pagination"
 
 type AdminNewsPageProps = {
@@ -216,7 +217,7 @@ export const AdminNewsPage = ({
                   <th className="text-muted-foreground hidden px-2 py-3 text-left font-medium md:table-cell md:px-4">
                     Date de publication
                   </th>
-                  <th className="text-muted-foreground px-2 py-3 text-center font-medium md:px-4">
+                  <th className="text-muted-foreground hidden px-2 py-3 text-center font-medium md:table-cell md:px-4">
                     Statut
                   </th>
                   <th className="text-muted-foreground px-2 py-3 text-right font-medium md:px-4">
@@ -242,7 +243,14 @@ export const AdminNewsPage = ({
                       </label>
                     </td>
                     <td className="px-2 py-3 md:px-4">
-                      <span className="font-medium text-white">{article.titleFr}</span>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-medium text-white">{article.titleFr}</span>
+                        <StatusBadge
+                          className="md:hidden"
+                          published={article.published}
+                          unpublishedAt={article.unpublishedAt}
+                        />
+                      </div>
                       {article.excerptFr && (
                         <p className="text-muted-foreground mt-0.5 line-clamp-1 text-xs">
                           {article.excerptFr}
@@ -252,26 +260,20 @@ export const AdminNewsPage = ({
                     <td className="text-muted-foreground hidden px-2 py-3 md:table-cell md:px-4">
                       {article.publishedAt ? formatDate(article.publishedAt) : "—"}
                     </td>
-                    <td className="px-2 py-3 md:px-4 text-center">
-                      {article.published ? (
-                        <span className="inline-flex items-center gap-1 text-emerald-400">
-                          <Eye className="h-3.5 w-3.5" aria-hidden="true" />
-                          <span className="sr-only md:not-sr-only">Publié</span>
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground inline-flex items-center gap-1">
-                          <EyeOff className="h-3.5 w-3.5" aria-hidden="true" />
-                          <span className="sr-only md:not-sr-only">Brouillon</span>
-                        </span>
-                      )}
+                    <td className="hidden px-2 py-3 text-center md:table-cell md:px-4">
+                      <StatusBadge
+                        published={article.published}
+                        unpublishedAt={article.unpublishedAt}
+                      />
                     </td>
-                    <td className="px-2 py-3 md:px-4 text-right">
+                    <td className="px-2 py-3 text-right md:px-4">
                       <div className="flex items-center justify-end gap-1">
                         <Button
                           asChild
                           variant="ghost"
                           size="icon-sm"
                           aria-label={`Modifier ${article.titleFr}`}
+                          title={`Modifier ${article.titleFr}`}
                         >
                           <Link href={`/admin/news/${article.id}/edit`}>
                             <Pencil className="h-3.5 w-3.5" />
@@ -285,6 +287,7 @@ export const AdminNewsPage = ({
                                 size="icon-sm"
                                 className="text-red-400 hover:text-red-300"
                                 aria-label={`Supprimer ${article.titleFr}`}
+                                title={`Supprimer ${article.titleFr}`}
                               />
                             }
                           >

@@ -90,7 +90,7 @@ export const AltTextField = ({
               <Sparkles className="mr-2 h-4 w-4" aria-hidden="true" />
             )}
             Proposer avec l&apos;IA
-            {aiAvailable === false && <span className="sr-only"> (IA indisponible)</span>}
+            {aiAvailable === false && <span className="sr-only"> (IA non configurée)</span>}
           </Button>
         )}
       </div>

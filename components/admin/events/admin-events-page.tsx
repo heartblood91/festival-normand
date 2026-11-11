@@ -37,6 +37,7 @@ import {
 import { buildListUrl, type EventListParams } from "@/lib/admin/event-list"
 import type { AdminEventListItem } from "@/lib/types/admin"
 import { AdminFilters, type FilterConfig } from "@/components/admin/shared/admin-filters"
+import { StatusBadge } from "@/components/admin/shared/status-badge"
 import { AdminPagination } from "@/components/admin/shared/admin-pagination"
 
 type AdminEventsPageProps = {
@@ -317,7 +318,7 @@ export const AdminEventsPage = ({
                   <th className="text-muted-foreground hidden px-2 py-3 text-left font-medium md:px-4 lg:table-cell">
                     Date
                   </th>
-                  <th className="text-muted-foreground px-2 py-3 text-center font-medium md:px-4">
+                  <th className="text-muted-foreground hidden px-2 py-3 text-center font-medium md:table-cell md:px-4">
                     Statut
                   </th>
                   <th className="text-muted-foreground px-2 py-3 text-right font-medium md:px-4">
@@ -345,6 +346,11 @@ export const AdminEventsPage = ({
                     <td className="px-2 py-3 md:px-4">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="font-medium text-white">{event.titleFr}</span>
+                        <StatusBadge
+                          className="md:hidden"
+                          published={event.published}
+                          unpublishedAt={event.unpublishedAt}
+                        />
                         {event.featured && (
                           <span
                             className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-400"
@@ -389,31 +395,20 @@ export const AdminEventsPage = ({
                     <td className="text-muted-foreground hidden px-2 py-3 md:px-4 lg:table-cell">
                       {formatDate(event.dateStart)}
                     </td>
-                    <td className="px-2 py-3 md:px-4 text-center">
-                      {event.published ? (
-                        <span className="inline-flex items-center gap-1 text-emerald-400">
-                          <Eye className="h-3.5 w-3.5" aria-hidden="true" />
-                          <span className="sr-only md:not-sr-only">Publié</span>
-                        </span>
-                      ) : event.unpublishedAt ? (
-                        <span className="inline-flex items-center gap-1 text-orange-400">
-                          <EyeOff className="h-3.5 w-3.5" aria-hidden="true" />
-                          <span className="sr-only md:not-sr-only">Dépublié</span>
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground inline-flex items-center gap-1">
-                          <EyeOff className="h-3.5 w-3.5" aria-hidden="true" />
-                          <span className="sr-only md:not-sr-only">Brouillon</span>
-                        </span>
-                      )}
+                    <td className="hidden px-2 py-3 text-center md:table-cell md:px-4">
+                      <StatusBadge
+                        published={event.published}
+                        unpublishedAt={event.unpublishedAt}
+                      />
                     </td>
-                    <td className="px-2 py-3 md:px-4 text-right">
+                    <td className="px-2 py-3 text-right md:px-4">
                       <div className="flex items-center justify-end gap-1">
                         <Button
                           asChild
                           variant="ghost"
                           size="icon-sm"
                           aria-label={`Modifier ${event.titleFr}`}
+                          title={`Modifier ${event.titleFr}`}
                         >
                           <Link href={`/admin/events/${event.id}/edit`}>
                             <Pencil className="h-3.5 w-3.5" />
@@ -428,6 +423,7 @@ export const AdminEventsPage = ({
                                   size="icon-sm"
                                   className="text-orange-400 hover:text-orange-300"
                                   aria-label={`Dépublier ${event.titleFr}`}
+                                  title={`Dépublier ${event.titleFr}`}
                                 />
                               }
                             >

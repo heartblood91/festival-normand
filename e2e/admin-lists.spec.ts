@@ -138,8 +138,12 @@ test.describe("Admin event lists", () => {
           `1 événement publié. Non publié(s) : ${blocked} (image de couverture sans texte alternatif).`
         )
       ).toBeVisible()
-      await expect(row(page, NO_COVER_EVENT).getByText("Publié", { exact: true })).toBeVisible()
-      await expect(row(page, blocked).getByText("Dépublié", { exact: true })).toBeVisible()
+      await expect(
+        row(page, NO_COVER_EVENT).getByText("Publié", { exact: true }).filter({ visible: true })
+      ).toBeVisible()
+      await expect(
+        row(page, blocked).getByText("Dépublié", { exact: true }).filter({ visible: true })
+      ).toBeVisible()
     } finally {
       await republishEvent(page, blockedEdit ?? "")
       await republishEvent(page, noCoverEdit ?? "")
@@ -154,6 +158,7 @@ test.describe("Admin event lists", () => {
     await page.goto("/fr/admin")
     const todo = page.getByRole("region", { name: "À traiter" })
     const missingEn = todo.getByRole("link", { name: /Traduction EN manquante/ })
+    test.skip((await missingEn.count()) === 0, "No missing translation: the counter says « Aucun »")
     const count = Number((await missingEn.textContent())?.match(/\d+$/)?.[0])
 
     await missingEn.click()
