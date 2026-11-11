@@ -8,7 +8,7 @@ import { shareTravelBook } from "@/lib/actions/travel-book"
 import { useFavorites } from "@/lib/travel-book/use-favorites"
 
 const ACTION_CLASS =
-  "border-primary/50 text-primary hover:bg-primary/10 focus-visible:ring-primary/50 inline-flex min-h-11 items-center gap-2 border px-4 font-sans text-[11px] font-semibold tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:opacity-60"
+  "border-primary/50 text-primary hover:bg-primary/10 focus-visible:ring-primary/50 inline-flex min-h-11 items-center gap-2 border px-4 font-sans text-xs font-semibold tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:opacity-60"
 
 export const PrintButton = () => {
   const t = useTranslations("travelBook")

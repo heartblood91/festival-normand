@@ -88,13 +88,13 @@ const NewsListPage = async ({ params }: NewsListPageProps) => {
                   ) : null}
                 </div>
                 <div className="flex flex-col justify-center gap-5 p-8 md:p-10">
-                  <span className="bg-primary text-primary-foreground w-fit px-3 py-1 font-sans text-[10px] font-semibold tracking-[0.16em] uppercase">
+                  <span className="bg-primary text-primary-foreground w-fit px-3 py-1 font-sans text-xs font-semibold tracking-[0.16em] uppercase">
                     {locale === "en" ? "Featured" : "À la une"}
                   </span>
                   {featured.publishedAt ? (
                     <time
                       dateTime={new Date(featured.publishedAt).toISOString()}
-                      className="text-primary font-mono text-[10.5px] tracking-[0.18em] uppercase"
+                      className="text-primary font-mono text-xs tracking-[0.18em] uppercase"
                     >
                       {formatNewsDate(featured.publishedAt, locale)}
                     </time>

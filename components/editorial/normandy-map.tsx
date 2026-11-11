@@ -59,14 +59,22 @@ const buildDots = (counts: DeptCount[]) => {
 type NormandyMapProps = {
   departments: { code: string; name: string; count: number }[]
   className?: string
+  label: string
 }
 
-const NormandyMap = ({ departments, className }: NormandyMapProps) => {
+const NormandyMap = ({ departments, className, label }: NormandyMapProps) => {
   const dots = buildDots(departments.map((d) => ({ code: d.code, count: d.count })))
 
   return (
-    <svg viewBox={VIEWBOX} className={className} role="img" aria-label="Carte de la Normandie illuminée">
-      <path d={PATH} fill="var(--primary)" fillOpacity="0.1" stroke="var(--primary)" strokeOpacity="0.5" strokeWidth="1.5" />
+    <svg viewBox={VIEWBOX} className={className} role="img" aria-label={label}>
+      <path
+        d={PATH}
+        fill="var(--primary)"
+        fillOpacity="0.1"
+        stroke="var(--primary)"
+        strokeOpacity="0.5"
+        strokeWidth="1.5"
+      />
       {dots.map((d, i) =>
         d.live ? (
           <g key={i}>
@@ -91,10 +99,12 @@ const NormandyMap = ({ departments, className }: NormandyMapProps) => {
           y={dept.center.y - 80}
           fill="var(--ed-cream)"
           fontFamily="var(--font-mono)"
-          fontSize="11"
-          letterSpacing="3"
+          fontSize="26"
+          letterSpacing="4"
           textAnchor="middle"
-          opacity="0.7"
+          opacity="0.75"
+          // Too small to read on phones; the list beside the map names every department.
+          className="hidden md:inline"
         >
           {dept.nameFr.toUpperCase()}
         </text>

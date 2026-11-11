@@ -40,7 +40,7 @@ const NewsCard = async ({ article, className, priority = false }: NewsCardProps)
         {article.publishedAt ? (
           <time
             dateTime={new Date(article.publishedAt).toISOString()}
-            className="text-primary font-mono text-[10px] tracking-[0.18em] uppercase opacity-85"
+            className="text-primary font-mono text-xs tracking-[0.18em] uppercase opacity-85"
           >
             {formatNewsDate(article.publishedAt, locale)}
           </time>
@@ -53,7 +53,7 @@ const NewsCard = async ({ article, className, priority = false }: NewsCardProps)
             {article.excerpt}
           </p>
         ) : null}
-        <span className="border-primary/20 text-primary mt-auto flex items-center justify-between border-t pt-3 font-sans text-[11px] tracking-[0.16em] uppercase">
+        <span className="border-primary/20 text-primary mt-auto flex items-center justify-between border-t pt-3 font-sans text-xs tracking-[0.16em] uppercase">
           <span className="group-hover:text-ed-amber-soft transition-colors">
             {locale === "en" ? "Read" : "Lire"}
           </span>

@@ -13,7 +13,7 @@ const initialState: ContactActionResult = {
   message: "",
 }
 
-const labelClass = "text-primary mb-2 block font-mono text-[10.5px] tracking-[0.18em] uppercase"
+const labelClass = "text-primary mb-2 block font-mono text-xs tracking-[0.18em] uppercase"
 const fieldClass =
   "border-primary/30 bg-ed-bg-soft text-foreground placeholder:text-ed-mute focus-visible:border-primary focus-visible:ring-primary/30 w-full border px-4 py-3 font-serif text-base transition-colors focus-visible:ring-2 focus-visible:outline-none"
 
@@ -27,7 +27,7 @@ const ContactForm = () => {
     if (state.success) {
       toast.success(state.message)
       formRef.current?.reset()
-    } else if (state.message && !state.errors) {
+    } else if (!state.errors && !state.fallback) {
       toast.error(state.message)
     }
   }, [state])
@@ -52,6 +52,7 @@ const ContactForm = () => {
           minLength={2}
           maxLength={100}
           className={fieldClass}
+          defaultValue={state.values?.name}
           placeholder={t("contact.name")}
           aria-describedby={state.errors?.name ? "name-error" : undefined}
           aria-invalid={state.errors?.name ? true : undefined}
@@ -73,6 +74,7 @@ const ContactForm = () => {
           name="email"
           required
           className={fieldClass}
+          defaultValue={state.values?.email}
           placeholder={t("contact.email")}
           aria-describedby={state.errors?.email ? "email-error" : undefined}
           aria-invalid={state.errors?.email ? true : undefined}
@@ -88,12 +90,14 @@ const ContactForm = () => {
         <label htmlFor="department" className={labelClass}>
           {t("contact.departmentLabel")} <span className="text-primary">*</span>
         </label>
+        {/* The key remounts the select: React's post-action form reset ignores a changed defaultValue on selects. */}
         <select
+          key={state.values?.department ?? ""}
           id="department"
           name="department"
           required
           className={fieldClass}
-          defaultValue=""
+          defaultValue={state.values?.department ?? ""}
           aria-describedby={state.errors?.department ? "department-error" : undefined}
           aria-invalid={state.errors?.department ? true : undefined}
         >
@@ -125,6 +129,7 @@ const ContactForm = () => {
           maxLength={5000}
           rows={6}
           className={`${fieldClass} resize-y`}
+          defaultValue={state.values?.message}
           placeholder={t("contact.message")}
           aria-describedby={state.errors?.message ? "message-error" : undefined}
           aria-invalid={state.errors?.message ? true : undefined}
@@ -135,6 +140,22 @@ const ContactForm = () => {
           </p>
         )}
       </div>
+
+      {state.fallback && (
+        <div
+          data-testid="contact-fallback"
+          role="alert"
+          className="border-primary/40 bg-primary/5 text-foreground border p-5 font-serif text-base"
+        >
+          <p>{t("contact.unavailable")}</p>
+          <a
+            href={state.fallback.href}
+            className="text-primary hover:text-ed-amber-soft focus-visible:ring-primary/50 mt-2 inline-flex min-h-11 items-center font-sans font-semibold break-all underline underline-offset-4 focus-visible:ring-2 focus-visible:outline-none"
+          >
+            {state.fallback.email}
+          </a>
+        </div>
+      )}
 
       <button
         type="submit"

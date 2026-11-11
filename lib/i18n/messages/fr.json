@@ -78,7 +78,8 @@
       "title": "Toute la Normandie, allumée.",
       "text": "{count, plural, =0 {Des illuminations} other {# illuminations}} à travers Manche, Calvados, Seine-Maritime, Orne et Eure. Chaque point sur la carte est un lieu qui s'ouvre, à la nuit tombée.",
       "places": "lieux",
-      "soon": "Programme à venir"
+      "soon": "Programme à venir",
+      "mapLabel": "Carte de la Normandie illuminée"
     },
     "partnersSection": {
       "marker": "Ils nous soutiennent",
@@ -95,7 +96,8 @@
     "theme": {
       "marker": "Fil rouge {year}",
       "viewAll": "Voir les événements",
-      "soon": "Les lieux participants seront annoncés prochainement."
+      "soon": "Les lieux participants seront annoncés prochainement.",
+      "browse": "Parcourir le programme"
     }
   },
   "a11y": {
@@ -261,7 +263,8 @@
     "error": "Une erreur est survenue. Veuillez réessayer.",
     "registerTitle": "Inscrivez votre événement",
     "registerDescription": "Vous souhaitez participer au festival ? Inscrivez votre site ou monument.",
-    "registerCta": "S'inscrire"
+    "registerCta": "S'inscrire",
+    "unavailable": "L'envoi du formulaire est momentanément indisponible. Votre message est prêt : écrivez directement au département depuis votre messagerie."
   },
   "footer": {
     "description": "Découvrez la magie du patrimoine normand en nocturne.",
@@ -490,5 +493,13 @@
     "home": "Retour à l'accueil",
     "programme": "Voir les événements",
     "metaTitle": "Page introuvable"
+  },
+  "errorPage": {
+    "marker": "Erreur",
+    "title": "Un incident technique",
+    "text": "Cette page n'a pas pu s'afficher. Réessayez dans un instant ; si le problème persiste, le programme reste accessible depuis l'accueil.",
+    "reference": "Référence : {id}",
+    "retry": "Réessayer",
+    "home": "Retour à l'accueil"
   }
 }

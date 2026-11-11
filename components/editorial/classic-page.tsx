@@ -27,7 +27,7 @@ const ClassicPage = async ({ title, content, marker, lead, children }: ClassicPa
         aria-label={t("a11y.breadcrumb")}
         className="border-primary/15 bg-background border-b px-4 py-4 md:px-6"
       >
-        <ol className="text-ed-mute mx-auto flex max-w-3xl flex-wrap items-center gap-2.5 font-mono text-[10.5px] tracking-[0.16em] uppercase">
+        <ol className="text-ed-mute mx-auto flex max-w-3xl flex-wrap items-center gap-2.5 font-mono text-xs tracking-[0.16em] uppercase">
           <li>
             <Link href="/" className="hover:text-primary transition-colors">
               {t("nav.home")}

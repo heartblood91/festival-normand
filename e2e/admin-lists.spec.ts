@@ -87,6 +87,8 @@ test.describe("Admin event lists", () => {
       await expect(row(page, title).getByLabel("À la une")).toBeVisible()
     } finally {
       await page.goto("/fr/admin/events?featured=true&sort=title")
+      // count() does not wait: a cleanup that ran before the rows rendered left every event featured.
+      await rowTitles(page)
       const box = page.getByRole("checkbox", { name: SELECT_PREFIX + title })
       if (await box.count()) {
         await box.check()

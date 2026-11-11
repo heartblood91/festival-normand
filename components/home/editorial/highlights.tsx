@@ -75,7 +75,7 @@ const Highlights = async ({ events, mode, year, markerIndex }: HighlightsProps) 
                     <p className="text-ed-bone font-serif text-base font-light italic">
                       {event.location}, {event.city}
                     </p>
-                    <dl className="border-primary/25 text-ed-bone mt-auto grid grid-cols-2 gap-x-4 gap-y-1.5 border-t pt-4 font-mono text-[10.5px] tracking-[0.12em] uppercase">
+                    <dl className="border-primary/25 text-ed-bone mt-auto grid grid-cols-2 gap-x-4 gap-y-1.5 border-t pt-4 font-mono text-xs tracking-[0.12em] uppercase">
                       <dt className="sr-only">{t("events.date")}</dt>
                       <dd>
                         {event.dateStart ? formatEventDate(event.dateStart, locale) : ""}

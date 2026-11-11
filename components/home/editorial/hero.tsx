@@ -2,6 +2,7 @@ import { getTranslations, getLocale } from "next-intl/server"
 import { Link } from "@/lib/i18n/routing"
 import type { Locale } from "@/lib/i18n/config"
 import { editionKicker, type Edition, type EditionMode } from "@/lib/festival/edition"
+import { heroVideoSrc } from "@/lib/festival/hero-video"
 import { HeroVideoBg } from "@/components/home/editorial/hero-video-bg"
 
 type HeroProps = {
@@ -35,7 +36,7 @@ const Hero = async ({ edition, mode, totalPlaces, countdownDays, live }: HeroPro
       className="relative isolate overflow-hidden px-4 py-20 text-center md:px-6 md:py-28 lg:py-32"
       aria-label={t("hero.badge")}
     >
-      <HeroVideoBg />
+      <HeroVideoBg src={heroVideoSrc()} />
       {/* readability overlays */}
       <div
         className="from-ed-bg-deep/85 via-ed-bg-deep/45 to-ed-bg-deep absolute inset-0 -z-[1] bg-gradient-to-b"
@@ -47,10 +48,13 @@ const Hero = async ({ edition, mode, totalPlaces, countdownDays, live }: HeroPro
       />
 
       <div className="relative mx-auto max-w-4xl">
-        <p className="text-primary mb-6 inline-flex items-center gap-3 font-mono text-[11px] tracking-[0.28em] uppercase md:text-xs">
-          <span className="bg-primary/50 h-px w-6" aria-hidden="true" />
+        <p
+          data-testid="hero-kicker"
+          className="text-primary mb-6 inline-flex items-center gap-3 font-mono text-xs tracking-[0.12em] uppercase sm:tracking-[0.28em]"
+        >
+          <span className="bg-primary/50 hidden h-px w-6 sm:block" aria-hidden="true" />
           {editionKicker(edition, mode, locale)}
-          <span className="bg-primary/50 h-px w-6" aria-hidden="true" />
+          <span className="bg-primary/50 hidden h-px w-6 sm:block" aria-hidden="true" />
         </p>
 
         <h1 className="text-foreground font-display text-[clamp(3rem,11vw,9.5rem)] leading-[0.94] font-normal tracking-[-0.025em]">
@@ -66,7 +70,7 @@ const Hero = async ({ edition, mode, totalPlaces, countdownDays, live }: HeroPro
           {stats.map((s) => (
             // Term before value in the DOM (read « lieux illuminés : 4 »), number on top visually.
             <div key={s.l} className="flex flex-col-reverse text-center">
-              <dt className="text-ed-mute mt-2.5 font-mono text-[10px] tracking-[0.2em] uppercase">
+              <dt className="text-ed-mute mt-2.5 font-mono text-xs tracking-[0.2em] uppercase">
                 {s.l}
               </dt>
               <dd className="text-primary font-display text-4xl leading-none font-normal tracking-tight md:text-5xl">
@@ -91,7 +95,7 @@ const Hero = async ({ edition, mode, totalPlaces, countdownDays, live }: HeroPro
           </Link>
         </div>
 
-        <p className="text-ed-mute mt-12 inline-flex items-center gap-2.5 font-mono text-[11px] tracking-[0.18em] uppercase">
+        <p className="text-ed-mute mt-12 inline-flex items-center gap-2.5 font-mono text-xs tracking-[0.18em] uppercase">
           <span
             className="bg-primary animate-ed-pulse size-1.5 rounded-full [box-shadow:0_0_10px_var(--primary)]"
             aria-hidden="true"

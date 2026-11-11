@@ -24,7 +24,7 @@ export const TravelBookLink = ({ active = false }: { active?: boolean }) => {
       <BookMarked className="size-5" aria-hidden="true" />
       {ids.length > 0 ? (
         <span
-          className="bg-primary text-primary-foreground absolute top-1 right-0.5 min-w-4 rounded-full px-1 text-center font-sans text-[10px] leading-4 font-semibold"
+          className="bg-primary text-primary-foreground absolute top-1 right-0.5 min-w-4 rounded-full px-1 text-center font-sans text-xs leading-4 font-semibold"
           aria-hidden="true"
         >
           {ids.length}

@@ -94,7 +94,7 @@ const components: Components = {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={src} alt={alt ?? ""} className="border-primary/20 w-full border" loading="lazy" />
       {alt ? (
-        <figcaption className="text-ed-mute mt-2.5 text-center font-mono text-[11px] tracking-[0.14em] uppercase">
+        <figcaption className="text-ed-mute mt-2.5 text-center font-mono text-xs tracking-[0.14em] uppercase">
           {alt}
         </figcaption>
       ) : null}

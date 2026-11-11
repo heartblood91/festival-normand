@@ -27,7 +27,11 @@ const NormandySection = async ({
   return (
     <section className="bg-ed-bg-deep border-primary/25 border-t px-4 py-20 md:px-6 md:py-24">
       <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1fr_380px]">
-        <NormandyMap departments={departments} className="h-auto w-full" />
+        <NormandyMap
+          departments={departments}
+          label={t("editorial.mapSection.mapLabel")}
+          className="h-auto w-full"
+        />
         <div>
           <Marker index={markerIndex} className="mb-3.5">
             {t("editorial.mapSection.marker")}
@@ -41,7 +45,7 @@ const NormandySection = async ({
           <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-4">
             {departments.map((d) => (
               <div key={d.code} className="border-primary/40 border-t pt-3">
-                <dt className="text-primary font-mono text-[10px] tracking-[0.16em] uppercase">
+                <dt className="text-primary font-mono text-xs tracking-[0.16em] uppercase">
                   {d.code} · {d.name.toUpperCase()}
                 </dt>
                 {/* No « 0 lieux » before the department has published places */}

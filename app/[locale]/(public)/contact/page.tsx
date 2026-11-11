@@ -98,7 +98,7 @@ const ContactPage = async ({ params }: ContactPageProps) => {
             <div className="grid gap-8">
               {coordinates.map((block) => (
                 <div key={block.label} className="border-primary/20 border-b pb-7">
-                  <h3 className="text-primary mb-3 font-mono text-[10px] tracking-[0.2em] uppercase">
+                  <h3 className="text-primary mb-3 font-mono text-xs tracking-[0.2em] uppercase">
                     {block.label}
                   </h3>
                   {block.lines.map((line, i) => (
@@ -127,7 +127,7 @@ const ContactPage = async ({ params }: ContactPageProps) => {
 
               {/* Register CTA */}
               <div className="bg-ed-bg-soft border-primary/25 border p-6">
-                <h3 className="text-primary mb-3 font-mono text-[10px] tracking-[0.2em] uppercase">
+                <h3 className="text-primary mb-3 font-mono text-xs tracking-[0.2em] uppercase">
                   {t("contact.registerTitle")}
                 </h3>
                 <p className="text-ed-bone mb-5 font-serif text-base font-light">
@@ -135,7 +135,7 @@ const ContactPage = async ({ params }: ContactPageProps) => {
                 </p>
                 <Link
                   href="/inscription"
-                  className="bg-primary text-primary-foreground hover:bg-ed-amber-deep focus-visible:ring-ring inline-flex items-center px-5 py-3 font-sans text-[11px] font-semibold tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                  className="bg-primary text-primary-foreground hover:bg-ed-amber-deep focus-visible:ring-ring inline-flex items-center px-5 py-3 font-sans text-xs font-semibold tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
                 >
                   {t("contact.registerCta")}
                 </Link>

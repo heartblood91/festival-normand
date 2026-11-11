@@ -35,7 +35,7 @@ const PastRevive = async ({
           {hasGallery ? (
             <Link
               href="/evenements?view=map"
-              className="bg-primary text-primary-foreground hover:bg-ed-amber-deep focus-visible:ring-ring inline-flex items-center px-6 py-3.5 font-sans text-[11px] font-semibold tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+              className="bg-primary text-primary-foreground hover:bg-ed-amber-deep focus-visible:ring-ring inline-flex items-center px-6 py-3.5 font-sans text-xs font-semibold tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             >
               {t("editorial.past.gallery", { year })}
             </Link>
@@ -43,14 +43,14 @@ const PastRevive = async ({
           {hasReplays ? (
             <Link
               href="/actualites"
-              className="border-ed-cream/50 text-foreground hover:border-primary hover:text-primary focus-visible:ring-primary/50 inline-flex items-center border px-6 py-3.5 font-sans text-[11px] font-medium tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none"
+              className="border-ed-cream/50 text-foreground hover:border-primary hover:text-primary focus-visible:ring-primary/50 inline-flex items-center border px-6 py-3.5 font-sans text-xs font-medium tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none"
             >
               {t("editorial.past.replays")}
             </Link>
           ) : null}
           <Link
             href="/evenements"
-            className="border-ed-cream/50 text-foreground hover:border-primary hover:text-primary focus-visible:ring-primary/50 inline-flex items-center border px-6 py-3.5 font-sans text-[11px] font-medium tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none"
+            className="border-ed-cream/50 text-foreground hover:border-primary hover:text-primary focus-visible:ring-primary/50 inline-flex items-center border px-6 py-3.5 font-sans text-xs font-medium tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none"
           >
             {t("editorial.discoverProgramme")}
           </Link>

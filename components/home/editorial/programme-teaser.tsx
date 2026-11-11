@@ -60,12 +60,12 @@ const ProgrammeTeaser = async ({ events, total, markerIndex }: ProgrammeTeaserPr
                     {event.location}, {event.city}
                   </p>
                 </div>
-                <p className="text-ed-bone hidden font-mono text-[11px] tracking-[0.14em] uppercase opacity-75 md:block">
+                <p className="text-ed-bone hidden font-mono text-xs tracking-[0.14em] uppercase opacity-75 md:block">
                   {event.dateStart ? formatEventDate(event.dateStart, locale) : ""}
                   <br />
                   {formatTime(event.timeStart ?? undefined)}
                 </p>
-                <span className="border-primary/50 text-primary hidden justify-self-start border px-3 py-1.5 font-sans text-[10px] tracking-[0.16em] uppercase md:block">
+                <span className="border-primary/50 text-primary hidden justify-self-start border px-3 py-1.5 font-sans text-xs tracking-[0.16em] uppercase md:block">
                   {t(`categories.${event.category}`)}
                 </span>
                 <span

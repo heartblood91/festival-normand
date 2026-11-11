@@ -9,9 +9,7 @@ const NotFound = () => (
     <body className="editorial bg-background text-foreground flex min-h-dvh flex-col font-serif antialiased">
       <main className="flex flex-1 items-center justify-center px-4 py-20">
         <div className="max-w-xl text-center">
-          <p className="text-primary font-mono text-[11px] tracking-[0.22em] uppercase">
-            Erreur 404
-          </p>
+          <p className="text-primary font-mono text-xs tracking-[0.22em] uppercase">Erreur 404</p>
           <h1 className="text-foreground font-display mt-5 text-5xl font-normal italic md:text-6xl">
             Page introuvable
           </h1>

@@ -78,7 +78,8 @@
       "title": "All of Normandy, lit up.",
       "text": "{count, plural, =0 {Illuminations} other {# illuminations}} across Manche, Calvados, Seine-Maritime, Orne and Eure. Each point on the map is a place that opens, after dark.",
       "places": "places",
-      "soon": "Programme coming soon"
+      "soon": "Programme coming soon",
+      "mapLabel": "Map of Normandy lit up"
     },
     "partnersSection": {
       "marker": "They support us",
@@ -95,7 +96,8 @@
     "theme": {
       "marker": "{year} common thread",
       "viewAll": "See the events",
-      "soon": "Participating places will be announced soon."
+      "soon": "Participating places will be announced soon.",
+      "browse": "Browse the programme"
     }
   },
   "a11y": {
@@ -261,7 +263,8 @@
     "error": "An error occurred. Please try again.",
     "registerTitle": "Register your event",
     "registerDescription": "Want to participate in the festival? Register your site or monument.",
-    "registerCta": "Register"
+    "registerCta": "Register",
+    "unavailable": "The form cannot send messages right now. Your message is ready: write to the department directly from your mailbox."
   },
   "footer": {
     "description": "Discover the magic of Normandy's heritage by night.",
@@ -490,5 +493,13 @@
     "home": "Back to home",
     "programme": "See the events",
     "metaTitle": "Page not found"
+  },
+  "errorPage": {
+    "marker": "Error",
+    "title": "Something went wrong",
+    "text": "This page could not be displayed. Try again in a moment; if the problem persists, the programme is still available from the home page.",
+    "reference": "Reference: {id}",
+    "retry": "Try again",
+    "home": "Back to home"
   }
 }

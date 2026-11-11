@@ -98,7 +98,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
         aria-label={t("a11y.breadcrumb")}
         className="border-primary/15 bg-background border-b px-4 py-4 md:px-6"
       >
-        <ol className="text-ed-mute mx-auto flex max-w-7xl flex-wrap items-center gap-2.5 font-mono text-[10.5px] tracking-[0.16em] uppercase">
+        <ol className="text-ed-mute mx-auto flex max-w-7xl flex-wrap items-center gap-2.5 font-mono text-xs tracking-[0.16em] uppercase">
           <li>
             <Link href="/" className="hover:text-primary transition-colors">
               {t("events.breadcrumbHome")}
@@ -142,12 +142,12 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
             <div className="mb-5 flex flex-wrap gap-2.5">
               <Link
                 href={`/evenements?category=${event.category.toLowerCase()}`}
-                className="border-primary/50 text-primary hover:bg-primary/10 focus-visible:ring-primary/50 border px-3 py-1.5 font-sans text-[10px] tracking-[0.16em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                className="border-primary/50 text-primary hover:bg-primary/10 focus-visible:ring-primary/50 border px-3 py-1.5 font-sans text-xs tracking-[0.16em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none"
               >
                 {t(`categories.${event.category}`)}
               </Link>
               {event.accessible ? (
-                <span className="bg-primary text-primary-foreground px-3 py-1.5 font-sans text-[10px] font-semibold tracking-[0.16em] uppercase">
+                <span className="bg-primary text-primary-foreground px-3 py-1.5 font-sans text-xs font-semibold tracking-[0.16em] uppercase">
                   {t("events.accessible")}
                 </span>
               ) : null}
@@ -205,7 +205,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
           <aside className="flex min-w-0 flex-col gap-6">
             {hasNormandyCoordinates ? (
               <section className="bg-ed-bg-deep border-primary/25 border p-6">
-                <h2 className="text-primary mb-4 font-mono text-[10.5px] tracking-[0.22em] uppercase">
+                <h2 className="text-primary mb-4 font-mono text-xs tracking-[0.22em] uppercase">
                   <span aria-hidden="true">¶</span> {t("events.location")}
                 </h2>
                 <EventMapWrapper

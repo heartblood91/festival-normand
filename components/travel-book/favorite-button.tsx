@@ -38,7 +38,7 @@ export const FavoriteButton = ({
           : "border-primary/50 bg-ed-bg-deep/85 text-primary hover:bg-primary/15 backdrop-blur-sm",
         variant === "icon"
           ? "size-11"
-          : "px-4 font-sans text-[11px] font-semibold tracking-[0.14em] uppercase",
+          : "px-4 font-sans text-xs font-semibold tracking-[0.14em] uppercase",
         className
       )}
     >

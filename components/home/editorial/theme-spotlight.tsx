@@ -77,9 +77,16 @@ const ThemeSpotlight = async ({ theme, year, markerIndex }: ThemeSpotlightProps)
               ))}
             </ul>
           ) : (
-            <p className="text-ed-bone self-center font-serif text-lg italic">
-              {t("editorial.theme.soon")}
-            </p>
+            <div className="self-center">
+              <p className="text-ed-bone font-serif text-lg italic">{t("editorial.theme.soon")}</p>
+              {/* Nothing tagged yet: point to the whole programme rather than a dead end. */}
+              <Link
+                href="/evenements"
+                className="text-primary hover:text-ed-amber-soft focus-visible:ring-primary/50 border-primary mt-4 inline-flex min-h-11 items-center rounded-sm border-b pb-1 font-sans text-xs tracking-[0.16em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none"
+              >
+                {t("editorial.theme.browse")}
+              </Link>
+            </div>
           )}
         </div>
       </div>

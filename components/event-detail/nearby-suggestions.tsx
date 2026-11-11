@@ -37,7 +37,7 @@ const NearbySuggestions = async ({ items, sameDay, locale }: NearbySuggestionsPr
               className="group hover:bg-primary/5 focus-visible:ring-primary/50 flex min-h-11 items-start gap-3 py-3 transition-colors focus-visible:ring-2 focus-visible:outline-none"
             >
               <span
-                className="border-primary text-primary mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full border font-mono text-[11px]"
+                className="border-primary text-primary mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full border font-mono text-xs"
                 aria-hidden="true"
               >
                 {index + 1}
