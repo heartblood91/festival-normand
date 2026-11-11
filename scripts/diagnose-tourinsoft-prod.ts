@@ -27,9 +27,9 @@ const walkListing = async (base: string) => {
   let pages = 1
   let cards = 0
   for (let page = 1; page <= Math.min(pages, MAX_PAGES); page++) {
-    const { status, body } = await fetchText(`${base}/fr/evenements?page=${page}`)
+    const { status, body } = await fetchText(`${base}/fr/evenements?edition=all&page=${page}`)
     if (status !== 200) throw new Error(`Listing page ${page} returned ${status}`)
-    const announced = [...body.matchAll(/[?&]page=(\d+)/g)].map((m) => Number(m[1]))
+    const announced = [...body.matchAll(/(?:[?&]|&amp;)page=(\d+)/g)].map((m) => Number(m[1]))
     pages = Math.max(pages, ...announced)
     const found = new Set([...body.matchAll(/href="\/fr\/evenement\/([^"?#]+)"/g)].map((m) => m[1]))
     cards += found.size
@@ -72,7 +72,7 @@ Generated ${new Date().toISOString()} by \`scripts/diagnose-tourinsoft-prod.ts\`
 - Target: ${base}
 - Offers in the Tourinsoft feed: **${offers.length}**
 - Published events (map view inventory, unpaginated): **${inventory.length}**
-- Listing \`/fr/evenements?page=1..${listing.pages}\`: ${listing.cards} cards, **${listing.slugs.size}** distinct events
+- Listing \`/fr/evenements?edition=all&page=1..${listing.pages}\`: ${listing.cards} cards, **${listing.slugs.size}** distinct events
 - Published events a visitor cannot reach by paging the listing: **${unreachable.length}**
   (the listing ordered only by \`dateStart\`, so OFFSET pages overlapped — fixed
   on \`feat/pel-2027\` by adding \`id\` as tie-breaker)

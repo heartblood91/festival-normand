@@ -66,7 +66,7 @@ export const extractEventsFromRsc = (rsc: string): PublicEvent[] => {
 }
 
 export const fetchPublicEvents = async (base: string): Promise<PublicEvent[]> => {
-  const { status, body } = await fetchText(`${base}/fr/evenements?view=map`)
+  const { status, body } = await fetchText(`${base}/fr/evenements?view=map&edition=all`)
   if (status !== 200) throw new Error(`Map view returned ${status}`)
   return extractEventsFromRsc(decodeRscPayload(body))
 }
