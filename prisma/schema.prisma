@@ -390,3 +390,18 @@ model SurveyResponse {
   @@index([surveyId, createdAt])
   @@map("survey_responses")
 }
+
+model GalleryPhoto {
+  id        String   @id @default(cuid())
+  url       String
+  /// Empty until an editor writes it; photos without a text alternative stay hidden.
+  altFr     String   @default("") @map("alt_fr")
+  altEn     String?  @map("alt_en")
+  credit    String?
+  year      Int
+  order     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([year, order])
+  @@map("gallery_photos")
+}

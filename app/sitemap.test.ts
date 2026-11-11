@@ -120,4 +120,30 @@ describe("sitemap", () => {
     const newsDetail = result.find((e) => e.url?.includes("/fr/actualite/test-news"))
     expect(newsDetail?.priority).toBe(0.6)
   })
+
+  it("lists the photo gallery only for years with published photos", async () => {
+    prismaMock.event.findMany.mockResolvedValue([])
+    prismaMock.news.findMany.mockResolvedValue([])
+    prismaMock.page.findMany.mockResolvedValue([])
+    prismaMock.galleryPhoto.groupBy.mockResolvedValueOnce([{ year: 2026 }, { year: 2025 }])
+
+    const urls = (await sitemap()).map((entry) => entry.url)
+
+    expect(urls).toContain("https://pierresenlumieres.fr/fr/retour-en-images")
+    expect(urls).toContain("https://pierresenlumieres.fr/en/retour-en-images/2025")
+    expect(urls).not.toContain("https://pierresenlumieres.fr/fr/retour-en-images/2026")
+    expect(prismaMock.galleryPhoto.groupBy).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { altFr: { not: "" } } })
+    )
+  })
+
+  it("leaves the gallery out while it is empty", async () => {
+    prismaMock.event.findMany.mockResolvedValue([])
+    prismaMock.news.findMany.mockResolvedValue([])
+    prismaMock.page.findMany.mockResolvedValue([])
+
+    const urls = (await sitemap()).map((entry) => entry.url)
+
+    expect(urls.some((url) => url.includes("retour-en-images"))).toBe(false)
+  })
 })

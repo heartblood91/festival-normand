@@ -350,7 +350,8 @@
       "registrationLinks": "Registrations",
       "edition": "Edition",
       "recovery": "Sites to recover",
-      "surveys": "Surveys"
+      "surveys": "Surveys",
+      "gallery": "Photo gallery"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -539,5 +540,20 @@
     "printMultiple": "several answers possible",
     "printButton": "Print",
     "printThanks": "Thank you! Please hand this survey in at the site's reception."
+  },
+  "gallery": {
+    "marker": "Looking back",
+    "title": "Photo gallery",
+    "intro": "The festival nights in pictures, edition after edition.",
+    "yearsNav": "Editions",
+    "yearTitle": "{year} edition",
+    "count": "{count, plural, one {# photo} other {# photos}}",
+    "open": "Enlarge: {alt}",
+    "dialogLabel": "Enlarged photo",
+    "close": "Close",
+    "position": "Photo {index} of {total}",
+    "homeTitle": "The {year} edition in pictures",
+    "homeLink": "See all photos",
+    "footerLink": "Photo gallery"
   }
 }

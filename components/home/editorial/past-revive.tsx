@@ -34,7 +34,7 @@ const PastRevive = async ({
         <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
           {hasGallery ? (
             <Link
-              href="/evenements?view=map"
+              href="/retour-en-images"
               className="bg-primary text-primary-foreground hover:bg-ed-amber-deep focus-visible:ring-ring inline-flex items-center px-6 py-3.5 font-sans text-xs font-semibold tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             >
               {t("editorial.past.gallery", { year })}

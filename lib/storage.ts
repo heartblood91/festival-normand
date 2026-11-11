@@ -24,8 +24,9 @@ const compressImage = async (buffer: Buffer, preset: ImagePreset): Promise<Buffe
   const config = IMAGE_PRESETS[preset]
   return sharp(buffer)
     .resize(config.width, config.height, {
-      fit: "cover",
+      fit: "fit" in config ? config.fit : "cover",
       position: "center",
+      withoutEnlargement: "fit" in config,
     })
     .webp({ quality: config.quality })
     .toBuffer()

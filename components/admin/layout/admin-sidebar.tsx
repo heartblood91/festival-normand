@@ -7,6 +7,7 @@ import {
   Calendar,
   Tags,
   ClipboardList,
+  Images,
   Newspaper,
   Handshake,
   FileText,
@@ -95,6 +96,11 @@ const AdminSidebar = ({
       href: `/${locale}/admin/surveys`,
       icon: ClipboardList,
       labelKey: "sidebar.surveys",
+    },
+    {
+      href: `/${locale}/admin/gallery`,
+      icon: Images,
+      labelKey: "sidebar.gallery",
     },
     {
       href: `/${locale}/admin/inscription`,

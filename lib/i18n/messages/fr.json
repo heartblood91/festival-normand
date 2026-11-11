@@ -350,7 +350,8 @@
       "registrationLinks": "Inscriptions",
       "edition": "Édition",
       "recovery": "Sites à récupérer",
-      "surveys": "Questionnaires"
+      "surveys": "Questionnaires",
+      "gallery": "Retour en images"
     },
     "dashboard": {
       "title": "Tableau de bord",
@@ -539,5 +540,20 @@
     "printMultiple": "plusieurs réponses possibles",
     "printButton": "Imprimer",
     "printThanks": "Merci ! Remettez ce questionnaire à l’accueil du site."
+  },
+  "gallery": {
+    "marker": "Retour en images",
+    "title": "Retour en images",
+    "intro": "Les nuits du festival en photos, édition après édition.",
+    "yearsNav": "Éditions",
+    "yearTitle": "Édition {year}",
+    "count": "{count, plural, one {# photo} other {# photos}}",
+    "open": "Agrandir : {alt}",
+    "dialogLabel": "Photo agrandie",
+    "close": "Fermer",
+    "position": "Photo {index} sur {total}",
+    "homeTitle": "L'édition {year} en images",
+    "homeLink": "Voir toutes les photos",
+    "footerLink": "Retour en images"
   }
 }
