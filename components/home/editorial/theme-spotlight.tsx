@@ -64,7 +64,7 @@ const ThemeSpotlight = async ({ theme, year, markerIndex }: ThemeSpotlightProps)
                 <li key={event.id}>
                   <Link
                     href={`/evenement/${event.slug}`}
-                    className="border-primary/20 hover:bg-primary/5 focus-visible:ring-primary/50 block h-full border p-5 transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                    className="border-primary/20 hover:bg-primary/5 focus-visible:ring-primary/50 block h-full border p-5 ed-halo focus-visible:ring-2 focus-visible:outline-none"
                   >
                     <p className="text-foreground font-display text-xl font-normal">
                       {event.title}

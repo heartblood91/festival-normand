@@ -71,6 +71,8 @@ const run = async () => {
       viewport: { width, height: phone ? 844 : 900 },
       hasTouch: phone,
       isMobile: phone,
+      // Full-page shots never scroll: show scroll-reveal sections in their final state.
+      reducedMotion: "reduce",
     })
     const page = await context.newPage()
     if (admin) await login(page)

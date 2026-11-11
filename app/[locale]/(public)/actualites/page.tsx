@@ -73,7 +73,7 @@ const NewsListPage = async ({ params }: NewsListPageProps) => {
             {featured ? (
               <Link
                 href={`/actualite/${featured.slug}`}
-                className="group bg-ed-bg-soft border-primary/25 hover:border-primary/50 focus-visible:ring-primary/50 mb-12 grid overflow-hidden border transition-colors focus-visible:ring-2 focus-visible:outline-none md:mb-16 lg:grid-cols-[1.15fr_1fr]"
+                className="group bg-ed-bg-soft border-primary/25 hover:border-primary/50 focus-visible:ring-primary/50 mb-12 grid overflow-hidden border ed-halo focus-visible:ring-2 focus-visible:outline-none md:mb-16 lg:grid-cols-[1.15fr_1fr]"
               >
                 <div className="bg-ed-bg-deep relative aspect-[16/10] w-full overflow-hidden lg:aspect-auto lg:min-h-[22rem]">
                   {featured.coverImage ? (

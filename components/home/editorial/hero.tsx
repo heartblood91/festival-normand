@@ -4,6 +4,8 @@ import type { Locale } from "@/lib/i18n/config"
 import { editionKicker, type Edition, type EditionMode } from "@/lib/festival/edition"
 import { heroVideoSrc } from "@/lib/festival/hero-video"
 import { HeroVideoBg } from "@/components/home/editorial/hero-video-bg"
+import { AnimatedNumber } from "@/components/motion/animated-number"
+import { countdownStart } from "@/lib/motion/tween"
 
 type HeroProps = {
   edition: Edition
@@ -29,7 +31,16 @@ const Hero = async ({ edition, mode, totalPlaces, countdownDays, live }: HeroPro
       ? t("editorial.pastStatus", { year: edition.year, nextYear: edition.year + 1 })
       : live
         ? t("editorial.liveStatus")
-        : t("editorial.upcomingStatus", { days: countdownDays })
+        : t.rich("editorial.upcomingStatus", {
+            days: countdownDays,
+            n: () => (
+              <AnimatedNumber
+                value={countdownDays}
+                from={countdownStart(countdownDays)}
+                testId="hero-countdown"
+              />
+            ),
+          })
 
   return (
     <section
@@ -74,7 +85,7 @@ const Hero = async ({ edition, mode, totalPlaces, countdownDays, live }: HeroPro
                 {s.l}
               </dt>
               <dd className="text-primary font-display text-4xl leading-none font-normal tracking-tight md:text-5xl">
-                {s.n}
+                <AnimatedNumber value={s.n} />
               </dd>
             </div>
           ))}
@@ -83,13 +94,13 @@ const Hero = async ({ edition, mode, totalPlaces, countdownDays, live }: HeroPro
         <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
             href="/evenements"
-            className="bg-primary text-primary-foreground hover:bg-ed-amber-deep focus-visible:ring-ring inline-flex w-full items-center justify-center px-8 py-4 font-sans text-xs font-semibold tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none sm:w-auto"
+            className="bg-primary text-primary-foreground hover:bg-ed-amber-deep focus-visible:ring-ring ed-halo inline-flex w-full items-center justify-center px-8 py-4 font-sans text-xs font-semibold tracking-[0.14em] uppercase focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none sm:w-auto"
           >
             {t("editorial.discoverProgramme")}
           </Link>
           <Link
             href="/evenements?view=map"
-            className="border-ed-cream/50 text-foreground hover:border-primary hover:text-primary focus-visible:ring-primary/50 inline-flex w-full items-center justify-center border px-8 py-4 font-sans text-xs font-medium tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none sm:w-auto"
+            className="border-ed-cream/50 text-foreground hover:border-primary hover:text-primary focus-visible:ring-primary/50 ed-halo inline-flex w-full items-center justify-center border px-8 py-4 font-sans text-xs font-medium tracking-[0.14em] uppercase focus-visible:ring-2 focus-visible:outline-none sm:w-auto"
           >
             {t("editorial.viewMap")}
           </Link>

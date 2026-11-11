@@ -226,6 +226,62 @@ html:not(.high-contrast) .editorial {
   }
 }
 
+/* Map markers light up on hover and keyboard focus (Mapbox makes markers with a popup focusable). */
+.pel-map-target > span {
+  transition:
+    transform 0.2s ease-out,
+    box-shadow 0.2s ease-out;
+}
+.pel-map-target:hover > span,
+.pel-map-target:focus-visible > span {
+  transform: scale(1.3);
+  box-shadow:
+    0 0 0 4px rgba(245, 158, 11, 0.35),
+    0 0 18px 2px rgba(245, 158, 11, 0.6) !important;
+}
+.pel-map-target:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+  border-radius: 9999px;
+}
+
+/* Amber halo on cards and calls to action; the lift only when motion is welcome. */
+.ed-halo {
+  transition-property: color, background-color, border-color, box-shadow, transform;
+  transition-duration: 0.3s;
+  transition-timing-function: ease-out;
+}
+/* Composed with Tailwind's ring variables so the focus ring stays visible under the halo. */
+.ed-halo:hover,
+.ed-halo:focus-visible {
+  --tw-shadow: 0 12px 40px -12px rgba(245, 158, 11, 0.5);
+  box-shadow:
+    var(--tw-inset-shadow, 0 0 #0000), var(--tw-inset-ring-shadow, 0 0 #0000),
+    var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ed-halo:hover {
+    transform: translateY(-3px);
+  }
+}
+
+/* Scroll reveal (components/motion/reveal.tsx): only sections hidden by script ever fade. */
+.ed-reveal[data-reveal="hidden"] {
+  opacity: 0;
+  transform: translateY(28px);
+}
+.ed-reveal[data-reveal="shown"] {
+  transition:
+    opacity 0.8s ease-out,
+    transform 0.8s ease-out;
+}
+@media print {
+  .ed-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 /* High contrast mode — RGAA AAA (7:1+ ratio) */
 .high-contrast {
   --background: #000000;

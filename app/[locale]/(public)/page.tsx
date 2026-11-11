@@ -25,6 +25,7 @@ import { NormandySection } from "@/components/home/editorial/normandy-section"
 import { Partners } from "@/components/home/editorial/partners"
 import { PastRevive } from "@/components/home/editorial/past-revive"
 import { ThemeSpotlight } from "@/components/home/editorial/theme-spotlight"
+import { Reveal } from "@/components/motion/reveal"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
@@ -93,36 +94,53 @@ const HomePage = async ({ params }: HomePageProps) => {
   const hasPartners = partners.length > 0
   const themeSections = () =>
     themes.map((theme) => (
-      <ThemeSpotlight
-        key={theme.slug}
-        theme={theme}
-        year={edition.year}
+      <Reveal key={theme.slug}>
+        <ThemeSpotlight theme={theme} year={edition.year} markerIndex={nextMarker()} />
+      </Reveal>
+    ))
+  const normandy = () => (
+    <Reveal>
+      <NormandySection
+        byDepartment={stats.byDepartment}
+        totalPlaces={stats.totalPlaces}
         markerIndex={nextMarker()}
       />
-    ))
+    </Reveal>
+  )
+  const partnersSection = () =>
+    hasPartners ? (
+      <Reveal>
+        <Partners partners={partners} markerIndex={nextMarker()} />
+      </Reveal>
+    ) : null
+  const newsSection = () =>
+    hasNews ? (
+      <Reveal>
+        <NewsRow news={news} mode={mode} markerIndex={nextMarker()} />
+      </Reveal>
+    ) : null
+  const highlightsSection = () =>
+    hasFeatured ? (
+      <Reveal>
+        <Highlights events={featured} mode={mode} year={edition.year} markerIndex={nextMarker()} />
+      </Reveal>
+    ) : null
 
   if (mode === "bilan") {
     return (
       <>
         {hero}
-        <PastRevive year={edition.year} markerIndex={nextMarker()} />
-        <Quote markerIndex={nextMarker()} />
+        <Reveal>
+          <PastRevive year={edition.year} markerIndex={nextMarker()} />
+        </Reveal>
+        <Reveal>
+          <Quote markerIndex={nextMarker()} />
+        </Reveal>
         {themeSections()}
-        {hasNews ? <NewsRow news={news} mode={mode} markerIndex={nextMarker()} /> : null}
-        {hasFeatured ? (
-          <Highlights
-            events={featured}
-            mode={mode}
-            year={edition.year}
-            markerIndex={nextMarker()}
-          />
-        ) : null}
-        <NormandySection
-          byDepartment={stats.byDepartment}
-          totalPlaces={stats.totalPlaces}
-          markerIndex={nextMarker()}
-        />
-        {hasPartners ? <Partners partners={partners} markerIndex={nextMarker()} /> : null}
+        {newsSection()}
+        {highlightsSection()}
+        {normandy()}
+        {partnersSection()}
       </>
     )
   }
@@ -130,22 +148,26 @@ const HomePage = async ({ params }: HomePageProps) => {
   return (
     <>
       {hero}
-      <ThreeNights nights={edition.nights} byNight={stats.byNight} markerIndex={nextMarker()} />
-      <Quote markerIndex={nextMarker()} />
+      <Reveal>
+        <ThreeNights nights={edition.nights} byNight={stats.byNight} markerIndex={nextMarker()} />
+      </Reveal>
+      <Reveal>
+        <Quote markerIndex={nextMarker()} />
+      </Reveal>
       {themeSections()}
-      {hasNews ? <NewsRow news={news} mode={mode} markerIndex={nextMarker()} /> : null}
-      {hasFeatured ? (
-        <Highlights events={featured} mode={mode} year={edition.year} markerIndex={nextMarker()} />
-      ) : null}
+      {newsSection()}
+      {highlightsSection()}
       {hasProgramme ? (
-        <ProgrammeTeaser events={programme} total={stats.totalPlaces} markerIndex={nextMarker()} />
+        <Reveal>
+          <ProgrammeTeaser
+            events={programme}
+            total={stats.totalPlaces}
+            markerIndex={nextMarker()}
+          />
+        </Reveal>
       ) : null}
-      <NormandySection
-        byDepartment={stats.byDepartment}
-        totalPlaces={stats.totalPlaces}
-        markerIndex={nextMarker()}
-      />
-      {hasPartners ? <Partners partners={partners} markerIndex={nextMarker()} /> : null}
+      {normandy()}
+      {partnersSection()}
     </>
   )
 }

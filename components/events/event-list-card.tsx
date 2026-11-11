@@ -23,7 +23,7 @@ const EventListCard = async ({ event, className, priority = false }: EventListCa
     <div className={cn("animate-fade-in-up relative", className)}>
       <Link
         href={`/evenement/${event.slug}`}
-        className="group bg-ed-bg-soft border-primary/20 hover:border-primary/50 focus-visible:ring-primary/50 flex h-full flex-col border transition-colors focus-visible:ring-2 focus-visible:outline-none"
+        className="group bg-ed-bg-soft border-primary/20 hover:border-primary/50 focus-visible:ring-primary/50 flex h-full flex-col border ed-halo focus-visible:ring-2 focus-visible:outline-none"
       >
         <div className="relative">
           <EventThumb

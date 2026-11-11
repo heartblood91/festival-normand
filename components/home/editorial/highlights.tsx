@@ -50,7 +50,7 @@ const Highlights = async ({ events, mode, year, markerIndex }: HighlightsProps) 
               <li key={event.id} className="flex">
                 <Link
                   href={`/evenement/${event.slug}`}
-                  className="bg-ed-bg-soft border-primary/25 hover:border-primary/50 focus-visible:ring-primary/50 group flex flex-1 flex-col border transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                  className="bg-ed-bg-soft border-primary/25 hover:border-primary/50 focus-visible:ring-primary/50 group flex flex-1 flex-col border ed-halo focus-visible:ring-2 focus-visible:outline-none"
                 >
                   <div className="relative">
                     <EventThumb

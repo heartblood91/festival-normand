@@ -22,7 +22,7 @@
     "allNews": "All news →",
     "allPartners": "All partners →",
     "readArticle": "Read the article",
-    "upcomingStatus": "D − {days} {days, plural, one {day} other {days}} · free entry",
+    "upcomingStatus": "D − <n>{days}</n> {days, plural, one {day} other {days}} · free entry",
     "liveStatus": "The festival is on · tonight across Normandy",
     "pastStatus": "{year} edition over · see you in {nextYear}",
     "stats": {

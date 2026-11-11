@@ -69,6 +69,16 @@ const visit = async (page: Page, path: string) => {
     }
     window.scrollTo(0, 0)
   })
+  // Let reveal fades finish: axe would read half-transparent text as low contrast.
+  await page.waitForFunction(() =>
+    document
+      .getAnimations()
+      .every(
+        (animation) =>
+          animation.playState !== "running" ||
+          !Number.isFinite(Number(animation.effect?.getComputedTiming().endTime))
+      )
+  )
 }
 
 test.describe("axe: public pages", () => {

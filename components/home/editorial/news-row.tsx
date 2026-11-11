@@ -39,7 +39,7 @@ const NewsRow = async ({ news, mode, markerIndex = "03" }: NewsRowProps) => {
             <li key={item.id} className="flex">
               <Link
                 href={`/actualite/${item.slug}`}
-                className="bg-ed-bg-soft border-primary/20 hover:border-primary/45 focus-visible:ring-primary/50 group flex flex-1 flex-col gap-5 border p-7 transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                className="bg-ed-bg-soft border-primary/20 hover:border-primary/45 focus-visible:ring-primary/50 group flex flex-1 flex-col gap-5 border p-7 ed-halo focus-visible:ring-2 focus-visible:outline-none"
               >
                 {item.publishedAt ? (
                   <span className="text-primary font-mono text-xs tracking-[0.18em] uppercase opacity-85">

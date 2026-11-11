@@ -42,7 +42,7 @@ const ThreeNights = async ({ nights, byNight, markerIndex }: ThreeNightsProps) =
               <Link
                 key={night.date}
                 href={`/evenements?date=${night.code}`}
-                className="bg-ed-bg-soft border-primary/20 hover:border-primary/50 focus-visible:ring-primary/50 group flex flex-col border p-8 transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                className="bg-ed-bg-soft border-primary/20 hover:border-primary/50 focus-visible:ring-primary/50 group flex flex-col border p-8 ed-halo focus-visible:ring-2 focus-visible:outline-none"
               >
                 {/* The visual date reads « 21 Vendredi mai 2027 »: give screen readers the natural order. */}
                 <span className="sr-only">

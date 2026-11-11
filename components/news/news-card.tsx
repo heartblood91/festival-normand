@@ -19,7 +19,7 @@ const NewsCard = async ({ article, className, priority = false }: NewsCardProps)
     <Link
       href={`/actualite/${article.slug}`}
       className={cn(
-        "group bg-ed-bg-soft border-primary/20 hover:border-primary/50 focus-visible:ring-primary/50 flex flex-col border transition-colors focus-visible:ring-2 focus-visible:outline-none",
+        "group bg-ed-bg-soft border-primary/20 hover:border-primary/50 focus-visible:ring-primary/50 flex flex-col border ed-halo focus-visible:ring-2 focus-visible:outline-none",
         className
       )}
     >
