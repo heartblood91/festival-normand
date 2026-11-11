@@ -254,7 +254,7 @@ const FilterBar = ({ nights, total = 0, counts, themes = [] }: FilterBarProps) =
             <button
               onClick={() => setOpenDropdown(openDropdown === "dept" ? null : "dept")}
               className={cn(
-                "focus:ring-primary/50 flex min-h-10 min-w-10 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus:ring-2 focus:outline-none",
+                "focus:ring-primary/50 flex min-h-11 min-w-11 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus:ring-2 focus:outline-none",
                 selectedDept
                   ? "border-primary/30 bg-primary/10 text-primary"
                   : "text-muted-foreground hover:text-foreground border-white/10 bg-white/5 hover:bg-white/10"
@@ -318,7 +318,7 @@ const FilterBar = ({ nights, total = 0, counts, themes = [] }: FilterBarProps) =
             <button
               onClick={() => setOpenDropdown(openDropdown === "category" ? null : "category")}
               className={cn(
-                "focus:ring-primary/50 flex min-h-10 min-w-10 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus:ring-2 focus:outline-none",
+                "focus:ring-primary/50 flex min-h-11 min-w-11 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus:ring-2 focus:outline-none",
                 selectedCategory
                   ? "border-primary/30 bg-primary/10 text-primary"
                   : "text-muted-foreground hover:text-foreground border-white/10 bg-white/5 hover:bg-white/10"
@@ -384,7 +384,7 @@ const FilterBar = ({ nights, total = 0, counts, themes = [] }: FilterBarProps) =
                 key={option.value}
                 onClick={() => handleDateToggle(option.value)}
                 className={cn(
-                  "focus:ring-primary/50 min-h-10 min-w-10 rounded-full border px-3 py-2 text-xs font-medium transition-colors focus:ring-2 focus:outline-none sm:text-sm",
+                  "focus:ring-primary/50 min-h-11 min-w-11 rounded-full border px-3 py-2 text-xs font-medium transition-colors focus:ring-2 focus:outline-none sm:text-sm",
                   selectedDates.includes(option.value)
                     ? "border-primary/30 bg-primary/10 text-primary"
                     : "text-muted-foreground hover:text-foreground border-white/10 bg-white/5 hover:bg-white/10"
@@ -401,7 +401,7 @@ const FilterBar = ({ nights, total = 0, counts, themes = [] }: FilterBarProps) =
           <button
             onClick={handlePmrToggle}
             className={cn(
-              "focus:ring-primary/50 flex min-h-10 min-w-10 items-center justify-center gap-2 rounded-lg border px-3 py-2 transition-colors focus:ring-2 focus:outline-none",
+              "focus:ring-primary/50 flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-lg border px-3 py-2 transition-colors focus:ring-2 focus:outline-none",
               pmrEnabled
                 ? "border-primary/30 bg-primary/10 text-primary"
                 : "text-muted-foreground hover:text-foreground border-white/10 bg-white/5 hover:bg-white/10"
@@ -438,7 +438,7 @@ const FilterBar = ({ nights, total = 0, counts, themes = [] }: FilterBarProps) =
                   onClick={() => handleThemeToggle(theme.slug)}
                   aria-pressed={pressed}
                   className={cn(
-                    "focus:ring-primary/50 flex min-h-10 items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium transition-colors focus:ring-2 focus:outline-none sm:text-sm",
+                    "focus:ring-primary/50 flex min-h-11 items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium transition-colors focus:ring-2 focus:outline-none sm:text-sm",
                     pressed
                       ? "border-primary/30 bg-primary/10 text-primary"
                       : "text-muted-foreground hover:text-foreground border-white/10 bg-white/5 hover:bg-white/10"
@@ -464,7 +464,7 @@ const FilterBar = ({ nights, total = 0, counts, themes = [] }: FilterBarProps) =
               <button
                 key={filter.key}
                 onClick={() => removeFilter(filter.type, filter.key.split("-")[1])}
-                className="border-primary/20 bg-primary/10 text-primary hover:bg-primary/20 focus:ring-primary/50 flex min-h-9 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors focus:ring-2 focus:outline-none sm:text-sm"
+                className="border-primary/20 bg-primary/10 text-primary hover:bg-primary/20 focus:ring-primary/50 flex min-h-11 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors focus:ring-2 focus:outline-none sm:text-sm"
                 aria-label={t("filters.removeFilter", { filter: filter.label })}
               >
                 {filter.label}
@@ -473,7 +473,7 @@ const FilterBar = ({ nights, total = 0, counts, themes = [] }: FilterBarProps) =
             ))}
             <button
               onClick={clearAll}
-              className="text-muted-foreground hover:text-foreground focus:ring-primary/50 min-h-9 rounded-sm text-xs underline-offset-2 hover:underline focus:ring-2 focus:outline-none sm:text-sm"
+              className="text-muted-foreground hover:text-foreground focus:ring-primary/50 min-h-11 rounded-sm text-xs underline-offset-2 hover:underline focus:ring-2 focus:outline-none sm:text-sm"
               aria-label={t("filters.clearAll")}
             >
               {t("filters.clearAll")}

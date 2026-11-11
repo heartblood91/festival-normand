@@ -76,7 +76,10 @@ const NewsDetailPage = async ({ params }: NewsDetailPageProps) => {
       >
         <ol className="text-ed-mute mx-auto flex max-w-3xl flex-wrap items-center gap-2.5 font-mono text-xs tracking-[0.16em] uppercase">
           <li>
-            <Link href="/" className="hover:text-primary transition-colors">
+            <Link
+              href="/"
+              className="hover:text-primary inline-flex items-center transition-colors"
+            >
               {t("news.breadcrumbHome")}
             </Link>
           </li>
@@ -84,7 +87,10 @@ const NewsDetailPage = async ({ params }: NewsDetailPageProps) => {
             ›
           </li>
           <li>
-            <Link href="/actualites" className="hover:text-primary transition-colors">
+            <Link
+              href="/actualites"
+              className="hover:text-primary inline-flex items-center transition-colors"
+            >
               {t("news.breadcrumbNews")}
             </Link>
           </li>

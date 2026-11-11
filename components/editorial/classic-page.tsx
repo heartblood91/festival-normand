@@ -29,7 +29,10 @@ const ClassicPage = async ({ title, content, marker, lead, children }: ClassicPa
       >
         <ol className="text-ed-mute mx-auto flex max-w-3xl flex-wrap items-center gap-2.5 font-mono text-xs tracking-[0.16em] uppercase">
           <li>
-            <Link href="/" className="hover:text-primary transition-colors">
+            <Link
+              href="/"
+              className="hover:text-primary inline-flex items-center transition-colors"
+            >
               {t("nav.home")}
             </Link>
           </li>

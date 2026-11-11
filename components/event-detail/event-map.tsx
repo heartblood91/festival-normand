@@ -46,11 +46,15 @@ const popupHtml = (rawTitle: string, rawBody: string, href?: string) => {
 }
 
 const buildMarker = (name: string, color: string, size: number, ring: string, label?: string) => {
+  // The wrapper is the hit area (globals.css: 24px, 44px on touch screens); the dot keeps its size.
   const el = document.createElement("div")
+  el.className = "pel-map-target"
   // Mapbox keeps an existing aria-label instead of its generic "Map marker".
   el.setAttribute("aria-label", label ? `${label}. ${name}` : name)
-  el.style.cssText = `width:${size}px;height:${size}px;background:${color};border:${size > 12 ? 3 : 1}px solid ${ring};border-radius:50%;box-shadow:0 2px 12px rgba(0,0,0,0.5);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#0f172a;font:700 12px Inter,sans-serif;`
-  if (label) el.textContent = label
+  const dot = document.createElement("span")
+  dot.style.cssText = `width:${size}px;height:${size}px;background:${color};border:${size > 12 ? 3 : 1}px solid ${ring};border-radius:50%;box-shadow:0 2px 12px rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;color:#0f172a;font:700 12px Inter,sans-serif;`
+  if (label) dot.textContent = label
+  el.append(dot)
   return el
 }
 

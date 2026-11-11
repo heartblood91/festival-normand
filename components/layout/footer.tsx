@@ -61,12 +61,12 @@ const Footer = async ({ editionDates }: FooterProps) => {
               {t("footer.navigation")}
             </h2>
             <nav id="footer-nav" aria-label={t("a11y.footerNav")}>
-              <ul className="flex flex-col gap-2.5">
+              <ul className="flex flex-col gap-2.5 pointer-coarse:gap-0">
                 {NAV_ITEMS.map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="text-ed-bone hover:text-primary focus-visible:ring-primary/50 rounded-sm font-sans text-sm opacity-80 transition-colors hover:opacity-100 focus-visible:ring-2 focus-visible:outline-none"
+                      className="text-ed-bone hover:text-primary focus-visible:ring-primary/50 inline-flex items-center rounded-sm font-sans text-sm opacity-80 transition-colors hover:opacity-100 focus-visible:ring-2 focus-visible:outline-none"
                     >
                       {t(`nav.${item.key}`)}
                     </Link>
@@ -75,7 +75,7 @@ const Footer = async ({ editionDates }: FooterProps) => {
                 <li>
                   <Link
                     href="/mentions-legales"
-                    className="text-ed-bone hover:text-primary focus-visible:ring-primary/50 rounded-sm font-sans text-sm opacity-80 transition-colors hover:opacity-100 focus-visible:ring-2 focus-visible:outline-none"
+                    className="text-ed-bone hover:text-primary focus-visible:ring-primary/50 inline-flex items-center rounded-sm font-sans text-sm opacity-80 transition-colors hover:opacity-100 focus-visible:ring-2 focus-visible:outline-none"
                   >
                     {t("nav.legalNotice")}
                   </Link>
@@ -83,7 +83,7 @@ const Footer = async ({ editionDates }: FooterProps) => {
                 <li>
                   <Link
                     href="/accessibilite"
-                    className="text-ed-bone hover:text-primary focus-visible:ring-primary/50 rounded-sm font-sans text-sm opacity-80 transition-colors hover:opacity-100 focus-visible:ring-2 focus-visible:outline-none"
+                    className="text-ed-bone hover:text-primary focus-visible:ring-primary/50 inline-flex items-center rounded-sm font-sans text-sm opacity-80 transition-colors hover:opacity-100 focus-visible:ring-2 focus-visible:outline-none"
                   >
                     {t("nav.accessibility")}
                   </Link>

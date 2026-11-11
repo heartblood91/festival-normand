@@ -291,32 +291,36 @@ export const AdminEventsPage = ({
             <table className="w-full text-sm" role="table">
               <thead>
                 <tr className="border-b border-white/10 bg-white/5">
-                  <th className="w-10 px-4 py-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.size === items.length && items.length > 0}
-                      onChange={(e) => handleSelectAll(e.target.checked)}
-                      className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
-                      aria-label="Sélectionner tous les événements"
-                    />
+                  <th className="w-10 px-2 py-3 md:px-4">
+                    <label className="-m-1 inline-flex size-6 cursor-pointer items-center justify-center pointer-coarse:-m-3 pointer-coarse:size-11">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.size === items.length && items.length > 0}
+                        onChange={(e) => handleSelectAll(e.target.checked)}
+                        className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
+                        aria-label="Sélectionner tous les événements"
+                      />
+                    </label>
                   </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left font-medium">Titre</th>
-                  <th className="text-muted-foreground hidden px-4 py-3 text-left font-medium md:table-cell">
+                  <th className="text-muted-foreground px-2 py-3 text-left font-medium md:px-4">
+                    Titre
+                  </th>
+                  <th className="text-muted-foreground hidden px-2 py-3 text-left font-medium md:table-cell md:px-4">
                     Ville
                   </th>
-                  <th className="text-muted-foreground hidden px-4 py-3 text-left font-medium lg:table-cell">
+                  <th className="text-muted-foreground hidden px-2 py-3 text-left font-medium md:px-4 lg:table-cell">
                     Département
                   </th>
-                  <th className="text-muted-foreground hidden px-4 py-3 text-left font-medium md:table-cell">
+                  <th className="text-muted-foreground hidden px-2 py-3 text-left font-medium md:table-cell md:px-4">
                     Catégorie
                   </th>
-                  <th className="text-muted-foreground hidden px-4 py-3 text-left font-medium lg:table-cell">
+                  <th className="text-muted-foreground hidden px-2 py-3 text-left font-medium md:px-4 lg:table-cell">
                     Date
                   </th>
-                  <th className="text-muted-foreground px-4 py-3 text-center font-medium">
+                  <th className="text-muted-foreground px-2 py-3 text-center font-medium md:px-4">
                     Statut
                   </th>
-                  <th className="text-muted-foreground px-4 py-3 text-right font-medium">
+                  <th className="text-muted-foreground px-2 py-3 text-right font-medium md:px-4">
                     Actions
                   </th>
                 </tr>
@@ -327,16 +331,18 @@ export const AdminEventsPage = ({
                     key={event.id}
                     className={`border-b border-white/5 transition-colors ${selectedIds.has(event.id) ? "bg-amber-500/10" : "hover:bg-white/5"}`}
                   >
-                    <td className="w-10 px-4 py-3">
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.has(event.id)}
-                        onChange={() => handleToggleSelect(event.id)}
-                        className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
-                        aria-label={`Sélectionner ${event.titleFr}`}
-                      />
+                    <td className="w-10 px-2 py-3 md:px-4">
+                      <label className="-m-1 inline-flex size-6 cursor-pointer items-center justify-center pointer-coarse:-m-3 pointer-coarse:size-11">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(event.id)}
+                          onChange={() => handleToggleSelect(event.id)}
+                          className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
+                          aria-label={`Sélectionner ${event.titleFr}`}
+                        />
+                      </label>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-2 py-3 md:px-4">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="font-medium text-white">{event.titleFr}</span>
                         {event.featured && (
@@ -371,19 +377,19 @@ export const AdminEventsPage = ({
                         )}
                       </div>
                     </td>
-                    <td className="text-muted-foreground hidden px-4 py-3 md:table-cell">
+                    <td className="text-muted-foreground hidden px-2 py-3 md:table-cell md:px-4">
                       {event.city}
                     </td>
-                    <td className="text-muted-foreground hidden px-4 py-3 lg:table-cell">
+                    <td className="text-muted-foreground hidden px-2 py-3 md:px-4 lg:table-cell">
                       {DEPARTMENT_LABELS[event.department] || event.department}
                     </td>
-                    <td className="text-muted-foreground hidden px-4 py-3 md:table-cell">
+                    <td className="text-muted-foreground hidden px-2 py-3 md:table-cell md:px-4">
                       {CATEGORY_LABELS[event.category] || event.category}
                     </td>
-                    <td className="text-muted-foreground hidden px-4 py-3 lg:table-cell">
+                    <td className="text-muted-foreground hidden px-2 py-3 md:px-4 lg:table-cell">
                       {formatDate(event.dateStart)}
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-2 py-3 md:px-4 text-center">
                       {event.published ? (
                         <span className="inline-flex items-center gap-1 text-emerald-400">
                           <Eye className="h-3.5 w-3.5" aria-hidden="true" />
@@ -401,7 +407,7 @@ export const AdminEventsPage = ({
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-2 py-3 md:px-4 text-right">
                       <div className="flex items-center justify-end gap-1">
                         <Button
                           asChild

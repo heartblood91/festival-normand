@@ -27,7 +27,7 @@ const ViewToggle = () => {
       <button
         onClick={() => toggleView("grid")}
         className={cn(
-          "focus:ring-primary/50 flex min-h-10 min-w-10 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus:ring-2 focus:outline-none",
+          "focus:ring-primary/50 flex min-h-11 min-w-11 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus:ring-2 focus:outline-none",
           view === "grid"
             ? "border-primary/30 bg-primary/10 text-primary"
             : "text-muted-foreground hover:text-foreground border-white/10 bg-white/5 hover:bg-white/10"
@@ -42,7 +42,7 @@ const ViewToggle = () => {
       <button
         onClick={() => toggleView("map")}
         className={cn(
-          "focus:ring-primary/50 flex min-h-10 min-w-10 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus:ring-2 focus:outline-none",
+          "focus:ring-primary/50 flex min-h-11 min-w-11 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus:ring-2 focus:outline-none",
           view === "map"
             ? "border-primary/30 bg-primary/10 text-primary"
             : "text-muted-foreground hover:text-foreground border-white/10 bg-white/5 hover:bg-white/10"

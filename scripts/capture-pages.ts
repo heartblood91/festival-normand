@@ -52,7 +52,9 @@ const login = async (page: Page) => {
   const password = process.env.E2E_EDITOR_PASSWORD
   if (!email || !password) throw new Error("Set E2E_EDITOR_EMAIL and E2E_EDITOR_PASSWORD")
   await page.goto(`${base}/fr/admin/login`)
-  await page.screenshot({ path: join(out, `${prefix}-admin-login-${page.viewportSize()?.width}.png`) })
+  await page.screenshot({
+    path: join(out, `${prefix}-admin-login-${page.viewportSize()?.width}.png`),
+  })
   await page.getByLabel("Adresse email").fill(email)
   await page.getByLabel("Mot de passe", { exact: true }).fill(password)
   await page.getByRole("button", { name: "Se connecter" }).click()
@@ -63,7 +65,13 @@ const run = async () => {
   mkdirSync(out, { recursive: true })
   const browser = await chromium.launch()
   for (const width of [1440, 390]) {
-    const context = await browser.newContext({ viewport: { width, height: width === 1440 ? 900 : 844 } })
+    // A 390px screen is a phone: emulate touch so the touch-screen target sizes apply.
+    const phone = width === 390
+    const context = await browser.newContext({
+      viewport: { width, height: phone ? 844 : 900 },
+      hasTouch: phone,
+      isMobile: phone,
+    })
     const page = await context.newPage()
     if (admin) await login(page)
     for (const [name, path] of pages) {
@@ -86,8 +94,9 @@ const run = async () => {
         overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
         h1: document.querySelectorAll("h1").length,
         imagesWithoutAlt: [...document.images].filter((image) => !image.hasAttribute("alt")).length,
-        brokenImages: [...document.images].filter((image) => image.complete && image.naturalWidth === 0)
-          .length,
+        brokenImages: [...document.images].filter(
+          (image) => image.complete && image.naturalWidth === 0
+        ).length,
       }))
       await page.screenshot({ path: join(out, `${prefix}-${name}-${width}.png`), fullPage: true })
       console.log(JSON.stringify({ name, width, status: response?.status(), ...metrics, errors }))

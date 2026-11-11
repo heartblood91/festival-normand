@@ -23,7 +23,7 @@ const Breadcrumb = ({ items, ariaLabel }: BreadcrumbProps) => (
           {item.href ? (
             <Link
               href={item.href}
-              className="hover:text-foreground focus-visible:ring-primary/50 rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
+              className="hover:text-foreground focus-visible:ring-primary/50 inline-flex items-center rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
             >
               {item.label}
             </Link>

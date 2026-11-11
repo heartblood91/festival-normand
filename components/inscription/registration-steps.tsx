@@ -23,7 +23,7 @@ const RegistrationSteps = async () => {
               {step === "choose" ? (
                 <a
                   href="#registration-links-heading"
-                  className="hover:text-primary focus-visible:ring-primary/50 rounded-sm underline decoration-1 underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                  className="hover:text-primary focus-visible:ring-primary/50 inline-block rounded-sm underline decoration-1 underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
                 >
                   {t(`steps.${step}.title`)}
                 </a>
