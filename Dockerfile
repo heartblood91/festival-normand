@@ -38,6 +38,12 @@ ENV NEXT_PUBLIC_MAPBOX_TOKEN="$NEXT_PUBLIC_MAPBOX_TOKEN"
 ENV NEXT_PUBLIC_PERFORMANCE_MONITORING_ENABLED="$NEXT_PUBLIC_PERFORMANCE_MONITORING_ENABLED"
 ENV NEXT_PUBLIC_SITE_URL="$NEXT_PUBLIC_SITE_URL"
 
+# Migrations are additive, so applying them before the build is safe for the
+# image still serving traffic; a failed migration fails the build and keeps it.
+RUN --mount=type=secret,id=DATABASE_URL,required=true \
+  DATABASE_URL="$(cat /run/secrets/DATABASE_URL)" \
+  pnpm prisma migrate deploy
+
 RUN --mount=type=secret,id=DATABASE_URL,required=true \
   DATABASE_URL="$(cat /run/secrets/DATABASE_URL)" \
   BETTER_AUTH_SECRET="build-only-secret-not-used-at-runtime" \

@@ -8,8 +8,11 @@ the development VPS: every step below is for whoever holds the Dokploy access.
 
 ## 1. Database migrations
 
-The app image does not migrate on boot. Run the `migrate` stage against the
-production `DATABASE_URL` before (or right after) rolling out a new image:
+The `builder` stage runs `prisma migrate deploy` against the `DATABASE_URL`
+build secret before `next build`, so a Dokploy deploy of `main` migrates the
+database first. Migrations are additive; if one fails, the build fails and the
+running image stays up. To migrate by hand without building the app, run the
+`migrate` stage:
 
 ```sh
 docker build --target migrate -t pel-migrate .
