@@ -30,7 +30,7 @@ export const TravelBookList = ({ events, onRemove }: TravelBookListProps) => {
         aria-label={t("travelBook.groupBy")}
         className="mb-6 flex flex-wrap items-center gap-2 print:hidden"
       >
-        <span className="text-ed-mute mr-1 font-mono text-[10.5px] tracking-[0.16em] uppercase">
+        <span className="text-ed-mute mr-1 font-mono text-xs tracking-[0.16em] uppercase">
           {t("travelBook.groupBy")}
         </span>
         {GROUPINGS.map((value) => (
@@ -85,7 +85,7 @@ export const TravelBookList = ({ events, onRemove }: TravelBookListProps) => {
                       </span>
                     </p>
                     {event.dateStart ? (
-                      <p className="text-ed-mute mt-1 flex items-center gap-1.5 font-mono text-[11px] tracking-[0.12em] uppercase">
+                      <p className="text-ed-mute mt-1 flex items-center gap-1.5 font-mono text-xs tracking-[0.12em] uppercase">
                         <Clock className="text-primary size-3.5 shrink-0" aria-hidden="true" />
                         <span>
                           {formatEventDateRange(event.dateStart, event.dateEnd, locale)}

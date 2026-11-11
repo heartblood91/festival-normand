@@ -107,4 +107,59 @@ test.describe("Admin images and links", () => {
       await page.evaluate((key) => localStorage.removeItem(key), draftKey)
     }
   })
+
+  test("the editor wraps text in a callout and switches its variant", async ({ page }) => {
+    await page.goto("/fr/admin/events/new")
+    const editor = page.locator(".ProseMirror").first()
+    await editor.click()
+    await page.keyboard.type("Réservation obligatoire")
+
+    const info = page.getByRole("button", { name: "Encadré « À noter »" }).first()
+    const important = page.getByRole("button", { name: "Encadré « Important »" }).first()
+    await info.click()
+    await expect(editor.locator('div[data-block="callout"][data-variant="info"] p')).toHaveText(
+      "Réservation obligatoire"
+    )
+    await expect(info).toHaveAttribute("aria-pressed", "true")
+
+    await important.click()
+    await expect(editor.locator('div[data-block="callout"][data-variant="important"]')).toHaveCount(
+      1
+    )
+    await expect(info).toHaveAttribute("aria-pressed", "false")
+
+    await important.click()
+    await expect(editor.locator('div[data-block="callout"]')).toHaveCount(0)
+    await expect(editor.locator("p").first()).toHaveText("Réservation obligatoire")
+  })
+
+  test("the editor inserts and edits a call-to-action button", async ({ page }) => {
+    await page.goto("/fr/admin/events/new")
+    const editor = page.locator(".ProseMirror").first()
+    await editor.click()
+    await page.getByRole("button", { name: "Bouton d'action" }).first().click()
+
+    const dialog = page.getByRole("dialog", { name: "Insérer un bouton" })
+    await dialog.getByLabel("Adresse du bouton").fill("javascript:alert(1)")
+    await dialog.getByRole("button", { name: "Insérer le bouton" }).click()
+    await expect(dialog.getByText("Saisissez le texte du bouton.")).toBeVisible()
+    await expect(dialog.getByText(/Adresse invalide/)).toBeVisible()
+    await expect(dialog.getByLabel("Texte du bouton")).toHaveAttribute("aria-invalid", "true")
+
+    await dialog.getByLabel("Texte du bouton").fill("S'inscrire")
+    await dialog.getByLabel("Adresse du bouton").fill("forms.test/inscription")
+    await dialog.getByLabel("Adresse du bouton").press("Enter")
+    await expect(dialog).toBeHidden()
+    const cta = editor.locator('p[data-block="cta"] a[data-block="cta-link"]')
+    await expect(cta).toHaveText("S'inscrire")
+    await expect(cta).toHaveAttribute("href", "https://forms.test/inscription")
+
+    await editor.locator('p[data-block="cta"]').click()
+    await page.getByRole("button", { name: "Modifier le bouton" }).first().click()
+    const edit = page.getByRole("dialog", { name: "Modifier le bouton" })
+    await expect(edit.getByLabel("Texte du bouton")).toHaveValue("S'inscrire")
+    await edit.getByLabel("Texte du bouton").fill("Je m'inscris")
+    await edit.getByRole("button", { name: "Mettre à jour" }).click()
+    await expect(cta).toHaveText("Je m'inscris")
+  })
 })

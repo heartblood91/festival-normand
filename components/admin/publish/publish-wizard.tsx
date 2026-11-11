@@ -199,7 +199,7 @@ export const PublishWizard = ({
                 disabled={isLoading || isPublishing}
                 className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                   currentStep === step
-                    ? "bg-amber-500 text-white"
+                    ? "bg-amber-500 text-slate-950"
                     : "text-muted-foreground bg-white/10 hover:bg-white/20 disabled:opacity-50"
                 }`}
               >

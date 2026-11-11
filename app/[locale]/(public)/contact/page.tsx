@@ -39,14 +39,21 @@ const ContactPage = async ({ params }: ContactPageProps) => {
   const t = await getTranslations()
   const isEn = locale === "en"
 
-  const coordinates = [
+  const coordinates: { label: string; lines: { text: string; href?: string }[] }[] = [
     {
       label: isEn ? "Regional coordination" : "Coordination régionale",
-      lines: ["Fondation du Patrimoine", isEn ? "Normandy delegation" : "Délégation Normandie", "13 rue Saint-Romain, 76000 Rouen"],
+      lines: [
+        { text: "Fondation du Patrimoine" },
+        { text: isEn ? "Normandy delegation" : "Délégation Normandie" },
+        { text: "13 rue Saint-Romain, 76000 Rouen" },
+      ],
     },
     {
       label: isEn ? "Press & media" : "Presse & médias",
-      lines: ["presse@pierresenlumieres.fr", "+33 2 32 76 24 80"],
+      lines: [
+        { text: "presse@pierresenlumieres.fr", href: "mailto:presse@pierresenlumieres.fr" },
+        { text: "+33 2 32 76 24 80", href: "tel:+33232762480" },
+      ],
     },
   ]
 
@@ -77,29 +84,42 @@ const ContactPage = async ({ params }: ContactPageProps) => {
         <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr] lg:gap-20">
           {/* Form */}
           <div>
-            <Marker as="h2" className="mb-7">{t("contact.formTitle")}</Marker>
+            <Marker as="h2" className="mb-7">
+              {t("contact.formTitle")}
+            </Marker>
             <ContactForm />
           </div>
 
           {/* Coordinates */}
           <div className="lg:border-primary/25 lg:border-l lg:pl-16">
-            <Marker as="h2" className="mb-7">{isEn ? "Contact details" : "Coordonnées"}</Marker>
+            <Marker as="h2" className="mb-7">
+              {isEn ? "Contact details" : "Coordonnées"}
+            </Marker>
             <div className="grid gap-8">
               {coordinates.map((block) => (
                 <div key={block.label} className="border-primary/20 border-b pb-7">
-                  <h3 className="text-primary mb-3 font-mono text-[10px] tracking-[0.2em] uppercase">
+                  <h3 className="text-primary mb-3 font-mono text-xs tracking-[0.2em] uppercase">
                     {block.label}
                   </h3>
                   {block.lines.map((line, i) => (
                     <p
-                      key={line}
+                      key={line.text}
                       className={
                         i === 0
                           ? "text-foreground font-display text-xl font-normal italic"
                           : "text-ed-bone font-serif text-base opacity-80"
                       }
                     >
-                      {line}
+                      {line.href ? (
+                        <a
+                          href={line.href}
+                          className="hover:text-primary focus-visible:ring-primary/50 underline-offset-4 transition-colors hover:underline focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none"
+                        >
+                          {line.text}
+                        </a>
+                      ) : (
+                        line.text
+                      )}
                     </p>
                   ))}
                 </div>
@@ -107,7 +127,7 @@ const ContactPage = async ({ params }: ContactPageProps) => {
 
               {/* Register CTA */}
               <div className="bg-ed-bg-soft border-primary/25 border p-6">
-                <h3 className="text-primary mb-3 font-mono text-[10px] tracking-[0.2em] uppercase">
+                <h3 className="text-primary mb-3 font-mono text-xs tracking-[0.2em] uppercase">
                   {t("contact.registerTitle")}
                 </h3>
                 <p className="text-ed-bone mb-5 font-serif text-base font-light">
@@ -115,7 +135,7 @@ const ContactPage = async ({ params }: ContactPageProps) => {
                 </p>
                 <Link
                   href="/inscription"
-                  className="bg-primary text-primary-foreground hover:bg-ed-amber-deep focus-visible:ring-ring inline-flex items-center px-5 py-3 font-sans text-[11px] font-semibold tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                  className="bg-primary text-primary-foreground hover:bg-ed-amber-deep focus-visible:ring-ring inline-flex items-center px-5 py-3 font-sans text-xs font-semibold tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
                 >
                   {t("contact.registerCta")}
                 </Link>

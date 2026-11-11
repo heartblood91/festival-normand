@@ -166,6 +166,37 @@ html:not(.high-contrast) .editorial {
     outline: 2px solid var(--primary);
     outline-offset: 2px;
   }
+  /* Target size: 24px with a mouse (WCAG 2.5.8), 44px on touch screens (2.5.5). Inline links
+     in running text are exempt, and min-height leaves inline boxes untouched anyway. */
+  :where(
+    a[href],
+    button,
+    select,
+    summary,
+    textarea,
+    [role="button"],
+    [role="tab"],
+    input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="range"])
+  ) {
+    min-height: 24px;
+  }
+  @media (pointer: coarse) {
+    :where(
+      a[href],
+      button,
+      select,
+      summary,
+      textarea,
+      [role="button"],
+      [role="tab"],
+      input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="range"])
+    ) {
+      min-height: 44px;
+    }
+    :where(a[href], button, [role="button"], [role="tab"]) {
+      min-width: 44px;
+    }
+  }
   /* Respect reduced motion preference (RGAA 13.8) */
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -176,6 +207,78 @@ html:not(.high-contrast) .editorial {
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+}
+
+/* Map markers: a transparent hit area around the visible dot */
+.pel-map-target {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+  cursor: pointer;
+}
+@media (pointer: coarse) {
+  .pel-map-target {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Map markers light up on hover and keyboard focus (Mapbox makes markers with a popup focusable). */
+.pel-map-target > span {
+  transition:
+    transform 0.2s ease-out,
+    box-shadow 0.2s ease-out;
+}
+.pel-map-target:hover > span,
+.pel-map-target:focus-visible > span {
+  transform: scale(1.3);
+  box-shadow:
+    0 0 0 4px rgba(245, 158, 11, 0.35),
+    0 0 18px 2px rgba(245, 158, 11, 0.6) !important;
+}
+.pel-map-target:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+  border-radius: 9999px;
+}
+
+/* Amber halo on cards and calls to action; the lift only when motion is welcome. */
+.ed-halo {
+  transition-property: color, background-color, border-color, box-shadow, transform;
+  transition-duration: 0.3s;
+  transition-timing-function: ease-out;
+}
+/* Composed with Tailwind's ring variables so the focus ring stays visible under the halo. */
+.ed-halo:hover,
+.ed-halo:focus-visible {
+  --tw-shadow: 0 12px 40px -12px rgba(245, 158, 11, 0.5);
+  box-shadow:
+    var(--tw-inset-shadow, 0 0 #0000), var(--tw-inset-ring-shadow, 0 0 #0000),
+    var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ed-halo:hover {
+    transform: translateY(-3px);
+  }
+}
+
+/* Scroll reveal (components/motion/reveal.tsx): only sections hidden by script ever fade. */
+.ed-reveal[data-reveal="hidden"] {
+  opacity: 0;
+  transform: translateY(28px);
+}
+.ed-reveal[data-reveal="shown"] {
+  transition:
+    opacity 0.8s ease-out,
+    transform 0.8s ease-out;
+}
+@media print {
+  .ed-reveal {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
 

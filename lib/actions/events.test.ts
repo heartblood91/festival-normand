@@ -226,6 +226,21 @@ describe("updateEvent", () => {
     expect(mockPrisma.event.update.mock.calls[2][0].data).not.toHaveProperty("fundraisingUrl")
   })
 
+  it("saves the place history link, clears it, and leaves it alone when absent", async () => {
+    mockPrisma.event.findFirst.mockResolvedValue(null)
+    mockPrisma.event.update.mockResolvedValue({ id: "test-id", slug: "x" })
+    const historyUrl = "https://fr.wikipedia.org/wiki/Abbaye_aux_Hommes"
+
+    await updateEvent("test-id", createFormData({ ...validEventData, historyUrl }))
+    expect(mockPrisma.event.update.mock.calls[0][0].data).toMatchObject({ historyUrl })
+
+    await updateEvent("test-id", createFormData({ ...validEventData, historyUrl: "" }))
+    expect(mockPrisma.event.update.mock.calls[1][0].data).toMatchObject({ historyUrl: null })
+
+    await updateEvent("test-id", createFormData(validEventData))
+    expect(mockPrisma.event.update.mock.calls[2][0].data).not.toHaveProperty("historyUrl")
+  })
+
   it("returns error for duplicate slug on different event", async () => {
     mockPrisma.event.findFirst.mockResolvedValue({ id: "other-id" })
 

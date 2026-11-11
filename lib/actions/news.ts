@@ -73,6 +73,7 @@ export const getAdminNews = async ({
       coverImage: true,
       published: true,
       publishedAt: true,
+      unpublishedAt: true,
     },
   })
 

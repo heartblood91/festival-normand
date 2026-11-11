@@ -23,4 +23,5 @@ export type AdminNewsListItem = {
   published: boolean
   excerptFr: string | null
   publishedAt: Date | null
+  unpublishedAt: Date | null
 }

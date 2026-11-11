@@ -1,4 +1,6 @@
 import { z } from "zod"
+import { parseThemeYears } from "@/lib/themes/active"
+import { isSkinKey } from "@/lib/skins/registry"
 
 const optionalText = (max: number) =>
   z.string().max(max, `${max} caractères maximum`).optional().or(z.literal(""))
@@ -28,6 +30,15 @@ export const themeSchema = z.object({
     .optional()
     .or(z.literal("")),
   showOnHome: z.boolean().default(false),
+  // Free text such as "2027" or "2027, 2028"; empty means every edition.
+  years: z
+    .string()
+    .default("")
+    .refine((value) => parseThemeYears(value) !== null, "Années attendues au format 2027, 2028"),
+  skin: z
+    .string()
+    .default("")
+    .refine((value) => value === "" || isSkinKey(value), "Habillage inconnu"),
   order: z.coerce.number().int().min(0).default(0),
 })
 

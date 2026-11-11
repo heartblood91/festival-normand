@@ -39,10 +39,10 @@ const NewsRow = async ({ news, mode, markerIndex = "03" }: NewsRowProps) => {
             <li key={item.id} className="flex">
               <Link
                 href={`/actualite/${item.slug}`}
-                className="bg-ed-bg-soft border-primary/20 hover:border-primary/45 focus-visible:ring-primary/50 group flex flex-1 flex-col gap-5 border p-7 transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                className="bg-ed-bg-soft border-primary/20 hover:border-primary/45 focus-visible:ring-primary/50 group flex flex-1 flex-col gap-5 border p-7 ed-halo focus-visible:ring-2 focus-visible:outline-none"
               >
                 {item.publishedAt ? (
-                  <span className="text-primary font-mono text-[10px] tracking-[0.18em] uppercase opacity-85">
+                  <span className="text-primary font-mono text-xs tracking-[0.18em] uppercase opacity-85">
                     {formatNewsDate(item.publishedAt, locale)}
                   </span>
                 ) : null}
@@ -56,9 +56,12 @@ const NewsRow = async ({ news, mode, markerIndex = "03" }: NewsRowProps) => {
                 ) : (
                   <span className="flex-1" />
                 )}
-                <span className="border-primary/25 text-primary flex items-center justify-between border-t pt-4 font-sans text-[11px] tracking-[0.16em] uppercase">
+                <span className="border-primary/25 text-primary flex items-center justify-between border-t pt-4 font-sans text-xs tracking-[0.16em] uppercase">
                   {t("editorial.readArticle")}
-                  <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
+                  <span
+                    aria-hidden="true"
+                    className="transition-transform group-hover:translate-x-1"
+                  >
                     →
                   </span>
                 </span>

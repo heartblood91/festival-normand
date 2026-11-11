@@ -74,7 +74,7 @@ const Header = ({ kicker }: HeaderProps) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-ed-bone hover:text-primary focus-visible:ring-primary/50 inline-flex size-8 items-center justify-center rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
-                aria-label="Facebook"
+                aria-label={`Facebook ${t("a11y.newTab")}`}
               >
                 <Facebook className="size-4" />
               </a>
@@ -83,7 +83,7 @@ const Header = ({ kicker }: HeaderProps) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-ed-bone hover:text-primary focus-visible:ring-primary/50 inline-flex size-8 items-center justify-center rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
-                aria-label="Instagram"
+                aria-label={`Instagram ${t("a11y.newTab")}`}
               >
                 <Instagram className="size-4" />
               </a>
@@ -97,15 +97,15 @@ const Header = ({ kicker }: HeaderProps) => {
         <Link
           href="/"
           className="focus-visible:ring-primary/50 group flex items-center gap-3 rounded-sm focus-visible:ring-2 focus-visible:outline-none"
-          aria-label={`${t("meta.festivalName")} — ${t("a11y.backToHome")}`}
         >
           <LanternLogo className="size-7 shrink-0" />
           <span className="flex flex-col leading-none">
             <span className="text-foreground font-display group-hover:text-primary text-lg font-medium transition-colors md:text-xl">
               {t("meta.festivalName")}
+              <span className="sr-only"> — {t("a11y.backToHome")}</span>
             </span>
             <span
-              className="text-primary mt-1 hidden font-mono text-[9px] tracking-[0.2em] uppercase sm:block"
+              className="text-primary mt-1 hidden font-mono text-xs tracking-[0.2em] uppercase sm:block"
               aria-hidden="true"
             >
               {kicker}
@@ -137,7 +137,7 @@ const Header = ({ kicker }: HeaderProps) => {
           <TravelBookLink active={/^\/[a-z]{2}\/carnet(\/|$)/.test(pathname)} />
           <Link
             href={CTA_HREF}
-            className="bg-primary text-primary-foreground hover:bg-ed-amber-deep focus-visible:ring-ring hidden items-center px-5 py-3 font-sans text-[11px] font-semibold tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none lg:inline-flex"
+            className="bg-primary text-primary-foreground hover:bg-ed-amber-deep focus-visible:ring-ring hidden items-center px-5 py-3 font-sans text-xs font-semibold tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none lg:inline-flex"
           >
             {t("nav.register")}
           </Link>

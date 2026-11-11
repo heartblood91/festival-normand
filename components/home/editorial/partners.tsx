@@ -30,7 +30,8 @@ const Partners = async ({ partners, markerIndex }: PartnersProps) => {
           title={t("editorial.partnersSection.title")}
         />
 
-        <ul className="bg-primary/25 grid grid-cols-2 gap-px sm:grid-cols-3 lg:grid-cols-6">
+        {/* Flex instead of a grid: an incomplete last row is centred, never padded with empty cells. */}
+        <ul data-testid="partner-list" className="flex flex-wrap justify-center pt-px pl-px">
           {partners.map((partner) => {
             const cell = (
               <div className="bg-ed-bg-deep flex h-28 flex-col items-center justify-center gap-2.5 p-4 text-center">
@@ -52,7 +53,7 @@ const Partners = async ({ partners, markerIndex }: PartnersProps) => {
                     >
                       {initials(partner.name)}
                     </span>
-                    <span className="text-ed-bone font-mono text-[9px] tracking-[0.14em] uppercase opacity-70">
+                    <span className="text-ed-bone font-mono text-xs tracking-[0.14em] uppercase opacity-70">
                       {partner.name}
                     </span>
                   </>
@@ -60,14 +61,17 @@ const Partners = async ({ partners, markerIndex }: PartnersProps) => {
               </div>
             )
             return (
-              <li key={partner.id}>
+              <li
+                key={partner.id}
+                className="border-primary/25 -mt-px -ml-px w-1/2 border sm:w-1/3 lg:w-1/6"
+              >
                 {partner.website ? (
                   <a
                     href={partner.website}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="focus-visible:ring-primary/50 hover:bg-ed-bg-soft block transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:outline-none"
-                    aria-label={partner.name}
+                    aria-label={`${partner.name} ${t("a11y.newTab")}`}
                   >
                     {cell}
                   </a>

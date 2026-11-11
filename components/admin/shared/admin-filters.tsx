@@ -89,6 +89,7 @@ export const AdminFilters = ({ filters, baseUrl, currentValues }: AdminFiltersPr
                 }
               >
                 <SelectTrigger
+                  aria-label={getDisplayLabel(filter, currentValue ?? "")}
                   className={cn(
                     "border-white/10 bg-white/5",
                     isActive && "border-amber-500/30 bg-amber-500/10 text-amber-400"

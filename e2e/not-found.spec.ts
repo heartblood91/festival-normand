@@ -3,18 +3,18 @@ import { test, expect } from "@playwright/test"
 test.describe("404 Not Found Page", () => {
   test("displays 404 page for non-existent routes", async ({ page }) => {
     await page.goto("/this-page-does-not-exist")
-    await expect(page.getByText("404", { exact: true })).toBeVisible()
-    await expect(page.getByText("Page introuvable")).toBeVisible()
+    await expect(page.getByText(/Erreur 404/)).toBeVisible()
+    await expect(page.getByRole("heading", { level: 1, name: "Page introuvable" })).toBeVisible()
   })
 
   test("shows description text", async ({ page }) => {
     await page.goto("/non-existent-page")
-    await expect(page.getByText(/la page que vous recherchez/)).toBeVisible()
+    await expect(page.getByText(/page que vous recherchez/)).toBeVisible()
   })
 
   test("has link back to homepage", async ({ page }) => {
     await page.goto("/non-existent-page")
-    const homeLink = page.getByRole("link", { name: /accueil/i })
+    const homeLink = page.getByRole("main").getByRole("link", { name: /accueil/i })
     await expect(homeLink).toBeVisible()
     await homeLink.click()
     await expect(page).toHaveURL(/\/(fr|en)?\/?$/)
@@ -22,7 +22,7 @@ test.describe("404 Not Found Page", () => {
 
   test("has link to events page", async ({ page }) => {
     await page.goto("/non-existent-page")
-    const eventsLink = page.getByRole("link", { name: /Voir les événements/i })
+    const eventsLink = page.getByRole("main").getByRole("link", { name: /Voir les événements/i })
     await expect(eventsLink).toBeVisible()
     await eventsLink.click()
     await expect(page).toHaveURL(/\/evenements$/)

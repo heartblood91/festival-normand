@@ -62,6 +62,41 @@ test.describe("Admin on a 390px phone", () => {
     await expect(page.getByRole("dialog")).toBeHidden()
   })
 
+  for (const list of ["events", "news"]) {
+    test(`each ${list} row says its status in words`, async ({ page }) => {
+      // Design audit #21: below md the status was an eye icon only.
+      await page.goto(`/fr/admin/${list}`)
+      const rows = page.locator("tbody tr")
+      expect(await rows.count()).toBeGreaterThan(0)
+      for (const row of await rows.all()) {
+        // sr-only text has a 1px box: Playwright would call it visible.
+        const status = row.getByText(/^(Publié|Dépublié|Brouillon)$/).filter({ visible: true })
+        expect((await status.boundingBox())?.width ?? 0).toBeGreaterThan(20)
+      }
+    })
+  }
+
+  test("the fixed action bar never covers the last field", async ({ page }) => {
+    // Design audit #18.
+    await page.goto("/fr/admin/events/new")
+    await page.waitForLoadState("networkidle")
+    const bar = page.getByRole("button", { name: "Créer l'événement" }).locator("xpath=..")
+    await page.evaluate(() => {
+      const main = document.querySelector("main")
+      main?.scrollTo(0, main.scrollHeight)
+      window.scrollTo(0, document.body.scrollHeight)
+    })
+    const barTop = (await bar.boundingBox())!.y
+    const lastFieldBottom = await page.evaluate(() => {
+      const fields = [...document.querySelectorAll("main form :is(input, textarea, select)")]
+        .filter((field) => (field as HTMLInputElement).type !== "hidden")
+        .map((field) => field.getBoundingClientRect())
+        .filter((rect) => rect.height > 0)
+      return Math.max(...fields.map((rect) => rect.bottom))
+    })
+    expect(lastFieldBottom).toBeLessThanOrEqual(barTop)
+  })
+
   test("save and publish stay at the bottom of the screen", async ({ page }) => {
     await page.goto("/fr/admin/events/new")
     const save = page.getByRole("button", { name: "Créer l'événement" })

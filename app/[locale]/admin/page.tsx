@@ -6,6 +6,11 @@ import { prisma } from "@/lib/prisma"
 import { eventListWhere, parisToday } from "@/lib/admin/event-list"
 import { getLastTourinsoftRun } from "@/lib/tourinsoft/sync"
 
+export const metadata = {
+  title: "Tableau de bord - Administration",
+  robots: { index: false, follow: false },
+}
+
 const AdminPage = async () => {
   const session = await auth.api.getSession({
     headers: await headers(),

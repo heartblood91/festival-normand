@@ -15,10 +15,12 @@ import {
   Languages,
   ImageOff,
   MapPinOff,
+  type LucideIcon,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SyncStatusCard } from "@/components/admin/sync-status-card"
 import type { SyncRunSummary } from "@/lib/tourinsoft/sync"
+import { cn } from "@/lib/utils"
 
 type AdminDashboardProps = {
   user: {
@@ -58,6 +60,54 @@ const statCards = [
   { key: "totalPages", icon: FileText, color: "text-purple-400", bgColor: "bg-purple-400/10" },
 ] as const
 
+type CounterRowProps = {
+  href: string
+  count: number
+  icon: LucideIcon
+  tone: string
+  label: string
+  none: string
+}
+
+/** A zero is said in words and is not a link to an empty list. */
+const CounterRow = ({ href, count, icon: Icon, tone, label, none }: CounterRowProps) => {
+  const content = (
+    <>
+      <span className="text-foreground flex items-center gap-3 text-sm">
+        <Icon className={cn("size-4", tone)} aria-hidden="true" />
+        {label}
+      </span>
+      {count > 0 ? (
+        <span className={cn("text-sm font-bold", tone)}>{count}</span>
+      ) : (
+        <span className="text-muted-foreground text-xs">{none}</span>
+      )}
+    </>
+  )
+  const row = "flex min-h-11 items-center justify-between gap-3 rounded-lg px-4 py-3"
+  return count > 0 ? (
+    <Link
+      href={href}
+      data-testid="dashboard-counter"
+      data-count={count}
+      className={cn(
+        row,
+        "bg-white/5 transition-all hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-amber-500/60 focus-visible:outline-none"
+      )}
+    >
+      {content}
+    </Link>
+  ) : (
+    <div
+      data-testid="dashboard-counter"
+      data-count={0}
+      className={cn(row, "border border-dashed border-white/10")}
+    >
+      {content}
+    </div>
+  )
+}
+
 export const AdminDashboard = ({ user, stats, todo, lastSyncRun }: AdminDashboardProps) => {
   const t = useTranslations("admin")
   const locale = useLocale()
@@ -90,22 +140,47 @@ export const AdminDashboard = ({ user, stats, todo, lastSyncRun }: AdminDashboar
             totalPartners: `/${locale}/admin/partners`,
             totalPages: `/${locale}/admin/pages`,
           }
-          return (
-            <Link key={key} href={links[key]}>
-              <div className="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl transition-all hover:border-amber-500/30 md:p-6">
-                <div className="flex items-center justify-between">
-                  <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
-                    {t(`dashboard.${key}`)}
-                  </p>
-                  <div className={`rounded-lg p-2 ${bgColor}`}>
-                    <Icon className={`size-4 ${color}`} aria-hidden="true" />
-                  </div>
-                </div>
-                <p className="text-foreground mt-2 text-2xl font-bold md:text-3xl">
-                  {statValues[key]}
+          const count = statValues[key]
+          const card = (
+            <>
+              <div className="flex items-center justify-between">
+                <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
+                  {t(`dashboard.${key}`)}
                 </p>
+                <div className={`rounded-lg p-2 ${bgColor}`}>
+                  <Icon className={`size-4 ${color}`} aria-hidden="true" />
+                </div>
               </div>
+              {count > 0 ? (
+                <p className="text-foreground mt-2 text-2xl font-bold md:text-3xl">{count}</p>
+              ) : (
+                <p className="text-muted-foreground mt-3 text-sm">{t("dashboard.none")}</p>
+              )}
+            </>
+          )
+          const box = "rounded-xl border bg-white/5 p-4 backdrop-blur-xl md:p-6"
+          return count > 0 ? (
+            <Link
+              key={key}
+              href={links[key]}
+              data-testid="dashboard-counter"
+              data-count={count}
+              className={cn(
+                box,
+                "border-white/10 transition-all hover:border-amber-500/30 focus-visible:ring-2 focus-visible:ring-amber-500/60 focus-visible:outline-none"
+              )}
+            >
+              {card}
             </Link>
+          ) : (
+            <div
+              key={key}
+              data-testid="dashboard-counter"
+              data-count={0}
+              className={cn(box, "border-dashed border-white/15")}
+            >
+              {card}
+            </div>
           )
         })}
       </div>
@@ -123,24 +198,22 @@ export const AdminDashboard = ({ user, stats, todo, lastSyncRun }: AdminDashboar
             {t("dashboard.draftsDescription")}
           </p>
           <div className="flex flex-col gap-3">
-            <Link href={`/${locale}/admin/events?status=draft`} className="block">
-              <div className="flex items-center justify-between rounded-lg bg-white/5 px-4 py-3 transition-all hover:bg-white/10">
-                <div className="flex items-center gap-3">
-                  <Calendar className="size-4 text-amber-500" aria-hidden="true" />
-                  <span className="text-foreground text-sm">{t("dashboard.totalEvents")}</span>
-                </div>
-                <span className="text-sm font-bold text-amber-500">{stats.draftEvents}</span>
-              </div>
-            </Link>
-            <Link href={`/${locale}/admin/news?status=draft`} className="block">
-              <div className="flex items-center justify-between rounded-lg bg-white/5 px-4 py-3 transition-all hover:bg-white/10">
-                <div className="flex items-center gap-3">
-                  <Newspaper className="size-4 text-blue-400" aria-hidden="true" />
-                  <span className="text-foreground text-sm">{t("dashboard.totalNews")}</span>
-                </div>
-                <span className="text-sm font-bold text-blue-400">{stats.draftNews}</span>
-              </div>
-            </Link>
+            <CounterRow
+              href={`/${locale}/admin/events?status=draft`}
+              count={stats.draftEvents}
+              icon={Calendar}
+              tone="text-amber-500"
+              label={t("dashboard.totalEvents")}
+              none={t("dashboard.none")}
+            />
+            <CounterRow
+              href={`/${locale}/admin/news?status=draft`}
+              count={stats.draftNews}
+              icon={Newspaper}
+              tone="text-blue-400"
+              label={t("dashboard.totalNews")}
+              none={t("dashboard.none")}
+            />
           </div>
         </div>
 
@@ -155,24 +228,22 @@ export const AdminDashboard = ({ user, stats, todo, lastSyncRun }: AdminDashboar
             {t("dashboard.depublishedDescription")}
           </p>
           <div className="flex flex-col gap-3">
-            <Link href={`/${locale}/admin/events?status=depublished`} className="block">
-              <div className="flex items-center justify-between rounded-lg bg-white/5 px-4 py-3 transition-all hover:bg-white/10">
-                <div className="flex items-center gap-3">
-                  <Calendar className="size-4 text-orange-400" aria-hidden="true" />
-                  <span className="text-foreground text-sm">{t("dashboard.totalEvents")}</span>
-                </div>
-                <span className="text-sm font-bold text-orange-400">{stats.depublishedEvents}</span>
-              </div>
-            </Link>
-            <Link href={`/${locale}/admin/news?status=depublished`} className="block">
-              <div className="flex items-center justify-between rounded-lg bg-white/5 px-4 py-3 transition-all hover:bg-white/10">
-                <div className="flex items-center gap-3">
-                  <Newspaper className="size-4 text-orange-400" aria-hidden="true" />
-                  <span className="text-foreground text-sm">{t("dashboard.totalNews")}</span>
-                </div>
-                <span className="text-sm font-bold text-orange-400">{stats.depublishedNews}</span>
-              </div>
-            </Link>
+            <CounterRow
+              href={`/${locale}/admin/events?status=depublished`}
+              count={stats.depublishedEvents}
+              icon={Calendar}
+              tone="text-orange-400"
+              label={t("dashboard.totalEvents")}
+              none={t("dashboard.none")}
+            />
+            <CounterRow
+              href={`/${locale}/admin/news?status=depublished`}
+              count={stats.depublishedNews}
+              icon={Newspaper}
+              tone="text-orange-400"
+              label={t("dashboard.totalNews")}
+              none={t("dashboard.none")}
+            />
           </div>
         </div>
 
@@ -230,18 +301,16 @@ export const AdminDashboard = ({ user, stats, todo, lastSyncRun }: AdminDashboar
         </h2>
         <p className="text-muted-foreground mb-4 text-xs">{t("dashboard.todoDescription")}</p>
         <div className="grid gap-3 md:grid-cols-3">
-          {todoRows.map(({ key, filter, label, icon: Icon }) => (
-            <Link
+          {todoRows.map(({ key, filter, label, icon }) => (
+            <CounterRow
               key={key}
               href={`/${locale}/admin/events?todo=${filter}`}
-              className="flex min-h-11 items-center justify-between gap-3 rounded-lg bg-white/5 px-4 py-3 transition-all hover:bg-white/10"
-            >
-              <span className="text-foreground flex items-center gap-3 text-sm">
-                <Icon className="size-4 text-amber-500" aria-hidden="true" />
-                {t(`dashboard.${label}`)}
-              </span>
-              <span className="text-sm font-bold text-amber-500">{todo[key]}</span>
-            </Link>
+              count={todo[key]}
+              icon={icon}
+              tone="text-amber-500"
+              label={t(`dashboard.${label}`)}
+              none={t("dashboard.none")}
+            />
           ))}
         </div>
       </section>

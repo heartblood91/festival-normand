@@ -22,7 +22,7 @@
     "allNews": "Toutes les actualités →",
     "allPartners": "Tous les partenaires →",
     "readArticle": "Lire l'article",
-    "upcomingStatus": "J − {days} {days, plural, one {jour} other {jours}} · entrée libre",
+    "upcomingStatus": "J − <n>{days}</n> {days, plural, one {jour} other {jours}} · entrée libre",
     "liveStatus": "Le festival est en cours · ce soir en Normandie",
     "pastStatus": "Édition {year} terminée · rendez-vous en {nextYear}",
     "stats": {
@@ -77,7 +77,9 @@
       "marker": "Cinq départements",
       "title": "Toute la Normandie, allumée.",
       "text": "{count, plural, =0 {Des illuminations} other {# illuminations}} à travers Manche, Calvados, Seine-Maritime, Orne et Eure. Chaque point sur la carte est un lieu qui s'ouvre, à la nuit tombée.",
-      "places": "lieux"
+      "places": "lieux",
+      "soon": "Programme à venir",
+      "mapLabel": "Carte de la Normandie illuminée"
     },
     "partnersSection": {
       "marker": "Ils nous soutiennent",
@@ -94,7 +96,8 @@
     "theme": {
       "marker": "Fil rouge {year}",
       "viewAll": "Voir les événements",
-      "soon": "Les lieux participants seront annoncés prochainement."
+      "soon": "Les lieux participants seront annoncés prochainement.",
+      "browse": "Parcourir le programme"
     }
   },
   "a11y": {
@@ -119,7 +122,10 @@
     "mapDescription": "Carte des événements du festival en Normandie. Utilisez la vue liste pour une navigation accessible.",
     "mapSrOnly": "Cette carte interactive n'est pas entièrement accessible aux lecteurs d'écran. Utilisez la vue grille pour naviguer les événements.",
     "noGpsEvents": "Aucun événement avec coordonnées GPS trouvé",
-    "breadcrumb": "Fil d'Ariane"
+    "breadcrumb": "Fil d'Ariane",
+    "newTab": "(nouvel onglet)",
+    "calloutInfo": "À noter",
+    "calloutImportant": "Important"
   },
   "hero": {
     "badge": "Festival du Patrimoine Normand",
@@ -166,6 +172,7 @@
     "venue": "Lieu",
     "pricing": "Tarification",
     "organizer": "Organisateur",
+    "history": "Histoire du lieu",
     "free": "Gratuit",
     "accessible": "Accessible PMR",
     "nearbyFallback": "Aucun événement à moins de 50 km de votre position. Voici les événements les plus proches, à environ {distance} km.",
@@ -176,7 +183,14 @@
     "distanceKm": "{distance, number} km",
     "mapYouAreHere": "Vous êtes ici",
     "mapLabel": "Carte : {title} et {count, plural, =0 {aucun site voisin} one {# site voisin numéroté} other {# sites voisins numérotés}}",
-    "themes": "Thématiques"
+    "themes": "Thématiques",
+    "editionNav": "Édition",
+    "editionCurrent": "Édition {year}",
+    "editionPast": "Éditions précédentes",
+    "pastSubtitle": "Les {count} événements des éditions précédentes, pour mémoire",
+    "editionFallback": "Le programme {year} n'est pas encore publié : voici les lieux des éditions précédentes.",
+    "archivedEdition": "Édition {year} · archive",
+    "searchPast": "Chercher dans les éditions précédentes"
   },
   "filters": {
     "department": "Département",
@@ -259,7 +273,8 @@
     "error": "Une erreur est survenue. Veuillez réessayer.",
     "registerTitle": "Inscrivez votre événement",
     "registerDescription": "Vous souhaitez participer au festival ? Inscrivez votre site ou monument.",
-    "registerCta": "S'inscrire"
+    "registerCta": "S'inscrire",
+    "unavailable": "L'envoi du formulaire est momentanément indisponible. Votre message est prêt : écrivez directement au département depuis votre messagerie."
   },
   "footer": {
     "description": "Découvrez la magie du patrimoine normand en nocturne.",
@@ -333,7 +348,8 @@
       "users": "Utilisateurs",
       "settings": "Paramètres",
       "registrationLinks": "Inscriptions",
-      "edition": "Édition"
+      "edition": "Édition",
+      "recovery": "Sites à récupérer"
     },
     "dashboard": {
       "title": "Tableau de bord",
@@ -342,6 +358,7 @@
       "totalNews": "Actualités",
       "totalPartners": "Partenaires",
       "totalPages": "Pages",
+      "none": "Aucun",
       "drafts": "Brouillons",
       "draftsDescription": "Contenu en cours de rédaction, jamais publié",
       "draftsTooltip": "Les brouillons sont des contenus que vous êtes en train de créer et qui n'ont jamais été publiés sur le site.",
@@ -475,5 +492,26 @@
     "lede": "Ce patrimoine fait l'objet d'une collecte de la Fondation du patrimoine. Chaque don, déductible des impôts, aide à le sauvegarder.",
     "cta": "Faire un don",
     "newTab": "(nouvel onglet, fondation-patrimoine.org)"
+  },
+  "video": {
+    "play": "Lire la vidéo : {title}",
+    "fallbackTitle": "vidéo de présentation",
+    "thirdParty": "La vidéo est hébergée par YouTube et se charge au clic."
+  },
+  "notFound": {
+    "marker": "Erreur 404",
+    "title": "Page introuvable",
+    "text": "La page que vous recherchez n'existe pas ou a été déplacée. Le programme, lui, est toujours allumé.",
+    "home": "Retour à l'accueil",
+    "programme": "Voir les événements",
+    "metaTitle": "Page introuvable"
+  },
+  "errorPage": {
+    "marker": "Erreur",
+    "title": "Un incident technique",
+    "text": "Cette page n'a pas pu s'afficher. Réessayez dans un instant ; si le problème persiste, le programme reste accessible depuis l'accueil.",
+    "reference": "Référence : {id}",
+    "retry": "Réessayer",
+    "home": "Retour à l'accueil"
   }
 }

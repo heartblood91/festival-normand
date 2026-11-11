@@ -1,11 +1,23 @@
 import type { Metadata } from "next"
 import type { Locale } from "@/lib/i18n/config"
 import { Suspense } from "react"
-import { getEvents, getFilterCounts, getAllFilteredEventsForMap } from "@/lib/queries/events"
+import {
+  countEditionEvents,
+  getEvents,
+  getFilterCounts,
+  getAllFilteredEventsForMap,
+} from "@/lib/queries/events"
 import { getEventCities } from "@/lib/queries/homepage"
 import { getCurrentEdition } from "@/lib/queries/edition"
 import { getFilterThemes } from "@/lib/queries/themes"
 import { formatNight } from "@/lib/festival/edition"
+import {
+  defaultProgrammeEdition,
+  parseProgrammeEdition,
+  type ProgrammeEdition,
+} from "@/lib/festival/programme-edition"
+import { Link } from "@/lib/i18n/routing"
+import { cn } from "@/lib/utils"
 import { EventListCard } from "@/components/events/event-list-card"
 import { Pagination } from "@/components/events/pagination"
 import { FilterBar } from "@/components/events/filter-bar"
@@ -86,8 +98,18 @@ const parseSearchParams = (params: Record<string, string | string[] | undefined>
 const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
   const { locale } = (await params) as { locale: Locale }
   const searchParamsData = await searchParams
-  const filters = parseSearchParams(searchParamsData)
   const view = (searchParamsData.view as string | undefined) ?? "grid"
+  const requestedEdition = parseProgrammeEdition(
+    typeof searchParamsData.edition === "string" ? searchParamsData.edition : undefined
+  )
+  const preferredEdition = requestedEdition ?? defaultProgrammeEdition()
+  // Until the new programme is published, show the last edition rather than an empty page.
+  const editionFallback =
+    !requestedEdition &&
+    preferredEdition === "current" &&
+    (await countEditionEvents("current")) === 0
+  const programmeEdition: ProgrammeEdition = editionFallback ? "past" : preferredEdition
+  const filters = { ...parseSearchParams(searchParamsData), edition: programmeEdition }
 
   const t = await getTranslations()
   const [
@@ -105,7 +127,25 @@ const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
     getCurrentEdition(),
     getFilterThemes(locale),
   ])
-  const nights = edition.nights.map((night) => ({
+  const editionLinks: { key: ProgrammeEdition; href: string; label: string }[] = [
+    {
+      key: "current",
+      href: "/evenements?edition=current",
+      label: t("events.editionCurrent", { year: edition.year }),
+    },
+    { key: "past", href: "/evenements?edition=past", label: t("events.editionPast") },
+  ]
+  // Same filters, previous editions: offered when the current edition has no match.
+  const pastSearch = new URLSearchParams(
+    Object.entries(searchParamsData).flatMap(([key, value]) =>
+      key === "edition" || key === "page" || key === "date"
+        ? []
+        : [value ?? []].flat().map((item) => [key, item] as [string, string])
+    )
+  )
+  pastSearch.set("edition", "past")
+  // Night chips belong to the current edition only.
+  const nights = (programmeEdition === "past" ? [] : edition.nights).map((night) => ({
     value: night.code,
     short: formatNight(night, locale, "short"),
     long: formatNight(night, locale, "long"),
@@ -122,8 +162,38 @@ const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
           {t("events.title")}
         </h1>
         <p className="text-ed-bone mx-auto mt-5 max-w-2xl font-serif text-lg font-light italic md:text-xl">
-          {t("events.subtitle", { count: total })}
+          {programmeEdition === "past"
+            ? t("events.pastSubtitle", { count: total })
+            : t("events.subtitle", { count: total })}
         </p>
+        <nav
+          aria-label={t("events.editionNav")}
+          className="mt-8 flex flex-wrap items-center justify-center gap-3"
+        >
+          {editionLinks.map((link) => {
+            const active = programmeEdition === link.key
+            return (
+              <Link
+                key={link.key}
+                href={link.href}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "focus-visible:ring-primary/50 inline-flex min-h-11 items-center border px-5 font-sans text-xs tracking-[0.16em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none",
+                  active
+                    ? "border-primary bg-primary text-primary-foreground font-semibold"
+                    : "border-primary/50 text-primary hover:bg-primary/10"
+                )}
+              >
+                {link.label}
+              </Link>
+            )
+          })}
+        </nav>
+        {editionFallback ? (
+          <p role="status" className="text-ed-bone mx-auto mt-5 max-w-2xl font-serif text-base">
+            {t("events.editionFallback", { year: edition.year })}
+          </p>
+        ) : null}
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
@@ -203,6 +273,14 @@ const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
               {t("events.noResults")}
             </p>
             <p className="text-ed-bone mt-2 font-serif">{t("events.noResultsHint")}</p>
+            {programmeEdition === "current" ? (
+              <Link
+                href={`/evenements?${pastSearch}`}
+                className="text-primary border-primary focus-visible:ring-primary/50 mt-6 inline-flex min-h-11 items-center border-b font-sans text-xs tracking-[0.16em] uppercase focus-visible:ring-2 focus-visible:outline-none"
+              >
+                {t("events.searchPast")}
+              </Link>
+            ) : null}
           </div>
         )}
       </div>

@@ -42,13 +42,17 @@ const ThreeNights = async ({ nights, byNight, markerIndex }: ThreeNightsProps) =
               <Link
                 key={night.date}
                 href={`/evenements?date=${night.code}`}
-                className="bg-ed-bg-soft border-primary/20 hover:border-primary/50 focus-visible:ring-primary/50 group flex flex-col border p-8 transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                className="bg-ed-bg-soft border-primary/20 hover:border-primary/50 focus-visible:ring-primary/50 group flex flex-col border p-8 ed-halo focus-visible:ring-2 focus-visible:outline-none"
               >
-                <div className="mb-6 flex items-baseline gap-3.5">
+                {/* The visual date reads « 21 Vendredi mai 2027 »: give screen readers the natural order. */}
+                <span className="sr-only">
+                  {`${formatNight(night, locale, "weekday")} ${night.code} ${formatNight(night, locale, "monthYear")}`}
+                </span>
+                <div className="mb-6 flex items-baseline gap-3.5" aria-hidden="true">
                   <span className="text-primary font-display text-7xl leading-none font-normal italic md:text-8xl">
                     {night.code}
                   </span>
-                  <span className="text-ed-mute font-mono text-[10px] leading-tight tracking-[0.2em] uppercase">
+                  <span className="text-ed-mute font-mono text-xs leading-tight tracking-[0.2em] uppercase">
                     {formatNight(night, locale, "weekday")}
                     <br />
                     {formatNight(night, locale, "monthYear")}
@@ -60,7 +64,7 @@ const ThreeNights = async ({ nights, byNight, markerIndex }: ThreeNightsProps) =
                 <p className="text-ed-bone flex-1 font-serif text-base font-light">
                   {t(`editorial.threeNights.roles.${night.role}.desc`)}
                 </p>
-                <div className="border-primary/30 text-primary mt-6 flex items-center justify-between border-t pt-4 font-mono text-[10px] tracking-[0.16em] uppercase">
+                <div className="border-primary/30 text-primary mt-6 flex items-center justify-between border-t pt-4 font-mono text-xs tracking-[0.16em] uppercase">
                   {/* No "0 animations" before the programme is published */}
                   <span>
                     {count > 0 ? t("editorial.threeNights.nightsLabel", { count }) : null}

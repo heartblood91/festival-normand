@@ -19,8 +19,6 @@ const hash = (seed: string) => {
 
 type EventThumbProps = {
   coverImage?: string | null
-  /** Localized description of the cover; falls back to the title. */
-  coverImageAlt?: string
   category: string
   title: string
   seed?: string
@@ -31,7 +29,6 @@ type EventThumbProps = {
 
 const EventThumb = ({
   coverImage,
-  coverImageAlt,
   category,
   title,
   seed,
@@ -44,9 +41,10 @@ const EventThumb = ({
   if (coverImage) {
     return (
       <div className={base}>
+        {/* Decorative: thumbs sit inside a card link already named by the event title. */}
         <Image
           src={coverImage}
-          alt={coverImageAlt || title}
+          alt=""
           fill
           sizes={sizes}
           priority={priority}
@@ -65,8 +63,7 @@ const EventThumb = ({
       style={{
         backgroundImage: `linear-gradient(135deg, ${from} 0%, ${via} 45%, ${to} 130%)`,
       }}
-      role="img"
-      aria-label={title}
+      aria-hidden="true"
     >
       <div
         className="absolute bottom-[-30%] left-1/2 h-[60%] w-[85%] -translate-x-1/2 blur-md"

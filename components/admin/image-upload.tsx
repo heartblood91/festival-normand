@@ -91,7 +91,6 @@ export const ImageUpload = ({
         className="relative flex cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-white/20 bg-white/5 px-6 py-8 transition-colors hover:border-amber-500/30 hover:bg-amber-500/5 focus-visible:ring-2 focus-visible:ring-amber-500/50 focus-visible:outline-none"
         role="button"
         tabIndex={0}
-        aria-label={value ? "Changer l'image" : "Téléverser une image"}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             fileInputRef.current?.click()
@@ -126,7 +125,7 @@ export const ImageUpload = ({
               className="max-h-32 max-w-full rounded-lg object-contain"
               unoptimized
             />
-            <p className="text-muted-foreground text-xs">Cliquer pour changer</p>
+            <p className="text-muted-foreground text-xs">Cliquer pour changer l'image</p>
           </>
         ) : (
           <>

@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Plus, Search, Pencil, Trash2, Eye, EyeOff, X } from "lucide-react"
+import { Link } from "@/lib/i18n/routing"
+import { Plus, Search, Pencil, Trash2, X } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -21,6 +21,7 @@ import {
 import { deleteNews, bulkDeleteNews } from "@/lib/actions/news"
 import type { AdminNewsListItem } from "@/lib/types/admin"
 import { AdminFilters, type FilterConfig } from "@/components/admin/shared/admin-filters"
+import { StatusBadge } from "@/components/admin/shared/status-badge"
 import { AdminPagination } from "@/components/admin/shared/admin-pagination"
 
 type AdminNewsPageProps = {
@@ -133,12 +134,12 @@ export const AdminNewsPage = ({
             {total} article{total !== 1 ? "s" : ""}
           </p>
         </div>
-        <Link href="/admin/news/new">
-          <Button className="w-full md:w-auto">
+        <Button asChild className="w-full md:w-auto">
+          <Link href="/admin/news/new">
             <Plus className="mr-2 h-4 w-4" />
             Nouvel article
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       <form onSubmit={handleSearch} className="mb-6">
@@ -199,23 +200,27 @@ export const AdminNewsPage = ({
             <table className="w-full text-sm" role="table">
               <thead>
                 <tr className="border-b border-white/10 bg-white/5">
-                  <th className="w-10 px-4 py-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.size === items.length && items.length > 0}
-                      onChange={(e) => handleSelectAll(e.target.checked)}
-                      className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
-                      aria-label="Sélectionner tous les articles"
-                    />
+                  <th className="w-10 px-2 py-3 md:px-4">
+                    <label className="-m-1 inline-flex size-6 cursor-pointer items-center justify-center pointer-coarse:-m-3 pointer-coarse:size-11">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.size === items.length && items.length > 0}
+                        onChange={(e) => handleSelectAll(e.target.checked)}
+                        className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
+                        aria-label="Sélectionner tous les articles"
+                      />
+                    </label>
                   </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left font-medium">Titre</th>
-                  <th className="text-muted-foreground hidden px-4 py-3 text-left font-medium md:table-cell">
+                  <th className="text-muted-foreground px-2 py-3 text-left font-medium md:px-4">
+                    Titre
+                  </th>
+                  <th className="text-muted-foreground hidden px-2 py-3 text-left font-medium md:table-cell md:px-4">
                     Date de publication
                   </th>
-                  <th className="text-muted-foreground px-4 py-3 text-center font-medium">
+                  <th className="text-muted-foreground hidden px-2 py-3 text-center font-medium md:table-cell md:px-4">
                     Statut
                   </th>
-                  <th className="text-muted-foreground px-4 py-3 text-right font-medium">
+                  <th className="text-muted-foreground px-2 py-3 text-right font-medium md:px-4">
                     Actions
                   </th>
                 </tr>
@@ -226,56 +231,54 @@ export const AdminNewsPage = ({
                     key={article.id}
                     className={`border-b border-white/5 transition-colors ${selectedIds.has(article.id) ? "bg-amber-500/10" : "hover:bg-white/5"}`}
                   >
-                    <td className="w-10 px-4 py-3">
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.has(article.id)}
-                        onChange={() => handleToggleSelect(article.id)}
-                        className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
-                        aria-label={`Sélectionner ${article.titleFr}`}
-                      />
+                    <td className="w-10 px-2 py-3 md:px-4">
+                      <label className="-m-1 inline-flex size-6 cursor-pointer items-center justify-center pointer-coarse:-m-3 pointer-coarse:size-11">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(article.id)}
+                          onChange={() => handleToggleSelect(article.id)}
+                          className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
+                          aria-label={`Sélectionner ${article.titleFr}`}
+                        />
+                      </label>
                     </td>
-                    <td className="px-4 py-3">
-                      <span className="font-medium text-white">{article.titleFr}</span>
+                    <td className="px-2 py-3 md:px-4">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-medium text-white">{article.titleFr}</span>
+                        <StatusBadge
+                          className="md:hidden"
+                          published={article.published}
+                          unpublishedAt={article.unpublishedAt}
+                        />
+                      </div>
                       {article.excerptFr && (
                         <p className="text-muted-foreground mt-0.5 line-clamp-1 text-xs">
                           {article.excerptFr}
                         </p>
                       )}
                     </td>
-                    <td className="text-muted-foreground hidden px-4 py-3 md:table-cell">
+                    <td className="text-muted-foreground hidden px-2 py-3 md:table-cell md:px-4">
                       {article.publishedAt ? formatDate(article.publishedAt) : "—"}
                     </td>
-                    <td className="px-4 py-3 text-center">
-                      {article.published ? (
-                        <span
-                          className="inline-flex items-center gap-1 text-emerald-400"
-                          aria-label="Publié"
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                          <span className="hidden md:inline">Publié</span>
-                        </span>
-                      ) : (
-                        <span
-                          className="text-muted-foreground inline-flex items-center gap-1"
-                          aria-label="Brouillon"
-                        >
-                          <EyeOff className="h-3.5 w-3.5" />
-                          <span className="hidden md:inline">Brouillon</span>
-                        </span>
-                      )}
+                    <td className="hidden px-2 py-3 text-center md:table-cell md:px-4">
+                      <StatusBadge
+                        published={article.published}
+                        unpublishedAt={article.unpublishedAt}
+                      />
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-2 py-3 text-right md:px-4">
                       <div className="flex items-center justify-end gap-1">
-                        <Link href={`/admin/news/${article.id}/edit`}>
-                          <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            aria-label={`Modifier ${article.titleFr}`}
-                          >
+                        <Button
+                          asChild
+                          variant="ghost"
+                          size="icon-sm"
+                          aria-label={`Modifier ${article.titleFr}`}
+                          title={`Modifier ${article.titleFr}`}
+                        >
+                          <Link href={`/admin/news/${article.id}/edit`}>
                             <Pencil className="h-3.5 w-3.5" />
-                          </Button>
-                        </Link>
+                          </Link>
+                        </Button>
                         <AlertDialog>
                           <AlertDialogTrigger
                             render={
@@ -284,6 +287,7 @@ export const AdminNewsPage = ({
                                 size="icon-sm"
                                 className="text-red-400 hover:text-red-300"
                                 aria-label={`Supprimer ${article.titleFr}`}
+                                title={`Supprimer ${article.titleFr}`}
                               />
                             }
                           >

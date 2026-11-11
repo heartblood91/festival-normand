@@ -10,9 +10,7 @@ type EventInfoProps = {
 
 const Row = ({ label, value }: { label: string; value: React.ReactNode }) => (
   <div className="border-primary/15 flex items-baseline justify-between gap-4 border-b pb-2.5 last:border-b-0">
-    <dt className="text-ed-mute shrink-0 font-mono text-[10px] tracking-[0.18em] uppercase">
-      {label}
-    </dt>
+    <dt className="text-ed-mute shrink-0 font-mono text-xs tracking-[0.18em] uppercase">{label}</dt>
     <dd className="text-foreground text-right font-serif text-base italic">{value}</dd>
   </div>
 )
@@ -39,7 +37,7 @@ const EventInfo = async ({ event, locale }: EventInfoProps) => {
 
   return (
     <div className="bg-ed-bg-soft border-primary/25 border p-6">
-      <h2 className="text-primary mb-5 font-mono text-[10.5px] tracking-[0.22em] uppercase">
+      <h2 className="text-primary mb-5 font-mono text-xs tracking-[0.22em] uppercase">
         <span aria-hidden="true">¶</span> {t("events.practicalInfo")}
       </h2>
       <dl className="grid gap-3.5">

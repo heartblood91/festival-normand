@@ -17,6 +17,7 @@ type AdminShellProps = {
 const AdminShell = ({ user, children }: AdminShellProps) => {
   const pathname = usePathname()
   const t = useTranslations("admin")
+  const tA11y = useTranslations("a11y")
 
   // Auth pages (login, setup-account) and preview pages don't get the sidebar
   const isAuthPage = pathname.includes("/admin/login") || pathname.includes("/admin/setup-account")
@@ -28,6 +29,13 @@ const AdminShell = ({ user, children }: AdminShellProps) => {
 
   return (
     <div className="bg-background flex h-dvh w-full">
+      <a
+        href="#main-content"
+        className="focus:bg-primary focus:text-primary-foreground sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-lg focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:outline-none"
+      >
+        {tA11y("skipToContent")}
+      </a>
+
       {/* Desktop Sidebar */}
       <div className="hidden lg:flex">
         <AdminSidebar user={user} pathname={pathname} />
@@ -42,7 +50,13 @@ const AdminShell = ({ user, children }: AdminShellProps) => {
         </div>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-8">{children}</main>
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="flex-1 overflow-y-auto p-4 focus:outline-none md:p-8"
+        >
+          {children}
+        </main>
       </div>
     </div>
   )

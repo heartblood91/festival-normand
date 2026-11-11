@@ -103,6 +103,7 @@ const EventsMap = ({ events }: EventsMapProps) => {
         cluster: true,
         clusterMaxZoom: 12,
         clusterRadius: 60,
+        generateId: true,
       })
 
       // Cluster circles — amber with count
@@ -137,6 +138,20 @@ const EventsMap = ({ events }: EventsMapProps) => {
       })
 
       // Individual markers — pins in the colour of the event's theme (amber by default)
+      // Amber glow under the hovered pin (feature-state, no animation)
+      map.addLayer({
+        id: "unclustered-halo",
+        type: "circle",
+        source: "events",
+        filter: ["!", ["has", "point_count"]],
+        paint: {
+          "circle-color": "#f59e0b",
+          "circle-radius": 20,
+          "circle-blur": 0.8,
+          "circle-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 0.6, 0],
+        },
+      })
+
       map.addLayer({
         id: "unclustered-point",
         type: "circle",
@@ -144,7 +159,7 @@ const EventsMap = ({ events }: EventsMapProps) => {
         filter: ["all", ["!", ["has", "point_count"]], ["!", ["has", "pinMarker"]]],
         paint: {
           "circle-color": ["get", "pinColor"],
-          "circle-radius": 8,
+          "circle-radius": ["case", ["boolean", ["feature-state", "hover"], false], 11, 8],
           "circle-stroke-color": "#ffffff",
           "circle-stroke-width": 2.5,
           "circle-opacity": 0.9,
@@ -238,18 +253,23 @@ const EventsMap = ({ events }: EventsMapProps) => {
       map.on("mouseleave", "clusters", () => {
         map.getCanvas().style.cursor = ""
       })
-      map.on("mouseenter", "unclustered-point", () => {
-        map.getCanvas().style.cursor = "pointer"
-      })
-      map.on("mouseleave", "unclustered-point", () => {
-        map.getCanvas().style.cursor = ""
-      })
-      map.on("mouseenter", "themed-point", () => {
-        map.getCanvas().style.cursor = "pointer"
-      })
-      map.on("mouseleave", "themed-point", () => {
-        map.getCanvas().style.cursor = ""
-      })
+      let hovered: string | number | undefined
+      const setHover = (id: string | number | undefined) => {
+        if (hovered !== undefined)
+          map.setFeatureState({ source: "events", id: hovered }, { hover: false })
+        hovered = id
+        if (id !== undefined) map.setFeatureState({ source: "events", id }, { hover: true })
+      }
+      for (const layer of ["unclustered-point", "themed-point"]) {
+        map.on("mousemove", layer, (e) => {
+          map.getCanvas().style.cursor = "pointer"
+          setHover(e.features?.[0]?.id)
+        })
+        map.on("mouseleave", layer, () => {
+          map.getCanvas().style.cursor = ""
+          setHover(undefined)
+        })
+      }
     })
 
     mapRef.current = map
@@ -278,7 +298,7 @@ const EventsMap = ({ events }: EventsMapProps) => {
       <div
         ref={mapContainer}
         className="h-[500px] w-full rounded-xl md:h-[650px]"
-        role="img"
+        role="region"
         aria-label={t("a11y.mapDescription")}
       />
       <p className="sr-only">{t("a11y.mapSrOnly")}</p>

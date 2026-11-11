@@ -38,7 +38,7 @@ export const FundraisingCallout = async ({ url, title, image }: FundraisingCallo
         </div>
       ) : null}
       <div className="flex flex-col gap-4 p-6">
-        <p className="text-primary flex items-center gap-2 font-mono text-[10.5px] tracking-[0.22em] uppercase">
+        <p className="text-primary flex items-center gap-2 font-mono text-xs tracking-[0.22em] uppercase">
           <HandHeart className="size-4" aria-hidden="true" />
           {t("marker")}
         </p>
@@ -54,7 +54,7 @@ export const FundraisingCallout = async ({ url, title, image }: FundraisingCallo
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-primary/60 inline-flex min-h-11 items-center gap-2 self-start px-5 font-sans text-[11px] font-semibold tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-primary/60 inline-flex min-h-11 items-center gap-2 self-start px-5 font-sans text-xs font-semibold tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
         >
           {t("cta")}
           <ExternalLink className="size-4" aria-hidden="true" />

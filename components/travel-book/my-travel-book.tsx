@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react"
 import { useLocale, useTranslations } from "next-intl"
+import { BookOpen } from "lucide-react"
 import { Link } from "@/lib/i18n/routing"
 import { loadTravelBook } from "@/lib/actions/travel-book"
 import { useFavorites } from "@/lib/travel-book/use-favorites"
@@ -40,11 +41,12 @@ export const MyTravelBook = () => {
   if (hydrated && ids.length === 0) {
     return (
       <div className="border-primary/20 bg-ed-bg-soft flex flex-col items-center border px-6 py-16 text-center">
+        <BookOpen className="text-primary/70 mb-5 size-12" strokeWidth={1.25} aria-hidden="true" />
         <p className="text-foreground font-display text-2xl italic">{t("travelBook.empty")}</p>
         <p className="text-ed-bone mt-2 font-serif">{t("travelBook.emptyHint")}</p>
         <Link
           href="/evenements"
-          className="bg-primary text-primary-foreground hover:bg-ed-amber-deep focus-visible:ring-ring mt-6 inline-flex min-h-11 items-center px-5 font-sans text-[11px] font-semibold tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+          className="bg-primary text-primary-foreground hover:bg-ed-amber-deep focus-visible:ring-ring mt-6 inline-flex min-h-11 items-center px-5 font-sans text-xs font-semibold tracking-[0.14em] uppercase transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
         >
           {t("travelBook.browse")}
         </Link>

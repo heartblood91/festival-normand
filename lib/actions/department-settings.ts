@@ -1,7 +1,7 @@
 "use server"
 
 import { Department } from "@prisma/client"
-import { revalidateTag } from "next/cache"
+import { revalidatePath, updateTag } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
 
@@ -33,7 +33,9 @@ export const updateDepartmentEmbargo = async (
     })
 
     await prisma.$transaction(updates)
-    revalidateTag("events", "default")
+    updateTag("events")
+    // An embargoed event page renders notFound(); ISR keeps that 404 until it is revalidated.
+    revalidatePath("/[locale]/(public)/evenement/[slug]", "page")
 
     return { success: true, message: "Dates de publication mises à jour." }
   } catch (error) {

@@ -2,6 +2,7 @@ import { Link } from "@/lib/i18n/routing"
 import Image from "next/image"
 import { getLocale } from "next-intl/server"
 import { cn } from "@/lib/utils"
+import { EventThumb } from "@/components/editorial/event-thumb"
 import { formatNewsDate } from "@/lib/utils/format-date"
 import type { NewsListItem } from "@/lib/queries/news"
 
@@ -18,28 +19,38 @@ const NewsCard = async ({ article, className, priority = false }: NewsCardProps)
     <Link
       href={`/actualite/${article.slug}`}
       className={cn(
-        "group bg-ed-bg-soft border-primary/20 hover:border-primary/50 focus-visible:ring-primary/50 flex flex-col border transition-colors focus-visible:ring-2 focus-visible:outline-none",
+        "group bg-ed-bg-soft border-primary/20 hover:border-primary/50 focus-visible:ring-primary/50 flex flex-col border ed-halo focus-visible:ring-2 focus-visible:outline-none",
         className
       )}
     >
       <div className="bg-ed-bg-deep relative aspect-[16/10] w-full overflow-hidden">
         {article.coverImage ? (
+          // Decorative: the card link is named by the article title.
           <Image
             src={article.coverImage}
-            alt={article.coverImageAlt || article.title}
+            alt=""
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover"
             priority={priority}
           />
-        ) : null}
+        ) : (
+          <div data-testid="news-thumb-fallback" className="absolute inset-0">
+            <EventThumb
+              category="ILLUMINATIONS"
+              title={article.title}
+              seed={article.slug}
+              className="h-full w-full border-0"
+            />
+          </div>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col gap-3 p-6">
         {article.publishedAt ? (
           <time
             dateTime={new Date(article.publishedAt).toISOString()}
-            className="text-primary font-mono text-[10px] tracking-[0.18em] uppercase opacity-85"
+            className="text-primary font-mono text-xs tracking-[0.18em] uppercase opacity-85"
           >
             {formatNewsDate(article.publishedAt, locale)}
           </time>
@@ -52,7 +63,7 @@ const NewsCard = async ({ article, className, priority = false }: NewsCardProps)
             {article.excerpt}
           </p>
         ) : null}
-        <span className="border-primary/20 text-primary mt-auto flex items-center justify-between border-t pt-3 font-sans text-[11px] tracking-[0.16em] uppercase">
+        <span className="border-primary/20 text-primary mt-auto flex items-center justify-between border-t pt-3 font-sans text-xs tracking-[0.16em] uppercase">
           <span className="group-hover:text-ed-amber-soft transition-colors">
             {locale === "en" ? "Read" : "Lire"}
           </span>

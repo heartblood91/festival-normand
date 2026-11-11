@@ -1,6 +1,6 @@
 "use client"
 
-import Link from "next/link"
+import { Link } from "@/lib/i18n/routing"
 import { Pencil } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { AdminPageListItem } from "@/lib/actions/pages"
@@ -68,15 +68,16 @@ export const AdminPagesPage = ({ pages }: AdminPagesPageProps) => {
                       {formatDate(page.updatedAt)}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <Link href={`/admin/pages/${page.id}/edit`}>
-                        <Button
-                          variant="ghost"
-                          size="icon-sm"
-                          aria-label={`Modifier ${page.titleFr}`}
-                        >
+                      <Button
+                        asChild
+                        variant="ghost"
+                        size="icon-sm"
+                        aria-label={`Modifier ${page.titleFr}`}
+                      >
+                        <Link href={`/admin/pages/${page.id}/edit`}>
                           <Pencil className="h-3.5 w-3.5" />
-                        </Button>
-                      </Link>
+                        </Link>
+                      </Button>
                     </td>
                   </tr>
                 )

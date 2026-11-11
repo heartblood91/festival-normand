@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
-const { mockPrisma, mockRequireRole, mockRevalidateTag } = vi.hoisted(() => ({
+const { mockPrisma, mockRequireRole, mockUpdateTag } = vi.hoisted(() => ({
   mockPrisma: { edition: { upsert: vi.fn() } },
   mockRequireRole: vi.fn(),
-  mockRevalidateTag: vi.fn(),
+  mockUpdateTag: vi.fn(),
 }))
 
 vi.mock("@/lib/prisma", () => ({ prisma: mockPrisma }))
 vi.mock("@/lib/rbac", () => ({ requireRole: mockRequireRole }))
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), revalidateTag: mockRevalidateTag }))
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: mockUpdateTag }))
 
 import { updateEdition } from "./edition"
 
@@ -52,7 +52,7 @@ describe("updateEdition", () => {
         bilanFrom: null,
       },
     })
-    expect(mockRevalidateTag).toHaveBeenCalledWith("edition", expect.anything())
+    expect(mockUpdateTag).toHaveBeenCalledWith("edition")
   })
 
   it("rejects an end date before the start date", async () => {

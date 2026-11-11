@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { prismaMock } from "@/lib/test-utils"
 
+vi.mock("next/cache", () => ({ unstable_cache: (fn: Function) => fn }))
 vi.mock("@/lib/prisma", () => ({ prisma: prismaMock }))
 
 import { getTravelBook, getTravelBookEvents } from "@/lib/queries/travel-book"

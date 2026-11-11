@@ -2,8 +2,10 @@ import { setRequestLocale } from "next-intl/server"
 import { SkipNav } from "@/components/layout/skip-nav"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
+import { SkinSlot } from "@/components/skins"
 import { editionDateRange, editionKicker, getEditionMode } from "@/lib/festival/edition"
 import { getCurrentEdition } from "@/lib/queries/edition"
+import { getActiveSkin } from "@/lib/queries/skin"
 import type { Locale } from "@/lib/i18n/config"
 
 type PublicLayoutProps = {
@@ -18,14 +20,22 @@ const PublicLayout = async ({ children, params }: PublicLayoutProps) => {
   setRequestLocale(locale)
   const edition = await getCurrentEdition()
   const mode = getEditionMode(edition)
+  const skin = await getActiveSkin(edition.year)
 
   return (
-    <div className="editorial bg-background text-foreground flex min-h-dvh flex-col font-serif">
+    <div
+      className="editorial bg-background text-foreground flex min-h-dvh flex-col font-serif"
+      data-skin={skin?.key}
+    >
       <SkipNav />
+      <SkinSlot skin={skin} slot="beforeHeader" locale={locale} />
       <Header kicker={editionKicker(edition, mode, locale)} />
-      <main id="main-content" className="flex-1">
+      <SkinSlot skin={skin} slot="afterHeader" locale={locale} />
+      {/* tabIndex lets the skip link move focus, not only the scroll position */}
+      <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-none">
         {children}
       </main>
+      <SkinSlot skin={skin} slot="beforeFooter" locale={locale} />
       <Footer editionDates={editionDateRange(edition, locale)} />
     </div>
   )

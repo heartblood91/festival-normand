@@ -1,12 +1,9 @@
 import type { Metadata } from "next"
 import type { Locale } from "@/lib/i18n/config"
-import { notFound } from "next/navigation"
-import { getPageBySlug } from "@/lib/queries/pages"
+import { accessibilityDeclaration } from "@/lib/accessibility/declaration"
 import { ClassicPage } from "@/components/editorial/classic-page"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
-
-export const revalidate = 86400
 
 export const generateMetadata = async ({
   params,
@@ -14,9 +11,7 @@ export const generateMetadata = async ({
   params: Promise<{ locale: string }>
 }): Promise<Metadata> => {
   const { locale } = (await params) as { locale: Locale }
-  const page = await getPageBySlug("accessibilite", locale)
-  const title =
-    page?.title ?? (locale === "en" ? "Accessibility Statement" : "Déclaration d'accessibilité")
+  const { title } = accessibilityDeclaration(locale)
   const description =
     locale === "en"
       ? "Accessibility statement for the Pierres en Lumières website in accordance with RGAA 4.1."
@@ -42,18 +37,16 @@ type AccessibilitePageProps = {
   params: Promise<{ locale: string }>
 }
 
+// Generated from lib/accessibility/declaration.ts, not from the CMS page of the same
+// slug: the statement must match the tests actually run on the site.
 const AccessibilitePage = async ({ params }: AccessibilitePageProps) => {
   const { locale } = (await params) as { locale: Locale }
-  const page = await getPageBySlug("accessibilite", locale)
-
-  if (!page) {
-    notFound()
-  }
+  const { title, content } = accessibilityDeclaration(locale)
 
   return (
     <ClassicPage
-      title={page.title}
-      content={page.content}
+      title={title}
+      content={content}
       marker={locale === "en" ? "Information page" : "Page d'information"}
     />
   )

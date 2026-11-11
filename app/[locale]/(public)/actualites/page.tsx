@@ -5,6 +5,7 @@ import { Link } from "@/lib/i18n/routing"
 import { getTranslations } from "next-intl/server"
 import { getNews, type NewsListItem } from "@/lib/queries/news"
 import { NewsCard } from "@/components/news/news-card"
+import { EventThumb } from "@/components/editorial/event-thumb"
 import { Marker } from "@/components/editorial/primitives"
 import { formatNewsDate } from "@/lib/utils/format-date"
 
@@ -72,28 +73,38 @@ const NewsListPage = async ({ params }: NewsListPageProps) => {
             {featured ? (
               <Link
                 href={`/actualite/${featured.slug}`}
-                className="group bg-ed-bg-soft border-primary/25 hover:border-primary/50 focus-visible:ring-primary/50 mb-12 grid overflow-hidden border transition-colors focus-visible:ring-2 focus-visible:outline-none md:mb-16 lg:grid-cols-[1.15fr_1fr]"
+                className="group bg-ed-bg-soft border-primary/25 hover:border-primary/50 focus-visible:ring-primary/50 mb-12 grid overflow-hidden border ed-halo focus-visible:ring-2 focus-visible:outline-none md:mb-16 lg:grid-cols-[1.15fr_1fr]"
               >
                 <div className="bg-ed-bg-deep relative aspect-[16/10] w-full overflow-hidden lg:aspect-auto lg:min-h-[22rem]">
                   {featured.coverImage ? (
+                    // Decorative: the card link is named by the article title.
                     <Image
                       src={featured.coverImage}
-                      alt={featured.coverImageAlt || featured.title}
+                      alt=""
                       fill
                       sizes="(max-width: 1024px) 100vw, 55vw"
                       className="object-cover"
                       priority
                     />
-                  ) : null}
+                  ) : (
+                    <div data-testid="news-thumb-fallback" className="absolute inset-0">
+                      <EventThumb
+                        category="ILLUMINATIONS"
+                        title={featured.title}
+                        seed={featured.slug}
+                        className="h-full w-full border-0"
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="flex flex-col justify-center gap-5 p-8 md:p-10">
-                  <span className="bg-primary text-primary-foreground w-fit px-3 py-1 font-sans text-[10px] font-semibold tracking-[0.16em] uppercase">
+                  <span className="bg-primary text-primary-foreground w-fit px-3 py-1 font-sans text-xs font-semibold tracking-[0.16em] uppercase">
                     {locale === "en" ? "Featured" : "À la une"}
                   </span>
                   {featured.publishedAt ? (
                     <time
                       dateTime={new Date(featured.publishedAt).toISOString()}
-                      className="text-primary font-mono text-[10.5px] tracking-[0.18em] uppercase"
+                      className="text-primary font-mono text-xs tracking-[0.18em] uppercase"
                     >
                       {formatNewsDate(featured.publishedAt, locale)}
                     </time>

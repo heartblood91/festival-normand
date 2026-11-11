@@ -24,7 +24,10 @@ import { draftKey } from "@/lib/admin/form-draft"
 import { localeTabStatus } from "@/lib/admin/form-status"
 import type { Page } from "@prisma/client"
 
-const SYSTEM_SLUGS = ["festival", "inscription", "mentions-legales"]
+const SYSTEM_SLUGS = ["festival", "inscription", "mentions-legales", "accessibilite"]
+
+// Rendered from lib/accessibility/declaration.ts: the text saved here is not shown.
+const GENERATED_SLUGS = ["accessibilite"]
 
 const LOCALE_FIELDS = {
   fr: ["titleFr", "contentFr"],
@@ -142,6 +145,14 @@ export const PageForm = ({ page }: PageFormProps) => {
       />
 
       {draft && <DraftBanner draft={draft} onRestore={restoreDraft} onDiscard={discardDraft} />}
+
+      {page && GENERATED_SLUGS.includes(page.slug) && (
+        <p className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-4 text-sm">
+          La déclaration d&apos;accessibilité est générée par le site à partir des tests
+          d&apos;accessibilité : le texte enregistré ici n&apos;est pas affiché sur la page
+          publique.
+        </p>
+      )}
 
       <Card className="border-white/10 bg-white/5">
         <CardHeader className="flex flex-row items-center justify-between">

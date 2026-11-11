@@ -79,7 +79,7 @@ export const LocaleTabs = ({
             onClick={() => onChange(locale)}
             onKeyDown={onKeyDown}
             className={`relative inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded px-3 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none ${
-              selected ? "bg-amber-500 text-white" : "text-muted-foreground hover:text-white"
+              selected ? "bg-amber-500 text-slate-950" : "text-muted-foreground hover:text-white"
             }`}
           >
             {label}

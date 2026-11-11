@@ -139,6 +139,7 @@ export const createEvent = async (formData: FormData): Promise<EventActionResult
           ? { themes: { connect: data.themeIds.map((themeId) => ({ id: themeId })) } }
           : {}),
         ...fundraisingData(data),
+        ...(data.historyUrl === undefined ? {} : { historyUrl: data.historyUrl || null }),
       },
     })
 
@@ -227,6 +228,7 @@ export const updateEvent = async (id: string, formData: FormData): Promise<Event
           ? { themes: { set: data.themeIds.map((themeId) => ({ id: themeId })) } }
           : {}),
         ...fundraisingData(data),
+        ...(data.historyUrl === undefined ? {} : { historyUrl: data.historyUrl || null }),
       },
     })
 
@@ -310,6 +312,7 @@ const extractFormData = (formData: FormData) => ({
   themeIds: formData.has("themeIds")
     ? String(formData.get("themeIds")).split(",").filter(Boolean)
     : undefined,
+  ...(formData.has("historyUrl") ? { historyUrl: String(formData.get("historyUrl")) } : {}),
   // Absent means the form has no collect section: the attached collect is kept.
   ...(formData.has("fundraisingUrl")
     ? {

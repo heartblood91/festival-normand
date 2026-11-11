@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/routing"
 import {
   Plus,
   Search,
@@ -37,6 +37,7 @@ import {
 import { buildListUrl, type EventListParams } from "@/lib/admin/event-list"
 import type { AdminEventListItem } from "@/lib/types/admin"
 import { AdminFilters, type FilterConfig } from "@/components/admin/shared/admin-filters"
+import { StatusBadge } from "@/components/admin/shared/status-badge"
 import { AdminPagination } from "@/components/admin/shared/admin-pagination"
 
 type AdminEventsPageProps = {
@@ -231,12 +232,12 @@ export const AdminEventsPage = ({
             {total} résultat{total !== 1 ? "s" : ""}
           </p>
         </div>
-        <Link href="/admin/events/new">
-          <Button className="w-full md:w-auto">
+        <Button asChild className="w-full md:w-auto">
+          <Link href="/admin/events/new">
             <Plus className="mr-2 h-4 w-4" />
             Nouvel événement
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       <form onSubmit={handleSearch} className="mb-6">
@@ -291,32 +292,36 @@ export const AdminEventsPage = ({
             <table className="w-full text-sm" role="table">
               <thead>
                 <tr className="border-b border-white/10 bg-white/5">
-                  <th className="w-10 px-4 py-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.size === items.length && items.length > 0}
-                      onChange={(e) => handleSelectAll(e.target.checked)}
-                      className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
-                      aria-label="Sélectionner tous les événements"
-                    />
+                  <th className="w-10 px-2 py-3 md:px-4">
+                    <label className="-m-1 inline-flex size-6 cursor-pointer items-center justify-center pointer-coarse:-m-3 pointer-coarse:size-11">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.size === items.length && items.length > 0}
+                        onChange={(e) => handleSelectAll(e.target.checked)}
+                        className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
+                        aria-label="Sélectionner tous les événements"
+                      />
+                    </label>
                   </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left font-medium">Titre</th>
-                  <th className="text-muted-foreground hidden px-4 py-3 text-left font-medium md:table-cell">
+                  <th className="text-muted-foreground px-2 py-3 text-left font-medium md:px-4">
+                    Titre
+                  </th>
+                  <th className="text-muted-foreground hidden px-2 py-3 text-left font-medium md:table-cell md:px-4">
                     Ville
                   </th>
-                  <th className="text-muted-foreground hidden px-4 py-3 text-left font-medium lg:table-cell">
+                  <th className="text-muted-foreground hidden px-2 py-3 text-left font-medium md:px-4 lg:table-cell">
                     Département
                   </th>
-                  <th className="text-muted-foreground hidden px-4 py-3 text-left font-medium md:table-cell">
+                  <th className="text-muted-foreground hidden px-2 py-3 text-left font-medium md:table-cell md:px-4">
                     Catégorie
                   </th>
-                  <th className="text-muted-foreground hidden px-4 py-3 text-left font-medium lg:table-cell">
+                  <th className="text-muted-foreground hidden px-2 py-3 text-left font-medium md:px-4 lg:table-cell">
                     Date
                   </th>
-                  <th className="text-muted-foreground px-4 py-3 text-center font-medium">
+                  <th className="text-muted-foreground hidden px-2 py-3 text-center font-medium md:table-cell md:px-4">
                     Statut
                   </th>
-                  <th className="text-muted-foreground px-4 py-3 text-right font-medium">
+                  <th className="text-muted-foreground px-2 py-3 text-right font-medium md:px-4">
                     Actions
                   </th>
                 </tr>
@@ -327,18 +332,25 @@ export const AdminEventsPage = ({
                     key={event.id}
                     className={`border-b border-white/5 transition-colors ${selectedIds.has(event.id) ? "bg-amber-500/10" : "hover:bg-white/5"}`}
                   >
-                    <td className="w-10 px-4 py-3">
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.has(event.id)}
-                        onChange={() => handleToggleSelect(event.id)}
-                        className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
-                        aria-label={`Sélectionner ${event.titleFr}`}
-                      />
+                    <td className="w-10 px-2 py-3 md:px-4">
+                      <label className="-m-1 inline-flex size-6 cursor-pointer items-center justify-center pointer-coarse:-m-3 pointer-coarse:size-11">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(event.id)}
+                          onChange={() => handleToggleSelect(event.id)}
+                          className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 accent-amber-500"
+                          aria-label={`Sélectionner ${event.titleFr}`}
+                        />
+                      </label>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-2 py-3 md:px-4">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="font-medium text-white">{event.titleFr}</span>
+                        <StatusBadge
+                          className="md:hidden"
+                          published={event.published}
+                          unpublishedAt={event.unpublishedAt}
+                        />
                         {event.featured && (
                           <span
                             className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-400"
@@ -371,56 +383,37 @@ export const AdminEventsPage = ({
                         )}
                       </div>
                     </td>
-                    <td className="text-muted-foreground hidden px-4 py-3 md:table-cell">
+                    <td className="text-muted-foreground hidden px-2 py-3 md:table-cell md:px-4">
                       {event.city}
                     </td>
-                    <td className="text-muted-foreground hidden px-4 py-3 lg:table-cell">
+                    <td className="text-muted-foreground hidden px-2 py-3 md:px-4 lg:table-cell">
                       {DEPARTMENT_LABELS[event.department] || event.department}
                     </td>
-                    <td className="text-muted-foreground hidden px-4 py-3 md:table-cell">
+                    <td className="text-muted-foreground hidden px-2 py-3 md:table-cell md:px-4">
                       {CATEGORY_LABELS[event.category] || event.category}
                     </td>
-                    <td className="text-muted-foreground hidden px-4 py-3 lg:table-cell">
+                    <td className="text-muted-foreground hidden px-2 py-3 md:px-4 lg:table-cell">
                       {formatDate(event.dateStart)}
                     </td>
-                    <td className="px-4 py-3 text-center">
-                      {event.published ? (
-                        <span
-                          className="inline-flex items-center gap-1 text-emerald-400"
-                          aria-label="Publié"
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                          <span className="hidden md:inline">Publié</span>
-                        </span>
-                      ) : event.unpublishedAt ? (
-                        <span
-                          className="inline-flex items-center gap-1 text-orange-400"
-                          aria-label="Dépublié"
-                        >
-                          <EyeOff className="h-3.5 w-3.5" />
-                          <span className="hidden md:inline">Dépublié</span>
-                        </span>
-                      ) : (
-                        <span
-                          className="text-muted-foreground inline-flex items-center gap-1"
-                          aria-label="Brouillon"
-                        >
-                          <EyeOff className="h-3.5 w-3.5" />
-                          <span className="hidden md:inline">Brouillon</span>
-                        </span>
-                      )}
+                    <td className="hidden px-2 py-3 text-center md:table-cell md:px-4">
+                      <StatusBadge
+                        published={event.published}
+                        unpublishedAt={event.unpublishedAt}
+                      />
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-2 py-3 text-right md:px-4">
                       <div className="flex items-center justify-end gap-1">
-                        <Link href={`/admin/events/${event.id}/edit`}>
-                          <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            aria-label={`Modifier ${event.titleFr}`}
-                          >
+                        <Button
+                          asChild
+                          variant="ghost"
+                          size="icon-sm"
+                          aria-label={`Modifier ${event.titleFr}`}
+                          title={`Modifier ${event.titleFr}`}
+                        >
+                          <Link href={`/admin/events/${event.id}/edit`}>
                             <Pencil className="h-3.5 w-3.5" />
-                          </Button>
-                        </Link>
+                          </Link>
+                        </Button>
                         {event.published && (
                           <AlertDialog>
                             <AlertDialogTrigger
@@ -430,6 +423,7 @@ export const AdminEventsPage = ({
                                   size="icon-sm"
                                   className="text-orange-400 hover:text-orange-300"
                                   aria-label={`Dépublier ${event.titleFr}`}
+                                  title={`Dépublier ${event.titleFr}`}
                                 />
                               }
                             >

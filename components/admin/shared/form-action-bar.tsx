@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Eye, Languages, Search, AccessibilityIcon, ArrowLeft, Loader2 } from "lucide-react"
+import { Eye, Languages, Search, AccessibilityIcon, ArrowLeft, Info, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { PreviewDrawer } from "./preview-drawer"
@@ -139,11 +139,12 @@ export const FormActionBar = ({
               {aiAvailable === false && (
                 <span
                   id="ai-unavailable"
-                  title="Clé OpenRouter non configurée sur cet environnement"
-                  className="text-muted-foreground text-xs whitespace-nowrap"
+                  title="Traduction et vérifications assistées désactivées : clé OpenRouter absente sur cet environnement"
+                  className="inline-flex items-center gap-1 rounded-full border border-white/15 px-2 py-0.5 text-xs whitespace-nowrap text-slate-300"
                 >
-                  IA indisponible
-                  <span className="sr-only"> (clé OpenRouter non configurée)</span>
+                  <Info className="size-3" aria-hidden="true" />
+                  IA non configurée
+                  <span className="sr-only"> : clé OpenRouter absente sur cet environnement</span>
                 </span>
               )}
             </>

@@ -23,12 +23,11 @@ const EventListCard = async ({ event, className, priority = false }: EventListCa
     <div className={cn("animate-fade-in-up relative", className)}>
       <Link
         href={`/evenement/${event.slug}`}
-        className="group bg-ed-bg-soft border-primary/20 hover:border-primary/50 focus-visible:ring-primary/50 flex h-full flex-col border transition-colors focus-visible:ring-2 focus-visible:outline-none"
+        className="group bg-ed-bg-soft border-primary/20 hover:border-primary/50 focus-visible:ring-primary/50 flex h-full flex-col border ed-halo focus-visible:ring-2 focus-visible:outline-none"
       >
         <div className="relative">
           <EventThumb
             coverImage={event.coverImage ?? DEFAULT_EVENT_IMAGE}
-            coverImageAlt={event.coverImage ? event.coverImageAlt : undefined}
             category={event.category}
             title={event.title}
             seed={event.slug}
@@ -36,7 +35,7 @@ const EventListCard = async ({ event, className, priority = false }: EventListCa
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="border-primary/30 aspect-[16/10] w-full border-0 border-b"
           />
-          <span className="border-primary/40 bg-ed-bg-deep/85 text-primary absolute top-3 left-3 border px-2.5 py-1 font-sans text-[10px] tracking-[0.14em] uppercase backdrop-blur-sm">
+          <span className="border-primary/40 bg-ed-bg-deep/85 text-primary absolute top-3 left-3 border px-2.5 py-1 font-sans text-xs tracking-[0.14em] uppercase backdrop-blur-sm">
             {t(`categories.${event.category}`)}
           </span>
           {event.accessible ? (
@@ -50,7 +49,7 @@ const EventListCard = async ({ event, className, priority = false }: EventListCa
           ) : null}
           {event.fundraisingUrl ? (
             <span
-              className="bg-primary text-primary-foreground absolute right-3 bottom-3 flex items-center gap-1.5 px-2.5 py-1 font-sans text-[10px] font-semibold tracking-[0.14em] uppercase"
+              className="bg-primary text-primary-foreground absolute right-3 bottom-3 flex items-center gap-1.5 px-2.5 py-1 font-sans text-xs font-semibold tracking-[0.14em] uppercase"
               title={t("fundraising.badgeLabel")}
             >
               <HandHeart className="size-3.5" aria-hidden="true" />
@@ -67,7 +66,7 @@ const EventListCard = async ({ event, className, priority = false }: EventListCa
             {event.location}
             {event.city ? `, ${event.city}` : ""}
           </p>
-          <p className="border-primary/20 text-ed-mute mt-auto flex items-center justify-between border-t pt-3 font-mono text-[11px] tracking-[0.12em] uppercase">
+          <p className="border-primary/20 text-ed-mute mt-auto flex items-center justify-between border-t pt-3 font-mono text-xs tracking-[0.12em] uppercase">
             <span>{formatEventDateRange(event.dateStart, event.dateEnd, locale)}</span>
             {formatTime(event.timeStart ?? undefined) ? (
               <span className="text-primary">{formatTime(event.timeStart ?? undefined)}</span>

@@ -19,6 +19,9 @@ import { DEFAULT_EVENT_IMAGE } from "@/lib/events/default-image"
 import { isInNormandyBounds } from "@/lib/geo/normandy"
 import { FavoriteButton } from "@/components/travel-book/favorite-button"
 import { FundraisingCallout } from "@/components/events/fundraising-callout"
+import { HistoryLink } from "@/components/event-detail/history-link"
+import { archivedEditionYear } from "@/lib/festival/programme-edition"
+import { getCurrentEdition } from "@/lib/queries/edition"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
@@ -80,6 +83,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
     ? await getNeighbourEvents(slug, event.latitude as number, event.longitude as number, locale)
     : []
   const nearby = pickNearbySuggestions(event, neighbours)
+  const archivedYear = archivedEditionYear(event.dateStart, (await getCurrentEdition()).year)
 
   // Prefer the relational photos (with credit); fall back to coverImage/images
   // for legacy/seed events that predate the Tourinsoft import.
@@ -98,9 +102,12 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
         aria-label={t("a11y.breadcrumb")}
         className="border-primary/15 bg-background border-b px-4 py-4 md:px-6"
       >
-        <ol className="text-ed-mute mx-auto flex max-w-7xl flex-wrap items-center gap-2.5 font-mono text-[10.5px] tracking-[0.16em] uppercase">
+        <ol className="text-ed-mute mx-auto flex max-w-7xl flex-wrap items-center gap-2.5 font-mono text-xs tracking-[0.16em] uppercase">
           <li>
-            <Link href="/" className="hover:text-primary transition-colors">
+            <Link
+              href="/"
+              className="hover:text-primary inline-flex items-center transition-colors"
+            >
               {t("events.breadcrumbHome")}
             </Link>
           </li>
@@ -108,7 +115,10 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
             ›
           </li>
           <li>
-            <Link href="/evenements" className="hover:text-primary transition-colors">
+            <Link
+              href="/evenements"
+              className="hover:text-primary inline-flex items-center transition-colors"
+            >
               {t("nav.events")}
             </Link>
           </li>
@@ -142,13 +152,21 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
             <div className="mb-5 flex flex-wrap gap-2.5">
               <Link
                 href={`/evenements?category=${event.category.toLowerCase()}`}
-                className="border-primary/50 text-primary hover:bg-primary/10 focus-visible:ring-primary/50 border px-3 py-1.5 font-sans text-[10px] tracking-[0.16em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                className="border-primary/50 text-primary hover:bg-primary/10 focus-visible:ring-primary/50 border px-3 py-1.5 font-sans text-xs tracking-[0.16em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none"
               >
                 {t(`categories.${event.category}`)}
               </Link>
               {event.accessible ? (
-                <span className="bg-primary text-primary-foreground px-3 py-1.5 font-sans text-[10px] font-semibold tracking-[0.16em] uppercase">
+                <span className="bg-primary text-primary-foreground px-3 py-1.5 font-sans text-xs font-semibold tracking-[0.16em] uppercase">
                   {t("events.accessible")}
+                </span>
+              ) : null}
+              {archivedYear ? (
+                <span
+                  data-testid="edition-archive"
+                  className="border-ed-mute text-ed-bone border px-3 py-1.5 font-sans text-xs tracking-[0.16em] uppercase"
+                >
+                  {t("events.archivedEdition", { year: archivedYear })}
                 </span>
               ) : null}
             </div>
@@ -189,6 +207,8 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
               ))}
             </div>
 
+            <HistoryLink url={event.historyUrl} />
+
             {photos.length > 1 ? (
               <div className="mt-10">
                 <PhotoCarousel photos={photos} alt={event.title} />
@@ -205,7 +225,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
           <aside className="flex min-w-0 flex-col gap-6">
             {hasNormandyCoordinates ? (
               <section className="bg-ed-bg-deep border-primary/25 border p-6">
-                <h2 className="text-primary mb-4 font-mono text-[10.5px] tracking-[0.22em] uppercase">
+                <h2 className="text-primary mb-4 font-mono text-xs tracking-[0.22em] uppercase">
                   <span aria-hidden="true">¶</span> {t("events.location")}
                 </h2>
                 <EventMapWrapper

@@ -23,11 +23,11 @@ const Footer = async ({ editionDates }: FooterProps) => {
             <Link
               href="/"
               className="text-foreground hover:text-primary focus-visible:ring-primary/50 inline-flex items-center gap-3 rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
-              aria-label={`${t("meta.festivalName")} — ${t("a11y.backToHome")}`}
             >
               <LanternLogo className="size-7" />
               <span className="font-display text-xl font-medium italic">
                 {t("meta.festivalName")}
+                <span className="sr-only"> — {t("a11y.backToHome")}</span>
               </span>
             </Link>
             <p className="text-ed-bone max-w-sm font-serif text-base font-light opacity-75">
@@ -39,7 +39,7 @@ const Footer = async ({ editionDates }: FooterProps) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-ed-bone hover:text-primary hover:border-primary/50 focus-visible:ring-primary/50 border-primary/25 inline-flex size-11 items-center justify-center border transition-colors focus-visible:ring-2 focus-visible:outline-none"
-                aria-label="Facebook"
+                aria-label={`Facebook ${t("a11y.newTab")}`}
               >
                 <Facebook className="size-5" />
               </a>
@@ -48,7 +48,7 @@ const Footer = async ({ editionDates }: FooterProps) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-ed-bone hover:text-primary hover:border-primary/50 focus-visible:ring-primary/50 border-primary/25 inline-flex size-11 items-center justify-center border transition-colors focus-visible:ring-2 focus-visible:outline-none"
-                aria-label="Instagram"
+                aria-label={`Instagram ${t("a11y.newTab")}`}
               >
                 <Instagram className="size-5" />
               </a>
@@ -57,16 +57,16 @@ const Footer = async ({ editionDates }: FooterProps) => {
 
           {/* Navigation */}
           <div>
-            <h2 className="text-primary mb-4 font-mono text-[10px] tracking-[0.2em] uppercase">
+            <h2 className="text-primary mb-4 font-mono text-xs tracking-[0.2em] uppercase">
               {t("footer.navigation")}
             </h2>
             <nav id="footer-nav" aria-label={t("a11y.footerNav")}>
-              <ul className="flex flex-col gap-2.5">
+              <ul className="flex flex-col gap-2.5 pointer-coarse:gap-0">
                 {NAV_ITEMS.map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="text-ed-bone hover:text-primary focus-visible:ring-primary/50 rounded-sm font-sans text-sm opacity-80 transition-colors hover:opacity-100 focus-visible:ring-2 focus-visible:outline-none"
+                      className="text-ed-bone hover:text-primary focus-visible:ring-primary/50 inline-flex items-center rounded-sm font-sans text-sm opacity-80 transition-colors hover:opacity-100 focus-visible:ring-2 focus-visible:outline-none"
                     >
                       {t(`nav.${item.key}`)}
                     </Link>
@@ -75,7 +75,7 @@ const Footer = async ({ editionDates }: FooterProps) => {
                 <li>
                   <Link
                     href="/mentions-legales"
-                    className="text-ed-bone hover:text-primary focus-visible:ring-primary/50 rounded-sm font-sans text-sm opacity-80 transition-colors hover:opacity-100 focus-visible:ring-2 focus-visible:outline-none"
+                    className="text-ed-bone hover:text-primary focus-visible:ring-primary/50 inline-flex items-center rounded-sm font-sans text-sm opacity-80 transition-colors hover:opacity-100 focus-visible:ring-2 focus-visible:outline-none"
                   >
                     {t("nav.legalNotice")}
                   </Link>
@@ -83,7 +83,7 @@ const Footer = async ({ editionDates }: FooterProps) => {
                 <li>
                   <Link
                     href="/accessibilite"
-                    className="text-ed-bone hover:text-primary focus-visible:ring-primary/50 rounded-sm font-sans text-sm opacity-80 transition-colors hover:opacity-100 focus-visible:ring-2 focus-visible:outline-none"
+                    className="text-ed-bone hover:text-primary focus-visible:ring-primary/50 inline-flex items-center rounded-sm font-sans text-sm opacity-80 transition-colors hover:opacity-100 focus-visible:ring-2 focus-visible:outline-none"
                   >
                     {t("nav.accessibility")}
                   </Link>
@@ -95,7 +95,7 @@ const Footer = async ({ editionDates }: FooterProps) => {
 
           {/* Contact */}
           <div>
-            <h2 className="text-primary mb-4 font-mono text-[10px] tracking-[0.2em] uppercase">
+            <h2 className="text-primary mb-4 font-mono text-xs tracking-[0.2em] uppercase">
               {t("footer.contact")}
             </h2>
             <p className="text-ed-bone font-serif text-base font-light opacity-80">
@@ -111,10 +111,10 @@ const Footer = async ({ editionDates }: FooterProps) => {
         </div>
 
         <div className="border-primary/20 mt-12 flex flex-col gap-3 border-t pt-7 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-ed-bone font-mono text-[10px] tracking-[0.14em] uppercase opacity-80">
+          <p className="text-ed-bone font-mono text-xs tracking-[0.14em] uppercase opacity-80">
             {t("footer.copyright", { year })}
           </p>
-          <p className="text-ed-bone font-mono text-[10px] tracking-[0.14em] uppercase opacity-80">
+          <p className="text-ed-bone font-mono text-xs tracking-[0.14em] uppercase opacity-80">
             Départements de Normandie &amp; Fondation du Patrimoine
           </p>
         </div>

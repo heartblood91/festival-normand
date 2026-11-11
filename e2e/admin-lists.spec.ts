@@ -87,6 +87,8 @@ test.describe("Admin event lists", () => {
       await expect(row(page, title).getByLabel("À la une")).toBeVisible()
     } finally {
       await page.goto("/fr/admin/events?featured=true&sort=title")
+      // count() does not wait: a cleanup that ran before the rows rendered left every event featured.
+      await rowTitles(page)
       const box = page.getByRole("checkbox", { name: SELECT_PREFIX + title })
       if (await box.count()) {
         await box.check()
@@ -136,11 +138,15 @@ test.describe("Admin event lists", () => {
           `1 événement publié. Non publié(s) : ${blocked} (image de couverture sans texte alternatif).`
         )
       ).toBeVisible()
-      await expect(row(page, NO_COVER_EVENT).getByLabel("Publié")).toBeVisible()
-      await expect(row(page, blocked).getByLabel("Dépublié")).toBeVisible()
+      await expect(
+        row(page, NO_COVER_EVENT).getByText("Publié", { exact: true }).filter({ visible: true })
+      ).toBeVisible()
+      await expect(
+        row(page, blocked).getByText("Dépublié", { exact: true }).filter({ visible: true })
+      ).toBeVisible()
     } finally {
-      await republishEvent(page, `/fr${blockedEdit}`)
-      await republishEvent(page, `/fr${noCoverEdit}`)
+      await republishEvent(page, blockedEdit ?? "")
+      await republishEvent(page, noCoverEdit ?? "")
       await query(`update events set cover_image_alt_fr = $2 where id = $1`, [
         fixture.id,
         fixture.alt,
@@ -152,6 +158,7 @@ test.describe("Admin event lists", () => {
     await page.goto("/fr/admin")
     const todo = page.getByRole("region", { name: "À traiter" })
     const missingEn = todo.getByRole("link", { name: /Traduction EN manquante/ })
+    test.skip((await missingEn.count()) === 0, "No missing translation: the counter says « Aucun »")
     const count = Number((await missingEn.textContent())?.match(/\d+$/)?.[0])
 
     await missingEn.click()

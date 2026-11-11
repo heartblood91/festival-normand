@@ -13,6 +13,10 @@ technique et ce qu'il faut décider avant de commencer.
 | M15 | Site actif toute l'année | Basse | Contenu éditorial hors festival |
 | M12/M13 | Non définis dans l'extrait de réunion | — | Définition par Cédric |
 | M14 | Nettoyage IA des textes Tourinsoft | Basse | `OPENROUTER_API_KEY`, validation éditeur |
+| M16 | Verrou par champ des offres Tourinsoft | Moyenne | Liste des champs verrouillables choisie par les délégations |
+| M17 | Avis et photos des visiteurs | Basse | Un modérateur désigné |
+| M18 | Réseaux sociaux par site | Basse | Accord de Marc et Alizée sur l'utilité |
+| M19 | Infos en plus dans le carnet imprimé | Basse | Contenu défini par Marc |
 
 ## M8/M9 — Questionnaire visiteurs
 
@@ -135,3 +139,33 @@ Déplacé ici depuis P2.5.
   suit la règle « champs synchronisés » de P2.5.
 
 **Bloqueur.** `OPENROUTER_API_KEY` est absente de l'environnement local.
+
+## M16 — Verrou par champ des offres Tourinsoft
+
+Ajouté le 2026-11-11 après relecture du bilan (`docs/reports/meeting-coverage.md`).
+
+**Besoin.** Une correction faite dans l'admin sur une offre importée (coordonnées,
+description) ne doit pas être écrasée par la synchro suivante.
+
+**Piste.**
+- Ajouter une colonne `locked_fields text[]` sur `events`.
+- `lib/tourinsoft/synced-fields.ts` ignore les champs verrouillés.
+- Dans le formulaire, afficher une case « ne plus écraser » à côté de chaque champ synchronisé.
+
+**Pourquoi au backlog.** Les délégations doivent choisir les champs verrouillables.
+C'est aussi un prérequis de M14.
+
+## M17 — Avis et photos des visiteurs
+
+**Pourquoi au backlog.** Marc a rappelé qu'il faut un modérateur humain, même avec un
+filtre IA. On attend aussi peu d'avis pour environ 400 événements.
+
+## M18 — Réseaux sociaux par site
+
+**Pourquoi au backlog.** Marc et Alizée sont réservés sur l'utilité et sur l'entretien
+d'un agrégateur ou d'une timeline par site.
+
+## M19 — Infos en plus dans le carnet imprimé
+
+**Pourquoi au backlog.** La réunion n'a pas fixé le contenu (« à déterminer »). Marc doit le
+définir. L'impression du carnet existe déjà (`travel-book-actions.tsx`).

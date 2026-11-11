@@ -1,5 +1,10 @@
 import { TwoFactorVerifyForm } from "@/components/admin/two-factor-verify-form"
 
+export const metadata = {
+  title: "Vérification en deux étapes - Administration",
+  robots: { index: false, follow: false },
+}
+
 const Verify2faPage = () => (
   <div className="bg-background flex min-h-dvh items-center justify-center px-4">
     <div className="w-full max-w-md space-y-6">

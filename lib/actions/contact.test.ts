@@ -36,6 +36,7 @@ const validFormData = {
 describe("sendContactEmail", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.stubEnv("RESEND_API_KEY", "re_test_key")
     mockSend.mockResolvedValue({ id: "test-id" })
   })
 
@@ -113,5 +114,27 @@ describe("sendContactEmail", () => {
     )
     expect(result.success).toBe(false)
     expect(result.message).toContain("erreur")
+  })
+
+  it("keeps the submitted values when validation fails", async () => {
+    const result = await sendContactEmail(
+      initialState,
+      createFormData({ ...validFormData, email: "not-an-email" })
+    )
+    expect(result.values).toMatchObject({ name: "Jean Dupont", department: "CALVADOS" })
+  })
+
+  it("offers a prefilled mailto link to the department when email is not configured", async () => {
+    vi.stubEnv("RESEND_API_KEY", "")
+    const result = await sendContactEmail(
+      initialState,
+      createFormData({ ...validFormData, email: "no-mailer@example.fr" })
+    )
+    expect(mockSend).not.toHaveBeenCalled()
+    expect(result.success).toBe(false)
+    expect(result.fallback?.email).toBe("patrimoine@calvados.fr")
+    expect(result.fallback?.href).toBe(
+      `mailto:patrimoine@calvados.fr?subject=${encodeURIComponent("[Contact] Message de Jean Dupont")}&body=${encodeURIComponent(validFormData.message)}`
+    )
   })
 })

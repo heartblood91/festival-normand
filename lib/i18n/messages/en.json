@@ -22,7 +22,7 @@
     "allNews": "All news →",
     "allPartners": "All partners →",
     "readArticle": "Read the article",
-    "upcomingStatus": "D − {days} {days, plural, one {day} other {days}} · free entry",
+    "upcomingStatus": "D − <n>{days}</n> {days, plural, one {day} other {days}} · free entry",
     "liveStatus": "The festival is on · tonight across Normandy",
     "pastStatus": "{year} edition over · see you in {nextYear}",
     "stats": {
@@ -77,7 +77,9 @@
       "marker": "Five departments",
       "title": "All of Normandy, lit up.",
       "text": "{count, plural, =0 {Illuminations} other {# illuminations}} across Manche, Calvados, Seine-Maritime, Orne and Eure. Each point on the map is a place that opens, after dark.",
-      "places": "places"
+      "places": "places",
+      "soon": "Programme coming soon",
+      "mapLabel": "Map of Normandy lit up"
     },
     "partnersSection": {
       "marker": "They support us",
@@ -94,7 +96,8 @@
     "theme": {
       "marker": "{year} common thread",
       "viewAll": "See the events",
-      "soon": "Participating places will be announced soon."
+      "soon": "Participating places will be announced soon.",
+      "browse": "Browse the programme"
     }
   },
   "a11y": {
@@ -119,7 +122,10 @@
     "mapDescription": "Map of festival events in Normandy. Use the list view for accessible navigation.",
     "mapSrOnly": "This interactive map is not fully accessible to screen readers. Use the grid view to browse events.",
     "noGpsEvents": "No events with GPS coordinates found",
-    "breadcrumb": "Breadcrumb"
+    "breadcrumb": "Breadcrumb",
+    "newTab": "(new tab)",
+    "calloutInfo": "Note",
+    "calloutImportant": "Important"
   },
   "hero": {
     "badge": "Normandy Heritage Festival",
@@ -166,6 +172,7 @@
     "venue": "Venue",
     "pricing": "Pricing",
     "organizer": "Organizer",
+    "history": "History of the place",
     "free": "Free",
     "accessible": "Wheelchair accessible",
     "nearbyFallback": "No events within 50 km of your location. Here are the closest events, around {distance} km away.",
@@ -176,7 +183,14 @@
     "distanceKm": "{distance, number} km",
     "mapYouAreHere": "You are here",
     "mapLabel": "Map: {title} and {count, plural, =0 {no neighbouring site} one {# numbered neighbouring site} other {# numbered neighbouring sites}}",
-    "themes": "Themes"
+    "themes": "Themes",
+    "editionNav": "Edition",
+    "editionCurrent": "{year} edition",
+    "editionPast": "Previous editions",
+    "pastSubtitle": "The {count} events of previous editions, for the record",
+    "editionFallback": "The {year} programme is not published yet: here are the places of previous editions.",
+    "archivedEdition": "{year} edition · archive",
+    "searchPast": "Search previous editions"
   },
   "filters": {
     "department": "Department",
@@ -259,7 +273,8 @@
     "error": "An error occurred. Please try again.",
     "registerTitle": "Register your event",
     "registerDescription": "Want to participate in the festival? Register your site or monument.",
-    "registerCta": "Register"
+    "registerCta": "Register",
+    "unavailable": "The form cannot send messages right now. Your message is ready: write to the department directly from your mailbox."
   },
   "footer": {
     "description": "Discover the magic of Normandy's heritage by night.",
@@ -333,7 +348,8 @@
       "users": "Users",
       "settings": "Settings",
       "registrationLinks": "Registrations",
-      "edition": "Edition"
+      "edition": "Edition",
+      "recovery": "Sites to recover"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -342,6 +358,7 @@
       "totalNews": "News",
       "totalPartners": "Partners",
       "totalPages": "Pages",
+      "none": "None",
       "drafts": "Drafts",
       "draftsDescription": "Work in progress, never published",
       "draftsTooltip": "Drafts are content you are currently creating that has never been published on the site.",
@@ -475,5 +492,26 @@
     "lede": "This heritage site has a fundraising campaign run by the Fondation du patrimoine. Every donation helps to save it.",
     "cta": "Make a donation",
     "newTab": "(opens a new tab, fondation-patrimoine.org)"
+  },
+  "video": {
+    "play": "Play video: {title}",
+    "fallbackTitle": "presentation video",
+    "thirdParty": "The video is hosted by YouTube and loads when you click."
+  },
+  "notFound": {
+    "marker": "Error 404",
+    "title": "Page not found",
+    "text": "The page you are looking for does not exist or has moved. The programme, though, is still lit.",
+    "home": "Back to home",
+    "programme": "See the events",
+    "metaTitle": "Page not found"
+  },
+  "errorPage": {
+    "marker": "Error",
+    "title": "Something went wrong",
+    "text": "This page could not be displayed. Try again in a moment; if the problem persists, the programme is still available from the home page.",
+    "reference": "Reference: {id}",
+    "retry": "Try again",
+    "home": "Back to home"
   }
 }

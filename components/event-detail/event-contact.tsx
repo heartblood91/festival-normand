@@ -12,7 +12,7 @@ const EventContact = async ({ event }: EventContactProps) => {
 
   return (
     <div className="bg-ed-bg-deep border-primary/25 border p-6">
-      <h2 className="text-primary mb-4 font-mono text-[10.5px] tracking-[0.22em] uppercase">
+      <h2 className="text-primary mb-4 font-mono text-xs tracking-[0.22em] uppercase">
         <span aria-hidden="true">¶</span> {t("events.organizer")}
       </h2>
       {event.organizer ? (
@@ -53,6 +53,7 @@ const EventContact = async ({ event }: EventContactProps) => {
             >
               <Globe className="text-primary size-4 shrink-0" aria-hidden="true" />
               {event.website.replace(/^https?:\/\//, "")}
+              <span className="sr-only"> {t("a11y.newTab")}</span>
             </a>
           </li>
         ) : null}
