@@ -49,7 +49,7 @@ Captures : `docs/screenshots/design/f1/f1-embargo-admin-1920.png` et
 | 15 | Page d'inscription plus claire | fait | `d0615dd`, `inscription.spec` |
 | 16 | Traduction auto, outils SEO et accessibilité, aperçu admin | fait | `ba598fb`, `admin-publish.spec` |
 | 17 | Partenaires ordonnés, événement à la une, PMR | fait | champs `order`, `featured`, `accessible` |
-| 18 | Pages modifiables, « il manque des petits blocs » | partiel | Éditeur riche FR/EN, pas de blocs structurés : la liste des blocs manquants est à fournir |
+| 18 | Pages modifiables, « il manque des petits blocs » | fait | Éditeur riche FR/EN, plus encadré « À noter » ou « Important » et bouton d'action (`markdown-content.test`, `admin-images.spec`) |
 | 19 | Accessibilité du site public | fait | `7109234`, `a689a01`, specs `a11y-*` |
 | 20 | Accueil vivant en deux états | fait | `f7c90be`, `eb9d219` |
 | 21 | Correction auto des textes Tourinsoft | partiel | Outil manuel seulement : backlog M14, dépend de M16 |

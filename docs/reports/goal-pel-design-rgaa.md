@@ -105,13 +105,21 @@ Total : e2e 243 réussis, 0 échec, 0 instable ; unitaires 472 réussis, 0 éche
 - **Nettoyage des tests e2e** : ils ne suppriment que les brouillons locaux qu'ils ont eux-mêmes créés. Ils ne suppriment jamais un événement publié ; un événement se dépublie.
 - **Récupération des 100 sites** : à faire en prod après le déploiement, avec la page admin « Sites à récupérer » (5 tours de 20, en brouillons). La marche à suivre est dans `docs/reports/ops-recovery.md`. Je n'ai rien écrit en prod.
 
-## Questions pour Cédric
+## Questions pour Cédric — réponses du 11 novembre 2026
 
-1. **« Connexion sur mes comptes »** : de quels comptes s'agit-il (Vercel, admin du site, Tourinsoft, réseaux sociaux) ? Je n'ai utilisé que le compte éditeur de test local, et aucun identifiant de l'ancien serveur.
-2. **La demande oubliée** : je n'ai pas retrouvé laquelle c'était. Les 34 demandes de la réunion sont suivies dans `docs/reports/meeting-coverage.md`. Laquelle manque ?
-3. **Logo du Millénaire** (réunion #11) : le code est prêt, avec l'upload dans le formulaire du thème et le logo à la place du rond sur la carte. Il manque le fichier : Marc l'a-t-il envoyé ?
-4. **« Petits blocs » pour les pages** (réunion #18, partiel) : les pages ont un éditeur riche FR/EN, mais pas de blocs structurés. Quels blocs manquent (chiffres clés, appel à l'action, galerie, partenaires…) ?
-5. **Éditeur légal et date de la déclaration d'accessibilité** : voir les valeurs provisoires ci-dessus.
+1. **« Connexion sur mes comptes »** : c'était une dictée vocale. Elle visait la barre de crédit du pied de page, qui renvoie vers les comptes de Cédric (« Site développé par Cédric Freret, lead dev bénévole — Délégation Normandie · LinkedIn »). C'est déjà en place. Clos.
+2. **La demande oubliée** : introuvable, de l'avis de Cédric aussi. Clos.
+3. **Logo du Millénaire** (réunion #11) : la Région Normandie a une identité graphique officielle « MILLENIUM – 2027 », mais je n'ai trouvé ni charte téléchargeable ni règles d'usage. Le logo co-marqué « Fondation du patrimoine Millennium » cité par Marc n'est pas publié. On garde donc le marqueur provisoire `public/themes/millennium-marker.svg` (couronne, G, 1027·2027), qui ne copie pas le logo officiel. Le fichier officiel se téléverse dans le formulaire du thème dès que Marc ou la Région l'envoie (contact Région : millenaireguillaumeleconquerant@normandie.fr).
+4. **« Petits blocs » pour les pages** (réunion #18) : fait. L'éditeur a deux nouveaux blocs, qui servent aussi pour les événements et les actualités. Voir la section « Blocs de l'éditeur ».
+5. **Déclaration d'accessibilité** : aucune déclaration n'a été validée, donc l'état reste « non conforme ». L'éditeur légal et la date restent des valeurs provisoires, à valider avant toute publication officielle.
+
+## Blocs de l'éditeur
+
+- **Encadré « À noter » ou « Important »** : il entoure un ou plusieurs paragraphes ou listes. Un clic sur le même bouton retire l'encadré ; un clic sur l'autre change de type. Sur le site public, c'est un `role="note"` nommé « À noter » ou « Important » (« Note » ou « Important » en anglais).
+- **Bouton d'action** : un lien mis en avant, par exemple vers un formulaire d'inscription ou le programme. Le dialogue demande le texte et l'adresse, et refuse `javascript:` comme le dialogue des liens. Pour modifier le bouton, cliquer dessus puis sur « Modifier le bouton ». Sur le site public, le lien fait au moins 44 px de haut et annonce « (nouvel onglet) » s'il est externe.
+- **Preuve** : aperçu admin d'une page temporaire de la base locale, en 1920×1080. Deux notes, « À noter » et « Important » ; deux boutons de 48 px ; l'externe s'ouvre dans un nouvel onglet et l'annonce. Aucune erreur console. Capture : `docs/screenshots/design/blocks/blocks-preview-1920.png`. La page temporaire a été supprimée ensuite.
+- **Suite complète** sur un build neuf : unit 478/0, e2e 245/0, tsc 0. Un premier passage a donné 1 échec : `event-detail` avait cliqué une carte du département que `embargo.spec` masquait au même moment. Ce test passe seul (10/10), puis la suite complète est repassée à 245/0. Cette course entre tests existait déjà ; pour l'éviter, il faudrait isoler `embargo.spec` dans un projet Playwright joué à part.
+- **Tests** : `components/news/markdown-content.test.tsx` (6 tests de rendu) et deux tests e2e dans `e2e/admin-images.spec.ts` (encadré et bouton dans l'éditeur).
 
 ## Test VoiceOver
 
