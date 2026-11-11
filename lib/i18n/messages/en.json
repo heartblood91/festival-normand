@@ -349,7 +349,8 @@
       "settings": "Settings",
       "registrationLinks": "Registrations",
       "edition": "Edition",
-      "recovery": "Sites to recover"
+      "recovery": "Sites to recover",
+      "surveys": "Surveys"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -513,5 +514,30 @@
     "reference": "Reference: {id}",
     "retry": "Try again",
     "home": "Back to home"
+  },
+  "survey": {
+    "marker": "Your opinion",
+    "required": "required",
+    "requiredHint": "Questions marked with an asterisk are required. Your answers are anonymous.",
+    "ratingLegend": "Rate from 1 (not satisfied at all) to 5 (very satisfied)",
+    "ratingValue": "{value} out of 5",
+    "textPlaceholder": "Your answer",
+    "send": "Send my answers",
+    "sending": "Sending…",
+    "sentTitle": "Thank you for your answers!",
+    "sentBody": "They help us prepare the next editions of Pierres en Lumières.",
+    "backHome": "Back to the home page",
+    "errorRequired": "Please answer this question.",
+    "errorInvalid": "This answer is not valid.",
+    "errorSummary": "Some answers are missing or incorrect.",
+    "errorEmpty": "Answer at least one question before sending.",
+    "errorServer": "Sending failed. Please try again in a moment.",
+    "errorLimited": "Too many answers sent from this connection. Please try again later.",
+    "printTitle": "Survey",
+    "printQr": "You can also answer online by scanning this code",
+    "printHint": "Tick one box per question, unless “several answers possible” is shown.",
+    "printMultiple": "several answers possible",
+    "printButton": "Print",
+    "printThanks": "Thank you! Please hand this survey in at the site's reception."
   }
 }

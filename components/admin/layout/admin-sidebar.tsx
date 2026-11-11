@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   Calendar,
   Tags,
+  ClipboardList,
   Newspaper,
   Handshake,
   FileText,
@@ -89,6 +90,11 @@ const AdminSidebar = ({
       href: `/${locale}/admin/pages`,
       icon: FileText,
       labelKey: "sidebar.pages",
+    },
+    {
+      href: `/${locale}/admin/surveys`,
+      icon: ClipboardList,
+      labelKey: "sidebar.surveys",
     },
     {
       href: `/${locale}/admin/inscription`,

@@ -359,3 +359,34 @@ model Verification {
 
   @@map("auth_verifications")
 }
+
+// Visitor questionnaire built in /admin/surveys. `questions` holds the
+// SurveyQuestion[] list validated by lib/schemas/survey.ts.
+model Survey {
+  id        String           @id @default(cuid())
+  slug      String           @unique
+  titleFr   String           @map("title_fr")
+  titleEn   String?          @map("title_en")
+  introFr   String?          @map("intro_fr") @db.Text
+  introEn   String?          @map("intro_en") @db.Text
+  published Boolean          @default(false)
+  questions Json             @default("[]")
+  responses SurveyResponse[]
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+
+  @@map("surveys")
+}
+
+/// Anonymous answers keyed by question id; no personal data is asked for.
+model SurveyResponse {
+  id        String   @id @default(cuid())
+  surveyId  String   @map("survey_id")
+  survey    Survey   @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  answers   Json
+  locale    String   @default("fr")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([surveyId, createdAt])
+  @@map("survey_responses")
+}

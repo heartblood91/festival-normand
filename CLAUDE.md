@@ -67,6 +67,9 @@ ai-publish,translate,registration-links,recovery,text-correction}.ts`) call `req
   the real authorization boundary (middleware only protects page navigation).
   `lib/actions/users.ts` requires `ADMIN`. Keep this invariant when adding new
   admin actions.
+- `lib/actions/survey-submit.ts` is intentionally public (anonymous visitor answers):
+  honeypot, published-only, in-memory rate limit. `app/api/admin/surveys/[id]/export`
+  checks `getAuthenticatedUser()` itself because middleware skips `/api`.
 - `app/api/upload` checks `getAuthenticatedUser()` and returns 401 for anonymous
   callers before touching storage.
 

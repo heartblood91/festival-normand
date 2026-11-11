@@ -349,7 +349,8 @@
       "settings": "Paramètres",
       "registrationLinks": "Inscriptions",
       "edition": "Édition",
-      "recovery": "Sites à récupérer"
+      "recovery": "Sites à récupérer",
+      "surveys": "Questionnaires"
     },
     "dashboard": {
       "title": "Tableau de bord",
@@ -513,5 +514,30 @@
     "reference": "Référence : {id}",
     "retry": "Réessayer",
     "home": "Retour à l'accueil"
+  },
+  "survey": {
+    "marker": "Votre avis",
+    "required": "obligatoire",
+    "requiredHint": "Les questions marquées d’un astérisque sont obligatoires. Vos réponses sont anonymes.",
+    "ratingLegend": "Note de 1 (pas du tout satisfait) à 5 (très satisfait)",
+    "ratingValue": "{value} sur 5",
+    "textPlaceholder": "Votre réponse",
+    "send": "Envoyer mes réponses",
+    "sending": "Envoi…",
+    "sentTitle": "Merci pour vos réponses !",
+    "sentBody": "Elles nous aident à préparer les prochaines éditions de Pierres en Lumières.",
+    "backHome": "Retour à l’accueil",
+    "errorRequired": "Merci de répondre à cette question.",
+    "errorInvalid": "Cette réponse n’est pas valide.",
+    "errorSummary": "Certaines réponses sont manquantes ou incorrectes.",
+    "errorEmpty": "Répondez à au moins une question avant d’envoyer.",
+    "errorServer": "L’envoi a échoué. Merci de réessayer dans un instant.",
+    "errorLimited": "Trop de réponses envoyées depuis cette connexion. Merci de réessayer plus tard.",
+    "printTitle": "Questionnaire",
+    "printQr": "Répondez aussi en ligne en scannant ce code",
+    "printHint": "Cochez une case par question, sauf mention « plusieurs réponses possibles ».",
+    "printMultiple": "plusieurs réponses possibles",
+    "printButton": "Imprimer",
+    "printThanks": "Merci ! Remettez ce questionnaire à l’accueil du site."
   }
 }
