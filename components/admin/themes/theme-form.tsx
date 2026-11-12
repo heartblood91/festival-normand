@@ -39,6 +39,7 @@ export const ThemeForm = ({ theme }: ThemeFormProps) => {
   const [slugEdited, setSlugEdited] = useState(Boolean(theme))
   const [color, setColor] = useState(theme?.color ?? DEFAULT_PIN_COLOR)
   const [markerImage, setMarkerImage] = useState(theme?.markerImage ?? "")
+  const [skinLogo, setSkinLogo] = useState(theme?.skinLogo ?? "")
   const [showOnHome, setShowOnHome] = useState(theme?.showOnHome ?? false)
 
   const describedBy = (field: string) => (errors[field] ? `${field}-error` : undefined)
@@ -49,6 +50,7 @@ export const ThemeForm = ({ theme }: ThemeFormProps) => {
     formData.set("slug", slug)
     formData.set("color", color)
     formData.set("markerImage", markerImage)
+    formData.set("skinLogo", skinLogo)
     formData.set("showOnHome", String(showOnHome))
 
     setIsSubmitting(true)
@@ -296,6 +298,19 @@ export const ThemeForm = ({ theme }: ThemeFormProps) => {
               de lui-même hors des années indiquées.
             </p>
             <FieldError id="skin" messages={errors.skin} />
+          </div>
+
+          <div role="group" aria-labelledby="skin-logo-title">
+            <p id="skin-logo-title" className="text-muted-foreground mb-2 text-sm font-medium">
+              Logo de l&apos;habillage
+            </p>
+            <p className="text-muted-foreground mb-2 text-xs">
+              Affiché dans le bandeau en haut du site, à côté du titre. Le logo fourni est un
+              exemple : remplacez-le par le logo officiel quand il est disponible. Sans image,
+              l&apos;exemple est utilisé.
+            </p>
+            <ImageUpload value={skinLogo} onChange={setSkinLogo} preset="logo" />
+            <FieldError id="skinLogo" messages={errors.skinLogo} />
           </div>
         </CardContent>
       </Card>

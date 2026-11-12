@@ -28,13 +28,14 @@ describe("getActiveSkin", () => {
 
   it("returns the first theme whose skin still exists in the code", async () => {
     prismaMock.theme.findMany.mockResolvedValue([
-      { slug: "old", skin: "removed-skin" },
-      { slug: "millenaire", skin: "millennium" },
+      { slug: "old", skin: "removed-skin", skinLogo: null },
+      { slug: "millenaire", skin: "millennium", skinLogo: "/uploads/logo.png" },
     ])
 
     await expect(getActiveSkin(2027)).resolves.toEqual({
       key: "millennium",
       themeSlug: "millenaire",
+      logo: "/uploads/logo.png",
     })
   })
 

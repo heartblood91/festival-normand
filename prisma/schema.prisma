@@ -129,6 +129,8 @@ model Theme {
   years         Int[]    @default([])
   /// Site-wide skin (lib/skins) applied while the theme is shown.
   skin          String?
+  /// Logo shown by the skin (e.g. Millennium ribbon); null falls back to the bundled example.
+  skinLogo      String?  @map("skin_logo")
   showOnHome    Boolean  @default(false) @map("show_on_home")
   order         Int      @default(0)
   events        Event[]  @relation("event_themes")

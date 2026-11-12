@@ -2,7 +2,7 @@
 
 ## Ce que règle l'admin
 
-Le formulaire d'une thématique (`/admin/themes`, carte « Période et habillage ») a deux champs :
+Le formulaire d'une thématique (`/admin/themes`, carte « Période et habillage ») a trois champs :
 
 - **Années d'affichage** : vide = toutes les éditions. Avec « 2027 », la thématique n'existe
   sur le site public que pour l'édition 2027 : filtre du programme, section d'accueil, lien sur
@@ -12,22 +12,28 @@ Le formulaire d'une thématique (`/admin/themes`, carte « Période et habillage
 - **Habillage du site** : un décor appliqué à tout le site public, tant que la thématique est
   affichée. Il suit donc les mêmes années. « Aucun habillage » le retire tout de suite.
 
+- **Logo de l'habillage** : l'image du bandeau, à côté du titre. Le Millénaire part de
+  l'emblème d'exemple (`/themes/millennium-emblem.svg`) ; téléverser le logo officiel le remplace
+  sur tout le site, « Retirer » revient à l'exemple. Image décorative (`alt=""`) : le titre du
+  bandeau est déjà écrit à côté.
+
 Si plusieurs thématiques affichées ont un habillage, la première dans l'ordre d'affichage
 l'emporte (ordre, puis nom).
 
 La migration `20261111180000_add_theme_years_and_skin` règle le thème Millénaire sur 2027 avec
 l'habillage « Millénaire de Guillaume le Conquérant », sauf si un éditeur l'a déjà réglé.
+`20261112050000_add_theme_skin_logo` lui donne l'emblème d'exemple comme logo de bandeau.
 
 ## L'habillage Millénaire
 
 Il est dans `components/skins/millennium/` :
 
-| Fichier | Rôle |
-| --- | --- |
+| Fichier      | Rôle                                                                                                                                                           |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ribbon.tsx` | Bandeau rouge au-dessus de l'en-tête : emblème, titre, dates, lien vers les événements de la thématique. C'est une région `complementary` nommée par le titre. |
-| `frieze.tsx` | Frise brodée façon Tapisserie de Bayeux (drakkar, donjon), sous l'en-tête et au-dessus du pied de page. Décorative : `aria-hidden`, masquée à l'impression. |
-| `copy.ts` | Textes FR et EN de l'habillage. |
-| `index.ts` | Emplacements utilisés (`beforeHeader`, `afterHeader`, `beforeFooter`). |
+| `frieze.tsx` | Frise brodée façon Tapisserie de Bayeux (drakkar, donjon), sous l'en-tête et au-dessus du pied de page. Décorative : `aria-hidden`, masquée à l'impression.    |
+| `copy.ts`    | Textes FR et EN de l'habillage.                                                                                                                                |
+| `index.ts`   | Emplacements utilisés (`beforeHeader`, `afterHeader`, `beforeFooter`).                                                                                         |
 
 Les visuels sont dans `public/themes/` : `millennium-emblem.svg` (bandeau),
 `millennium-marker.svg` (épingle de carte) et `millennium-wordmark.svg` (logotype avec texte,

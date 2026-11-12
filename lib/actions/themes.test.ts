@@ -101,10 +101,21 @@ describe("theme actions", () => {
     mockPrisma.theme.findFirst.mockResolvedValue(null)
     mockPrisma.theme.create.mockResolvedValue({ id: "t1" })
 
-    await createTheme(form({ ...valid, years: "2028, 2027", skin: "millennium" }))
+    await createTheme(
+      form({
+        ...valid,
+        years: "2028, 2027",
+        skin: "millennium",
+        skinLogo: "/uploads/millenaire.png",
+      })
+    )
 
     expect(mockPrisma.theme.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({ years: [2027, 2028], skin: "millennium" }),
+      data: expect.objectContaining({
+        years: [2027, 2028],
+        skin: "millennium",
+        skinLogo: "/uploads/millenaire.png",
+      }),
     })
   })
 
@@ -115,7 +126,7 @@ describe("theme actions", () => {
     await createTheme(form({ ...valid, years: "", skin: "" }))
 
     expect(mockPrisma.theme.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({ years: [], skin: null }),
+      data: expect.objectContaining({ years: [], skin: null, skinLogo: null }),
     })
   })
 

@@ -3,8 +3,10 @@ import { Link } from "@/lib/i18n/routing"
 import { millenniumCopy } from "@/components/skins/millennium/copy"
 import type { SkinSlotProps } from "@/components/skins/types"
 
+const EXAMPLE_LOGO = "/themes/millennium-emblem.svg"
+
 /** Heraldic red band above the header; scrolls away with the page. */
-export const MillenniumRibbon = ({ locale, themeSlug }: SkinSlotProps) => {
+export const MillenniumRibbon = ({ locale, themeSlug, logo }: SkinSlotProps) => {
   const copy = millenniumCopy(locale)
   return (
     <aside
@@ -15,11 +17,11 @@ export const MillenniumRibbon = ({ locale, themeSlug }: SkinSlotProps) => {
         <p className="flex items-center gap-3 font-serif text-sm md:text-base">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/themes/millennium-emblem.svg"
+            src={logo || EXAMPLE_LOGO}
             alt=""
             width={32}
             height={32}
-            className="size-8 shrink-0"
+            className="size-8 shrink-0 object-contain"
           />
           <span>
             <span className="font-semibold">{copy.title}</span>
