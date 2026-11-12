@@ -1,37 +1,51 @@
-import { Inter, Playfair_Display, Fraunces, Cormorant_Garamond, DM_Mono } from "next/font/google"
+import localFont from "next/font/local"
 import { cn } from "@/lib/utils"
 
-const inter = Inter({
-  subsets: ["latin"],
+// Latin subsets from Google Fonts (OFL), kept in the repository so a build
+// never depends on reaching fonts.googleapis.com.
+const inter = localFont({
+  src: "../assets/fonts/inter-latin.woff2",
+  weight: "100 900",
   variable: "--font-sans",
   display: "swap",
 })
-const playfair = Playfair_Display({
-  subsets: ["latin"],
+const playfair = localFont({
+  src: "../assets/fonts/playfair-display-latin.woff2",
+  weight: "400 900",
   variable: "--font-serif",
   display: "swap",
+  adjustFontFallback: "Times New Roman",
 })
 
 // Editorial "Édito" type system (public pages only).
 // Fraunces = display, Cormorant Garamond = serif body, DM Mono = labels/meta.
-const fraunces = Fraunces({
-  subsets: ["latin"],
+const fraunces = localFont({
+  src: [
+    { path: "../assets/fonts/fraunces-latin-normal.woff2", style: "normal" },
+    { path: "../assets/fonts/fraunces-latin-italic.woff2", style: "italic" },
+  ],
+  weight: "100 900",
   variable: "--font-fraunces",
   display: "swap",
-  style: ["normal", "italic"],
-  axes: ["opsz", "SOFT"],
+  adjustFontFallback: "Times New Roman",
 })
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
+const cormorant = localFont({
+  src: [
+    { path: "../assets/fonts/cormorant-garamond-latin-normal.woff2", style: "normal" },
+    { path: "../assets/fonts/cormorant-garamond-latin-italic.woff2", style: "italic" },
+  ],
+  weight: "300 700",
   variable: "--font-cormorant",
-  weight: ["300", "400", "500", "600"],
-  style: ["normal", "italic"],
   display: "swap",
+  adjustFontFallback: "Times New Roman",
 })
-const dmMono = DM_Mono({
-  subsets: ["latin"],
+const dmMono = localFont({
+  src: [
+    { path: "../assets/fonts/dm-mono-latin-300.woff2", weight: "300" },
+    { path: "../assets/fonts/dm-mono-latin-400.woff2", weight: "400" },
+    { path: "../assets/fonts/dm-mono-latin-500.woff2", weight: "500" },
+  ],
   variable: "--font-dm-mono",
-  weight: ["300", "400", "500"],
   display: "swap",
 })
 
