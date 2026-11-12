@@ -62,7 +62,7 @@ This project uses Ralph (autonomous AI coding loop). When running as Ralph (`cla
 ## Security
 
 - All admin server actions (`lib/actions/{events,news,partners,pages,edition,department-settings,
-ai-publish,translate,registration-links,recovery,text-correction,surveys,gallery,reviews}.ts`) call `requireRole("EDITOR")`
+ai-publish,translate,registration-links,recovery,text-correction,surveys,gallery,reviews,community}.ts`) call `requireRole("EDITOR")`
   first — `"use server"` exposes them as public HTTP endpoints, so the guard is
   the real authorization boundary (middleware only protects page navigation).
   `lib/actions/users.ts` requires `ADMIN`. Keep this invariant when adding new
@@ -74,6 +74,9 @@ ai-publish,translate,registration-links,recovery,text-correction,surveys,gallery
   only for public events that have started; reviews are stored PENDING and only an
   editor can publish them. The AI advice helper lives in `lib/reviews/advise.ts`, not
   in a `"use server"` file, so it cannot be called over HTTP.
+- The social-page search (`lib/actions/community.ts`) fetches editor-entered websites
+  server-side: always go through `lib/events/fetch-public-page.ts` (http(s) on 80/443,
+  private/loopback addresses refused at every redirect, size and time caps).
 - `app/api/upload` checks `getAuthenticatedUser()` and returns 401 for anonymous
   callers before touching storage.
 

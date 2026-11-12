@@ -21,6 +21,7 @@ import { FavoriteButton } from "@/components/travel-book/favorite-button"
 import { FundraisingCallout } from "@/components/events/fundraising-callout"
 import { HistoryLink } from "@/components/event-detail/history-link"
 import { EventReviews } from "@/components/event-detail/event-reviews"
+import { EventCommunity } from "@/components/event-detail/event-community"
 import { getEventReviews } from "@/lib/queries/reviews"
 import { archivedEditionYear } from "@/lib/festival/programme-edition"
 import { getCurrentEdition } from "@/lib/queries/edition"
@@ -257,6 +258,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
               </section>
             ) : null}
             <EventContact event={event} />
+            <EventCommunity event={event} />
           </aside>
         </div>
       </div>

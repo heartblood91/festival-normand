@@ -1,18 +1,9 @@
 import { z } from "zod"
+import { imageUrlSchema } from "@/lib/schemas/image-url"
 
 export const GALLERY_MIN_YEAR = 2000
 export const GALLERY_MAX_YEAR = 2100
 export const MAX_GALLERY_UPLOADS = 30
-
-// Uploads land either on local disk (/uploads/…) or on the blob store; site
-// assets (/images/…) are accepted too. Other hosts would fail in next/image.
-const imageUrlSchema = z
-  .string()
-  .max(500)
-  .regex(
-    /^(\/(uploads|images)(\/[\w-]+)+\.[a-z0-9]+|https:\/\/[\w-]+\.public\.blob\.vercel-storage\.com\/\S+)$/i,
-    "Adresse d'image invalide"
-  )
 
 export const galleryYearSchema = z.coerce
   .number()

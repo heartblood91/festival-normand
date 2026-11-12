@@ -5,6 +5,8 @@ import { getAdminEventById } from "@/lib/actions/events"
 import { getThemeOptions } from "@/lib/actions/themes"
 import { getFundraisingSuggestions } from "@/lib/actions/fundraising"
 import { EventForm } from "@/components/admin/events/event-form"
+import { EventCommunityCard } from "@/components/admin/events/event-community-card"
+import { getEventCommunity } from "@/lib/actions/community"
 
 export const metadata = {
   title: "Modifier l'événement - Administration",
@@ -25,13 +27,14 @@ const EditEventRoute = async ({ params }: Props) => {
   }
 
   const { id } = await params
-  const [event, themes, fundraisingSuggestions] = await Promise.all([
+  const [event, themes, fundraisingSuggestions, community] = await Promise.all([
     getAdminEventById(id),
     getThemeOptions(),
     getFundraisingSuggestions(id),
+    getEventCommunity(id),
   ])
 
-  if (!event) {
+  if (!event || !community) {
     notFound()
   }
 
@@ -41,6 +44,7 @@ const EditEventRoute = async ({ params }: Props) => {
         Modifier l&apos;événement
       </h1>
       <EventForm event={event} themes={themes} fundraisingSuggestions={fundraisingSuggestions} />
+      <EventCommunityCard eventId={event.id} community={community} />
     </div>
   )
 }

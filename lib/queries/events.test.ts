@@ -397,7 +397,12 @@ describe("getEventBySlug", () => {
           orderBy: [{ order: "asc" }, { nameFr: "asc" }],
           select: { slug: true, nameFr: true, nameEn: true, color: true },
         },
+        associations: {
+          orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+          select: { id: true, name: true, url: true, logo: true },
+        },
       },
+      omit: { socialLinksCheckedAt: true },
     })
   })
 
@@ -427,7 +432,12 @@ describe("getEventBySlug", () => {
           orderBy: [{ order: "asc" }, { nameFr: "asc" }],
           select: { slug: true, nameFr: true, nameEn: true, color: true },
         },
+        associations: {
+          orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+          select: { id: true, name: true, url: true, logo: true },
+        },
       },
+      omit: { socialLinksCheckedAt: true },
     })
   })
 })

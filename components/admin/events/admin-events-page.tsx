@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import { SocialBulkSearch } from "@/components/admin/events/social-bulk-search"
 import { Input } from "@/components/ui/input"
 import {
   AlertDialog,
@@ -46,6 +47,7 @@ type AdminEventsPageProps = {
   page: number
   totalPages: number
   params: EventListParams
+  missingSocial: number
 }
 
 const BASE_URL = "/admin/events"
@@ -86,6 +88,7 @@ export const AdminEventsPage = ({
   page,
   totalPages,
   params,
+  missingSocial,
 }: AdminEventsPageProps) => {
   const router = useRouter()
   const search = params.search ?? ""
@@ -239,6 +242,8 @@ export const AdminEventsPage = ({
           </Link>
         </Button>
       </div>
+
+      <SocialBulkSearch missing={missingSocial} />
 
       <form onSubmit={handleSearch} className="mb-6">
         <div className="relative">

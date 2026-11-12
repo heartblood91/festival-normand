@@ -281,7 +281,12 @@ export const getEventBySlug = async (slug: string, locale: Locale = "fr") => {
             orderBy: [{ order: "asc" }, { nameFr: "asc" }],
             select: { slug: true, nameFr: true, nameEn: true, color: true },
           },
+          associations: {
+            orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+            select: { id: true, name: true, url: true, logo: true },
+          },
         },
+        omit: { socialLinksCheckedAt: true },
       })
       if (!event) return null
       return {

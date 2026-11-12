@@ -586,5 +586,10 @@
       "tooLong": "{max} caractères au maximum.",
       "invalid": "Cette valeur n’est pas valide."
     }
+  },
+  "community": {
+    "socialTitle": "Suivre le site",
+    "associationsTitle": "Associations partenaires",
+    "socialLink": "{network} de {place}"
   }
 }
