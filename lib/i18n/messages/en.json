@@ -351,7 +351,8 @@
       "edition": "Edition",
       "recovery": "Sites to recover",
       "surveys": "Surveys",
-      "gallery": "Photo gallery"
+      "gallery": "Photo gallery",
+      "reviews": "Visitor reviews"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -555,5 +556,35 @@
     "homeTitle": "The {year} edition in pictures",
     "homeLink": "See all photos",
     "footerLink": "Photo gallery"
+  },
+  "reviews": {
+    "marker": "Guestbook",
+    "title": "Visitor reviews",
+    "average": "Average rating: {value} out of 5",
+    "count": "{count, plural, one {# review} other {# reviews}}",
+    "empty": "No reviews yet. Have you visited this site? Share your experience.",
+    "rating": "{value} out of 5",
+    "formTitle": "Write a review",
+    "formIntro": "Your review will be published once the festival team has read it.",
+    "required": "required",
+    "ratingLabel": "Your rating, from 1 (disappointing) to 5 (excellent)",
+    "commentLabel": "Your review",
+    "commentHint": "Between {min} and {max} characters.",
+    "nameLabel": "First name or nickname",
+    "nameHint": "It will be shown with your review. Do not include an email address or phone number.",
+    "send": "Send my review",
+    "sending": "Sending…",
+    "sentTitle": "Thank you for your review!",
+    "sentBody": "It will appear here once the team has read it.",
+    "errorSummary": "Some fields are missing or incorrect.",
+    "errorLimited": "Too many reviews sent from this connection. Please try again later.",
+    "errorClosed": "Reviews open on the first day of the event.",
+    "errorServer": "Sending failed. Please try again in a moment.",
+    "error": {
+      "required": "This field is required.",
+      "tooShort": "Write at least {min} characters.",
+      "tooLong": "{max} characters maximum.",
+      "invalid": "This value is not valid."
+    }
   }
 }

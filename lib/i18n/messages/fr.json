@@ -351,7 +351,8 @@
       "edition": "Édition",
       "recovery": "Sites à récupérer",
       "surveys": "Questionnaires",
-      "gallery": "Retour en images"
+      "gallery": "Retour en images",
+      "reviews": "Avis visiteurs"
     },
     "dashboard": {
       "title": "Tableau de bord",
@@ -555,5 +556,35 @@
     "homeTitle": "L'édition {year} en images",
     "homeLink": "Voir toutes les photos",
     "footerLink": "Retour en images"
+  },
+  "reviews": {
+    "marker": "Livre d’or",
+    "title": "Avis des visiteurs",
+    "average": "Note moyenne : {value} sur 5",
+    "count": "{count, plural, one {# avis} other {# avis}}",
+    "empty": "Aucun avis pour l’instant. Vous avez visité ce site ? Partagez votre expérience.",
+    "rating": "{value} sur 5",
+    "formTitle": "Donner mon avis",
+    "formIntro": "Votre avis sera publié après relecture par l’équipe du festival.",
+    "required": "obligatoire",
+    "ratingLabel": "Votre note, de 1 (décevant) à 5 (excellent)",
+    "commentLabel": "Votre avis",
+    "commentHint": "Entre {min} et {max} caractères.",
+    "nameLabel": "Prénom ou pseudonyme",
+    "nameHint": "Il sera affiché avec votre avis. N’indiquez ni adresse e-mail ni téléphone.",
+    "send": "Envoyer mon avis",
+    "sending": "Envoi…",
+    "sentTitle": "Merci pour votre avis !",
+    "sentBody": "Il apparaîtra ici dès que l’équipe l’aura relu.",
+    "errorSummary": "Certains champs sont manquants ou incorrects.",
+    "errorLimited": "Trop d’avis envoyés depuis cette connexion. Merci de réessayer plus tard.",
+    "errorClosed": "Les avis seront ouverts à partir du premier jour de l’événement.",
+    "errorServer": "L’envoi a échoué. Merci de réessayer dans un instant.",
+    "error": {
+      "required": "Ce champ est obligatoire.",
+      "tooShort": "Écrivez au moins {min} caractères.",
+      "tooLong": "{max} caractères au maximum.",
+      "invalid": "Cette valeur n’est pas valide."
+    }
   }
 }

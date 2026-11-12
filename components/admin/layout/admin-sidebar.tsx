@@ -8,6 +8,7 @@ import {
   Tags,
   ClipboardList,
   Images,
+  MessageSquareQuote,
   Newspaper,
   Handshake,
   FileText,
@@ -101,6 +102,11 @@ const AdminSidebar = ({
       href: `/${locale}/admin/gallery`,
       icon: Images,
       labelKey: "sidebar.gallery",
+    },
+    {
+      href: `/${locale}/admin/reviews`,
+      icon: MessageSquareQuote,
+      labelKey: "sidebar.reviews",
     },
     {
       href: `/${locale}/admin/inscription`,

@@ -1,7 +1,7 @@
 "use server"
 
-import { headers } from "next/headers"
 import { prisma } from "@/lib/prisma"
+import { clientKey, createRateLimiter } from "@/lib/rate-limit"
 import { collectAnswers, readQuestions, type AnswerError } from "@/lib/schemas/survey"
 import { locales, type Locale } from "@/lib/i18n/config"
 
@@ -14,25 +14,7 @@ export type SurveySubmitResult = {
 // is generous: it only stops a script from flooding the results.
 const RATE_LIMIT_WINDOW_MS = 10 * 60_000
 const RATE_LIMIT_MAX = 20
-const recentByClient = new Map<string, number[]>()
-
-const isRateLimited = (client: string) => {
-  const now = Date.now()
-  const recent = (recentByClient.get(client) ?? []).filter(
-    (time) => now - time < RATE_LIMIT_WINDOW_MS
-  )
-  if (recent.length >= RATE_LIMIT_MAX) {
-    recentByClient.set(client, recent)
-    return true
-  }
-  recentByClient.set(client, [...recent, now])
-  return false
-}
-
-const clientKey = async () => {
-  const list = await headers()
-  return list.get("x-forwarded-for")?.split(",")[0]?.trim() || list.get("x-real-ip") || "unknown"
-}
+const isRateLimited = createRateLimiter({ windowMs: RATE_LIMIT_WINDOW_MS, max: RATE_LIMIT_MAX })
 
 /** Public, anonymous: stores one response to a published survey. */
 export const submitSurveyResponse = async (
