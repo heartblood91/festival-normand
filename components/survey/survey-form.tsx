@@ -7,6 +7,7 @@ import { Link } from "@/lib/i18n/routing"
 import { submitSurveyResponse, type SurveySubmitResult } from "@/lib/actions/survey-submit"
 import { RATING_VALUES, MAX_TEXT_ANSWER } from "@/lib/schemas/survey"
 import type { PublicSurvey, PublicSurveyQuestion } from "@/lib/queries/surveys"
+import { TURNSTILE_ACTIVE, TurnstileWidget } from "@/components/forms/turnstile-widget"
 import { cn } from "@/lib/utils"
 
 type SurveyFormProps = {
@@ -24,6 +25,7 @@ export const SurveyForm = ({ survey, locale }: SurveyFormProps) => {
   const t = useTranslations("survey")
   const [state, setState] = useState<SurveySubmitResult>({ status: "idle" })
   const [isPending, startTransition] = useTransition()
+  const [verified, setVerified] = useState(!TURNSTILE_ACTIVE)
   const feedbackRef = useRef<HTMLDivElement>(null)
   const thanksRef = useRef<HTMLHeadingElement>(null)
 
@@ -66,9 +68,11 @@ export const SurveyForm = ({ survey, locale }: SurveyFormProps) => {
         : t("errorEmpty")
       : state.status === "limited"
         ? t("errorLimited")
-        : state.status === "error"
-          ? t("errorServer")
-          : null
+        : state.status === "unverified"
+          ? t("errorUnverified")
+          : state.status === "error"
+            ? t("errorServer")
+            : null
 
   const errorText = (question: PublicSurveyQuestion) =>
     errors[question.id] === "required"
@@ -193,9 +197,15 @@ export const SurveyForm = ({ survey, locale }: SurveyFormProps) => {
         )
       })}
 
+      <TurnstileWidget
+        locale={locale}
+        resetKey={state.status === "invalid" ? null : state}
+        onVerifiedChange={setVerified}
+      />
+
       <button
         type="submit"
-        disabled={isPending}
+        disabled={isPending || !verified}
         className="bg-primary text-primary-foreground hover:bg-ed-amber-deep focus-visible:ring-ring inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 px-6 py-4 font-sans text-xs font-semibold tracking-[0.16em] uppercase transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-50 md:w-auto"
       >
         {isPending ? (

@@ -11,6 +11,7 @@ import {
   REVIEW_RATINGS,
   type ReviewField,
 } from "@/lib/schemas/review"
+import { TURNSTILE_ACTIVE, TurnstileWidget } from "@/components/forms/turnstile-widget"
 import { cn } from "@/lib/utils"
 
 type ReviewFormProps = {
@@ -28,6 +29,7 @@ export const ReviewForm = ({ slug, locale }: ReviewFormProps) => {
   const t = useTranslations("reviews")
   const [state, setState] = useState<ReviewSubmitResult>({ status: "idle" })
   const [isPending, startTransition] = useTransition()
+  const [verified, setVerified] = useState(!TURNSTILE_ACTIVE)
   const feedbackRef = useRef<HTMLDivElement>(null)
   const thanksRef = useRef<HTMLParagraphElement>(null)
 
@@ -66,11 +68,13 @@ export const ReviewForm = ({ slug, locale }: ReviewFormProps) => {
       ? t("errorSummary")
       : state.status === "limited"
         ? t("errorLimited")
-        : state.status === "closed"
-          ? t("errorClosed")
-          : state.status === "error"
-            ? t("errorServer")
-            : null
+        : state.status === "unverified"
+          ? t("errorUnverified")
+          : state.status === "closed"
+            ? t("errorClosed")
+            : state.status === "error"
+              ? t("errorServer")
+              : null
 
   const errorId = (field: ReviewField) => `review-${field}-error`
   const errorNode = (field: ReviewField) =>
@@ -185,9 +189,15 @@ export const ReviewForm = ({ slug, locale }: ReviewFormProps) => {
         {errorNode("authorName")}
       </div>
 
+      <TurnstileWidget
+        locale={locale}
+        resetKey={state.status === "invalid" ? null : state}
+        onVerifiedChange={setVerified}
+      />
+
       <button
         type="submit"
-        disabled={isPending}
+        disabled={isPending || !verified}
         className="bg-primary text-primary-foreground hover:bg-ed-amber-deep focus-visible:ring-ring inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 px-6 py-4 font-sans text-xs font-semibold tracking-[0.16em] uppercase transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-50 md:w-auto"
       >
         {isPending ? (

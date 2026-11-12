@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
-const { mockPrisma, headerValues, mockAdvise, afterCallbacks } = vi.hoisted(() => ({
+const { mockPrisma, headerValues, mockAdvise, afterCallbacks, mockVerify } = vi.hoisted(() => ({
   mockPrisma: {
     event: { findFirst: vi.fn() },
     eventReview: { create: vi.fn() },
@@ -8,6 +8,7 @@ const { mockPrisma, headerValues, mockAdvise, afterCallbacks } = vi.hoisted(() =
   headerValues: new Map<string, string>(),
   mockAdvise: vi.fn(),
   afterCallbacks: [] as (() => unknown)[],
+  mockVerify: vi.fn(),
 }))
 
 vi.mock("@/lib/prisma", () => ({ prisma: mockPrisma }))
@@ -17,6 +18,7 @@ vi.mock("next/server", () => ({
 }))
 vi.mock("@/lib/queries/visibility", () => ({ publicEventWhere: async () => ({ published: true }) }))
 vi.mock("@/lib/reviews/advise", () => ({ adviseOnReview: mockAdvise }))
+vi.mock("@/lib/turnstile", () => ({ verifyTurnstile: mockVerify }))
 
 import { submitEventReview } from "./review-submit"
 
@@ -37,9 +39,19 @@ beforeEach(() => {
   headerValues.clear()
   mockPrisma.event.findFirst.mockResolvedValue({ id: "e1", dateStart: new Date("2026-09-19") })
   mockPrisma.eventReview.create.mockResolvedValue({ id: "r1" })
+  mockVerify.mockResolvedValue(true)
 })
 
 describe("submitEventReview", () => {
+  it("refuses a failed anti-spam check without storing anything", async () => {
+    expect(await submit({ ...valid, rating: "9" })).toMatchObject({ status: "invalid" })
+    expect(mockVerify).not.toHaveBeenCalled()
+
+    mockVerify.mockResolvedValue(false)
+    expect(await submit(valid)).toEqual({ status: "unverified" })
+    expect(mockPrisma.eventReview.create).not.toHaveBeenCalled()
+  })
+
   it("queues the review as pending and asks the AI after responding", async () => {
     headerValues.set("x-forwarded-for", "10.1.0.1")
     expect(await submit(valid, "en")).toEqual({ status: "sent" })

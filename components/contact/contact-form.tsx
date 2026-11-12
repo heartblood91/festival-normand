@@ -1,11 +1,12 @@
 "use client"
 
 import { useActionState } from "react"
-import { useEffect, useRef } from "react"
-import { useTranslations } from "next-intl"
+import { useEffect, useRef, useState } from "react"
+import { useLocale, useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { Send } from "lucide-react"
 import { DEPARTMENT_OPTIONS } from "@/lib/contact-schema"
+import { TURNSTILE_ACTIVE, TurnstileWidget } from "@/components/forms/turnstile-widget"
 import { sendContactEmail, type ContactActionResult } from "@/lib/actions/contact"
 
 const initialState: ContactActionResult = {
@@ -19,7 +20,9 @@ const fieldClass =
 
 const ContactForm = () => {
   const t = useTranslations()
+  const locale = useLocale()
   const [state, formAction, isPending] = useActionState(sendContactEmail, initialState)
+  const [verified, setVerified] = useState(!TURNSTILE_ACTIVE)
   const formRef = useRef<HTMLFormElement>(null)
 
   useEffect(() => {
@@ -157,9 +160,15 @@ const ContactForm = () => {
         </div>
       )}
 
+      <TurnstileWidget
+        locale={locale}
+        resetKey={state.errors ? null : state}
+        onVerifiedChange={setVerified}
+      />
+
       <button
         type="submit"
-        disabled={isPending}
+        disabled={isPending || !verified}
         className="bg-primary text-primary-foreground hover:bg-ed-amber-deep focus-visible:ring-ring inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 px-6 py-4 font-sans text-xs font-semibold tracking-[0.16em] uppercase transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-50"
       >
         {isPending ? (

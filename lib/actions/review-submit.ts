@@ -3,6 +3,7 @@
 import { after } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { clientKey, createRateLimiter } from "@/lib/rate-limit"
+import { verifyTurnstile } from "@/lib/turnstile"
 import {
   reviewErrors,
   reviewSchema,
@@ -14,11 +15,11 @@ import { adviseOnReview } from "@/lib/reviews/advise"
 import { locales, type Locale } from "@/lib/i18n/config"
 
 export type ReviewSubmitResult = {
-  status: "idle" | "sent" | "invalid" | "error" | "limited" | "closed"
+  status: "idle" | "sent" | "invalid" | "error" | "limited" | "closed" | "unverified"
   errors?: Partial<Record<ReviewField, ReviewFieldError>>
 }
 
-const isRateLimited = createRateLimiter({ windowMs: 60 * 60_000, max: 5 })
+const isRateLimited = createRateLimiter({ name: "review", windowMs: 60 * 60_000, max: 5 })
 
 /** Public, anonymous: queues a review of a site that has opened to visitors. */
 export const submitEventReview = async (
@@ -46,7 +47,9 @@ export const submitEventReview = async (
     if (!event) return { status: "error" }
     if (event.dateStart > now) return { status: "closed" }
 
-    if (isRateLimited(await clientKey())) return { status: "limited" }
+    const client = await clientKey()
+    if (!(await verifyTurnstile(formData, client))) return { status: "unverified" }
+    if (await isRateLimited(client)) return { status: "limited" }
 
     const review = await prisma.eventReview.create({
       data: {

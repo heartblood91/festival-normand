@@ -1,15 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
-const { mockPrisma, headerValues } = vi.hoisted(() => ({
+const { mockPrisma, headerValues, mockVerify } = vi.hoisted(() => ({
   mockPrisma: {
     survey: { findFirst: vi.fn() },
     surveyResponse: { create: vi.fn() },
   },
   headerValues: new Map<string, string>(),
+  mockVerify: vi.fn(),
 }))
 
 vi.mock("@/lib/prisma", () => ({ prisma: mockPrisma }))
 vi.mock("next/headers", () => ({ headers: async () => headerValues }))
+vi.mock("@/lib/turnstile", () => ({ verifyTurnstile: mockVerify }))
 
 import { submitSurveyResponse } from "./survey-submit"
 
@@ -34,9 +36,21 @@ beforeEach(() => {
   vi.clearAllMocks()
   mockPrisma.survey.findFirst.mockResolvedValue(survey)
   headerValues.clear()
+  mockVerify.mockResolvedValue(true)
 })
 
 describe("submitSurveyResponse", () => {
+  it("refuses a failed anti-spam check, but only once the answers are valid", async () => {
+    expect(await submit({})).toMatchObject({ status: "invalid" })
+    expect(mockVerify).not.toHaveBeenCalled()
+
+    headerValues.set("x-forwarded-for", "10.0.0.9")
+    mockVerify.mockResolvedValue(false)
+    expect(await submit({ q_score: "4" })).toEqual({ status: "unverified" })
+    expect(mockVerify).toHaveBeenCalledWith(expect.any(FormData), "10.0.0.9")
+    expect(mockPrisma.surveyResponse.create).not.toHaveBeenCalled()
+  })
+
   it("stores the answers of a published survey with the visitor's language", async () => {
     headerValues.set("x-forwarded-for", "10.0.0.1")
     expect(await submit({ q_score: "4", q_free: "Superbe" }, "en")).toEqual({ status: "sent" })
