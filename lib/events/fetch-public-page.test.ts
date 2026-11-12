@@ -28,10 +28,19 @@ describe("fetchPublicPage", () => {
       "::1",
       "fd00::1",
       "::ffff:127.0.0.1",
+      // What the URL parser makes of http://[::ffff:169.254.169.254]/
+      "::ffff:a9fe:a9fe",
+      "::ffff:7f00:1",
+      "64:ff9b::a9fe:a9fe",
+      "2002:7f00:1::",
+      "fe80::1",
+      "224.0.0.1",
+      "not-an-ip",
     ]) {
       expect(isPrivateAddress(address)).toBe(true)
     }
     expect(isPrivateAddress("93.184.216.34")).toBe(false)
+    expect(isPrivateAddress("2606:4700::6810:84e5")).toBe(false)
   })
 
   it("returns the HTML of a public page", async () => {
