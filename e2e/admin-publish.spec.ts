@@ -14,6 +14,9 @@ const openPublishReview = async (page: Page) => {
   return wizard
 }
 
+const sitemapUrlCount = async (page: Page) =>
+  ((await (await page.request.get("/sitemap.xml")).text()).match(/<url>/g) ?? []).length
+
 test.describe("Admin publish workflow", () => {
   test.skip(!editorCredentials(), MISSING_EDITOR)
 
@@ -62,11 +65,15 @@ test.describe("Admin publish workflow", () => {
     await expect(page).toHaveURL(/\/admin\/events\/[^/]+\/edit/, { timeout: 15_000 })
     const editUrl = page.url()
 
+    const publishedSitemapCount = await sitemapUrlCount(page)
+
     try {
       await describeCoverIfMissing(page)
       // Unpublishing never opens the review.
       await page.getByRole("button", { name: "Dépublier" }).click()
       await expect(page).toHaveURL(/\/admin\/events(\?|$)/, { timeout: 15_000 })
+      // The sitemap drops the event in both locales right away, not after its hourly refresh.
+      expect(await sitemapUrlCount(page)).toBe(publishedSitemapCount - 2)
 
       await page.goto(editUrl)
       await expect(page.getByText("Brouillon", { exact: true })).toBeVisible()
@@ -85,6 +92,7 @@ test.describe("Admin publish workflow", () => {
       await expect(page).toHaveURL(/\/admin\/events(\?|$)/)
       await page.goto(editUrl)
       await expect(page.getByText("Publié", { exact: true })).toBeVisible()
+      expect(await sitemapUrlCount(page)).toBe(publishedSitemapCount)
     } finally {
       // The shared local DB must keep its seeded events published, even after a failure.
       await republishEvent(page, editUrl)
