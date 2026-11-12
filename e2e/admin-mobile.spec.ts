@@ -15,6 +15,7 @@ const ADMIN_PAGES = [
   "/fr/admin/surveys/new",
   "/fr/admin/gallery",
   "/fr/admin/reviews",
+  "/fr/admin/stats",
   "/fr/admin/pages",
   "/fr/admin/settings",
   "/fr/admin/edition",

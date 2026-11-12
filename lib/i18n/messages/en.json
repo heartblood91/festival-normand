@@ -352,7 +352,8 @@
       "recovery": "Sites to recover",
       "surveys": "Surveys",
       "gallery": "Photo gallery",
-      "reviews": "Visitor reviews"
+      "reviews": "Visitor reviews",
+      "stats": "Statistics"
     },
     "dashboard": {
       "title": "Dashboard",

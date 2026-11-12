@@ -37,6 +37,7 @@ const ADMIN_PATHS = [
   "/fr/admin/surveys/new",
   "/fr/admin/gallery",
   "/fr/admin/reviews",
+  "/fr/admin/stats",
   "/fr/admin/partners",
   "/fr/admin/pages",
   "/fr/admin/edition",

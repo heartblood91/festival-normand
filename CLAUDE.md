@@ -77,6 +77,9 @@ ai-publish,translate,registration-links,recovery,text-correction,surveys,gallery
 - The social-page search (`lib/actions/community.ts`) fetches editor-entered websites
   server-side: always go through `lib/events/fetch-public-page.ts` (http(s) on 80/443,
   private/loopback addresses refused at every redirect, size and time caps).
+- `/admin/stats` calls `requireRole("EDITOR")` itself. Its PostHog reader
+  (`lib/analytics/posthog-stats.ts`) uses a server-only personal key
+  (`POSTHOG_PERSONAL_API_KEY`, read scope); never expose it with a `NEXT_PUBLIC_` prefix.
 - `app/api/upload` checks `getAuthenticatedUser()` and returns 401 for anonymous
   callers before touching storage.
 

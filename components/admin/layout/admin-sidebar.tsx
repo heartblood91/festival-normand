@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
 import {
   LayoutDashboard,
+  ChartColumn,
   Calendar,
   Tags,
   ClipboardList,
@@ -67,6 +68,11 @@ const AdminSidebar = ({
       href: `/${locale}/admin`,
       icon: LayoutDashboard,
       labelKey: "sidebar.dashboard",
+    },
+    {
+      href: `/${locale}/admin/stats`,
+      icon: ChartColumn,
+      labelKey: "sidebar.stats",
     },
     {
       href: `/${locale}/admin/events`,
