@@ -166,6 +166,7 @@
     "breadcrumbEvents": "Events",
     "description": "Description",
     "location": "Location",
+    "locationAndAround": "Location and surroundings",
     "practicalInfo": "Practical information",
     "date": "Date",
     "time": "Hours",

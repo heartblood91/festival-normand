@@ -4,6 +4,7 @@ import { useEffect, useRef, useCallback } from "react"
 import { useLocale, useTranslations } from "next-intl"
 import mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
+import { mapboxLocale } from "@/lib/map/mapbox-locale"
 import { formatEventDate } from "@/lib/utils/format-date"
 import type { MapEventItem } from "@/lib/queries/events"
 import { DEFAULT_EVENT_IMAGE } from "@/lib/events/default-image"
@@ -61,6 +62,7 @@ const EventsMap = ({ events }: EventsMapProps) => {
       zoom: 7,
       scrollZoom: true,
       attributionControl: true,
+      locale: mapboxLocale(locale),
     })
 
     map.addControl(new mapboxgl.NavigationControl(), "top-right")

@@ -191,7 +191,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
 
           {/* Intentionally NOT sticky: a sticky aside next to a long main column
               made test users think the two halves scrolled independently. */}
-          <aside>
+          <aside aria-label={t("events.practicalInfo")}>
             <EventInfo event={event} locale={locale} />
           </aside>
         </div>
@@ -229,7 +229,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
             <EventReviews slug={slug} locale={locale} summary={reviews} open={reviewsOpen} />
           </div>
 
-          <aside className="flex min-w-0 flex-col gap-6">
+          <aside aria-label={t("events.locationAndAround")} className="flex min-w-0 flex-col gap-6">
             {hasNormandyCoordinates ? (
               <section className="bg-ed-bg-deep border-primary/25 border p-6">
                 <h2 className="text-primary mb-4 font-mono text-xs tracking-[0.22em] uppercase">
