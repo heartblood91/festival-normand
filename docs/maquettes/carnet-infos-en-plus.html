@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquette — Carnet de voyage, pages « Infos en plus » · Pierres en Lumières 2027</title>
+<!--
+  Off-site mockup for a meeting, not part of the website.
+  Two A5 pages added at the end of the printed travel book.
+  Print: A5 portrait, no margins, background graphics on.
+-->
+<style>
+  @page { size: 148mm 210mm; margin: 0; }
+  :root {
+    --navy: #0f172a; --indigo: #1e1b4b; --amber: #d97706; --amber-light: #f59e0b;
+    --paper: #fbf7ef; --ink: #1f2937; --muted: #4b5563; --rule: #e7dcc6;
+    --serif: "Playfair Display", Georgia, "Times New Roman", serif;
+    --sans: Inter, "Helvetica Neue", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { margin: 0; background: #d6d3cd; font-family: var(--sans); color: var(--ink); }
+  .note {
+    max-width: 320mm; margin: 16px auto 0; padding: 12px 16px; font-size: 14px; line-height: 1.5;
+    background: #fff7e6; border: 1px solid #f2c879; border-radius: 6px;
+  }
+  .note strong { color: #92400e; }
+  .spread { display: flex; flex-wrap: wrap; gap: 12mm; justify-content: center; padding: 12mm 0 16mm; }
+  .page {
+    width: 148mm; height: 210mm; background: var(--paper); position: relative; overflow: hidden;
+    padding: 12mm 12mm 13mm; display: flex; flex-direction: column; gap: 4mm;
+    box-shadow: 0 2px 14px rgb(0 0 0 / 0.25);
+  }
+  .folio { position: absolute; bottom: 5mm; left: 0; right: 0; text-align: center; font-size: 8pt; color: var(--muted); letter-spacing: 0.08em; }
+  .kicker { font-size: 7.5pt; letter-spacing: 0.22em; text-transform: uppercase; color: var(--amber); font-weight: 600; margin: 0; }
+  h1, h2 { font-family: var(--serif); color: var(--navy); margin: 0; font-weight: 700; }
+  h1 { font-size: 22pt; line-height: 1.1; }
+  h2 { font-size: 12.5pt; line-height: 1.2; margin-bottom: 1.5mm; }
+  p { margin: 0; font-size: 9.5pt; line-height: 1.45; }
+  .muted { color: var(--muted); }
+  .band {
+    margin: -12mm -12mm 0; padding: 9mm 12mm 6mm; color: #f8f1e3;
+    background: linear-gradient(135deg, var(--navy), var(--indigo));
+    border-bottom: 1.2mm solid var(--amber-light);
+  }
+  .band h1 { color: #fff; }
+  .band .kicker { color: var(--amber-light); }
+  .dates { display: flex; align-items: baseline; gap: 3mm; margin-top: 1.5mm; font-family: var(--serif); }
+  .dates b { font-size: 22pt; color: var(--amber-light); font-weight: 700; }
+  .dates span { font-size: 11pt; }
+  .block { border-top: 0.3mm solid var(--rule); padding-top: 3mm; }
+  ul { margin: 0; padding-left: 4.5mm; font-size: 9.5pt; line-height: 1.5; }
+  li + li { margin-top: 0.8mm; }
+  li::marker { color: var(--amber); }
+  .qr-row { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+  .qr { display: grid; grid-template-columns: 21mm 1fr; gap: 3mm; align-items: center; }
+  .qr svg { width: 21mm; height: 21mm; background: #fff; padding: 1.5mm; border: 0.3mm solid var(--rule); border-radius: 1mm; }
+  .qr p { font-size: 8.5pt; }
+  .qr-slot { width: 21mm; height: 21mm; display: grid; place-items: center; text-align: center; font-size: 7.5pt; }
+  .qr .url { font-size: 7.5pt; color: var(--muted); word-break: break-all; }
+  .don {
+    background: var(--navy); color: #f8f1e3; border-radius: 2mm; padding: 4mm 5mm;
+    display: grid; gap: 2mm; border-left: 1.2mm solid var(--amber-light);
+  }
+  .don h2 { color: #fff; }
+  .don .link { font-weight: 600; color: var(--amber-light); font-size: 9.5pt; }
+  .contacts { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5mm 5mm; }
+  .contact h3 { margin: 0 0 0.5mm; font-size: 8pt; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); }
+  .contact p { font-size: 8.5pt; line-height: 1.4; }
+  .todo { background: #fff3d6; outline: 0.3mm dashed #d97706; padding: 0 1mm; border-radius: 0.6mm; }
+  .notes { flex: 1; display: flex; flex-direction: column; }
+  .lines { flex: 1; background: repeating-linear-gradient(transparent 0 7.6mm, var(--rule) 7.6mm 7.9mm); min-height: 15mm; }
+  .partners { display: flex; gap: 3mm; flex-wrap: wrap; }
+  .partners span { font-size: 7.5pt; color: var(--muted); border: 0.3mm dashed #c9bda5; padding: 1.5mm 2.5mm; border-radius: 1mm; }
+  @media print {
+    body { background: none; }
+    .note { display: none; }
+    .spread { display: block; padding: 0; }
+    .page { box-shadow: none; break-after: page; }
+  }
+</style>
+</head>
+<body>
+
+<p class="note">
+  <strong>Maquette de travail, hors site.</strong> Deux pages A5 ajoutées à la fin du carnet de voyage
+  imprimé, après les sites favoris du visiteur. Les zones <span class="todo">surlignées</span> sont à
+  compléter ou à valider en réunion. Pour l'imprimer : A5 portrait, sans marges, avec les arrière-plans.
+</p>
+
+<main class="spread">
+
+  <!-- Page 1: the festival in practice -->
+  <section class="page" aria-labelledby="p1-title">
+    <header class="band">
+      <p class="kicker">Infos en plus</p>
+      <h1 id="p1-title">Pierres en Lumières</h1>
+      <p class="dates"><b>21 – 23 mai</b><span>2027 · 18<sup>e</sup> édition</span></p>
+      <p style="margin-top:2mm">Trois jours pour découvrir le patrimoine normand mis en lumière,
+        dans les cinq départements de Normandie.</p>
+    </header>
+
+    <div class="block">
+      <h2>Pour bien profiter de vos visites</h2>
+      <ul>
+        <li>Horaires et conditions propres à chaque site : vérifiez la fiche en ligne avant de partir.</li>
+        <li>Certains sites demandent une inscription ; elle est indiquée sur leur fiche.</li>
+        <li>Accessibilité des lieux : <span class="todo">texte à valider avec les délégations</span>.</li>
+      </ul>
+    </div>
+
+    <div class="block">
+      <h2>Le programme et votre avis</h2>
+      <div class="qr-row">
+        <div class="qr">
+          <svg role="img" aria-label="QR code vers le programme complet" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29 29" shape-rendering="crispEdges"><path stroke="#0f172a" d="M0 0.5h7m2 0h1m2 0h1m3 0h1m2 0h2m1 0h7M0 1.5h1m5 0h1m2 0h1m2 0h1m1 0h2m1 0h2m1 0h1m1 0h1m5 0h1M0 2.5h1m1 0h3m1 0h1m1 0h2m2 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h3m1 0h1M0 3.5h1m1 0h3m1 0h1m1 0h3m2 0h2m2 0h1m4 0h1m1 0h3m1 0h1M0 4.5h1m1 0h3m1 0h1m1 0h3m2 0h1m2 0h1m1 0h3m1 0h1m1 0h3m1 0h1M0 5.5h1m5 0h1m1 0h1m2 0h1m2 0h3m3 0h1m1 0h1m5 0h1M0 6.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M8 7.5h1m3 0h1m1 0h3M0 8.5h1m1 0h5m4 0h1m1 0h3m1 0h1m1 0h1m2 0h5M0 9.5h1m1 0h1m1 0h1m3 0h2m1 0h1m4 0h1m2 0h2m1 0h3m3 0h1M5 10.5h2m1 0h1m2 0h2m1 0h2m1 0h2m1 0h2M3 11.5h3m1 0h1m1 0h1m1 0h1m2 0h1m1 0h1m3 0h3m1 0h2m1 0h1M0 12.5h1m1 0h1m1 0h4m2 0h2m1 0h7m3 0h1m1 0h2M2 13.5h2m1 0h1m2 0h2m1 0h1m1 0h1m2 0h9m3 0h1M2 14.5h1m1 0h1m1 0h1m1 0h1m3 0h6m2 0h1m2 0h4M0 15.5h2m1 0h2m2 0h3m1 0h2m2 0h2m1 0h1m1 0h1m2 0h2m2 0h1M1 16.5h6m4 0h5m1 0h1m2 0h1m4 0h2M0 17.5h2m2 0h2m1 0h2m2 0h2m1 0h1m1 0h1m1 0h3m1 0h3m1 0h1m1 0h1M0 18.5h1m1 0h1m3 0h2m1 0h2m3 0h4m3 0h1m1 0h2m1 0h1M0 19.5h1m4 0h1m2 0h4m4 0h1m1 0h1m1 0h1m1 0h1m4 0h1M0 20.5h1m2 0h2m1 0h9m2 0h1m1 0h6m1 0h3M8 21.5h2m2 0h1m1 0h1m5 0h1m3 0h5M0 22.5h7m2 0h3m1 0h1m1 0h1m1 0h4m1 0h1m1 0h3M0 23.5h1m5 0h1m1 0h5m1 0h1m3 0h3m3 0h1m2 0h2M0 24.5h1m1 0h3m1 0h1m1 0h3m1 0h1m2 0h4m1 0h5m1 0h3M0 25.5h1m1 0h3m1 0h1m1 0h3m5 0h3m1 0h1m4 0h4M0 26.5h1m1 0h3m1 0h1m1 0h4m1 0h3m1 0h1m1 0h9M0 27.5h1m5 0h1m4 0h2m3 0h1m3 0h1m3 0h2m1 0h1M0 28.5h7m1 0h2m5 0h1m1 0h1m1 0h1m4 0h3"/></svg>
+
+          <div>
+            <p><strong>Tout le programme</strong>, la carte et les sites près de vous.</p>
+            <p class="url">pierresenlumieres.fr/fr/evenements</p>
+          </div>
+        </div>
+        <div class="qr">
+          <div class="qr-slot todo" role="img" aria-label="Emplacement du QR code du questionnaire">QR à venir</div>
+          <div>
+            <p><strong>Donnez votre avis</strong> pour améliorer le festival.</p>
+            <p class="url"><span class="todo">QR et adresse à reprendre de la version imprimable du questionnaire (admin), une fois publié</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="don">
+      <p class="kicker">Soutenir le patrimoine</p>
+      <h2>Ces pierres ont besoin de vous</h2>
+      <p>La Fondation du patrimoine aide à sauver des églises, châteaux, lavoirs et moulins partout
+        en Normandie. Chaque don, même modeste, compte.</p>
+      <p class="link">fondation-patrimoine.org</p>
+      <p><span class="todo" style="color:#92400e">Lien exact de la page de don (et QR code) à confirmer</span></p>
+    </div>
+
+    <p class="folio">Pierres en Lumières 2027 · Infos en plus · 1/2</p>
+  </section>
+
+  <!-- Page 2: contacts and notes -->
+  <section class="page" aria-labelledby="p2-title">
+    <div>
+      <p class="kicker">Infos en plus</p>
+      <h1 id="p2-title" style="font-size:18pt">Qui contacter ?</h1>
+    </div>
+
+    <div class="block contacts">
+      <div class="contact" style="grid-column: 1 / -1">
+        <h3>Coordination régionale</h3>
+        <p><strong>Fondation du patrimoine — Délégation Normandie</strong><br>
+          13 rue Saint-Romain, 76000 Rouen</p>
+      </div>
+      <div class="contact">
+        <h3>Calvados</h3>
+        <p><span class="todo">Délégation : contact à compléter</span></p>
+      </div>
+      <div class="contact">
+        <h3>Eure</h3>
+        <p><span class="todo">Délégation : contact à compléter</span></p>
+      </div>
+      <div class="contact">
+        <h3>Manche</h3>
+        <p><span class="todo">Délégation : contact à compléter</span></p>
+      </div>
+      <div class="contact">
+        <h3>Orne</h3>
+        <p><span class="todo">Délégation : contact à compléter</span></p>
+      </div>
+      <div class="contact">
+        <h3>Seine-Maritime</h3>
+        <p><span class="todo">Délégation : contact à compléter</span></p>
+      </div>
+      <div class="contact">
+        <h3>Presse</h3>
+        <p>presse@pierresenlumieres.fr<br>02 32 76 24 80</p>
+      </div>
+    </div>
+
+    <div class="block">
+      <h2>Le festival toute l'année</h2>
+      <p>Photos des éditions passées, actualités des sites et des associations qui les font vivre :
+        retrouvez-les sur <strong>pierresenlumieres.fr</strong>.</p>
+    </div>
+
+    <div class="block">
+      <h2>Avec le soutien de</h2>
+      <div class="partners">
+        <span>Fondation du patrimoine</span>
+        <span>Département de l'Orne</span>
+        <span class="todo">Autres départements et partenaires — logos à fournir</span>
+      </div>
+    </div>
+
+    <div class="block notes">
+      <h2>Mes notes de visite</h2>
+      <div class="lines" aria-hidden="true"></div>
+    </div>
+
+    <p class="folio">Pierres en Lumières 2027 · Infos en plus · 2/2</p>
+  </section>
+
+</main>
+</body>
+</html>
