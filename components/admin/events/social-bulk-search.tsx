@@ -25,8 +25,13 @@ export const SocialBulkSearch = ({ missing }: SocialBulkSearchProps) => {
       while (remaining > 0) {
         const result = await findMissingSocialLinks()
         if (!result.success) {
+          // Batches already done are saved: show them, without claiming the search finished.
+          setStatus(
+            `${processed} site${processed > 1 ? "s" : ""} analysé${processed > 1 ? "s" : ""}.`
+          )
           toast.error(result.message)
-          break
+          router.refresh()
+          return
         }
         processed += result.processed
         found += result.found

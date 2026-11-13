@@ -56,8 +56,7 @@ export const correctPendingTexts = async (limit: number): Promise<TextCorrection
         description: event.descriptionFr,
       })
       const texts = { titleFr: corrected.title, descriptionFr: corrected.description }
-      const changed =
-        texts.titleFr !== event.titleFr || texts.descriptionFr !== event.descriptionFr
+      const changed = texts.titleFr !== event.titleFr || texts.descriptionFr !== event.descriptionFr
       const en = changed
         ? await translateChangedFields({ ...texts, pricingFr: event.pricingFr }, event)
         : {}

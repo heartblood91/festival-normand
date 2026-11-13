@@ -1,13 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
-const { mockRequireRole, mockCorrect, mockAiConfigured, mockRevalidatePath } = vi.hoisted(
-  () => ({
-    mockRequireRole: vi.fn(),
-    mockCorrect: vi.fn(),
-    mockAiConfigured: vi.fn(),
-    mockRevalidatePath: vi.fn(),
-  })
-)
+const { mockRequireRole, mockCorrect, mockAiConfigured, mockRevalidatePath } = vi.hoisted(() => ({
+  mockRequireRole: vi.fn(),
+  mockCorrect: vi.fn(),
+  mockAiConfigured: vi.fn(),
+  mockRevalidatePath: vi.fn(),
+}))
 
 vi.mock("@/lib/rbac", () => ({ requireRole: mockRequireRole }))
 vi.mock("@/lib/ai/openrouter", () => ({ isAiConfigured: mockAiConfigured }))

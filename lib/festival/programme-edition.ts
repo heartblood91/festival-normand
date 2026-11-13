@@ -31,10 +31,7 @@ export const programmeEditionWhere = (
 }
 
 /** Year of the earlier edition an event belongs to, or null when it is current. */
-export const archivedEditionYear = (
-  dateStart: string | Date,
-  year: number
-): number | null => {
+export const archivedEditionYear = (dateStart: string | Date, year: number): number | null => {
   const start = new Date(dateStart)
   return start < editionStart(year) ? start.getFullYear() : null
 }

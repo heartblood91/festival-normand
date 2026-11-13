@@ -24,7 +24,7 @@ export type AdminGalleryPhoto = Awaited<ReturnType<typeof getAdminGallery>>[numb
 const revalidateGallery = () => {
   updateTag("gallery")
   revalidatePublic("/")
-  revalidatePath("/[locale]/retour-en-images", "layout")
+  revalidatePath("/[locale]/(public)/retour-en-images/[[...annee]]", "page")
   revalidatePath("/[locale]/admin/gallery", "page")
 }
 

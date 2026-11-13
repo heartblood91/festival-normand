@@ -44,7 +44,7 @@ const revalidateEvent = async (eventId: string) => {
   revalidatePath(`/[locale]/admin/events/${eventId}/edit`, "page")
 }
 
-/** Normalizes, deduplicates and keeps at most one page per network. */
+/** Normalizes the links, drops exact duplicates and sets aside the unusable ones. */
 const cleanSocialLinks = (urls: string[]) => {
   const valid: string[] = []
   const invalid: string[] = []

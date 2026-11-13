@@ -33,7 +33,9 @@ export const correctImportedTextsBatch = async (): Promise<TextCorrectionActionR
     }
     revalidatePath("/[locale]/admin", "layout")
 
-    const parts = [`${plural(report.corrected, "fiche")} corrigée${report.corrected > 1 ? "s" : ""}`]
+    const parts = [
+      `${plural(report.corrected, "fiche")} corrigée${report.corrected > 1 ? "s" : ""}`,
+    ]
     if (report.unchanged) {
       parts.push(`${report.unchanged} déjà correcte${report.unchanged > 1 ? "s" : ""}`)
     }

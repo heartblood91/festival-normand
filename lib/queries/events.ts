@@ -358,12 +358,14 @@ export const getAllFilteredEventsForMap = async (
 export type MapEventItem = Awaited<ReturnType<typeof getAllFilteredEventsForMap>>[number]
 
 /** Published events of one edition, before any visitor filter: decides the default programme. */
-export const countEditionEvents = async (edition: ProgrammeEdition) =>
-  cachedQuery(
+export const countEditionEvents = async (edition: ProgrammeEdition) => {
+  const { year } = await getCurrentEdition()
+  return cachedQuery(
     async () => prisma.event.count({ where: await buildFilterWhere({ edition }) }),
-    ["edition-events-count", edition],
+    ["edition-events-count", edition, String(year)],
     { revalidate: 300, tags: ["events"] }
   )()
+}
 
 export const getFilterCounts = async (filters: EventFilters = {}) => {
   const cacheKey = JSON.stringify(filters)
