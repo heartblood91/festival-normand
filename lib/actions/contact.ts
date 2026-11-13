@@ -3,6 +3,8 @@
 import { Resend } from "resend"
 import { contactSchema, DEPARTMENT_EMAILS } from "@/lib/contact-schema"
 import { isEmailEnabled } from "@/lib/email"
+import { createRateLimiter } from "@/lib/rate-limit"
+import { verifyTurnstile } from "@/lib/turnstile"
 
 const getResend = () => new Resend(process.env.RESEND_API_KEY)
 
@@ -26,16 +28,8 @@ export type ContactActionResult = {
 const mailtoHref = (to: string, name: string, message: string) =>
   `mailto:${to}?subject=${encodeURIComponent(`[Contact] Message de ${name}`)}&body=${encodeURIComponent(message)}`
 
-const RATE_LIMIT_MAP = new Map<string, number>()
-const RATE_LIMIT_WINDOW_MS = 60_000
-
-const isRateLimited = (email: string): boolean => {
-  const lastSent = RATE_LIMIT_MAP.get(email)
-  if (lastSent && Date.now() - lastSent < RATE_LIMIT_WINDOW_MS) {
-    return true
-  }
-  return false
-}
+// One message per sender address per minute.
+const isRateLimited = createRateLimiter({ name: "contact", windowMs: 60_000, max: 1 })
 
 export const sendContactEmail = async (
   _prevState: ContactActionResult,
@@ -68,8 +62,17 @@ export const sendContactEmail = async (
 
     const { name, email, department, message } = result.data
 
+    if (!(await verifyTurnstile(formData))) {
+      return {
+        success: false,
+        message:
+          "La vérification anti-spam n’a pas abouti. Rechargez la page et réessayez ; si un bloqueur de contenu est actif, autorisez challenges.cloudflare.com.",
+        values,
+      }
+    }
+
     // Rate limiting
-    if (isRateLimited(email)) {
+    if (await isRateLimited(email)) {
       return {
         success: false,
         message: "Veuillez patienter une minute avant d'envoyer un nouveau message.",
@@ -103,8 +106,6 @@ export const sendContactEmail = async (
       subject: `[Contact] Message de ${name}`,
       text: `Nom: ${name}\nEmail: ${email}\nDépartement: ${department}\n\nMessage:\n${message}`,
     })
-
-    RATE_LIMIT_MAP.set(email, Date.now())
 
     return {
       success: true,

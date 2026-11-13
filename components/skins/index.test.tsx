@@ -12,7 +12,7 @@ vi.mock("@/lib/i18n/routing", () => ({
 
 import { SkinSlot } from "@/components/skins"
 
-const millennium = { key: "millennium" as const, themeSlug: "millenaire" }
+const millennium = { key: "millennium" as const, themeSlug: "millenaire", logo: null }
 
 describe("SkinSlot", () => {
   it("renders nothing without an active skin", () => {
@@ -26,6 +26,19 @@ describe("SkinSlot", () => {
     expect(html).toContain('<aside aria-label="Millennium of William the Conqueror"')
     expect(html).toContain('href="/fr/evenements?theme=millenaire"')
     expect(html).toContain('alt=""')
+    expect(html).toContain('src="/themes/millennium-emblem.svg"')
+  })
+
+  it("shows the logo chosen in the theme form instead of the example", () => {
+    const html = renderToStaticMarkup(
+      <SkinSlot
+        skin={{ ...millennium, logo: "/uploads/millenaire-officiel.png" }}
+        slot="beforeHeader"
+        locale="fr"
+      />
+    )
+    expect(html).toContain('src="/uploads/millenaire-officiel.png"')
+    expect(html).not.toContain("millennium-emblem.svg")
   })
 
   it("keeps the frieze out of the accessibility tree", () => {

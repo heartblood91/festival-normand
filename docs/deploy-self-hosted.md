@@ -55,20 +55,37 @@ listing still works.
 
 ## 2. Environment variables
 
-| Variable                                | Purpose                                                                                              |
-| --------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`                          | PostgreSQL                                                                                           |
-| `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` | admin auth                                                                                           |
-| `NEXT_PUBLIC_SITE_URL`                  | canonical URLs, sitemap                                                                              |
-| `TOURINSOFT_SYNDICATION_URL`            | Tourinsoft V3 feed                                                                                   |
-| `TOURINSOFT_SYNC_INTERVAL_MINUTES`      | enables the in-app scheduler (e.g. `360`; minimum 15). Unset = disabled                              |
-| `CRON_SECRET`                           | bearer for `/api/cron/sync-tourinsoft` (manual or external trigger)                                  |
-| `OPENROUTER_API_KEY`                    | EN translation of imported offers, admin AI helpers. Missing = EN left empty, `/en` falls back to FR |
-| `OPENROUTER_MODEL`                      | optional, default `google/gemini-3.5-flash-lite`                                                     |
-| `BLOB_READ_WRITE_TOKEN`                 | Vercel Blob for uploads; missing = local disk `public/uploads` (needs a persistent volume)           |
-| `REVALIDATE_TOKEN`                      | `/api/revalidate`                                                                                    |
+| Variable                                                                            | Purpose                                                                                              |
+| ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                                                                      | PostgreSQL                                                                                           |
+| `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`                                             | admin auth                                                                                           |
+| `NEXT_PUBLIC_SITE_URL`                                                              | canonical URLs, sitemap                                                                              |
+| `TOURINSOFT_SYNDICATION_URL`                                                        | Tourinsoft V3 feed                                                                                   |
+| `TOURINSOFT_SYNC_INTERVAL_MINUTES`                                                  | enables the in-app scheduler (e.g. `360`; minimum 15). Unset = disabled                              |
+| `CRON_SECRET`                                                                       | bearer for `/api/cron/sync-tourinsoft` (manual or external trigger)                                  |
+| `OPENROUTER_API_KEY`                                                                | EN translation of imported offers, admin AI helpers. Missing = EN left empty, `/en` falls back to FR |
+| `OPENROUTER_MODEL`                                                                  | optional, default `google/gemini-3.5-flash-lite`                                                     |
+| `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` | uploads to an S3-compatible bucket (see §5); takes precedence over Blob                              |
+| `BLOB_READ_WRITE_TOKEN`                                                             | Vercel Blob for uploads; with neither S3 nor Blob = local disk `public/uploads` (persistent volume)  |
+| `REVALIDATE_TOKEN`                                                                  | `/api/revalidate`                                                                                    |
+| `REDIS_URL`                                                                         | optional, shares public-form rate limits across instances and restarts (see §6)                      |
+| `TURNSTILE_SECRET_KEY`                                                              | optional, Cloudflare Turnstile server check (see §6)                                                 |
 
-`/api/healthz` lists which of these are set (never their values).
+`/api/healthz` lists which of these are set (never their values). It answers
+`503` unless one of S3 or Blob is configured, along with the auth, cron and
+Tourinsoft variables.
+
+### Build arguments
+
+`NEXT_PUBLIC_*` values are inlined by `next build`, so they are Docker build
+arguments, not runtime variables. Changing one means rebuilding the image.
+
+| Build argument                      | Purpose                                                            |
+| ----------------------------------- | ------------------------------------------------------------------ |
+| `NEXT_PUBLIC_SITE_URL`              | canonical URLs                                                     |
+| `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` | audience tracking; empty = no cookie banner and nothing tracked    |
+| `NEXT_PUBLIC_POSTHOG_HOST`          | PostHog ingestion host, default `https://eu.i.posthog.com`         |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY`    | anti-spam widget on public forms; needs `TURNSTILE_SECRET_KEY` too |
 
 ## 3. Tourinsoft synchronisation
 
@@ -172,3 +189,63 @@ On the local database (`pel-audit-db`):
   `--limit 5` → `created: 5` drafts with photos and coordinates; full run with
   `--skip-images` → `knownById: 5, created: 418`; re-run → `knownById: 423,
 created: 0`. The test drafts were then removed from the local database.
+
+## 5. Image storage on S3 (Garage)
+
+Uploads (`lib/storage.ts`) are converted to WebP and written to the bucket
+under a generated key; the database stores `/media/<key>`, and
+`app/media/[key]/route.ts` streams the object back with a one-year immutable
+cache. The bucket therefore stays private, and moving to another provider
+(OVH Object Storage later) only means copying the objects and changing the
+`S3_*` variables: stored URLs do not change.
+
+The provisional bucket is a single-node [Garage](https://garagehq.deuxfleurs.fr)
+container. Its configuration and data live outside the repository; create the
+bucket and an application key once:
+
+```sh
+garage layout assign -z <zone> -c 10G <node-id> && garage layout apply --version 1
+garage bucket create pel-media
+garage bucket set-quotas pel-media --max-size 10GiB
+garage key create pel-app
+garage bucket allow --read --write pel-media --key pel-app
+```
+
+Then set `S3_ENDPOINT` (the Garage S3 API, port 3900), `S3_REGION` (the
+`s3_region` of `garage.toml`, e.g. `garage`), `S3_BUCKET=pel-media` and the
+key pair. Never expose the S3 API publicly without TLS; the app is the only
+client.
+
+Images uploaded before the switch keep working from wherever they were
+(`/uploads/…` or Blob URLs).
+
+## 6. Public forms: Turnstile and rate limits
+
+The contact, review and survey forms accept anonymous visitors. Each one has a
+honeypot field and a rate limit; Cloudflare Turnstile is added when both
+`NEXT_PUBLIC_TURNSTILE_SITE_KEY` (build argument) and `TURNSTILE_SECRET_KEY`
+(runtime) are set. If Cloudflare cannot be reached, the server lets the form
+through rather than locking visitors out; the rate limit still applies.
+
+Rate limits are counted in Redis when `REDIS_URL` is set (they then survive
+restarts and are shared by every instance), otherwise in memory. A Redis
+outage falls back to memory: forms never fail because of it.
+
+The site key only counts as a build argument: `next.config.ts` inlines it in
+both the server and the browser bundles, so setting it only at runtime leaves
+Turnstile off on both sides rather than asking for a token the page cannot
+produce. If the Cloudflare script is blocked in a visitor's browser, the form
+can still be sent and the server answers with a message explaining why it was
+refused.
+
+Rate limits are keyed on the visitor address: the **last** `X-Forwarded-For`
+hop, i.e. the one our reverse proxy (Traefik) appended. This assumes exactly
+one proxy in front of the app; if Cloudflare's proxy or a second load balancer
+is added in front, every visitor would share that proxy's address, and
+`clientKey()` in `lib/rate-limit.ts` must be adapted (e.g. `CF-Connecting-IP`).
+
+The default end-to-end suite runs without Turnstile keys. To exercise them,
+build with Cloudflare's always-pass test site key `1x00000000000000000000AA`,
+start the server with the test secret `1x0000000000000000000000000000000AA`,
+and run `e2e/contact.spec.ts`, `e2e/reviews.spec.ts` and `e2e/surveys.spec.ts`
+(specs waiting for `networkidle` never settle while the widget is on the page).

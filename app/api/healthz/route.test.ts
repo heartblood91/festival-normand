@@ -10,10 +10,13 @@ const required = [
   "TOURINSOFT_SYNDICATION_URL",
 ] as const
 
-const original = Object.fromEntries(required.map((name) => [name, process.env[name]]))
+const s3 = ["S3_ENDPOINT", "S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"] as const
+const touched = [...required, ...s3]
+
+const original = Object.fromEntries(touched.map((name) => [name, process.env[name]]))
 
 afterEach(() => {
-  for (const name of required) {
+  for (const name of touched) {
     const value = original[name]
     if (value === undefined) delete process.env[name]
     else process.env[name] = value
@@ -46,5 +49,18 @@ describe("GET /api/healthz", () => {
 
     expect(response.status).toBe(503)
     expect(body.missing).toEqual(["CRON_SECRET"])
+  })
+
+  it("accepts S3 instead of Vercel Blob for uploads", async () => {
+    for (const name of required) process.env[name] = "configured"
+    delete process.env.BLOB_READ_WRITE_TOKEN
+    for (const name of s3) process.env[name] = "configured"
+
+    const response = await GET()
+    expect(response.status).toBe(200)
+
+    delete process.env.S3_BUCKET
+    const body = await (await GET()).json()
+    expect(body.missing).toEqual(["S3_* or BLOB_READ_WRITE_TOKEN"])
   })
 })

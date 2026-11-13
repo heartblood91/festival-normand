@@ -63,6 +63,24 @@ test.describe("screen reader: landmarks and skip links", () => {
   })
 })
 
+test.describe("screen reader: event page", () => {
+  // RGAA 8.7: Mapbox ships English control labels; they must follow the page language.
+  test("asides are named and the map controls speak French", async ({ page }) => {
+    await page.goto("/fr/evenements")
+    const href = await page.locator('a[href*="/evenement/"]').first().getAttribute("href")
+    await page.goto(href!)
+    await expect(page.getByRole("complementary", { name: "Informations pratiques" })).toBeVisible()
+    const around = page.getByRole("complementary", { name: "Localisation et alentours" })
+    await expect(around).toBeVisible()
+    const hasMap = (await around.getByRole("heading", { name: "Localisation" }).count()) > 0
+    test.skip(!hasMap, "no map on this event")
+    await expect(around.getByRole("button", { name: "Zoomer", exact: true })).toBeVisible({
+      timeout: 15_000,
+    })
+    await expect(around.getByRole("button", { name: "Zoom in" })).toHaveCount(0)
+  })
+})
+
 test.describe("screen reader: home content", () => {
   test("definition lists read term then value", async ({ page }) => {
     await page.goto("/fr")

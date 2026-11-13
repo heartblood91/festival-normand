@@ -5,6 +5,8 @@ import { AdminDashboard } from "@/components/admin/admin-dashboard"
 import { prisma } from "@/lib/prisma"
 import { eventListWhere, parisToday } from "@/lib/admin/event-list"
 import { getLastTourinsoftRun } from "@/lib/tourinsoft/sync"
+import { countPendingTextCorrections } from "@/lib/tourinsoft/text-correction"
+import { isAiConfigured } from "@/lib/ai/openrouter"
 
 export const metadata = {
   title: "Tableau de bord - Administration",
@@ -30,6 +32,7 @@ const AdminPage = async () => {
     depublishedEventCount,
     depublishedNewsCount,
     lastSyncRun,
+    pendingTextCorrections,
     missingEn,
     missingAlt,
     missingGps,
@@ -45,6 +48,7 @@ const AdminPage = async () => {
     prisma.event.count({ where: { published: false, unpublishedAt: { not: null } } }),
     prisma.news.count({ where: { published: false, unpublishedAt: { not: null } } }),
     getLastTourinsoftRun(),
+    countPendingTextCorrections(),
     ...(["missing-en", "missing-alt", "missing-gps"] as const).map((todo) =>
       prisma.event.count({ where: eventListWhere({ todo }, parisToday()) })
     ),
@@ -54,6 +58,7 @@ const AdminPage = async () => {
     <AdminDashboard
       user={session.user}
       lastSyncRun={lastSyncRun}
+      textCorrection={{ pending: pendingTextCorrections, aiConfigured: isAiConfigured() }}
       stats={{
         events: eventCount,
         news: newsCount,

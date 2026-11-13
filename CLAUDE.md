@@ -62,13 +62,32 @@ This project uses Ralph (autonomous AI coding loop). When running as Ralph (`cla
 ## Security
 
 - All admin server actions (`lib/actions/{events,news,partners,pages,edition,department-settings,
-ai-publish,translate,registration-links,recovery}.ts`) call `requireRole("EDITOR")`
+ai-publish,translate,registration-links,recovery,text-correction,surveys,gallery,reviews,community}.ts`) call `requireRole("EDITOR")`
   first — `"use server"` exposes them as public HTTP endpoints, so the guard is
   the real authorization boundary (middleware only protects page navigation).
   `lib/actions/users.ts` requires `ADMIN`. Keep this invariant when adding new
   admin actions.
+- `lib/actions/survey-submit.ts` is intentionally public (anonymous visitor answers):
+  honeypot, published-only, in-memory rate limit. `app/api/admin/surveys/[id]/export`
+  checks `getAuthenticatedUser()` itself because middleware skips `/api`.
+- `lib/actions/review-submit.ts` is public too (visitor reviews): honeypot, rate limit,
+  only for public events that have started; reviews are stored PENDING and only an
+  editor can publish them. The AI advice helper lives in `lib/reviews/advise.ts`, not
+  in a `"use server"` file, so it cannot be called over HTTP.
+- The social-page search (`lib/actions/community.ts`) fetches editor-entered websites
+  server-side: always go through `lib/events/fetch-public-page.ts` (http(s) on 80/443,
+  private/loopback addresses refused at every redirect, size and time caps).
+- `/admin/stats` calls `requireRole("EDITOR")` itself. Its PostHog reader
+  (`lib/analytics/posthog-stats.ts`) uses a server-only personal key
+  (`POSTHOG_PERSONAL_API_KEY`, read scope); never expose it with a `NEXT_PUBLIC_` prefix.
 - `app/api/upload` checks `getAuthenticatedUser()` and returns 401 for anonymous
   callers before touching storage.
+- `app/media/[key]` is public on purpose: it streams uploaded images from the private
+  S3 bucket, and only for keys matching `MEDIA_KEY_PATTERN` (`lib/s3.ts`).
+- Public forms (contact, review, survey) verify Cloudflare Turnstile server-side
+  (`lib/turnstile.ts`) when both keys are set, after field validation and before the
+  rate limit. It fails open when Cloudflare is unreachable. Rate limits use Redis when
+  `REDIS_URL` is set and fall back to memory; the app must keep working without Redis.
 
 ## Ralph
 

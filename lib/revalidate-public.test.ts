@@ -15,11 +15,12 @@ describe("revalidatePublic", () => {
       "/en/evenement/abbaye",
       "/fr/evenements",
       "/en/evenements",
+      "/sitemap.xml",
     ])
   })
 
   it("maps the home page to the locale root", () => {
     revalidatePublic("/")
-    expect(revalidatePath.mock.calls.map(([path]) => path)).toEqual(["/fr", "/en"])
+    expect(revalidatePath.mock.calls.map(([path]) => path)).toEqual(["/fr", "/en", "/sitemap.xml"])
   })
 })

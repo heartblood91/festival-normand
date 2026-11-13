@@ -5,6 +5,12 @@ import { isSkinKey } from "@/lib/skins/registry"
 const optionalText = (max: number) =>
   z.string().max(max, `${max} caractères maximum`).optional().or(z.literal(""))
 
+const assetImage = z
+  .string()
+  .regex(/^(https:\/\/|\/(?!\/))\S+$/, "Image invalide : adresse https ou chemin /…")
+  .optional()
+  .or(z.literal(""))
+
 export const themeSchema = z.object({
   nameFr: z
     .string()
@@ -24,11 +30,7 @@ export const themeSchema = z.object({
   descriptionEn: optionalText(600),
   color: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Couleur attendue au format #rrggbb"),
   // Uploaded image (https) or a bundled asset path such as /themes/x.svg.
-  markerImage: z
-    .string()
-    .regex(/^(https:\/\/|\/(?!\/))\S+$/, "Image invalide : adresse https ou chemin /…")
-    .optional()
-    .or(z.literal("")),
+  markerImage: assetImage,
   showOnHome: z.boolean().default(false),
   // Free text such as "2027" or "2027, 2028"; empty means every edition.
   years: z
@@ -39,6 +41,7 @@ export const themeSchema = z.object({
     .string()
     .default("")
     .refine((value) => value === "" || isSkinKey(value), "Habillage inconnu"),
+  skinLogo: assetImage,
   order: z.coerce.number().int().min(0).default(0),
 })
 

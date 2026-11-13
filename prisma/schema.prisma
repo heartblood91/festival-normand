@@ -56,12 +56,23 @@ model Event {
   fundraisingImage       String?                 @map("fundraising_image")
   /// History of the place (Wikipedia or official site). Editor-owned: the Tourinsoft sync never writes it.
   historyUrl             String?                 @map("history_url")
+  /// Official social pages of the site. Editor-owned: the Tourinsoft sync never writes it.
+  socialLinks            String[]                @default([]) @map("social_links")
+  /// Last search of the official website for social pages, so a bulk search skips it.
+  socialLinksCheckedAt   DateTime?               @map("social_links_checked_at")
+  associations           EventAssociation[]
   fundraisingSuggestions FundraisingSuggestion[]
   photos                 Photo[]
+  reviews                EventReview[]
   themes                 Theme[]                 @relation("event_themes")
   tourinsoftId           String?                 @unique @map("tourinsoft_id")
   tourinsoftCategories   String?                 @map("tourinsoft_categories")
   tourinsoftUpdatedAt    DateTime?               @map("tourinsoft_updated_at")
+  /// Raw French texts as imported (Tourinsoft or v1). The public title and
+  /// description are an AI-corrected copy; a sync only re-corrects when these change.
+  sourceTitleFr          String?                 @map("source_title_fr")
+  sourceDescriptionFr    String?                 @map("source_description_fr") @db.Text
+  textsCorrectedAt       DateTime?               @map("texts_corrected_at")
   featured               Boolean                 @default(false)
   accessible             Boolean                 @default(false)
   published              Boolean                 @default(false)
@@ -118,6 +129,8 @@ model Theme {
   years         Int[]    @default([])
   /// Site-wide skin (lib/skins) applied while the theme is shown.
   skin          String?
+  /// Logo shown by the skin (e.g. Millennium ribbon); null falls back to the bundled example.
+  skinLogo      String?  @map("skin_logo")
   showOnHome    Boolean  @default(false) @map("show_on_home")
   order         Int      @default(0)
   events        Event[]  @relation("event_themes")
@@ -353,4 +366,94 @@ model Verification {
   updatedAt  DateTime @updatedAt @map("updated_at")
 
   @@map("auth_verifications")
+}
+
+// Visitor questionnaire built in /admin/surveys. `questions` holds the
+// SurveyQuestion[] list validated by lib/schemas/survey.ts.
+model Survey {
+  id        String           @id @default(cuid())
+  slug      String           @unique
+  titleFr   String           @map("title_fr")
+  titleEn   String?          @map("title_en")
+  introFr   String?          @map("intro_fr") @db.Text
+  introEn   String?          @map("intro_en") @db.Text
+  published Boolean          @default(false)
+  questions Json             @default("[]")
+  responses SurveyResponse[]
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+
+  @@map("surveys")
+}
+
+/// Anonymous answers keyed by question id; no personal data is asked for.
+model SurveyResponse {
+  id        String   @id @default(cuid())
+  surveyId  String   @map("survey_id")
+  survey    Survey   @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  answers   Json
+  locale    String   @default("fr")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([surveyId, createdAt])
+  @@map("survey_responses")
+}
+
+model GalleryPhoto {
+  id        String   @id @default(cuid())
+  url       String
+  /// Empty until an editor writes it; photos without a text alternative stay hidden.
+  altFr     String   @default("") @map("alt_fr")
+  altEn     String?  @map("alt_en")
+  credit    String?
+  year      Int
+  order     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([year, order])
+  @@map("gallery_photos")
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+/// Visitor review of a site. The AI only advises (aiVerdict); an editor
+/// always decides whether it goes online.
+model EventReview {
+  id          String       @id @default(cuid())
+  eventId     String       @map("event_id")
+  event       Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  authorName  String       @map("author_name")
+  rating      Int
+  comment     String       @db.Text
+  locale      String       @default("fr")
+  status      ReviewStatus @default(PENDING)
+  /// "approve" or "reject" as advised by the moderation model; null until it answers.
+  aiVerdict   String?      @map("ai_verdict")
+  aiReason    String?      @map("ai_reason")
+  moderatedAt DateTime?    @map("moderated_at")
+  createdAt   DateTime     @default(now()) @map("created_at")
+
+  @@index([eventId, status, createdAt])
+  @@index([status, createdAt])
+  @@map("event_reviews")
+}
+
+/// Local association that runs or supports a site. Display only: no account.
+model EventAssociation {
+  id        String   @id @default(cuid())
+  eventId   String   @map("event_id")
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name      String
+  url       String?
+  /// Decorative next to the name, so it needs no text alternative.
+  logo      String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([eventId, order])
+  @@map("event_associations")
 }

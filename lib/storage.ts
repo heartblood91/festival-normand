@@ -1,5 +1,7 @@
 import sharp from "sharp"
 import { put } from "@vercel/blob"
+import { PutObjectCommand } from "@aws-sdk/client-s3"
+import { getS3, MEDIA_PREFIX, s3Bucket } from "@/lib/s3"
 import { IMAGE_PRESETS, ImagePreset, MAX_FILE_SIZE, ALLOWED_TYPES } from "@/lib/image-config"
 import { writeFile, mkdir } from "fs/promises"
 import { join } from "path"
@@ -24,15 +26,29 @@ const compressImage = async (buffer: Buffer, preset: ImagePreset): Promise<Buffe
   const config = IMAGE_PRESETS[preset]
   return sharp(buffer)
     .resize(config.width, config.height, {
-      fit: "cover",
+      fit: "fit" in config ? config.fit : "cover",
       position: "center",
+      withoutEnlargement: "fit" in config,
     })
     .webp({ quality: config.quality })
     .toBuffer()
 }
 
 const persistImage = async (buffer: Buffer, filename: string): Promise<string> => {
-  // Local disk when Vercel Blob is not configured (dev, CLI scripts, tests).
+  const bucket = s3Bucket()
+  if (bucket) {
+    await getS3().send(
+      new PutObjectCommand({
+        Bucket: bucket,
+        Key: filename,
+        Body: buffer,
+        ContentType: "image/webp",
+      })
+    )
+    return `${MEDIA_PREFIX}${filename}`
+  }
+
+  // Local disk when no remote storage is configured (dev, CLI scripts, tests).
   if (process.env.NODE_ENV === "development" || !process.env.BLOB_READ_WRITE_TOKEN) {
     const uploadsDir = join(process.cwd(), "public", "uploads")
     await mkdir(uploadsDir, { recursive: true })

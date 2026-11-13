@@ -1,6 +1,7 @@
 import { getAdminEvents } from "@/lib/actions/events"
 import { parseEventListParams } from "@/lib/admin/event-list"
 import { AdminEventsPage } from "@/components/admin/events/admin-events-page"
+import { countMissingSocialLinks } from "@/lib/actions/community"
 
 export const metadata = {
   title: "Événements - Administration",
@@ -13,7 +14,10 @@ type Props = {
 
 const AdminEventsRoute = async ({ searchParams }: Props) => {
   const params = parseEventListParams(await searchParams)
-  const data = await getAdminEvents({ ...params, limit: 25 })
+  const [data, missingSocial] = await Promise.all([
+    getAdminEvents({ ...params, limit: 25 }),
+    countMissingSocialLinks(),
+  ])
 
   return (
     <AdminEventsPage
@@ -22,6 +26,7 @@ const AdminEventsRoute = async ({ searchParams }: Props) => {
       page={data.page}
       totalPages={data.totalPages}
       params={params}
+      missingSocial={missingSocial}
     />
   )
 }

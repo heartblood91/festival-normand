@@ -19,6 +19,13 @@ export const prismaMock = {
   theme: mockMethods(),
   travelBook: mockMethods(),
   page: mockMethods(),
+  // No gallery photo by default: the gallery stays hidden.
+  galleryPhoto: {
+    ...mockMethods(),
+    groupBy: vi.fn().mockResolvedValue([]),
+    createMany: vi.fn(),
+    updateMany: vi.fn(),
+  },
   adminUser: mockMethods(),
   user: mockMethods(),
   session: mockMethods(),

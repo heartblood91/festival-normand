@@ -14,5 +14,7 @@ type SkinSlotProps = { skin: ActiveSkin | null; slot: Slot; locale: Locale }
 export const SkinSlot = ({ skin, slot, locale }: SkinSlotProps) => {
   if (!skin) return null
   const Component = SKIN_SLOTS[skin.key]?.[slot]
-  return Component ? <Component locale={locale} themeSlug={skin.themeSlug} slot={slot} /> : null
+  return Component ? (
+    <Component locale={locale} themeSlug={skin.themeSlug} slot={slot} logo={skin.logo} />
+  ) : null
 }

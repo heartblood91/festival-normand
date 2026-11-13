@@ -19,6 +19,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SyncStatusCard } from "@/components/admin/sync-status-card"
+import { TextCorrectionCard } from "@/components/admin/text-correction-card"
 import type { SyncRunSummary } from "@/lib/tourinsoft/sync"
 import { cn } from "@/lib/utils"
 
@@ -40,6 +41,7 @@ type AdminDashboardProps = {
   }
   todo: { missingEn: number; missingAlt: number; missingGps: number }
   lastSyncRun: SyncRunSummary | null
+  textCorrection: { pending: number; aiConfigured: boolean }
 }
 
 const todoRows = [
@@ -108,7 +110,13 @@ const CounterRow = ({ href, count, icon: Icon, tone, label, none }: CounterRowPr
   )
 }
 
-export const AdminDashboard = ({ user, stats, todo, lastSyncRun }: AdminDashboardProps) => {
+export const AdminDashboard = ({
+  user,
+  stats,
+  todo,
+  lastSyncRun,
+  textCorrection,
+}: AdminDashboardProps) => {
   const t = useTranslations("admin")
   const locale = useLocale()
 
@@ -316,6 +324,7 @@ export const AdminDashboard = ({ user, stats, todo, lastSyncRun }: AdminDashboar
       </section>
 
       <SyncStatusCard lastRun={lastSyncRun} />
+      <TextCorrectionCard {...textCorrection} />
     </div>
   )
 }

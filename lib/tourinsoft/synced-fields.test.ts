@@ -12,7 +12,14 @@ describe("TOURINSOFT_SYNCED_FIELDS", () => {
   })
 
   it("leaves editor-owned fields out", () => {
-    for (const field of ["slug", "published", "featured", "accessible", "coverImageAltFr", "historyUrl"]) {
+    for (const field of [
+      "slug",
+      "published",
+      "featured",
+      "accessible",
+      "coverImageAltFr",
+      "historyUrl",
+    ]) {
       expect(TOURINSOFT_SYNCED_FIELDS).not.toHaveProperty(field)
     }
   })

@@ -3,6 +3,8 @@ export const IMAGE_PRESETS = {
   thumbnail: { width: 400, height: 300, quality: 75 },
   logo: { width: 200, height: 200, quality: 85 },
   content: { width: 800, height: 600, quality: 80 },
+  // Gallery photos keep their framing: resized to fit, never cropped.
+  gallery: { width: 1800, height: 1800, quality: 80, fit: "inside" },
 } as const
 
 export type ImagePreset = keyof typeof IMAGE_PRESETS

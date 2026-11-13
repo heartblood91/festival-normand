@@ -20,6 +20,9 @@ import { isInNormandyBounds } from "@/lib/geo/normandy"
 import { FavoriteButton } from "@/components/travel-book/favorite-button"
 import { FundraisingCallout } from "@/components/events/fundraising-callout"
 import { HistoryLink } from "@/components/event-detail/history-link"
+import { EventReviews } from "@/components/event-detail/event-reviews"
+import { EventCommunity } from "@/components/event-detail/event-community"
+import { getEventReviews } from "@/lib/queries/reviews"
 import { archivedEditionYear } from "@/lib/festival/programme-edition"
 import { getCurrentEdition } from "@/lib/queries/edition"
 
@@ -84,6 +87,8 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
     : []
   const nearby = pickNearbySuggestions(event, neighbours)
   const archivedYear = archivedEditionYear(event.dateStart, (await getCurrentEdition()).year)
+  const reviews = await getEventReviews(event.id)
+  const reviewsOpen = event.dateStart !== null && new Date(event.dateStart) <= new Date()
 
   // Prefer the relational photos (with credit); fall back to coverImage/images
   // for legacy/seed events that predate the Tourinsoft import.
@@ -186,7 +191,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
 
           {/* Intentionally NOT sticky: a sticky aside next to a long main column
               made test users think the two halves scrolled independently. */}
-          <aside>
+          <aside aria-label={t("events.practicalInfo")}>
             <EventInfo event={event} locale={locale} />
           </aside>
         </div>
@@ -220,9 +225,11 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
               title={event.fundraisingTitle}
               image={event.fundraisingImage}
             />
+
+            <EventReviews slug={slug} locale={locale} summary={reviews} open={reviewsOpen} />
           </div>
 
-          <aside className="flex min-w-0 flex-col gap-6">
+          <aside aria-label={t("events.locationAndAround")} className="flex min-w-0 flex-col gap-6">
             {hasNormandyCoordinates ? (
               <section className="bg-ed-bg-deep border-primary/25 border p-6">
                 <h2 className="text-primary mb-4 font-mono text-xs tracking-[0.22em] uppercase">
@@ -251,6 +258,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
               </section>
             ) : null}
             <EventContact event={event} />
+            <EventCommunity event={event} />
           </aside>
         </div>
       </div>

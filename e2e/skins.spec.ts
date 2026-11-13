@@ -4,6 +4,15 @@ import { editorCredentials, loginAsEditor, MISSING_EDITOR } from "./helpers/admi
 const MILLENNIUM = "Millénaire de Guillaume le Conquérant"
 // Sorts before the Millennium theme, so its skin wins while it is shown.
 const THEME = { name: "Atelier habillage e2e", slug: "atelier-habillage-e2e" }
+const EXAMPLE_LOGO = "/themes/millennium-emblem.svg"
+const UPLOADED_LOGO = "/images/hero-poster.jpg"
+const PNG_1PX = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+  "base64"
+)
+
+const ribbonLogo = (page: Page) =>
+  page.getByRole("complementary", { name: MILLENNIUM }).locator("img").first()
 
 const ribbonLink = (page: Page) =>
   page
@@ -34,6 +43,7 @@ test.describe("Millennium skin", () => {
     await page.goto("/fr")
     await expect(page.locator('[data-skin="millennium"]')).toBeVisible()
     await expect(ribbonLink(page)).toHaveAttribute("href", "/fr/evenements?theme=millennium")
+    await expect(ribbonLogo(page)).toHaveAttribute("src", EXAMPLE_LOGO)
     await expect(page.locator('[aria-hidden="true"] pattern[id^="millennium-frieze"]')).toHaveCount(
       2
     )
@@ -51,6 +61,8 @@ test.describe("Millennium skin", () => {
       test.setTimeout(150_000)
       await loginAsEditor(page)
       await deleteThemeIfPresent(page)
+      // Uploads are answered locally: nothing is written to Blob storage.
+      await page.route("**/api/upload", (route) => route.fulfill({ json: { url: UPLOADED_LOGO } }))
 
       try {
         await page.goto("/fr/admin/themes/new")
@@ -76,17 +88,24 @@ test.describe("Millennium skin", () => {
         await expect(page).toHaveURL(/\/edit/, { timeout: 15_000 })
         await expect(page.getByLabel("Années d'affichage")).toHaveValue("2026")
         await page.getByLabel("Années d'affichage").fill("2026, 2027")
+        await page
+          .getByRole("group", { name: "Logo de l'habillage" })
+          .locator('input[type="file"]')
+          .setInputFiles({ name: "logo.png", mimeType: "image/png", buffer: PNG_1PX })
+        await expect(page.getByText("Image téléversée")).toBeVisible()
         await page.getByRole("button", { name: "Mettre à jour" }).click()
         await expect(page).toHaveURL(/\/admin\/themes$/, { timeout: 15_000 })
         await expect(themeRow(page)).toContainText("2026, 2027")
         await page.goto("/fr")
         await expect(ribbonLink(page)).toHaveAttribute("href", `/fr/evenements?theme=${THEME.slug}`)
+        await expect(ribbonLogo(page)).toHaveAttribute("src", UPLOADED_LOGO)
       } finally {
         await deleteThemeIfPresent(page)
       }
 
       await page.goto("/fr")
       await expect(ribbonLink(page)).toHaveAttribute("href", "/fr/evenements?theme=millennium")
+      await expect(ribbonLogo(page)).toHaveAttribute("src", EXAMPLE_LOGO)
     })
   })
 })

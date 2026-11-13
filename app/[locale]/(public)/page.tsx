@@ -15,6 +15,7 @@ import {
 } from "@/lib/festival/edition"
 import { getCurrentEdition } from "@/lib/queries/edition"
 import { getHomeThemes } from "@/lib/queries/themes"
+import { getGalleryPhotos, getGalleryYears } from "@/lib/queries/gallery"
 import { Hero } from "@/components/home/editorial/hero"
 import { ThreeNights } from "@/components/home/editorial/three-nights"
 import { Quote } from "@/components/home/editorial/quote"
@@ -24,6 +25,7 @@ import { ProgrammeTeaser } from "@/components/home/editorial/programme-teaser"
 import { NormandySection } from "@/components/home/editorial/normandy-section"
 import { Partners } from "@/components/home/editorial/partners"
 import { PastRevive } from "@/components/home/editorial/past-revive"
+import { GalleryStrip } from "@/components/home/editorial/gallery-strip"
 import { ThemeSpotlight } from "@/components/home/editorial/theme-spotlight"
 import { Reveal } from "@/components/motion/reveal"
 
@@ -65,14 +67,20 @@ const HomePage = async ({ params }: HomePageProps) => {
   const edition = await getCurrentEdition()
   const mode = getEditionMode(edition)
 
-  const [featured, news, partners, programme, stats, themes] = await Promise.all([
+  const [featured, news, partners, programme, stats, themes, galleryYears] = await Promise.all([
     getFeaturedEvents(locale, edition),
     getLatestNews(locale),
     getPartners(locale),
     getProgrammeTeaser(locale, edition),
     getHomeStats(edition),
     getHomeThemes(locale, edition),
+    getGalleryYears(),
   ])
+  // After the festival, its own photos; before it, the latest past edition's.
+  const galleryYear = galleryYears.find((year) =>
+    mode === "bilan" ? year === edition.year : year < edition.year
+  )
+  const galleryPhotos = galleryYear ? await getGalleryPhotos(galleryYear, locale, 8) : []
 
   const hero = (
     <Hero
@@ -119,6 +127,17 @@ const HomePage = async ({ params }: HomePageProps) => {
         <NewsRow news={news} mode={mode} markerIndex={nextMarker()} />
       </Reveal>
     ) : null
+  const gallerySection = () =>
+    galleryYear && galleryPhotos.length > 0 ? (
+      <Reveal>
+        <GalleryStrip
+          year={galleryYear}
+          latest={galleryYear === galleryYears[0]}
+          photos={galleryPhotos}
+          markerIndex={nextMarker()}
+        />
+      </Reveal>
+    ) : null
   const highlightsSection = () =>
     hasFeatured ? (
       <Reveal>
@@ -131,8 +150,13 @@ const HomePage = async ({ params }: HomePageProps) => {
       <>
         {hero}
         <Reveal>
-          <PastRevive year={edition.year} markerIndex={nextMarker()} />
+          <PastRevive
+            year={edition.year}
+            markerIndex={nextMarker()}
+            hasGallery={galleryYear === edition.year}
+          />
         </Reveal>
+        {gallerySection()}
         <Reveal>
           <Quote markerIndex={nextMarker()} />
         </Reveal>
@@ -166,6 +190,7 @@ const HomePage = async ({ params }: HomePageProps) => {
           />
         </Reveal>
       ) : null}
+      {gallerySection()}
       {normandy()}
       {partnersSection()}
     </>

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useTranslations } from "next-intl"
 
 const posthogToken =
-  process.env.NEXT_PUBLIC_POSTHOG_KEY ?? process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN
+  process.env.NEXT_PUBLIC_POSTHOG_KEY || process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN
 
 const isLocalHost = () =>
   typeof window !== "undefined" &&

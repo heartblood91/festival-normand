@@ -194,7 +194,7 @@ export const getEvents = async (filters: EventFilters = {}, locale: Locale = "fr
             : null,
       }
     },
-    ["events-list", locale, cacheKey],
+    ["events-list", locale, cacheKey, String(year)],
     { revalidate: 300, tags: ["events"] }
   )()
 }
@@ -281,7 +281,12 @@ export const getEventBySlug = async (slug: string, locale: Locale = "fr") => {
             orderBy: [{ order: "asc" }, { nameFr: "asc" }],
             select: { slug: true, nameFr: true, nameEn: true, color: true },
           },
+          associations: {
+            orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+            select: { id: true, name: true, url: true, logo: true },
+          },
         },
+        omit: { socialLinksCheckedAt: true },
       })
       if (!event) return null
       return {
@@ -353,12 +358,14 @@ export const getAllFilteredEventsForMap = async (
 export type MapEventItem = Awaited<ReturnType<typeof getAllFilteredEventsForMap>>[number]
 
 /** Published events of one edition, before any visitor filter: decides the default programme. */
-export const countEditionEvents = async (edition: ProgrammeEdition) =>
-  cachedQuery(
+export const countEditionEvents = async (edition: ProgrammeEdition) => {
+  const { year } = await getCurrentEdition()
+  return cachedQuery(
     async () => prisma.event.count({ where: await buildFilterWhere({ edition }) }),
-    ["edition-events-count", edition],
+    ["edition-events-count", edition, String(year)],
     { revalidate: 300, tags: ["events"] }
   )()
+}
 
 export const getFilterCounts = async (filters: EventFilters = {}) => {
   const cacheKey = JSON.stringify(filters)
@@ -397,7 +404,7 @@ export const getFilterCounts = async (filters: EventFilters = {}) => {
 
       return { departments, categories }
     },
-    ["filter-counts", cacheKey],
+    ["filter-counts", cacheKey, String(year)],
     { revalidate: 300, tags: ["events"] }
   )()
 }

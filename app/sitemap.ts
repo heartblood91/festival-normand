@@ -10,7 +10,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.
 export const revalidate = 3600
 
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
-  const [events, news, pages] = await Promise.all([
+  const [events, news, pages, galleryYears] = await Promise.all([
     prisma.event.findMany({
       where: await publicEventWhere(),
       select: { slug: true, updatedAt: true },
@@ -23,6 +23,11 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
     }),
     prisma.page.findMany({
       select: { slug: true, updatedAt: true },
+    }),
+    prisma.galleryPhoto.groupBy({
+      by: ["year"],
+      where: { altFr: { not: "" } },
+      orderBy: { year: "desc" },
     }),
   ])
 
@@ -54,6 +59,15 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
         changeFrequency: "monthly",
         priority: 0.5,
       }
+    )
+
+    // The latest year lives at /retour-en-images; older ones under their year.
+    galleryYears.forEach(({ year }, index) =>
+      entries.push({
+        url: `${BASE_URL}/${locale}/retour-en-images${index === 0 ? "" : `/${year}`}`,
+        changeFrequency: "monthly",
+        priority: 0.6,
+      })
     )
 
     for (const page of pages) {

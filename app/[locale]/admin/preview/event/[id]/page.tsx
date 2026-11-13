@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma"
 import { localizeEntity } from "@/lib/i18n/db"
 import { PreviewBar } from "@/components/admin/preview-bar"
 import { EventInfo } from "@/components/event-detail/event-info"
+import { EventCommunity } from "@/components/event-detail/event-community"
 import { PhotoCarousel, type CarouselPhoto } from "@/components/event-detail/photo-carousel"
 import { EventMapWrapper } from "@/components/event-detail/event-map-wrapper"
 import { DEFAULT_EVENT_IMAGE } from "@/lib/events/default-image"
@@ -29,7 +30,12 @@ const EventPreviewPage = async ({ params }: EventPreviewPageProps) => {
         orderBy: [{ order: "asc" }, { nameFr: "asc" }],
         select: { slug: true, nameFr: true, nameEn: true, color: true },
       },
+      associations: {
+        orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+        select: { id: true, name: true, url: true, logo: true },
+      },
     },
+    omit: { socialLinksCheckedAt: true },
   })
 
   if (!rawEvent) {
@@ -113,6 +119,9 @@ const EventPreviewPage = async ({ params }: EventPreviewPageProps) => {
           <aside className="lg:col-span-1">
             <div className="lg:sticky lg:top-24">
               <EventInfo event={event} locale={locale} />
+              <div className="mt-6">
+                <EventCommunity event={event} />
+              </div>
             </div>
           </aside>
         </div>

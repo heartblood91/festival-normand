@@ -4,8 +4,12 @@ import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
 import {
   LayoutDashboard,
+  ChartColumn,
   Calendar,
   Tags,
+  ClipboardList,
+  Images,
+  MessageSquareQuote,
   Newspaper,
   Handshake,
   FileText,
@@ -66,6 +70,11 @@ const AdminSidebar = ({
       labelKey: "sidebar.dashboard",
     },
     {
+      href: `/${locale}/admin/stats`,
+      icon: ChartColumn,
+      labelKey: "sidebar.stats",
+    },
+    {
       href: `/${locale}/admin/events`,
       icon: Calendar,
       labelKey: "sidebar.events",
@@ -89,6 +98,21 @@ const AdminSidebar = ({
       href: `/${locale}/admin/pages`,
       icon: FileText,
       labelKey: "sidebar.pages",
+    },
+    {
+      href: `/${locale}/admin/surveys`,
+      icon: ClipboardList,
+      labelKey: "sidebar.surveys",
+    },
+    {
+      href: `/${locale}/admin/gallery`,
+      icon: Images,
+      labelKey: "sidebar.gallery",
+    },
+    {
+      href: `/${locale}/admin/reviews`,
+      icon: MessageSquareQuote,
+      labelKey: "sidebar.reviews",
     },
     {
       href: `/${locale}/admin/inscription`,

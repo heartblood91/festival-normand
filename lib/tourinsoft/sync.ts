@@ -5,6 +5,7 @@ import { mapOffer, type MappedOffer, type MappedPhoto } from "@/lib/tourinsoft/m
 import type { TourinsoftOffer } from "@/lib/tourinsoft/types"
 import { uploadImageFromUrl } from "@/lib/storage"
 import { isAiConfigured, translateText } from "@/lib/ai/openrouter"
+import { correctImportedTexts } from "@/lib/ai/correct-texts"
 import { geocodeNormandyAddress } from "@/lib/geo/geocode"
 import { isInNormandyBounds } from "@/lib/geo/normandy"
 
@@ -99,6 +100,52 @@ export const translateChangedFields = async (
   return Object.fromEntries(entries.filter((entry) => entry !== null)) as EnglishFields
 }
 
+type SourceTexts = {
+  titleFr: string
+  descriptionFr: string
+  sourceTitleFr: string | null
+  sourceDescriptionFr: string | null
+  textsCorrectedAt: Date | null
+}
+
+export type CorrectedTexts = SourceTexts & { sourceTitleFr: string; sourceDescriptionFr: string }
+
+// The imported texts are kept as the source; the public copy is proofread by AI.
+// While the source does not change, the current copy (corrected or edited) stays.
+// Without AI, the raw text is used and `textsCorrectedAt` stays null so the
+// admin batch can correct it later.
+export const correctChangedTexts = async (
+  mapped: Pick<MappedOffer, "titleFr" | "descriptionFr">,
+  current: SourceTexts | null,
+  { useAi = true }: { useAi?: boolean } = {}
+): Promise<CorrectedTexts> => {
+  const source = { sourceTitleFr: mapped.titleFr, sourceDescriptionFr: mapped.descriptionFr }
+  if (
+    current &&
+    current.sourceTitleFr === mapped.titleFr &&
+    current.sourceDescriptionFr === mapped.descriptionFr
+  ) {
+    return { ...current, ...source }
+  }
+  const raw = { titleFr: mapped.titleFr, descriptionFr: mapped.descriptionFr, ...source }
+  if (!useAi || !isAiConfigured()) return { ...raw, textsCorrectedAt: null }
+  try {
+    const corrected = await correctImportedTexts({
+      title: mapped.titleFr,
+      description: mapped.descriptionFr,
+    })
+    return {
+      titleFr: corrected.title,
+      descriptionFr: corrected.description,
+      ...source,
+      textsCorrectedAt: new Date(),
+    }
+  } catch (error) {
+    console.error("Imported text correction failed:", error)
+    return { ...raw, textsCorrectedAt: null }
+  }
+}
+
 export const withGeocodedCoordinates = async (mapped: MappedOffer): Promise<MappedOffer> => {
   if (isInNormandyBounds(mapped)) return mapped
 
@@ -134,14 +181,16 @@ export const createEventFromOffer = async (
   { published = true, downloadPhotos = true, translate = true }: CreateEventOptions = {}
 ): Promise<void> => {
   const { photos: rawPhotos, slug, ...data } = mapped
-  const [photos, en, uniqueSlug] = await Promise.all([
+  const [photos, texts, uniqueSlug] = await Promise.all([
     downloadPhotos ? persistPhotos(rawPhotos) : [],
-    translate ? translateChangedFields(mapped, null) : {},
+    correctChangedTexts(mapped, null, { useAi: translate }),
     ensureUniqueSlug(slug),
   ])
+  const en = translate ? await translateChangedFields({ ...mapped, ...texts }, null) : {}
   await prisma.event.create({
     data: {
       ...data,
+      ...texts,
       ...en,
       slug: uniqueSlug,
       published,
@@ -166,11 +215,19 @@ const updateEvent = async (mapped: MappedOffer, eventId: string): Promise<void> 
       descriptionEn: true,
       pricingFr: true,
       pricingEn: true,
+      sourceTitleFr: true,
+      sourceDescriptionFr: true,
+      textsCorrectedAt: true,
     },
   })
-  const [photos, en] = await Promise.all([
+  // English is translated from the corrected French, not from the raw import.
+  const correctThenTranslate = async () => {
+    const texts = await correctChangedTexts(mapped, current)
+    return { texts, en: await translateChangedFields({ ...mapped, ...texts }, current) }
+  }
+  const [photos, { texts, en }] = await Promise.all([
     persistPhotos(rawPhotos),
-    translateChangedFields(mapped, current),
+    correctThenTranslate(),
   ])
   await prisma.$transaction([
     prisma.photo.deleteMany({ where: { eventId } }),
@@ -178,6 +235,7 @@ const updateEvent = async (mapped: MappedOffer, eventId: string): Promise<void> 
       where: { id: eventId },
       data: {
         ...data,
+        ...texts,
         ...en,
         coverImage: photos[0]?.url ?? null,
         photos: { create: photos },

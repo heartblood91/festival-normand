@@ -1,8 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
-const { mockSend } = vi.hoisted(() => ({
+const { mockSend, mockVerify } = vi.hoisted(() => ({
   mockSend: vi.fn().mockResolvedValue({ id: "test-id" }),
+  mockVerify: vi.fn(),
 }))
+
+vi.mock("@/lib/turnstile", () => ({ verifyTurnstile: mockVerify }))
 
 vi.mock("resend", () => ({
   Resend: class {
@@ -38,6 +41,7 @@ describe("sendContactEmail", () => {
     vi.clearAllMocks()
     vi.stubEnv("RESEND_API_KEY", "re_test_key")
     mockSend.mockResolvedValue({ id: "test-id" })
+    mockVerify.mockResolvedValue(true)
   })
 
   it("sends email successfully with valid data", async () => {
@@ -53,6 +57,15 @@ describe("sendContactEmail", () => {
     )
     expect(result.success).toBe(false)
     expect(result.errors?.email).toBeDefined()
+  })
+
+  it("refuses a failed anti-spam check and keeps what was typed", async () => {
+    mockVerify.mockResolvedValue(false)
+    const data = { ...validFormData, email: "turnstile-test@example.fr" }
+    const result = await sendContactEmail(initialState, createFormData(data))
+    expect(result).toMatchObject({ success: false, values: { email: data.email } })
+    expect(result.message).toContain("anti-spam")
+    expect(mockSend).not.toHaveBeenCalled()
   })
 
   it("silently succeeds for honeypot submissions", async () => {

@@ -2,6 +2,7 @@ import { Link } from "@/lib/i18n/routing"
 import { getTranslations } from "next-intl/server"
 import { Facebook, Instagram } from "lucide-react"
 import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/navigation"
+import { getGalleryYears } from "@/lib/queries/gallery"
 import { CookiePreferencesFooterItem } from "@/components/cookies/cookie-preferences-footer-item"
 import { LanternLogo } from "@/components/editorial/lantern-logo"
 import { MakerCredit } from "@/packages/maker-credit/src"
@@ -11,7 +12,7 @@ type FooterProps = {
 }
 
 const Footer = async ({ editionDates }: FooterProps) => {
-  const t = await getTranslations()
+  const [t, galleryYears] = await Promise.all([getTranslations(), getGalleryYears()])
   const year = new Date().getFullYear()
 
   return (
@@ -72,6 +73,16 @@ const Footer = async ({ editionDates }: FooterProps) => {
                     </Link>
                   </li>
                 ))}
+                {galleryYears.length > 0 && (
+                  <li>
+                    <Link
+                      href="/retour-en-images"
+                      className="text-ed-bone hover:text-primary focus-visible:ring-primary/50 inline-flex items-center rounded-sm font-sans text-sm opacity-80 transition-colors hover:opacity-100 focus-visible:ring-2 focus-visible:outline-none"
+                    >
+                      {t("gallery.footerLink")}
+                    </Link>
+                  </li>
+                )}
                 <li>
                   <Link
                     href="/mentions-legales"

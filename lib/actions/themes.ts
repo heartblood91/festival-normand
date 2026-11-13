@@ -64,6 +64,7 @@ const extractThemeFormData = (formData: FormData) => ({
   order: (formData.get("order") as string) || "0",
   years: (formData.get("years") as string) ?? "",
   skin: (formData.get("skin") as string) ?? "",
+  skinLogo: (formData.get("skinLogo") as string) ?? "",
 })
 
 const parseTheme = async (formData: FormData, id?: string) => {
@@ -104,6 +105,7 @@ const parseTheme = async (formData: FormData, id?: string) => {
       order: data.order,
       years: parseThemeYears(data.years) ?? [],
       skin: data.skin || null,
+      skinLogo: data.skinLogo || null,
     },
   }
 }

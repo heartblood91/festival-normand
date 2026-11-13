@@ -309,7 +309,16 @@ export const EventForm = ({
 
         {draft && <DraftBanner draft={draft} onRestore={restoreDraft} onDiscard={discardDraft} />}
 
-        {event?.tourinsoftId && <TourinsoftBanner updatedAt={event.tourinsoftUpdatedAt} />}
+        {event?.tourinsoftId && (
+          <TourinsoftBanner
+            updatedAt={event.tourinsoftUpdatedAt}
+            source={{
+              title: event.sourceTitleFr,
+              description: event.sourceDescriptionFr,
+              correctedAt: event.textsCorrectedAt,
+            }}
+          />
+        )}
 
         {/* Basic Info with global i18n toggle */}
         <Card className="border-white/10 bg-white/5">
