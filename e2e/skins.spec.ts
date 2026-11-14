@@ -39,14 +39,12 @@ const deleteThemeIfPresent = async (page: Page) => {
 test.describe.configure({ mode: "serial" })
 
 test.describe("Millennium skin", () => {
-  test("dresses the 2027 site with a ribbon and embroidered friezes", async ({ page }) => {
+  test("dresses the 2027 site with a ribbon and two friezes", async ({ page }) => {
     await page.goto("/fr")
     await expect(page.locator('[data-skin="millennium"]')).toBeVisible()
     await expect(ribbonLink(page)).toHaveAttribute("href", "/fr/evenements?theme=millennium")
     await expect(ribbonLogo(page)).toHaveAttribute("src", EXAMPLE_LOGO)
-    await expect(page.locator('[aria-hidden="true"] pattern[id^="millennium-frieze"]')).toHaveCount(
-      2
-    )
+    await expect(page.locator('[aria-hidden="true"][data-millennium-frieze]')).toHaveCount(2)
 
     await page.goto("/en/contact")
     await expect(
