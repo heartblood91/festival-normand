@@ -17,7 +17,8 @@ export const POST = async (request: NextRequest) => {
   const tags = body.tags ?? []
   const paths = body.paths ?? []
 
-  for (const tag of tags) revalidateTag(tag, "default")
+  // Expire at once, like an admin save, instead of serving stale content once more.
+  for (const tag of tags) revalidateTag(tag, { expire: 0 })
   for (const path of paths) revalidateRoute(path)
 
   return NextResponse.json({ revalidated: true, tags, paths })

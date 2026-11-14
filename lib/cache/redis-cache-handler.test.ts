@@ -124,7 +124,7 @@ describe("redis cache handler", () => {
     }
 
     expect(key).toBe("pel:isr:build-abc:/fr/actualite/x")
-    expect(fakeRedis.set).toHaveBeenCalledWith(key, expect.any(String), "EX", 14 * 24 * 60 * 60)
+    expect(fakeRedis.set).toHaveBeenCalledWith(key, expect.any(String), "EX", 7 * 24 * 60 * 60)
     expect(entry.value.html).toBe("<html></html>")
     expect(Buffer.isBuffer(entry.value.rscData)).toBe(true)
     expect(entry.value.rscData?.toString()).toBe("rsc-payload")

@@ -1,6 +1,6 @@
 "use server"
 
-import { revalidatePublic } from "@/lib/revalidate-public"
+import { expirePublicData, revalidatePublic } from "@/lib/revalidate-public"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
 import { pageSchema } from "@/lib/schemas/page"
@@ -69,6 +69,8 @@ export const createPage = async (formData: FormData): Promise<PageActionResult> 
       },
     })
 
+    expirePublicData("pages")
+
     revalidatePublic(`/${page.slug}`)
 
     return {
@@ -122,6 +124,8 @@ export const updatePage = async (id: string, formData: FormData): Promise<PageAc
       },
     })
 
+    expirePublicData("pages")
+
     revalidatePublic(`/${page.slug}`, "/")
 
     return {
@@ -156,6 +160,8 @@ export const deletePage = async (id: string): Promise<PageActionResult> => {
     }
 
     await prisma.page.delete({ where: { id } })
+
+    expirePublicData("pages")
 
     revalidatePublic(`/${page.slug}`)
 

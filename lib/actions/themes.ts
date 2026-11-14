@@ -1,8 +1,9 @@
 "use server"
 
-import { revalidatePath, updateTag } from "next/cache"
+import { revalidatePath } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
+import { expirePublicData } from "@/lib/revalidate-public"
 import { themeSchema } from "@/lib/schemas/theme"
 import { parseThemeYears } from "@/lib/themes/active"
 
@@ -112,8 +113,7 @@ const parseTheme = async (formData: FormData, id?: string) => {
 
 // Theme years and skins change the public layout, pins and filters at once.
 const revalidateThemes = () => {
-  updateTag("themes")
-  updateTag("events")
+  expirePublicData("themes", "events")
   revalidatePath("/", "layout")
 }
 

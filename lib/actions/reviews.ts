@@ -1,10 +1,10 @@
 "use server"
 
-import { revalidatePath, updateTag } from "next/cache"
+import { revalidatePath } from "next/cache"
 import type { ReviewStatus } from "@prisma/client"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
-import { revalidatePublic } from "@/lib/revalidate-public"
+import { expirePublicData, revalidatePublic } from "@/lib/revalidate-public"
 import { isAiConfigured } from "@/lib/ai/openrouter"
 import { adviseOnReview } from "@/lib/reviews/advise"
 
@@ -51,7 +51,7 @@ export type AdminReviews = Awaited<ReturnType<typeof getAdminReviews>>
 export type AdminReview = AdminReviews["reviews"][number]
 
 const revalidateReviews = (slug: string) => {
-  updateTag("reviews")
+  expirePublicData("reviews")
   revalidatePublic(`/evenement/${slug}`)
   revalidatePath("/[locale]/admin/reviews", "page")
 }

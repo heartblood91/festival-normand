@@ -1,9 +1,9 @@
 "use server"
 
-import { revalidatePath, updateTag } from "next/cache"
+import { revalidatePath } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
-import { revalidatePublic } from "@/lib/revalidate-public"
+import { expirePublicData, revalidatePublic } from "@/lib/revalidate-public"
 import { galleryAddSchema, galleryPhotoSchema, type GalleryPhotoInput } from "@/lib/schemas/gallery"
 
 export type GalleryActionResult = {
@@ -22,7 +22,7 @@ export const getAdminGallery = async () => {
 export type AdminGalleryPhoto = Awaited<ReturnType<typeof getAdminGallery>>[number]
 
 const revalidateGallery = () => {
-  updateTag("gallery")
+  expirePublicData("gallery")
   revalidatePublic("/")
   revalidatePath("/[locale]/(public)/retour-en-images/[[...annee]]", "page")
   revalidatePath("/[locale]/admin/gallery", "page")

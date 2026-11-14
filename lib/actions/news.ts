@@ -1,6 +1,6 @@
 "use server"
 
-import { revalidatePublic } from "@/lib/revalidate-public"
+import { expirePublicData, revalidatePublic } from "@/lib/revalidate-public"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
 import { newsSchema } from "@/lib/schemas/news"
@@ -127,6 +127,8 @@ export const createNews = async (formData: FormData): Promise<NewsActionResult> 
       },
     })
 
+    expirePublicData("news")
+
     revalidatePublic("/actualites", `/actualite/${news.slug}`, "/")
 
     return {
@@ -187,6 +189,8 @@ export const updateNews = async (id: string, formData: FormData): Promise<NewsAc
       },
     })
 
+    expirePublicData("news")
+
     revalidatePublic("/actualites", `/actualite/${news.slug}`, "/")
 
     return {
@@ -206,6 +210,8 @@ export const deleteNews = async (id: string): Promise<NewsActionResult> => {
   try {
     await requireRole("EDITOR")
     const news = await prisma.news.delete({ where: { id } })
+
+    expirePublicData("news")
 
     revalidatePublic("/actualites", `/actualite/${news.slug}`, "/")
 
@@ -239,6 +245,8 @@ export const bulkDeleteNews = async (ids: string[]): Promise<NewsActionResult> =
     await prisma.news.deleteMany({
       where: { id: { in: ids } },
     })
+
+    expirePublicData("news")
 
     revalidatePublic("/actualites", ...articles.map((article) => `/actualite/${article.slug}`), "/")
 
