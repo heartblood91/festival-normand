@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
 import { revalidateTag, revalidatePath } from "next/cache"
 
+// A route pattern ("/[locale]/evenement/[slug]") needs the "page" type; a
+// concrete URL ("/fr/evenement/x") must not get it, otherwise the tag becomes
+// "/fr/evenement/x/page" and matches no cached page.
+const revalidateRoute = (path: string) =>
+  path.includes("[") ? revalidatePath(path, "page") : revalidatePath(path)
+
 export const POST = async (request: NextRequest) => {
   const token = request.headers.get("x-revalidate-token")
   if (!token || token !== process.env.REVALIDATE_TOKEN) {
@@ -12,7 +18,7 @@ export const POST = async (request: NextRequest) => {
   const paths = body.paths ?? []
 
   for (const tag of tags) revalidateTag(tag, "default")
-  for (const path of paths) revalidatePath(path, "page")
+  for (const path of paths) revalidateRoute(path)
 
   return NextResponse.json({ revalidated: true, tags, paths })
 }

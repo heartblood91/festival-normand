@@ -68,7 +68,8 @@ listing still works.
 | `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` | uploads to an S3-compatible bucket (see §5); takes precedence over Blob                              |
 | `BLOB_READ_WRITE_TOKEN`                                                             | Vercel Blob for uploads; with neither S3 nor Blob = local disk `public/uploads` (persistent volume)  |
 | `REVALIDATE_TOKEN`                                                                  | `/api/revalidate`                                                                                    |
-| `REDIS_URL`                                                                         | optional, shares public-form rate limits across instances and restarts (see §6)                      |
+| `REDIS_URL`                                                                         | optional, ISR page/data cache and public-form rate limits (see §6, §7)                               |
+| `REDIS_KEY_PREFIX`                                                                  | optional, prefix of the ISR cache keys, default `pel:` (see §7)                                      |
 | `TURNSTILE_SECRET_KEY`                                                              | optional, Cloudflare Turnstile server check (see §6)                                                 |
 
 `/api/healthz` lists which of these are set (never their values). It answers
@@ -249,3 +250,26 @@ build with Cloudflare's always-pass test site key `1x00000000000000000000AA`,
 start the server with the test secret `1x0000000000000000000000000000000AA`,
 and run `e2e/contact.spec.ts`, `e2e/reviews.spec.ts` and `e2e/surveys.spec.ts`
 (specs waiting for `networkidle` never settle while the widget is on the page).
+
+## 7. Page cache (ISR) and Redis
+
+`next build` never queries the database. Event and news pages
+(`/[locale]/evenement/[slug]`, `/[locale]/actualite/[slug]`) are rendered on
+their first request, cached, then refreshed every 30 minutes or as soon as an
+editor change calls `revalidatePath`/`revalidateTag`. The sitemap is rendered
+per request on top of a one-hour data cache.
+
+`next.config.ts` always plugs `lib/cache/redis-cache-handler.mjs` in as the
+`cacheHandler`; it decides at runtime:
+
+- `REDIS_URL` set: rendered pages, `unstable_cache` data and tag invalidations
+  live in Redis, so they survive restarts and are shared by every instance.
+  Keys look like `${REDIS_KEY_PREFIX}isr:<build id>:<path>` (prefix default
+  `pel:`); entries of an older build are never served and expire after 14 days.
+  Use a distinct prefix when staging and production share one Redis.
+- `REDIS_URL` unset: Next's default file-system cache (local to the container).
+- Redis unreachable: the handler logs a warning (at most once a minute) and
+  falls back to the file-system cache. Pages keep rendering.
+
+`/api/healthz` reports `checks.redis` as `ok`, `down` or `not_configured`, for
+information only: it never changes the status code.

@@ -1,20 +1,29 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { prismaMock } from "@/lib/test-utils"
 
+const { connection } = vi.hoisted(() => ({ connection: vi.fn(async () => undefined) }))
+
 vi.mock("@/lib/prisma", () => ({
   prisma: prismaMock,
 }))
+vi.mock("next/server", () => ({ connection }))
+vi.mock("@/lib/cache", () => ({ cachedQuery: (fn: unknown) => fn }))
 
-import sitemap, { revalidate } from "./sitemap"
+import sitemap from "./sitemap"
 
 describe("sitemap", () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it("is regenerated periodically instead of frozen at build time", () => {
-    expect(revalidate).toBeGreaterThan(0)
-    expect(revalidate).toBeLessThanOrEqual(3600)
+  it("renders per request instead of querying the database at build time", async () => {
+    prismaMock.event.findMany.mockResolvedValue([])
+    prismaMock.news.findMany.mockResolvedValue([])
+    prismaMock.page.findMany.mockResolvedValue([])
+
+    await sitemap()
+
+    expect(connection).toHaveBeenCalled()
   })
 
   it("returns static pages", async () => {
