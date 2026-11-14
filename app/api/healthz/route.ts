@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { getRedis } from "@/lib/redis"
 import { s3Bucket } from "@/lib/s3"
 
 const REQUIRED_NON_DB_ENV_VARS = [
@@ -20,6 +21,27 @@ const noStoreHeaders = {
   Expires: "0",
 }
 
+const REDIS_PING_TIMEOUT_MS = 500
+
+// Informational only: the ISR cache falls back to local storage without Redis,
+// so its state never changes the health status.
+const redisStatus = async (): Promise<"ok" | "down" | "not_configured"> => {
+  const redis = getRedis()
+  if (!redis) return "not_configured"
+  let timer: ReturnType<typeof setTimeout> | undefined
+  const timeout = new Promise<never>((_resolve, reject) => {
+    timer = setTimeout(() => reject(new Error("timeout")), REDIS_PING_TIMEOUT_MS)
+  })
+  try {
+    await Promise.race([redis.ping(), timeout])
+    return "ok"
+  } catch {
+    return "down"
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
 export const GET = async () => {
   const externalConfiguration = [
     ...REQUIRED_NON_DB_ENV_VARS.map((name) => ({ name, configured: isSet(name) })),
@@ -37,6 +59,7 @@ export const GET = async () => {
       checks: {
         app: true,
         database: "not_checked",
+        redis: await redisStatus(),
         externalConfiguration,
       },
       missing,

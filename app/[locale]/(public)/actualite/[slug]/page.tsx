@@ -8,8 +8,6 @@ import { getNewsBySlug } from "@/lib/queries/news"
 import { MarkdownContent } from "@/components/news/markdown-content"
 import { Marker } from "@/components/editorial/primitives"
 import { formatFullDate } from "@/lib/utils/format-date"
-import { prisma } from "@/lib/prisma"
-import { locales } from "@/lib/i18n/config"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
@@ -18,13 +16,11 @@ export const revalidate = 1800
 // sneaks into this ISR route: on-demand renders of new slugs would crash.
 export const dynamic = "error"
 
-export const generateStaticParams = async () => {
-  const news = await prisma.news.findMany({
-    where: { published: true },
-    select: { slug: true },
-  })
-  return locales.flatMap((locale) => news.map((n: { slug: string }) => ({ locale, slug: n.slug })))
-}
+// Every slug renders on its first request, then lives in the ISR cache: the
+// build never queries the database (prerendering all slugs exhausted Neon).
+export const dynamicParams = true
+
+export const generateStaticParams = async (): Promise<{ locale: string; slug: string }[]> => []
 
 type NewsDetailPageProps = {
   params: Promise<{ locale: string; slug: string }>

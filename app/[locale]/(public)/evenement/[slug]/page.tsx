@@ -12,9 +12,6 @@ import { EventContact } from "@/components/event-detail/event-contact"
 import { PhotoCarousel, type CarouselPhoto } from "@/components/event-detail/photo-carousel"
 import { EventMapWrapper } from "@/components/event-detail/event-map-wrapper"
 import { Marker } from "@/components/editorial/primitives"
-import { prisma } from "@/lib/prisma"
-import { publicEventWhere } from "@/lib/queries/visibility"
-import { locales } from "@/lib/i18n/config"
 import { DEFAULT_EVENT_IMAGE } from "@/lib/events/default-image"
 import { isInNormandyBounds } from "@/lib/geo/normandy"
 import { FavoriteButton } from "@/components/travel-book/favorite-button"
@@ -33,13 +30,11 @@ export const revalidate = 1800
 // sneaks into this ISR route: on-demand renders of new slugs would crash.
 export const dynamic = "error"
 
-export const generateStaticParams = async () => {
-  const events = await prisma.event.findMany({
-    where: await publicEventWhere(),
-    select: { slug: true },
-  })
-  return locales.flatMap((locale) => events.map((e) => ({ locale, slug: e.slug })))
-}
+// Every slug renders on its first request, then lives in the ISR cache: the
+// build never queries the database (prerendering all slugs exhausted Neon).
+export const dynamicParams = true
+
+export const generateStaticParams = async (): Promise<{ locale: string; slug: string }[]> => []
 
 type EventDetailPageProps = {
   params: Promise<{ locale: string; slug: string }>
