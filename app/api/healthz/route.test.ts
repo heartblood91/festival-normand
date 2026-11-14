@@ -1,4 +1,8 @@
-import { afterEach, describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
+
+const { getRedis } = vi.hoisted(() => ({ getRedis: vi.fn(() => null as unknown) }))
+vi.mock("@/lib/redis", () => ({ getRedis }))
+
 import { GET } from "./route"
 
 const required = [
@@ -62,5 +66,42 @@ describe("GET /api/healthz", () => {
     delete process.env.S3_BUCKET
     const body = await (await GET()).json()
     expect(body.missing).toEqual(["S3_* or BLOB_READ_WRITE_TOKEN"])
+  })
+
+  describe("redis", () => {
+    const configureAll = () => {
+      for (const name of required) process.env[name] = "configured"
+    }
+
+    afterEach(() => getRedis.mockReset().mockReturnValue(null))
+
+    it("reports redis as not configured without REDIS_URL", async () => {
+      configureAll()
+
+      const body = await (await GET()).json()
+
+      expect(body.checks.redis).toBe("not_configured")
+    })
+
+    it("reports redis as ok when it answers", async () => {
+      configureAll()
+      getRedis.mockReturnValue({ ping: vi.fn(async () => "PONG") })
+
+      const body = await (await GET()).json()
+
+      expect(body.checks.redis).toBe("ok")
+    })
+
+    it("stays healthy when redis is down", async () => {
+      configureAll()
+      getRedis.mockReturnValue({ ping: vi.fn(async () => Promise.reject(new Error("down"))) })
+
+      const response = await GET()
+      const body = await response.json()
+
+      expect(response.status).toBe(200)
+      expect(body.ok).toBe(true)
+      expect(body.checks.redis).toBe("down")
+    })
   })
 })

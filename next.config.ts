@@ -1,3 +1,4 @@
+import path from "node:path"
 import type { NextConfig } from "next"
 import createNextIntlPlugin from "next-intl/plugin"
 
@@ -5,6 +6,9 @@ const withNextIntl = createNextIntlPlugin("./lib/i18n/request.ts")
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  // Always wired: the handler itself picks Redis when REDIS_URL is set at
+  // runtime and falls back to Next's file-system cache otherwise (build, dev).
+  cacheHandler: path.join(process.cwd(), "lib/cache/redis-cache-handler.mjs"),
   // Inlined in both the server and the browser bundles from the same build-time
   // value, so the server never asks for a token the page cannot produce.
   env: { TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "" },
