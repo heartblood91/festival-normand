@@ -46,6 +46,7 @@ describe("SkinSlot", () => {
       <SkinSlot skin={millennium} slot="beforeFooter" locale="fr" />
     )
     expect(html).toMatch(/^<div aria-hidden="true"/)
-    expect(html).toContain('id="millennium-frieze-beforeFooter"')
+    expect(html).toContain('data-millennium-frieze="beforeFooter"')
+    expect(html).toContain("LAPIDES IN LUMINE")
   })
 })
