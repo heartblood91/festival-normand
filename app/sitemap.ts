@@ -1,35 +1,44 @@
 import type { MetadataRoute } from "next"
+import { connection } from "next/server"
+import { cachedQuery } from "@/lib/cache"
 import { prisma } from "@/lib/prisma"
 import { publicEventWhere } from "@/lib/queries/visibility"
 import { locales } from "@/lib/i18n/config"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
-// Without this the sitemap is rendered once at build time: a build against an
-// empty or unreachable DB ships a sitemap with no event at all (seen in prod).
-export const revalidate = 3600
+// Rendered per request (never at build: no database then) on top of a data
+// cache shared through the ISR cache handler. revalidatePublic() refreshes it
+// through the /sitemap.xml path tag; the hourly expiry catches the rest.
+const getSitemapData = cachedQuery(
+  async () =>
+    Promise.all([
+      prisma.event.findMany({
+        where: await publicEventWhere(),
+        select: { slug: true, updatedAt: true },
+        orderBy: { updatedAt: "desc" },
+      }),
+      prisma.news.findMany({
+        where: { published: true },
+        select: { slug: true, updatedAt: true },
+        orderBy: { updatedAt: "desc" },
+      }),
+      prisma.page.findMany({
+        select: { slug: true, updatedAt: true },
+      }),
+      prisma.galleryPhoto.groupBy({
+        by: ["year"],
+        where: { altFr: { not: "" } },
+        orderBy: { year: "desc" },
+      }),
+    ]),
+  ["sitemap-data"],
+  { revalidate: 3600, tags: ["sitemap", "events", "gallery"] }
+)
 
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
-  const [events, news, pages, galleryYears] = await Promise.all([
-    prisma.event.findMany({
-      where: await publicEventWhere(),
-      select: { slug: true, updatedAt: true },
-      orderBy: { updatedAt: "desc" },
-    }),
-    prisma.news.findMany({
-      where: { published: true },
-      select: { slug: true, updatedAt: true },
-      orderBy: { updatedAt: "desc" },
-    }),
-    prisma.page.findMany({
-      select: { slug: true, updatedAt: true },
-    }),
-    prisma.galleryPhoto.groupBy({
-      by: ["year"],
-      where: { altFr: { not: "" } },
-      orderBy: { year: "desc" },
-    }),
-  ])
+  await connection()
+  const [events, news, pages, galleryYears] = await getSitemapData()
 
   const entries: MetadataRoute.Sitemap = []
 
@@ -73,7 +82,7 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
     for (const page of pages) {
       entries.push({
         url: `${BASE_URL}/${locale}/${page.slug}`,
-        lastModified: page.updatedAt,
+        lastModified: new Date(page.updatedAt),
         changeFrequency: "monthly" as const,
         priority: 0.6,
       })
@@ -82,7 +91,7 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
     for (const event of events) {
       entries.push({
         url: `${BASE_URL}/${locale}/evenement/${event.slug}`,
-        lastModified: event.updatedAt,
+        lastModified: new Date(event.updatedAt),
         changeFrequency: "weekly" as const,
         priority: 0.7,
       })
@@ -91,7 +100,7 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
     for (const article of news) {
       entries.push({
         url: `${BASE_URL}/${locale}/actualite/${article.slug}`,
-        lastModified: article.updatedAt,
+        lastModified: new Date(article.updatedAt),
         changeFrequency: "monthly" as const,
         priority: 0.6,
       })
