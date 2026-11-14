@@ -10,6 +10,9 @@ type SourceRow = {
 }
 
 test.describe("AI proofreading of imported texts", () => {
+  // The source-text test marks an event as proofread for a moment, which would
+  // change the count the dashboard test reads.
+  test.describe.configure({ mode: "serial" })
   test.skip(!editorCredentials(), MISSING_EDITOR)
   test.skip(!hasDatabase(), "Needs DATABASE_URL to set an imported source text")
 
