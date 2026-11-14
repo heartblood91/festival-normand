@@ -33,7 +33,7 @@ describe("POST /api/revalidate", () => {
     const response = await POST(request({ tags: ["events"], paths: ["/fr/evenement/abbaye"] }))
 
     expect(response.status).toBe(200)
-    expect(revalidateTag).toHaveBeenCalledWith("events", "default")
+    expect(revalidateTag).toHaveBeenCalledWith("events", { expire: 0 })
     expect(revalidatePath).toHaveBeenCalledWith("/fr/evenement/abbaye")
   })
 

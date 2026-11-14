@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
-const { mockPrisma, mockRequireRole } = vi.hoisted(() => ({
+const { mockPrisma, mockRequireRole, mockUpdateTag } = vi.hoisted(() => ({
+  mockUpdateTag: vi.fn(),
   mockPrisma: {
     fundraisingSuggestion: {
       findMany: vi.fn(),
@@ -15,7 +16,7 @@ const { mockPrisma, mockRequireRole } = vi.hoisted(() => ({
 
 vi.mock("@/lib/prisma", () => ({ prisma: mockPrisma }))
 vi.mock("@/lib/rbac", () => ({ requireRole: mockRequireRole }))
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: mockUpdateTag }))
 
 import {
   attachFundraisingSuggestion,
@@ -89,6 +90,7 @@ describe("fundraising suggestion actions", () => {
       where: { id: "s1" },
       data: { status: "ACCEPTED" },
     })
+    expect(mockUpdateTag).toHaveBeenCalledWith("events")
   })
 
   it("refuses a dismissed suggestion or one whose link left fondation-patrimoine.org", async () => {

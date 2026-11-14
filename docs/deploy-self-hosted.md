@@ -255,9 +255,17 @@ and run `e2e/contact.spec.ts`, `e2e/reviews.spec.ts` and `e2e/surveys.spec.ts`
 
 `next build` never queries the database. Event and news pages
 (`/[locale]/evenement/[slug]`, `/[locale]/actualite/[slug]`) are rendered on
-their first request, cached, then refreshed every 30 minutes or as soon as an
-editor change calls `revalidatePath`/`revalidateTag`. The sitemap is rendered
-per request on top of a one-hour data cache.
+their first request, cached, then refreshed every 30 minutes at most. The
+sitemap is rendered per request on top of a one-hour data cache.
+
+Every admin save expires the cached data it touched right away, wherever it is
+shown: the action calls `expirePublicData(<tag>)` (`lib/revalidate-public.ts`)
+with the data tags of `cachedQuery()` (`events`, `news`, `pages`, `partners`,
+`themes`, `edition`, `gallery`, `reviews`, `surveys`), and an ISR page carries the
+tags of the data it rendered. A Tourinsoft sync that created or updated events
+expires `events` too (scheduler and cron; the CLI script runs outside the server
+and leaves it to the cache windows). `POST /api/revalidate` expires its tags at
+once. Entries live 7 days at most (`expireTime`, Redis key TTL).
 
 `next.config.ts` always plugs `lib/cache/redis-cache-handler.mjs` in as the
 `cacheHandler`; it decides at runtime:
@@ -265,7 +273,7 @@ per request on top of a one-hour data cache.
 - `REDIS_URL` set: rendered pages, `unstable_cache` data and tag invalidations
   live in Redis, so they survive restarts and are shared by every instance.
   Keys look like `${REDIS_KEY_PREFIX}isr:<build id>:<path>` (prefix default
-  `pel:`); entries of an older build are never served and expire after 14 days.
+  `pel:`); entries of an older build are never served and expire after 7 days.
   Use a distinct prefix when staging and production share one Redis.
 - `REDIS_URL` unset: Next's default file-system cache (local to the container).
 - Redis unreachable: the handler logs a warning (at most once a minute) and

@@ -1,6 +1,6 @@
 "use server"
 
-import { revalidatePublic } from "@/lib/revalidate-public"
+import { expirePublicData, revalidatePublic } from "@/lib/revalidate-public"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
 import { eventSchema, type EventFormData } from "@/lib/schemas/event"
@@ -78,6 +78,13 @@ export const getAdminEventById = async (id: string) => {
   })
 }
 
+// An event shows on many cached pages (map, themes, neighbours): expire its data
+// tag as well as the pages that obviously list it.
+const revalidateEvents = (slugs: string[]) => {
+  expirePublicData("events")
+  revalidatePublic("/evenements", ...slugs.map((slug) => `/evenement/${slug}`), "/")
+}
+
 export const createEvent = async (formData: FormData): Promise<EventActionResult> => {
   try {
     await requireRole("EDITOR")
@@ -143,7 +150,7 @@ export const createEvent = async (formData: FormData): Promise<EventActionResult
       },
     })
 
-    revalidatePublic("/evenements", `/evenement/${event.slug}`, "/")
+    revalidateEvents([event.slug])
 
     return {
       success: true,
@@ -232,7 +239,7 @@ export const updateEvent = async (id: string, formData: FormData): Promise<Event
       },
     })
 
-    revalidatePublic("/evenements", `/evenement/${event.slug}`, "/")
+    revalidateEvents([event.slug])
 
     return {
       success: true,
@@ -265,7 +272,7 @@ export const unpublishEvents = async (ids: string[]): Promise<EventActionResult>
       data: { published: false, unpublishedAt: new Date() },
     })
 
-    revalidatePublic("/evenements", ...events.map((event) => `/evenement/${event.slug}`), "/")
+    revalidateEvents(events.map((event) => event.slug))
 
     return {
       success: true,
@@ -332,10 +339,6 @@ const fundraisingData = (data: EventFormData) => {
     fundraisingTitle: url ? data.fundraisingTitle || null : null,
     fundraisingImage: url ? data.fundraisingImage || null : null,
   }
-}
-
-const revalidateEvents = (slugs: string[]) => {
-  revalidatePublic("/evenements", ...slugs.map((slug) => `/evenement/${slug}`), "/")
 }
 
 const plural = (count: number, one: string, many: string) => `${count} ${count > 1 ? many : one}`

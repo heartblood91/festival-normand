@@ -1,6 +1,6 @@
 "use server"
 
-import { revalidatePublic } from "@/lib/revalidate-public"
+import { expirePublicData, revalidatePublic } from "@/lib/revalidate-public"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
 import { partnerSchema } from "@/lib/schemas/partner"
@@ -52,6 +52,8 @@ export const createPartner = async (formData: FormData): Promise<PartnerActionRe
       },
     })
 
+    expirePublicData("partners")
+
     revalidatePublic("/")
 
     return {
@@ -97,6 +99,8 @@ export const updatePartner = async (
       },
     })
 
+    expirePublicData("partners")
+
     revalidatePublic("/")
 
     return {
@@ -116,6 +120,8 @@ export const deletePartner = async (id: string): Promise<PartnerActionResult> =>
   try {
     await requireRole("EDITOR")
     await prisma.partner.delete({ where: { id } })
+
+    expirePublicData("partners")
 
     revalidatePublic("/")
 
@@ -142,6 +148,8 @@ export const reorderPartners = async (orderedIds: string[]): Promise<PartnerActi
         })
       )
     )
+
+    expirePublicData("partners")
 
     revalidatePublic("/")
 
