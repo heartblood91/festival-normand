@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
-const { mockPrisma, mockRequireRole } = vi.hoisted(() => ({
+const { mockPrisma, mockRequireRole, mockUpdateTag } = vi.hoisted(() => ({
+  mockUpdateTag: vi.fn(),
   mockPrisma: {
     page: {
       findMany: vi.fn(),
@@ -26,7 +27,7 @@ vi.mock("@/lib/rbac", () => ({
   requireRole: mockRequireRole,
   getAuthenticatedUser: mockRequireRole,
 }))
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), updateTag: mockUpdateTag }))
 
 import { createPage, updatePage, deletePage, getAdminPages, getAdminPageById } from "./pages"
 
@@ -119,6 +120,7 @@ describe("updatePage", () => {
     const result = await updatePage("test-id", createFormData(validPageData))
 
     expect(result.success).toBe(true)
+    expect(mockUpdateTag).toHaveBeenCalledWith("pages")
     expect(mockPrisma.page.update).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { id: "test-id" },

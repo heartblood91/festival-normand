@@ -1,9 +1,10 @@
 "use server"
 
 import { Department } from "@prisma/client"
-import { revalidatePath, updateTag } from "next/cache"
+import { revalidatePath } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
+import { expirePublicData } from "@/lib/revalidate-public"
 
 export type DepartmentSettingsActionResult = {
   success: boolean
@@ -33,7 +34,7 @@ export const updateDepartmentEmbargo = async (
     })
 
     await prisma.$transaction(updates)
-    updateTag("events")
+    expirePublicData("events")
     // An embargoed event page renders notFound(); ISR keeps that 404 until it is revalidated.
     revalidatePath("/[locale]/(public)/evenement/[slug]", "page")
 

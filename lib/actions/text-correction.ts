@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache"
 import { requireRole } from "@/lib/rbac"
 import { isAiConfigured } from "@/lib/ai/openrouter"
-import { revalidatePublic } from "@/lib/revalidate-public"
+import { expirePublicData, revalidatePublic } from "@/lib/revalidate-public"
 import { correctPendingTexts } from "@/lib/tourinsoft/text-correction"
 
 // Each event is one proofreading call plus, when it changed, its translation.
@@ -29,6 +29,7 @@ export const correctImportedTextsBatch = async (): Promise<TextCorrectionActionR
 
     const report = await correctPendingTexts(BATCH_SIZE)
     if (report.slugs.length) {
+      expirePublicData("events")
       revalidatePublic("/evenements", "/", ...report.slugs.map((slug) => `/evenement/${slug}`))
     }
     revalidatePath("/[locale]/admin", "layout")

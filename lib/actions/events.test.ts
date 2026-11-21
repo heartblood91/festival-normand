@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
-const { mockPrisma, mockRequireRole } = vi.hoisted(() => ({
+const { mockPrisma, mockRequireRole, mockUpdateTag } = vi.hoisted(() => ({
+  mockUpdateTag: vi.fn(),
   mockPrisma: {
     event: {
       findMany: vi.fn(),
@@ -32,6 +33,7 @@ vi.mock("@/lib/rbac", () => ({
 
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
+  updateTag: mockUpdateTag,
 }))
 
 import * as eventActions from "./events"
@@ -170,6 +172,7 @@ describe("updateEvent", () => {
     const result = await updateEvent("test-id", createFormData(validEventData))
 
     expect(result.success).toBe(true)
+    expect(mockUpdateTag).toHaveBeenCalledWith("events")
     expect(mockPrisma.event.update).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { id: "test-id" },

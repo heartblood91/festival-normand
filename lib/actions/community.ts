@@ -1,9 +1,9 @@
 "use server"
 
-import { revalidatePath, updateTag } from "next/cache"
+import { revalidatePath } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
-import { revalidatePublic } from "@/lib/revalidate-public"
+import { expirePublicData, revalidatePublic } from "@/lib/revalidate-public"
 import { associationSchema, type AssociationInput } from "@/lib/schemas/community"
 import { fetchPublicPage } from "@/lib/events/fetch-public-page"
 import { MAX_SOCIAL_LINKS, extractSocialLinks, normalizeSocialUrl } from "@/lib/events/social-links"
@@ -39,7 +39,7 @@ export type EventCommunity = NonNullable<Awaited<ReturnType<typeof getEventCommu
 
 const revalidateEvent = async (eventId: string) => {
   const event = await prisma.event.findUnique({ where: { id: eventId }, select: { slug: true } })
-  updateTag("events")
+  expirePublicData("events")
   if (event) revalidatePublic(`/evenement/${event.slug}`)
   revalidatePath(`/[locale]/admin/events/${eventId}/edit`, "page")
 }
@@ -172,7 +172,7 @@ export const findMissingSocialLinks = async (): Promise<BulkSocialResult> => {
     )
     const updated = results.filter(({ links }) => links.length > 0)
     if (updated.length > 0) {
-      updateTag("events")
+      expirePublicData("events")
       for (const { event } of updated) revalidatePublic(`/evenement/${event.slug}`)
     }
     const remaining = await prisma.event.count({ where: bulkCandidatesWhere })

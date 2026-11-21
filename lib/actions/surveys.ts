@@ -1,10 +1,10 @@
 "use server"
 
-import { revalidatePath, updateTag } from "next/cache"
+import { revalidatePath } from "next/cache"
 import type { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
-import { revalidatePublic } from "@/lib/revalidate-public"
+import { expirePublicData, revalidatePublic } from "@/lib/revalidate-public"
 import { readQuestions, surveySchema, type SurveyAnswers } from "@/lib/schemas/survey"
 import { summarizeResponses } from "@/lib/survey-results"
 
@@ -90,7 +90,7 @@ export const getSurveyResults = async (id: string) => {
 export type SurveyResults = NonNullable<Awaited<ReturnType<typeof getSurveyResults>>>
 
 const revalidateSurvey = (...slugs: string[]) => {
-  updateTag("surveys")
+  expirePublicData("surveys")
   revalidatePublic(
     ...slugs.flatMap((slug) => [`/questionnaire/${slug}`, `/questionnaire/${slug}/imprimer`])
   )

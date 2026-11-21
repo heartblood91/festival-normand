@@ -1,8 +1,8 @@
 "use server"
 
-import { updateTag } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
+import { expirePublicData } from "@/lib/revalidate-public"
 import { validateEditionSettings } from "@/lib/festival/edition"
 
 export type EditionActionResult = {
@@ -39,8 +39,7 @@ export const updateEdition = async (formData: FormData): Promise<EditionActionRe
       update: data,
       create: { year: settings.year, ...data },
     })
-    updateTag("edition")
-    updateTag("events")
+    expirePublicData("edition", "events")
 
     return { success: true, message: "Dates de l'édition enregistrées." }
   } catch (error) {

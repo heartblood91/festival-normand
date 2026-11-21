@@ -1,16 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
-const { mockRequireRole, mockCorrect, mockAiConfigured, mockRevalidatePath } = vi.hoisted(() => ({
-  mockRequireRole: vi.fn(),
-  mockCorrect: vi.fn(),
-  mockAiConfigured: vi.fn(),
-  mockRevalidatePath: vi.fn(),
-}))
+const { mockRequireRole, mockCorrect, mockAiConfigured, mockRevalidatePath, mockUpdateTag } =
+  vi.hoisted(() => ({
+    mockUpdateTag: vi.fn(),
+    mockRequireRole: vi.fn(),
+    mockCorrect: vi.fn(),
+    mockAiConfigured: vi.fn(),
+    mockRevalidatePath: vi.fn(),
+  }))
 
 vi.mock("@/lib/rbac", () => ({ requireRole: mockRequireRole }))
 vi.mock("@/lib/ai/openrouter", () => ({ isAiConfigured: mockAiConfigured }))
 vi.mock("@/lib/tourinsoft/text-correction", () => ({ correctPendingTexts: mockCorrect }))
-vi.mock("next/cache", () => ({ revalidatePath: mockRevalidatePath }))
+vi.mock("next/cache", () => ({ revalidatePath: mockRevalidatePath, updateTag: mockUpdateTag }))
 
 import { correctImportedTextsBatch } from "./text-correction"
 
@@ -56,5 +58,6 @@ describe("correctImportedTextsBatch", () => {
     })
     expect(mockRevalidatePath).toHaveBeenCalledWith("/fr/evenement/canon")
     expect(mockRevalidatePath).toHaveBeenCalledWith("/en/evenement/vendeuvre")
+    expect(mockUpdateTag).toHaveBeenCalledWith("events")
   })
 })

@@ -33,7 +33,7 @@ const getSitemapData = cachedQuery(
       }),
     ]),
   ["sitemap-data"],
-  { revalidate: 3600, tags: ["sitemap", "events", "gallery"] }
+  { revalidate: 3600, tags: ["sitemap", "events", "news", "pages", "gallery"] }
 )
 
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => {

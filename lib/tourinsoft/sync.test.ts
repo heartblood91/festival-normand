@@ -1,22 +1,25 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import type { TourinsoftOffer } from "./types"
 
-const { mockPrisma, translateTextMock, requireRoleMock, correctMock } = vi.hoisted(() => ({
-  mockPrisma: {
-    event: {
-      findMany: vi.fn(),
-      findUniqueOrThrow: vi.fn(),
-      create: vi.fn(),
-      update: vi.fn(),
+const { mockPrisma, translateTextMock, requireRoleMock, correctMock, expireNowMock } = vi.hoisted(
+  () => ({
+    expireNowMock: vi.fn(),
+    mockPrisma: {
+      event: {
+        findMany: vi.fn(),
+        findUniqueOrThrow: vi.fn(),
+        create: vi.fn(),
+        update: vi.fn(),
+      },
+      photo: { deleteMany: vi.fn() },
+      syncRun: { findFirst: vi.fn(), create: vi.fn(), update: vi.fn() },
+      $transaction: vi.fn(),
     },
-    photo: { deleteMany: vi.fn() },
-    syncRun: { findFirst: vi.fn(), create: vi.fn(), update: vi.fn() },
-    $transaction: vi.fn(),
-  },
-  translateTextMock: vi.fn(),
-  requireRoleMock: vi.fn(),
-  correctMock: vi.fn(),
-}))
+    translateTextMock: vi.fn(),
+    requireRoleMock: vi.fn(),
+    correctMock: vi.fn(),
+  })
+)
 
 vi.mock("@/lib/prisma", () => ({ prisma: mockPrisma }))
 vi.mock("@/lib/storage", () => ({
@@ -30,6 +33,7 @@ vi.mock("@/lib/ai/openrouter", () => ({
 vi.mock("@/lib/ai/correct-texts", () => ({ correctImportedTexts: correctMock }))
 // The cron has no session: if the sync ever goes through an auth-guarded action again, this throws.
 vi.mock("@/lib/rbac", () => ({ requireRole: requireRoleMock }))
+vi.mock("@/lib/revalidate-public", () => ({ expirePublicDataNow: expireNowMock }))
 
 import {
   correctChangedTexts,
@@ -82,6 +86,8 @@ describe("tourinsoft sync", () => {
     expect(mockPrisma.syncRun.update).toHaveBeenCalledWith(
       expect.objectContaining({ data: expect.objectContaining({ status: "SUCCESS", created: 1 }) })
     )
+    // The new event shows on cached pages right away.
+    expect(expireNowMock).toHaveBeenCalledWith("events")
   })
 
   it("never overlaps a live run", async () => {
@@ -115,6 +121,7 @@ describe("tourinsoft sync", () => {
     })
     expect(result).toMatchObject({ stats: { skipped: 1, created: 0, updated: 0 } })
     expect(mockPrisma.event.update).not.toHaveBeenCalled()
+    expect(expireNowMock).not.toHaveBeenCalled()
   })
 })
 

@@ -8,6 +8,7 @@ import { isAiConfigured, translateText } from "@/lib/ai/openrouter"
 import { correctImportedTexts } from "@/lib/ai/correct-texts"
 import { geocodeNormandyAddress } from "@/lib/geo/geocode"
 import { isInNormandyBounds } from "@/lib/geo/normandy"
+import { expirePublicDataNow } from "@/lib/revalidate-public"
 
 export const TOURINSOFT_SOURCE = "tourinsoft"
 
@@ -326,6 +327,11 @@ export const runTourinsoftSync = async ({
       where: { id: run.id },
       data: { ...stats, status, finishedAt: new Date() },
     })
+    // Imported events show on many cached pages: refresh them now, not within the half hour.
+    // The CLI runs outside the server and leaves that to the cache windows.
+    if (stats.created + stats.updated > 0 && !(await expirePublicDataNow("events"))) {
+      console.warn("Tourinsoft sync: cached pages refresh within their revalidate window")
+    }
     return { status, runId: run.id, stats }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)

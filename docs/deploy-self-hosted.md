@@ -61,7 +61,7 @@ listing still works.
 | `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`                                             | admin auth                                                                                           |
 | `NEXT_PUBLIC_SITE_URL`                                                              | canonical URLs, sitemap                                                                              |
 | `TOURINSOFT_SYNDICATION_URL`                                                        | Tourinsoft V3 feed                                                                                   |
-| `TOURINSOFT_SYNC_INTERVAL_MINUTES`                                                  | enables the in-app scheduler (e.g. `360`; minimum 15). Unset = disabled                              |
+| `TOURINSOFT_SYNC_INTERVAL_MINUTES`                                                  | enables the in-app scheduler (e.g. `60`; minimum 15). Unset = disabled                               |
 | `CRON_SECRET`                                                                       | bearer for `/api/cron/sync-tourinsoft` (manual or external trigger)                                  |
 | `OPENROUTER_API_KEY`                                                                | EN translation of imported offers, admin AI helpers. Missing = EN left empty, `/en` falls back to FR |
 | `OPENROUTER_MODEL`                                                                  | optional, default `google/gemini-3.5-flash-lite`                                                     |
@@ -95,9 +95,10 @@ in `sync_runs`, and a run refuses to start while another one is `RUNNING`
 (stale after 30 min).
 
 **A. In-app scheduler (recommended, no extra infrastructure).** Set
-`TOURINSOFT_SYNC_INTERVAL_MINUTES=360`. `instrumentation.ts` starts a timer in
-the Node server; every 5 minutes it checks the last run in the database and
-starts a sync when the interval has elapsed. First check 60 s after boot.
+`TOURINSOFT_SYNC_INTERVAL_MINUTES=60`. `instrumentation.ts` starts a timer in
+the Node server: 60 s after boot it reads the last run in the database, then
+sleeps until the next sync is due. The database is not touched in between, so
+Neon can suspend its compute (it does after 5 idle minutes).
 
 **B. Dokploy schedule / host cron.** Daily, mirrors the old `vercel.json`:
 
@@ -255,9 +256,17 @@ and run `e2e/contact.spec.ts`, `e2e/reviews.spec.ts` and `e2e/surveys.spec.ts`
 
 `next build` never queries the database. Event and news pages
 (`/[locale]/evenement/[slug]`, `/[locale]/actualite/[slug]`) are rendered on
-their first request, cached, then refreshed every 30 minutes or as soon as an
-editor change calls `revalidatePath`/`revalidateTag`. The sitemap is rendered
-per request on top of a one-hour data cache.
+their first request, cached, then refreshed every 30 minutes at most. The
+sitemap is rendered per request on top of a one-hour data cache.
+
+Every admin save expires the cached data it touched right away, wherever it is
+shown: the action calls `expirePublicData(<tag>)` (`lib/revalidate-public.ts`)
+with the data tags of `cachedQuery()` (`events`, `news`, `pages`, `partners`,
+`themes`, `edition`, `gallery`, `reviews`, `surveys`), and an ISR page carries the
+tags of the data it rendered. A Tourinsoft sync that created or updated events
+expires `events` too (scheduler and cron; the CLI script runs outside the server
+and leaves it to the cache windows). `POST /api/revalidate` expires its tags at
+once. Entries live 7 days at most (`expireTime`, Redis key TTL).
 
 `next.config.ts` always plugs `lib/cache/redis-cache-handler.mjs` in as the
 `cacheHandler`; it decides at runtime:
@@ -265,7 +274,7 @@ per request on top of a one-hour data cache.
 - `REDIS_URL` set: rendered pages, `unstable_cache` data and tag invalidations
   live in Redis, so they survive restarts and are shared by every instance.
   Keys look like `${REDIS_KEY_PREFIX}isr:<build id>:<path>` (prefix default
-  `pel:`); entries of an older build are never served and expire after 14 days.
+  `pel:`); entries of an older build are never served and expire after 7 days.
   Use a distinct prefix when staging and production share one Redis.
 - `REDIS_URL` unset: Next's default file-system cache (local to the container).
 - Redis unreachable: the handler logs a warning (at most once a minute) and

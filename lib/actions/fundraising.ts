@@ -1,6 +1,6 @@
 "use server"
 
-import { revalidatePublic } from "@/lib/revalidate-public"
+import { expirePublicData, revalidatePublic } from "@/lib/revalidate-public"
 import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/rbac"
 import { isFundraisingImageUrl, isFundraisingUrl } from "@/lib/fundraising/fondation"
@@ -78,6 +78,7 @@ export const attachFundraisingSuggestion = async (id: string): Promise<Fundraisi
         data: { status: "ACCEPTED" },
       }),
     ])
+    expirePublicData("events")
     revalidatePublic(`/evenement/${suggestion.event.slug}`, "/evenements")
 
     return { success: true, message: "Collecte associée à l'événement.", fundraising }
