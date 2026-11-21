@@ -61,7 +61,7 @@ listing still works.
 | `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`                                             | admin auth                                                                                           |
 | `NEXT_PUBLIC_SITE_URL`                                                              | canonical URLs, sitemap                                                                              |
 | `TOURINSOFT_SYNDICATION_URL`                                                        | Tourinsoft V3 feed                                                                                   |
-| `TOURINSOFT_SYNC_INTERVAL_MINUTES`                                                  | enables the in-app scheduler (e.g. `360`; minimum 15). Unset = disabled                              |
+| `TOURINSOFT_SYNC_INTERVAL_MINUTES`                                                  | enables the in-app scheduler (e.g. `60`; minimum 15). Unset = disabled                               |
 | `CRON_SECRET`                                                                       | bearer for `/api/cron/sync-tourinsoft` (manual or external trigger)                                  |
 | `OPENROUTER_API_KEY`                                                                | EN translation of imported offers, admin AI helpers. Missing = EN left empty, `/en` falls back to FR |
 | `OPENROUTER_MODEL`                                                                  | optional, default `google/gemini-3.5-flash-lite`                                                     |
@@ -95,9 +95,10 @@ in `sync_runs`, and a run refuses to start while another one is `RUNNING`
 (stale after 30 min).
 
 **A. In-app scheduler (recommended, no extra infrastructure).** Set
-`TOURINSOFT_SYNC_INTERVAL_MINUTES=360`. `instrumentation.ts` starts a timer in
-the Node server; every 5 minutes it checks the last run in the database and
-starts a sync when the interval has elapsed. First check 60 s after boot.
+`TOURINSOFT_SYNC_INTERVAL_MINUTES=60`. `instrumentation.ts` starts a timer in
+the Node server: 60 s after boot it reads the last run in the database, then
+sleeps until the next sync is due. The database is not touched in between, so
+Neon can suspend its compute (it does after 5 idle minutes).
 
 **B. Dokploy schedule / host cron.** Daily, mirrors the old `vercel.json`:
 
