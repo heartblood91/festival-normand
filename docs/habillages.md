@@ -28,20 +28,34 @@ l'habillage « Millénaire de Guillaume le Conquérant », sauf si un éditeur l
 
 Il est dans `components/skins/millennium/` :
 
-| Fichier      | Rôle                                                                                                                                                           |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ribbon.tsx` | Bandeau rouge au-dessus de l'en-tête : emblème, titre, dates, lien vers les événements de la thématique. C'est une région `complementary` nommée par le titre. |
-| `frieze.tsx` | Frise brodée façon Tapisserie de Bayeux (drakkar, donjon), sous l'en-tête et au-dessus du pied de page. Décorative : `aria-hidden`, masquée à l'impression.    |
-| `copy.ts`    | Textes FR et EN de l'habillage.                                                                                                                                |
-| `index.ts`   | Emplacements utilisés (`beforeHeader`, `afterHeader`, `beforeFooter`).                                                                                         |
+| Fichier            | Rôle                                                                                                                                                                                                                         |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ribbon.tsx`       | Bandeau rouge au-dessus de l'en-tête : emblème, titre, dates, lien vers les événements de la thématique. C'est une région `complementary` nommée par le titre.                                                               |
+| `frieze.tsx`       | Frise au trait doré façon Tapisserie de Bayeux, sous l'en-tête (la flotte traverse sous la comète) et au-dessus du pied de page (le donjon de Falaise, fenêtre allumée). Décorative : `aria-hidden`, masquée à l'impression. |
+| `halley-comet.tsx` | Easter egg : taper « 1066 » hors d'un champ de formulaire fait passer la comète de Halley sur l'écran. Rien avec « réduire les animations ».                                                                                 |
+| `copy.ts`          | Textes FR et EN de l'habillage.                                                                                                                                                                                              |
+| `index.ts`         | Emplacements utilisés (`beforeHeader`, `afterHeader`, `beforeFooter`).                                                                                                                                                       |
 
 Les visuels sont dans `public/themes/` : `millennium-emblem.svg` (bandeau),
 `millennium-marker.svg` (épingle de carte) et `millennium-wordmark.svg` (logotype avec texte,
 pour la communication). Ils ont été dessinés pour le site : écu rouge, donjon crénelé, bougie.
 Ils ne reprennent pas le logo officiel « MILLENIUM – 2027 » de la Région.
 
-Le contraste du bandeau est de 8,5:1 (crème `#f4ebd9` sur rouge `#7f1d1d`). Il n'y a aucune
-animation.
+Le contraste du bandeau est d'au moins 8,5:1 (crème `#f4ebd9` sur le dégradé `#5b1212` → `#7f1d1d`).
+
+Easter eggs de la frise, tous décoratifs :
+
+- inscriptions latines : « HIC WILLELM DUX IN MAGNO NAVIGIO MARE TRANSIVIT » vient de la
+  Tapisserie de Bayeux ; en pied de page, la naissance de Guillaume à Falaise (1027) et
+  « LAPIDES IN LUMINE » (Pierres en Lumières) ;
+- au survol, la flotte avance et la légende de la comète apparaît (« ISTI MIRANT STELLA », « ils
+  admirent l'étoile », autre légende de la Tapisserie) ; en pied de page, la fenêtre du donjon
+  s'allume ;
+- « 1066 » au clavier : la comète traverse l'écran.
+
+Aucun mouvement automatique : tout part d'un survol ou d'une frappe, et les déplacements sont
+coupés avec « réduire les animations » (les styles sont dans `app/globals.css`, section
+« Millennium skin »).
 
 ## Travailler un habillage
 

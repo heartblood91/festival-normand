@@ -11,7 +11,7 @@ export const MillenniumRibbon = ({ locale, themeSlug, logo }: SkinSlotProps) => 
   return (
     <aside
       aria-label={copy.title}
-      className="border-b border-[#f59e0b]/60 bg-[#7f1d1d] text-[#f4ebd9] print:hidden"
+      className="border-b border-[#f59e0b]/50 bg-[linear-gradient(90deg,#5b1212,#7f1d1d_50%,#5b1212)] text-[#f4ebd9] print:hidden"
     >
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-4 gap-y-1 px-4 py-2 text-center md:justify-between md:px-6">
         <p className="flex items-center gap-3 font-serif text-sm md:text-base">
@@ -24,9 +24,12 @@ export const MillenniumRibbon = ({ locale, themeSlug, logo }: SkinSlotProps) => 
             className="size-8 shrink-0 object-contain"
           />
           <span>
-            <span className="font-semibold">{copy.title}</span>
-            <span aria-hidden="true"> · </span>
-            <span className="whitespace-nowrap tabular-nums">{copy.dates}</span>
+            <span className="font-semibold tracking-wide">{copy.title}</span>
+            <span aria-hidden="true" className="text-[#f59e0b]">
+              {" "}
+              ✦{" "}
+            </span>
+            <span className="tracking-wider whitespace-nowrap tabular-nums">{copy.dates}</span>
           </span>
         </p>
         <Link
