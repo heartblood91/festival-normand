@@ -2,22 +2,28 @@
 
 import dynamic from "next/dynamic"
 import "mapbox-gl/dist/mapbox-gl.css"
-import type { MapEventItem } from "@/lib/queries/events"
+import type { ComponentProps } from "react"
+import { cn } from "@/lib/utils"
 
 const EventsMap = dynamic(
   () => import("./events-map").then((mod) => ({ default: mod.EventsMap })),
   {
     ssr: false,
-    loading: () => <div className="h-96 w-full rounded-lg bg-white/5 md:h-[600px]" />,
+    loading: () => <div className="size-full bg-white/5" />,
   }
 )
 
-type EventsMapWrapperProps = {
-  events: MapEventItem[]
-}
+type EventsMapWrapperProps = ComponentProps<typeof EventsMap>
 
-const EventsMapWrapper = ({ events }: EventsMapWrapperProps) => {
-  return <EventsMap events={events} />
-}
+// The frame takes the requested size, so the placeholder and the map share it and the
+// page does not jump when the Mapbox chunk arrives.
+const EventsMapWrapper = ({
+  className = "h-[500px] w-full rounded-xl md:h-[650px]",
+  ...props
+}: EventsMapWrapperProps) => (
+  <div className={cn("overflow-hidden", className)}>
+    <EventsMap {...props} className="size-full" />
+  </div>
+)
 
 export { EventsMapWrapper }

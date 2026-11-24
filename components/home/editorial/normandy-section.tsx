@@ -3,6 +3,7 @@ import type { Locale } from "@/lib/i18n/config"
 import { DEPARTMENTS, departmentName } from "@/lib/festival/departments"
 import { Marker } from "@/components/editorial/primitives"
 import { NormandyMap } from "@/components/editorial/normandy-map"
+import { HomeMap } from "@/components/home/editorial/home-map"
 
 type NormandySectionProps = {
   byDepartment: Record<string, number>
@@ -27,11 +28,16 @@ const NormandySection = async ({
   return (
     <section className="bg-ed-bg-deep border-primary/25 border-t px-4 py-20 md:px-6 md:py-24">
       <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1fr_380px]">
-        <NormandyMap
-          departments={departments}
-          label={t("editorial.mapSection.mapLabel")}
-          className="h-auto w-full"
-        />
+        {/* The drawn outline stays as a fallback when no Mapbox token is configured. */}
+        {process.env.NEXT_PUBLIC_MAPBOX_TOKEN ? (
+          <HomeMap />
+        ) : (
+          <NormandyMap
+            departments={departments}
+            label={t("editorial.mapSection.mapLabel")}
+            className="h-auto w-full"
+          />
+        )}
         <div>
           <Marker index={markerIndex} className="mb-3.5">
             {t("editorial.mapSection.marker")}

@@ -23,6 +23,7 @@ import { NewsRow } from "@/components/home/editorial/news-row"
 import { Highlights } from "@/components/home/editorial/highlights"
 import { ProgrammeTeaser } from "@/components/home/editorial/programme-teaser"
 import { NormandySection } from "@/components/home/editorial/normandy-section"
+import { HomeTravelBook } from "@/components/home/editorial/home-travel-book"
 import { Partners } from "@/components/home/editorial/partners"
 import { PastRevive } from "@/components/home/editorial/past-revive"
 import { GalleryStrip } from "@/components/home/editorial/gallery-strip"
@@ -149,6 +150,7 @@ const HomePage = async ({ params }: HomePageProps) => {
     return (
       <>
         {hero}
+        <HomeTravelBook />
         <Reveal>
           <PastRevive
             year={edition.year}
@@ -172,6 +174,7 @@ const HomePage = async ({ params }: HomePageProps) => {
   return (
     <>
       {hero}
+      <HomeTravelBook />
       <Reveal>
         <ThreeNights nights={edition.nights} byNight={stats.byNight} markerIndex={nextMarker()} />
       </Reveal>

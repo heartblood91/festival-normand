@@ -14,6 +14,8 @@ type GalleryPageProps = {
   params: Promise<{ locale: string; annee?: string[] }>
 }
 
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
+
 /** The requested edition, or the latest one; null when the URL names no gallery year. */
 const resolveYear = async (annee?: string[]) => {
   const years = await getGalleryYears()
@@ -26,9 +28,14 @@ export const generateMetadata = async ({ params }: GalleryPageProps): Promise<Me
   const { locale, annee } = (await params) as { locale: Locale; annee?: string[] }
   const t = await getTranslations({ locale, namespace: "gallery" })
   const { year } = await resolveYear(annee)
+  // Without its own alternates the page would inherit the layout's, which point home.
+  const path = `/retour-en-images${annee?.length ? `/${annee[0]}` : ""}`
   return {
     title: year ? `${t("title")} — ${t("yearTitle", { year })}` : t("title"),
     description: t("intro"),
+    alternates: {
+      languages: { fr: `${BASE_URL}/fr${path}`, en: `${BASE_URL}/en${path}` },
+    },
   }
 }
 

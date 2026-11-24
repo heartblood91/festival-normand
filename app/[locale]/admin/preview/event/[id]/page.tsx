@@ -10,6 +10,9 @@ import { PhotoCarousel, type CarouselPhoto } from "@/components/event-detail/pho
 import { EventMapWrapper } from "@/components/event-detail/event-map-wrapper"
 import { DEFAULT_EVENT_IMAGE } from "@/lib/events/default-image"
 import { isInNormandyBounds } from "@/lib/geo/normandy"
+import { isHtmlDescription } from "@/lib/events/description"
+import { htmlToMarkdown } from "@/lib/utils/markdown"
+import { MarkdownContent } from "@/components/news/markdown-content"
 
 type EventPreviewPageProps = {
   params: Promise<{ locale: string; id: string }>
@@ -86,11 +89,15 @@ const EventPreviewPage = async ({ params }: EventPreviewPageProps) => {
               <h2 className="text-foreground mb-4 font-serif text-xl font-bold md:text-2xl">
                 {t("events.description")}
               </h2>
-              <div className="prose prose-invert text-muted-foreground max-w-none">
-                {event.description.split("\n").map((paragraph, i) => (
-                  <p key={i}>{paragraph}</p>
-                ))}
-              </div>
+              {isHtmlDescription(event.description) ? (
+                <MarkdownContent content={htmlToMarkdown(event.description)} />
+              ) : (
+                <div className="prose prose-invert text-muted-foreground max-w-none">
+                  {event.description.split("\n").map((paragraph, i) => (
+                    <p key={i}>{paragraph}</p>
+                  ))}
+                </div>
+              )}
             </section>
 
             {/* Map */}

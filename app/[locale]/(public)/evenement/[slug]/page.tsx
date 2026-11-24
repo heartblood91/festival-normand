@@ -22,6 +22,9 @@ import { EventCommunity } from "@/components/event-detail/event-community"
 import { getEventReviews } from "@/lib/queries/reviews"
 import { archivedEditionYear } from "@/lib/festival/programme-edition"
 import { getCurrentEdition } from "@/lib/queries/edition"
+import { MarkdownContent } from "@/components/news/markdown-content"
+import { htmlToMarkdown } from "@/lib/utils/markdown"
+import { descriptionToPlainText, isHtmlDescription } from "@/lib/events/description"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
@@ -48,12 +51,14 @@ export const generateMetadata = async ({ params }: EventDetailPageProps): Promis
     return { title: locale === "en" ? "Event not found" : "Événement introuvable" }
   }
 
+  const description = descriptionToPlainText(event.description).slice(0, 160)
+
   return {
     title: event.title,
-    description: event.description.slice(0, 160),
+    description,
     openGraph: {
       title: event.title,
-      description: event.description.slice(0, 160),
+      description,
       images: event.coverImage ? [{ url: event.coverImage }] : [],
       type: "article",
     },
@@ -199,13 +204,18 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
             <Marker as="h2" className="mb-5">
               {t("events.description")}
             </Marker>
-            <div className="text-ed-bone font-serif text-lg leading-relaxed font-light break-words md:text-xl">
-              {paragraphs.map((paragraph, i) => (
-                <p key={i} className={i === 0 ? "ed-dropcap" : "mt-6"}>
-                  {paragraph}
-                </p>
-              ))}
-            </div>
+            {isHtmlDescription(event.description) ? (
+              // Edited in the admin rich-text editor: same rendering as pages and news.
+              <MarkdownContent content={htmlToMarkdown(event.description)} />
+            ) : (
+              <div className="text-ed-bone font-serif text-lg leading-relaxed font-light break-words md:text-xl">
+                {paragraphs.map((paragraph, i) => (
+                  <p key={i} className={i === 0 ? "ed-dropcap" : "mt-6"}>
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            )}
 
             <HistoryLink url={event.historyUrl} />
 

@@ -487,7 +487,10 @@
     "emailBody": "Voici les lieux que j'ai retenus pour Pierres en Lumières : {url}",
     "importAll": "Ajouter ces lieux à mon carnet",
     "imported": "Lieux ajoutés à votre carnet.",
-    "openMine": "Ouvrir mon carnet"
+    "openMine": "Ouvrir mon carnet",
+    "homeMarker": "Votre carnet",
+    "homeTitle": "Vos lieux retenus.",
+    "homeMore": "{count, plural, one {+ # autre lieu} other {+ # autres lieux}}"
   },
   "fundraising": {
     "badge": "Collecte",

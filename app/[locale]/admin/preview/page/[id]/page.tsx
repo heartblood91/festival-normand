@@ -1,10 +1,10 @@
 import type { Locale } from "@/lib/i18n/config"
 import { notFound } from "next/navigation"
-import { ArrowLeft } from "lucide-react"
+import { getTranslations } from "next-intl/server"
 import { prisma } from "@/lib/prisma"
 import { localizeEntity } from "@/lib/i18n/db"
 import { PreviewBar } from "@/components/admin/preview-bar"
-import { MarkdownContent } from "@/components/news/markdown-content"
+import { ClassicPage } from "@/components/editorial/classic-page"
 
 type PagePreviewPageProps = {
   params: Promise<{ locale: string; id: string }>
@@ -22,29 +22,14 @@ const PagePreviewPage = async ({ params }: PagePreviewPageProps) => {
   }
 
   const page = localizeEntity(rawPage, locale, ["title", "content"])
+  const t = await getTranslations()
 
+  // Same shell as the public page, inside the editorial palette the public layout applies.
   return (
-    <>
+    <div className="editorial bg-background text-foreground min-h-dvh pt-14 font-serif">
       <PreviewBar backUrl={`/admin/pages/${id}/edit`} />
-      <article className="mx-auto max-w-4xl px-4 py-8 pt-20 md:py-12 lg:py-16">
-        {/* Back link */}
-        <a
-          href={`/admin/pages/${id}/edit`}
-          className="text-muted-foreground hover:text-foreground focus-visible:ring-primary/50 mb-6 inline-flex items-center gap-2 text-sm transition-colors focus-visible:rounded-sm focus-visible:ring-2 focus-visible:outline-none"
-        >
-          <ArrowLeft className="size-4" aria-hidden="true" />
-          Back
-        </a>
-
-        {/* Title */}
-        <h1 className="text-foreground mb-8 font-serif text-3xl font-bold md:text-4xl lg:text-5xl">
-          {page.title}
-        </h1>
-
-        {/* Content */}
-        <MarkdownContent content={page.content} />
-      </article>
-    </>
+      <ClassicPage title={page.title} content={page.content} marker={t("meta.siteName")} />
+    </div>
   )
 }
 

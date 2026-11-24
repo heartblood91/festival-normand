@@ -76,17 +76,6 @@ export const htmlToMarkdown = (html: string): string => {
   markdown = markdown.replace(/<div[^>]*?>/g, "")
   markdown = markdown.replace(/<\/div>/g, "")
 
-  // Headings - use character class instead of dotall flag
-  markdown = markdown.replace(/<h1[^>]*?>([^<]*)<\/h1>/g, "# $1\n")
-  markdown = markdown.replace(/<h2[^>]*?>([^<]*)<\/h2>/g, "## $1\n")
-  markdown = markdown.replace(/<h3[^>]*?>([^<]*)<\/h3>/g, "### $1\n")
-  markdown = markdown.replace(/<h4[^>]*?>([^<]*)<\/h4>/g, "#### $1\n")
-  markdown = markdown.replace(/<h5[^>]*?>([^<]*)<\/h5>/g, "##### $1\n")
-  markdown = markdown.replace(/<h6[^>]*?>([^<]*)<\/h6>/g, "###### $1\n")
-
-  // Paragraphs
-  markdown = markdown.replace(/<p[^>]*?>([^<]*)<\/p>/g, "$1\n\n")
-
   // Bold
   markdown = markdown.replace(/<strong[^>]*?>([^<]*)<\/strong>/g, "**$1**")
   markdown = markdown.replace(/<b[^>]*?>([^<]*)<\/b>/g, "**$1**")
@@ -112,29 +101,41 @@ export const htmlToMarkdown = (html: string): string => {
     "![$1]($2)"
   )
 
+  // Headings and paragraphs run after the inline marks, so a bold word or a link
+  // inside a paragraph no longer keeps it from ending with a blank line.
+  markdown = markdown.replace(/<h1[^>]*?>([\s\S]*?)<\/h1>/g, "# $1\n\n")
+  markdown = markdown.replace(/<h2[^>]*?>([\s\S]*?)<\/h2>/g, "## $1\n\n")
+  markdown = markdown.replace(/<h3[^>]*?>([\s\S]*?)<\/h3>/g, "### $1\n\n")
+  markdown = markdown.replace(/<h4[^>]*?>([\s\S]*?)<\/h4>/g, "#### $1\n\n")
+  markdown = markdown.replace(/<h5[^>]*?>([\s\S]*?)<\/h5>/g, "##### $1\n\n")
+  markdown = markdown.replace(/<h6[^>]*?>([\s\S]*?)<\/h6>/g, "###### $1\n\n")
+
+  // Paragraphs
+  markdown = markdown.replace(/<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/g, "$1\n\n")
+
   // Unordered lists
   markdown = markdown.replace(/<ul[^>]*?>([\s\S]*?)<\/ul>/g, (match, content) => {
-    const items = content.match(/<li[^>]*?>([^<]*)<\/li>/g) || []
+    const items = content.match(/<li[^>]*?>([\s\S]*?)<\/li>/g) || []
     return (
       items
         .map((item: string) => {
-          const text = item.replace(/<li[^>]*?>([^<]*)<\/li>/g, "$1").trim()
+          const text = item.replace(/<li[^>]*?>([\s\S]*?)<\/li>/g, "$1").trim()
           return `- ${text}`
         })
-        .join("\n") + "\n"
+        .join("\n") + "\n\n"
     )
   })
 
   // Ordered lists
   markdown = markdown.replace(/<ol[^>]*?>([\s\S]*?)<\/ol>/g, (match, content) => {
-    const items = content.match(/<li[^>]*?>([^<]*)<\/li>/g) || []
+    const items = content.match(/<li[^>]*?>([\s\S]*?)<\/li>/g) || []
     return (
       items
         .map((item: string, idx: number) => {
-          const text = item.replace(/<li[^>]*?>([^<]*)<\/li>/g, "$1").trim()
+          const text = item.replace(/<li[^>]*?>([\s\S]*?)<\/li>/g, "$1").trim()
           return `${idx + 1}. ${text}`
         })
-        .join("\n") + "\n"
+        .join("\n") + "\n\n"
     )
   })
 
@@ -181,8 +182,8 @@ export const htmlToMarkdown = (html: string): string => {
   markdown = markdown.replace(/<[^>]*?>/g, "")
 
   // Clean up multiple spaces and newlines
+  markdown = markdown.replace(/[ \t]+$/gm, "")
   markdown = markdown.replace(/\n\n\n+/g, "\n\n")
-  markdown = markdown.replace(/\s+$/gm, "")
 
   return markdown.trim()
 }

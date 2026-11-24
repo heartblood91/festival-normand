@@ -70,6 +70,9 @@ ai-publish,translate,registration-links,recovery,text-correction,surveys,gallery
 - `lib/actions/survey-submit.ts` is intentionally public (anonymous visitor answers):
   honeypot, published-only, in-memory rate limit. `app/api/admin/surveys/[id]/export`
   checks `getAuthenticatedUser()` itself because middleware skips `/api`.
+- `lib/actions/home-map.ts` and `lib/actions/travel-book.ts` are public visitor actions: they
+  only read published events (`publicEventWhere`); `shareTravelBook` stores nothing but a
+  list of public event ids.
 - `lib/actions/review-submit.ts` is public too (visitor reviews): honeypot, rate limit,
   only for public events that have started; reviews are stored PENDING and only an
   editor can publish them. The AI advice helper lives in `lib/reviews/advise.ts`, not

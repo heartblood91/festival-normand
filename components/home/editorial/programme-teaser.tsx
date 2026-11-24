@@ -5,6 +5,7 @@ import type { ProgrammeTeaserEvent } from "@/lib/queries/homepage"
 import { formatEventDate, formatTime } from "@/lib/utils/format-date"
 import { SectionHeading } from "@/components/editorial/primitives"
 import { EventThumb } from "@/components/editorial/event-thumb"
+import { FavoriteButton } from "@/components/travel-book/favorite-button"
 
 type ProgrammeTeaserProps = {
   events: ProgrammeTeaserEvent[]
@@ -36,10 +37,13 @@ const ProgrammeTeaser = async ({ events, total, markerIndex }: ProgrammeTeaserPr
 
         <ul>
           {events.map((event, i) => (
-            <li key={event.id}>
+            <li
+              key={event.id}
+              className="border-primary/15 hover:bg-primary/5 flex items-center gap-3 border-b transition-colors md:gap-5"
+            >
               <Link
                 href={`/evenement/${event.slug}`}
-                className="border-primary/15 hover:bg-primary/5 focus-visible:ring-primary/50 group grid grid-cols-[64px_1fr_auto] items-center gap-4 border-b py-5 transition-colors focus-visible:ring-2 focus-visible:outline-none md:grid-cols-[32px_88px_1fr_180px_140px_40px] md:gap-5"
+                className="focus-visible:ring-primary/50 group grid min-w-0 flex-1 grid-cols-[64px_1fr_auto] items-center gap-4 py-5 focus-visible:ring-2 focus-visible:outline-none md:grid-cols-[32px_88px_1fr_180px_140px_40px] md:gap-5"
               >
                 <span className="text-primary hidden font-mono text-xs tracking-[0.14em] md:block">
                   {String(i + 1).padStart(2, "0")}
@@ -75,6 +79,7 @@ const ProgrammeTeaser = async ({ events, total, markerIndex }: ProgrammeTeaserPr
                   →
                 </span>
               </Link>
+              <FavoriteButton eventId={event.id} title={event.title} className="shrink-0" />
             </li>
           ))}
         </ul>

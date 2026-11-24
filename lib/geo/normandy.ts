@@ -15,6 +15,12 @@ const NORMANDY_BOUNDS = {
   maxLongitude: 2,
 } as const
 
+/** South-west and north-east corners, in the [lng, lat] order map libraries expect. */
+export const NORMANDY_LNG_LAT_BOUNDS: [[number, number], [number, number]] = [
+  [NORMANDY_BOUNDS.minLongitude, NORMANDY_BOUNDS.minLatitude],
+  [NORMANDY_BOUNDS.maxLongitude, NORMANDY_BOUNDS.maxLatitude],
+]
+
 export const isInNormandyBounds = ({ latitude, longitude }: Coordinates): boolean =>
   typeof latitude === "number" &&
   typeof longitude === "number" &&
