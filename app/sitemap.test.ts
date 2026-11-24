@@ -155,4 +155,37 @@ describe("sitemap", () => {
 
     expect(urls.some((url) => url.includes("retour-en-images"))).toBe(false)
   })
+
+  it("links each URL to its translations and an x-default", async () => {
+    prismaMock.event.findMany.mockResolvedValue([])
+    prismaMock.news.findMany.mockResolvedValue([])
+    prismaMock.page.findMany.mockResolvedValue([])
+
+    const entry = (await sitemap()).find(
+      (e) => e.url === "https://pierresenlumieres.fr/en/evenements"
+    )
+
+    expect(entry?.alternates?.languages).toEqual({
+      fr: "https://pierresenlumieres.fr/fr/evenements",
+      en: "https://pierresenlumieres.fr/en/evenements",
+      "x-default": "https://pierresenlumieres.fr/fr/evenements",
+    })
+  })
+
+  it("dates listing pages by their newest item, even from cached string dates", async () => {
+    prismaMock.event.findMany.mockResolvedValue([
+      { slug: "abbaye-jumieges", updatedAt: "2026-03-12T00:00:00.000Z" },
+    ])
+    prismaMock.news.findMany.mockResolvedValue([
+      { slug: "programme-2026", updatedAt: "2026-03-10T00:00:00.000Z" },
+    ])
+    prismaMock.page.findMany.mockResolvedValue([])
+
+    const result = await sitemap()
+    const byUrl = (url: string) => result.find((e) => e.url === url)?.lastModified
+
+    expect(byUrl("https://pierresenlumieres.fr/fr")).toEqual(new Date("2026-03-12"))
+    expect(byUrl("https://pierresenlumieres.fr/fr/actualites")).toEqual(new Date("2026-03-10"))
+    expect(byUrl("https://pierresenlumieres.fr/fr/contact")).toBeUndefined()
+  })
 })

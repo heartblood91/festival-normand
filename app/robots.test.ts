@@ -24,6 +24,9 @@ describe("robots", () => {
 
     expect(mainRule?.disallow).toContain("/admin/")
     expect(mainRule?.disallow).toContain("/api/")
+    // Admin URLs carry the locale prefix.
+    expect(mainRule?.disallow).toContain("/fr/admin/")
+    expect(mainRule?.disallow).toContain("/en/admin/")
   })
 
   it("includes sitemap URL", () => {
