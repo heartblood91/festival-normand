@@ -487,7 +487,10 @@
     "emailBody": "Here are the places I picked for Pierres en Lumières: {url}",
     "importAll": "Add these places to my travel book",
     "imported": "Places added to your travel book.",
-    "openMine": "Open my travel book"
+    "openMine": "Open my travel book",
+    "homeMarker": "Your travel book",
+    "homeTitle": "The places you picked.",
+    "homeMore": "{count, plural, one {+ # more place} other {+ # more places}}"
   },
   "fundraising": {
     "badge": "Fundraising",

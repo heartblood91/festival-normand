@@ -5,13 +5,10 @@ import { publicEventWhere } from "@/lib/queries/visibility"
 import { getTravelBookEvents } from "@/lib/queries/travel-book"
 import { normalizeEventIds } from "@/lib/travel-book/favorites"
 import { travelBookKey } from "@/lib/travel-book/key"
-import { defaultLocale, locales, type Locale } from "@/lib/i18n/config"
+import { toLocale } from "@/lib/i18n/config"
 
 // Public visitor actions (no login): they only read published events and store
 // lists of public event ids, so no requireRole guard applies here.
-
-const toLocale = (value: unknown): Locale =>
-  locales.includes(value as Locale) ? (value as Locale) : defaultLocale
 
 export const loadTravelBook = async (ids: unknown, locale: unknown) =>
   Array.isArray(ids) ? getTravelBookEvents(ids, toLocale(locale)) : []

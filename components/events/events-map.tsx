@@ -8,10 +8,15 @@ import { mapboxLocale } from "@/lib/map/mapbox-locale"
 import { formatEventDate } from "@/lib/utils/format-date"
 import type { MapEventItem } from "@/lib/queries/events"
 import { DEFAULT_EVENT_IMAGE } from "@/lib/events/default-image"
-import { isInNormandyBounds } from "@/lib/geo/normandy"
+import { isInNormandyBounds, NORMANDY_LNG_LAT_BOUNDS } from "@/lib/geo/normandy"
 
 type EventsMapProps = {
   events: MapEventItem[]
+  /** Frame the whole region instead of zooming on the events. */
+  showWholeNormandy?: boolean
+  /** Require ctrl/⌘ + scroll to zoom, so the page keeps scrolling over the map. */
+  cooperativeGestures?: boolean
+  className?: string
 }
 
 const escapeHtml = (str: string): string =>
@@ -36,7 +41,12 @@ const loadMarkers = async (map: mapboxgl.Map, urls: string[]): Promise<Set<strin
   return new Set(loaded.filter((url): url is string => url !== null))
 }
 
-const EventsMap = ({ events }: EventsMapProps) => {
+const EventsMap = ({
+  events,
+  showWholeNormandy = false,
+  cooperativeGestures = false,
+  className = "h-[500px] w-full rounded-xl md:h-[650px]",
+}: EventsMapProps) => {
   const locale = useLocale()
   const t = useTranslations()
   const mapContainer = useRef<HTMLDivElement>(null)
@@ -61,6 +71,7 @@ const EventsMap = ({ events }: EventsMapProps) => {
       center: [-0.5, 48.8],
       zoom: 7,
       scrollZoom: true,
+      cooperativeGestures,
       attributionControl: true,
       locale: mapboxLocale(locale),
     })
@@ -182,7 +193,9 @@ const EventsMap = ({ events }: EventsMapProps) => {
       })
 
       // Fit bounds to all events
-      if (validEvents.length > 0) {
+      if (showWholeNormandy) {
+        map.fitBounds(NORMANDY_LNG_LAT_BOUNDS, { padding: 20, duration: 0 })
+      } else if (validEvents.length > 0) {
         const bounds = new mapboxgl.LngLatBounds()
         validEvents.forEach((e) => bounds.extend([e.longitude!, e.latitude!]))
         map.fitBounds(bounds, { padding: 60, maxZoom: 12 })
@@ -280,14 +293,14 @@ const EventsMap = ({ events }: EventsMapProps) => {
       map.remove()
       mapRef.current = null
     }
-  }, [validEvents, locale, t])
+  }, [validEvents, locale, t, showWholeNormandy, cooperativeGestures])
 
   useEffect(() => {
     const cleanup = initMap()
     return cleanup
   }, [initMap])
 
-  if (validEvents.length === 0) {
+  if (validEvents.length === 0 && !showWholeNormandy) {
     return (
       <div className="flex h-96 items-center justify-center rounded-xl border border-white/10 bg-white/5">
         <p className="text-muted-foreground">{t("a11y.noGpsEvents")}</p>
@@ -299,7 +312,7 @@ const EventsMap = ({ events }: EventsMapProps) => {
     <>
       <div
         ref={mapContainer}
-        className="h-[500px] w-full rounded-xl md:h-[650px]"
+        className={className}
         role="region"
         aria-label={t("a11y.mapDescription")}
       />

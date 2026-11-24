@@ -36,13 +36,16 @@ const Partners = async ({ partners, markerIndex }: PartnersProps) => {
             const cell = (
               <div className="bg-ed-bg-deep flex h-28 flex-col items-center justify-center gap-2.5 p-4 text-center">
                 {partner.logo ? (
-                  <span className="relative flex h-16 w-full items-center justify-center rounded-sm bg-white/95 px-4 py-2.5">
+                  <span className="relative flex h-16 w-full items-center justify-center px-4 py-2.5">
+                    {/* Logos are uploaded on white: invert them and screen-blend so the white
+                        becomes black and disappears, leaving a monochrome mark on the dark band. */}
                     <Image
                       src={partner.logo}
                       alt={partner.name}
                       fill
                       sizes="160px"
-                      className="object-contain p-1"
+                      data-partner-logo
+                      className="object-contain p-1 opacity-75 mix-blend-screen [filter:grayscale(1)_invert(1)_contrast(1.25)] transition-opacity duration-300 group-hover:opacity-100"
                     />
                   </span>
                 ) : (
@@ -70,7 +73,7 @@ const Partners = async ({ partners, markerIndex }: PartnersProps) => {
                     href={partner.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="focus-visible:ring-primary/50 hover:bg-ed-bg-soft block transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:outline-none"
+                    className="group focus-visible:ring-primary/50 hover:bg-ed-bg-soft block transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:outline-none"
                     aria-label={`${partner.name} ${t("a11y.newTab")}`}
                   >
                     {cell}

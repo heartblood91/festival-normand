@@ -87,6 +87,22 @@ test.describe("Travel book", () => {
     )
   })
 
+  test("the home page recalls the places a visitor kept", async ({ page }) => {
+    test.setTimeout(90_000)
+    await page.goto("/fr")
+    await expect(page.getByTestId("home-travel-book")).toHaveCount(0)
+
+    await addFromEventPage(page, FALAISE.slug)
+    await page.goto("/fr")
+    const block = page.getByTestId("home-travel-book")
+    await expect(block.getByRole("heading", { level: 2, name: "Vos lieux retenus." })).toBeVisible()
+    await expect(block.getByRole("link", { name: FALAISE.title })).toBeVisible()
+    await expect(block.getByRole("link", { name: "Ouvrir mon carnet" })).toHaveAttribute(
+      "href",
+      "/fr/carnet"
+    )
+  })
+
   test("a shared link opens a read-only copy that another visitor can import", async ({
     page,
     browser,
