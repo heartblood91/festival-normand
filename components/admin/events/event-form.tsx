@@ -34,6 +34,7 @@ import { translateMissingFields } from "@/lib/admin/translate-missing"
 import { slugify, DEPARTMENT_OPTIONS, CATEGORY_OPTIONS } from "@/lib/schemas/event"
 import type { ThemeOption } from "@/lib/actions/themes"
 import type { FundraisingSuggestionItem } from "@/lib/actions/fundraising"
+import { descriptionToEditorHtml } from "@/lib/events/description"
 import type { Event } from "@prisma/client"
 
 type EventFormProps = {
@@ -78,8 +79,12 @@ export const EventForm = ({
   const [published, setPublished] = useState(wasPublished)
   const [titleFr, setTitleFr] = useState(event?.titleFr ?? "")
   const [titleEn, setTitleEn] = useState(event?.titleEn ?? "")
-  const [descriptionFr, setDescriptionFr] = useState(event?.descriptionFr ?? "")
-  const [descriptionEn, setDescriptionEn] = useState(event?.descriptionEn ?? "")
+  const [descriptionFr, setDescriptionFr] = useState(
+    descriptionToEditorHtml(event?.descriptionFr ?? "")
+  )
+  const [descriptionEn, setDescriptionEn] = useState(
+    descriptionToEditorHtml(event?.descriptionEn ?? "")
+  )
   const [pricingFr, setPricingFr] = useState(event?.pricingFr ?? "")
   const [pricingEn, setPricingEn] = useState(event?.pricingEn ?? "")
   const [location, setLocation] = useState(event?.location ?? "")

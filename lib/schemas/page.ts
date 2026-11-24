@@ -1,5 +1,7 @@
 import { z } from "zod"
 
+export const PAGE_SLUG_PATTERN = /^[a-z0-9-]+$/
+
 export const pageSchema = z.object({
   titleFr: z
     .string()
@@ -11,7 +13,7 @@ export const pageSchema = z.object({
     .min(2, "Le slug doit contenir au moins 2 caractères")
     .max(200, "Le slug ne peut pas dépasser 200 caractères")
     .regex(
-      /^[a-z0-9-]+$/,
+      PAGE_SLUG_PATTERN,
       "Le slug ne peut contenir que des lettres minuscules, chiffres et tirets"
     ),
   contentFr: z.string().min(10, "Le contenu doit contenir au moins 10 caractères"),
