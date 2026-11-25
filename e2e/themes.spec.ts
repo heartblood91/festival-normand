@@ -22,16 +22,44 @@ const deleteThemeIfPresent = async (page: Page) => {
 }
 
 test.describe("Themes", () => {
-  test("the Millennium theme has its own home section in each language", async ({ page }) => {
+  test("the Millennium theme has its own page and a home section only with events", async ({
+    page,
+  }) => {
+    const response = await page.goto("/fr/thematique/millennium")
+    expect(response?.status()).toBe(200)
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Millénaire de Guillaume le Conquérant" })
+    ).toBeVisible()
+    const events = await page.getByRole("main").getByRole("heading", { level: 3 }).count()
+
+    // Never an empty block: the home section exists only when the page lists events.
     await page.goto("/fr")
     const section = page.getByRole("region", { name: "Millénaire de Guillaume le Conquérant" })
-    await expect(section).toBeVisible()
-    await expect(section.locator('img[src="/themes/millennium-marker.svg"]')).toBeVisible()
+    if (events > 0) {
+      await expect(section).toBeVisible()
+      await expect(section.locator('img[src="/themes/millennium-marker.svg"]')).toBeVisible()
+      await expect(section.getByRole("link", { name: "Voir les événements" })).toHaveAttribute(
+        "href",
+        "/fr/thematique/millennium"
+      )
+    } else {
+      await expect(section).toHaveCount(0)
+      await expect(page.getByText("Les lieux participants seront annoncés")).toHaveCount(0)
+    }
 
-    await page.goto("/en")
+    await page.goto("/en/thematique/millennium")
     await expect(
-      page.getByRole("region", { name: "William the Conqueror Millennium" })
+      page.getByRole("heading", { level: 1, name: "William the Conqueror Millennium" })
     ).toBeVisible()
+    await expect(page.locator('link[rel="alternate"][hreflang="fr"]')).toHaveAttribute(
+      "href",
+      /\/fr\/thematique\/millennium$/
+    )
+  })
+
+  test("a theme outside the current edition has no page", async ({ page }) => {
+    const response = await page.goto("/fr/thematique/theme-inexistant-e2e")
+    expect(response?.status()).toBe(404)
   })
 
   test.describe("managed by an editor", () => {

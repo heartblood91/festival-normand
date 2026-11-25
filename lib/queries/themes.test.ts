@@ -4,7 +4,7 @@ import { prismaMock } from "@/lib/test-utils"
 vi.mock("next/cache", () => ({ unstable_cache: (fn: Function) => fn }))
 vi.mock("@/lib/prisma", () => ({ prisma: prismaMock }))
 
-import { getFilterThemes, getHomeThemes } from "@/lib/queries/themes"
+import { getFilterThemes, getHomeThemes, getThemePage } from "@/lib/queries/themes"
 import { buildEdition, DEFAULT_EDITION_SETTINGS } from "@/lib/festival/edition"
 
 beforeEach(() => {
@@ -79,6 +79,74 @@ describe("getHomeThemes", () => {
       OR: [{ years: { isEmpty: true } }, { years: { has: 2027 } }],
     })
     expect(call.select.events.take).toBe(3)
+    expect(call.select.events.where).toMatchObject({
+      published: true,
+      dateStart: { gte: new Date("2027-01-01T00:00:00") },
+    })
+  })
+
+  it("leaves out themes without any public event of the edition", async () => {
+    prismaMock.theme.findMany.mockResolvedValue([{ ...millennium, events: [] }])
+
+    const themes = await getHomeThemes("fr", buildEdition(DEFAULT_EDITION_SETTINGS))
+
+    expect(themes).toEqual([])
+  })
+})
+
+describe("getThemePage", () => {
+  const edition = buildEdition(DEFAULT_EDITION_SETTINGS)
+
+  it("has no page for a theme that is not shown this edition", async () => {
+    prismaMock.theme.findFirst.mockResolvedValue(null)
+
+    await expect(getThemePage("millennium", "fr", edition)).resolves.toBeNull()
+    expect(prismaMock.theme.findFirst.mock.calls[0][0].where).toEqual({
+      slug: "millennium",
+      OR: [{ years: { isEmpty: true } }, { years: { has: 2027 } }],
+    })
+  })
+
+  it("returns the localized theme with its public events of the edition", async () => {
+    prismaMock.theme.findFirst.mockResolvedValue({
+      ...millennium,
+      coverImage: "/media/uploads/cover.webp",
+      updatedAt: new Date("2026-11-20T00:00:00Z"),
+      events: [
+        {
+          id: "e1",
+          titleFr: "Château de Falaise",
+          titleEn: "Falaise Castle",
+          coverImageAltFr: "Le donjon",
+          coverImageAltEn: null,
+          slug: "falaise",
+          dateStart: new Date("2027-05-21T00:00:00Z"),
+          dateEnd: null,
+        },
+      ],
+      _count: { events: 30 },
+    })
+
+    const page = await getThemePage("millennium", "en", edition)
+
+    expect(page).toMatchObject({
+      slug: "millennium",
+      name: "Millennium",
+      description: "A thousand years",
+      coverImage: "/media/uploads/cover.webp",
+      eventCount: 30,
+      events: [
+        {
+          slug: "falaise",
+          title: "Falaise Castle",
+          coverImageAlt: "Le donjon",
+          dateStart: "2027-05-21T00:00:00.000Z",
+          dateEnd: null,
+        },
+      ],
+    })
+    const call = prismaMock.theme.findFirst.mock.calls[0][0]
+    expect(call.select.events.take).toBe(24)
     expect(call.select.events.where).toMatchObject({
       published: true,
       dateStart: { gte: new Date("2027-01-01T00:00:00") },

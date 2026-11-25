@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Link } from "@/lib/i18n/routing"
-import { ArrowLeft, Loader2 } from "lucide-react"
+import { ArrowLeft, ExternalLink, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -23,6 +23,12 @@ type ThemeFormProps = {
 
 const FIELD_CLASS = "mt-1 border-white/10 bg-white/5 text-white"
 
+const RIBBON_FIELDS = [
+  { key: "ribbonTitle", label: "Titre", placeholder: "Millénaire de Guillaume le Conquérant" },
+  { key: "ribbonDates", label: "Dates", placeholder: "1027 – 2027" },
+  { key: "ribbonCta", label: "Texte du lien", placeholder: "Les événements du millénaire" },
+] as const
+
 const FieldError = ({ id, messages }: { id: string; messages?: string[] }) =>
   messages?.length ? (
     <p id={`${id}-error`} className="mt-1 text-sm text-red-400">
@@ -40,6 +46,7 @@ export const ThemeForm = ({ theme }: ThemeFormProps) => {
   const [color, setColor] = useState(theme?.color ?? DEFAULT_PIN_COLOR)
   const [markerImage, setMarkerImage] = useState(theme?.markerImage ?? "")
   const [skinLogo, setSkinLogo] = useState(theme?.skinLogo ?? "")
+  const [coverImage, setCoverImage] = useState(theme?.coverImage ?? "")
   const [showOnHome, setShowOnHome] = useState(theme?.showOnHome ?? false)
 
   const describedBy = (field: string) => (errors[field] ? `${field}-error` : undefined)
@@ -51,6 +58,7 @@ export const ThemeForm = ({ theme }: ThemeFormProps) => {
     formData.set("color", color)
     formData.set("markerImage", markerImage)
     formData.set("skinLogo", skinLogo)
+    formData.set("coverImage", coverImage)
     formData.set("showOnHome", String(showOnHome))
 
     setIsSubmitting(true)
@@ -72,12 +80,23 @@ export const ThemeForm = ({ theme }: ThemeFormProps) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-      <Button asChild variant="ghost">
-        <Link href="/admin/themes">
-          <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" />
-          Retour
-        </Link>
-      </Button>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Button asChild variant="ghost">
+          <Link href="/admin/themes">
+            <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" />
+            Retour
+          </Link>
+        </Button>
+        {theme ? (
+          <Button asChild variant="outline">
+            <a href={`/fr/thematique/${theme.slug}`} target="_blank" rel="noopener noreferrer">
+              Voir la page
+              <ExternalLink className="ml-2 h-4 w-4" aria-hidden="true" />
+              <span className="sr-only"> (nouvel onglet)</span>
+            </a>
+          </Button>
+        ) : null}
+      </div>
 
       <Card className="border-white/10 bg-white/5">
         <CardHeader>
@@ -180,7 +199,7 @@ export const ThemeForm = ({ theme }: ThemeFormProps) => {
               aria-describedby={describedBy("slug") ?? "slug-hint"}
             />
             <p id="slug-hint" className="text-muted-foreground mt-1 text-xs">
-              /evenements?theme={slug || "…"}
+              Page : /thematique/{slug || "…"} · filtre : /evenements?theme={slug || "…"}
             </p>
             <FieldError id="slug" messages={errors.slug} />
           </div>
@@ -225,6 +244,18 @@ export const ThemeForm = ({ theme }: ThemeFormProps) => {
             </p>
             <ImageUpload value={markerImage} onChange={setMarkerImage} preset="logo" />
             <FieldError id="markerImage" messages={errors.markerImage} />
+          </div>
+
+          <div role="group" aria-labelledby="cover-image-title">
+            <p id="cover-image-title" className="text-muted-foreground mb-2 text-sm font-medium">
+              Image de couverture
+            </p>
+            <p className="text-muted-foreground mb-2 text-xs">
+              Bandeau en haut de la page de la thématique, format paysage. Image décorative : le nom
+              de la thématique est écrit dessous.
+            </p>
+            <ImageUpload value={coverImage} onChange={setCoverImage} preset="cover" />
+            <FieldError id="coverImage" messages={errors.coverImage} />
           </div>
 
           <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-white/10 p-3">
@@ -312,6 +343,37 @@ export const ThemeForm = ({ theme }: ThemeFormProps) => {
             <ImageUpload value={skinLogo} onChange={setSkinLogo} preset="logo" />
             <FieldError id="skinLogo" messages={errors.skinLogo} />
           </div>
+
+          <fieldset className="space-y-3" aria-describedby="ribbon-hint">
+            <legend className="text-muted-foreground text-sm font-medium">Textes du bandeau</legend>
+            <p id="ribbon-hint" className="text-muted-foreground text-xs">
+              Vide = texte par défaut de l&apos;habillage. Sans anglais, le français est repris.
+            </p>
+            {RIBBON_FIELDS.map(({ key, label, placeholder }) => (
+              <div key={key} className="grid gap-3 md:grid-cols-2">
+                {(["Fr", "En"] as const).map((lang) => {
+                  const name = `${key}${lang}` as const
+                  return (
+                    <div key={name} lang={lang === "En" ? "en" : undefined}>
+                      <Label htmlFor={name} className="text-muted-foreground">
+                        {label} ({lang === "Fr" ? "français" : "anglais"})
+                      </Label>
+                      <Input
+                        id={name}
+                        name={name}
+                        defaultValue={theme?.[name] ?? ""}
+                        placeholder={lang === "Fr" ? placeholder : undefined}
+                        className={FIELD_CLASS}
+                        aria-invalid={!!errors[name]}
+                        aria-describedby={describedBy(name)}
+                      />
+                      <FieldError id={name} messages={errors[name]} />
+                    </div>
+                  )
+                })}
+              </div>
+            ))}
+          </fieldset>
         </CardContent>
       </Card>
 

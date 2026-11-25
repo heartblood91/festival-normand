@@ -3,8 +3,14 @@ import { cachedQuery } from "@/lib/cache"
 import { prisma } from "@/lib/prisma"
 import { activeThemeWhere } from "@/lib/themes/active"
 import { isSkinKey, type SkinKey } from "@/lib/skins/registry"
+import type { SkinTextsInput } from "@/lib/skins/texts"
 
-export type ActiveSkin = { key: SkinKey; themeSlug: string; logo: string | null }
+export type ActiveSkin = {
+  key: SkinKey
+  themeSlug: string
+  logo: string | null
+  texts: SkinTextsInput
+}
 
 const isMissingColumn = (error: unknown) =>
   error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -21,11 +27,33 @@ export const getActiveSkin = async (year: number): Promise<ActiveSkin | null> =>
         const themes = await prisma.theme.findMany({
           where: { skin: { not: null }, ...activeThemeWhere(year) },
           orderBy: [{ order: "asc" }, { nameFr: "asc" }],
-          select: { slug: true, skin: true, skinLogo: true },
+          select: {
+            slug: true,
+            skin: true,
+            skinLogo: true,
+            ribbonTitleFr: true,
+            ribbonTitleEn: true,
+            ribbonDatesFr: true,
+            ribbonDatesEn: true,
+            ribbonCtaFr: true,
+            ribbonCtaEn: true,
+          },
         })
         const theme = themes.find((candidate) => isSkinKey(candidate.skin))
         return theme && isSkinKey(theme.skin)
-          ? { key: theme.skin, themeSlug: theme.slug, logo: theme.skinLogo }
+          ? {
+              key: theme.skin,
+              themeSlug: theme.slug,
+              logo: theme.skinLogo,
+              texts: {
+                ribbonTitleFr: theme.ribbonTitleFr,
+                ribbonTitleEn: theme.ribbonTitleEn,
+                ribbonDatesFr: theme.ribbonDatesFr,
+                ribbonDatesEn: theme.ribbonDatesEn,
+                ribbonCtaFr: theme.ribbonCtaFr,
+                ribbonCtaEn: theme.ribbonCtaEn,
+              },
+            }
           : null
       } catch (error) {
         if (isMissingColumn(error)) return null

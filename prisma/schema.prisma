@@ -131,6 +131,15 @@ model Theme {
   skin          String?
   /// Logo shown by the skin (e.g. Millennium ribbon); null falls back to the bundled example.
   skinLogo      String?  @map("skin_logo")
+  /// Skin ribbon texts; empty falls back to the skin's bundled copy (EN to FR first).
+  ribbonTitleFr String?  @map("ribbon_title_fr")
+  ribbonTitleEn String?  @map("ribbon_title_en")
+  ribbonDatesFr String?  @map("ribbon_dates_fr")
+  ribbonDatesEn String?  @map("ribbon_dates_en")
+  ribbonCtaFr   String?  @map("ribbon_cta_fr")
+  ribbonCtaEn   String?  @map("ribbon_cta_en")
+  /// Banner of the public theme page (/thematique/[slug]).
+  coverImage    String?  @map("cover_image")
   showOnHome    Boolean  @default(false) @map("show_on_home")
   order         Int      @default(0)
   events        Event[]  @relation("event_themes")

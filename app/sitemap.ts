@@ -4,6 +4,8 @@ import { cachedQuery } from "@/lib/cache"
 import { prisma } from "@/lib/prisma"
 import { publicEventWhere } from "@/lib/queries/visibility"
 import { defaultLocale, locales } from "@/lib/i18n/config"
+import { getCurrentEdition } from "@/lib/queries/edition"
+import { getActiveThemeSlugs } from "@/lib/queries/themes"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
@@ -36,6 +38,13 @@ const getSitemapData = cachedQuery(
   { revalidate: 3600, tags: ["sitemap", "events", "news", "pages", "gallery"] }
 )
 
+// Theme pages exist only while their theme is shown, so they follow the edition year.
+const getSitemapThemes = (year: number) =>
+  cachedQuery(() => getActiveThemeSlugs(year), ["sitemap-themes", String(year)], {
+    revalidate: 3600,
+    tags: ["sitemap", "themes"],
+  })()
+
 type Route = Omit<MetadataRoute.Sitemap[number], "url" | "alternates"> & { path: string }
 
 // One entry per locale, each pointing at its translations (hreflang) and x-default.
@@ -51,7 +60,11 @@ const localized = ({ path, ...rest }: Route): MetadataRoute.Sitemap => {
 
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
   await connection()
-  const [events, news, pages, galleryYears] = await getSitemapData()
+  const { year } = await getCurrentEdition()
+  const [[events, news, pages, galleryYears], themes] = await Promise.all([
+    getSitemapData(),
+    getSitemapThemes(year),
+  ])
 
   // Listing pages change with their content: date them by their newest item.
   // Dates come back as strings from the shared cache, hence new Date().
@@ -77,6 +90,12 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
       lastModified: new Date(page.updatedAt),
       changeFrequency: "monthly" as const,
       priority: 0.6,
+    })),
+    ...themes.map((theme) => ({
+      path: `/thematique/${theme.slug}`,
+      lastModified: new Date(theme.updatedAt),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
     })),
     ...events.map((event) => ({
       path: `/evenement/${event.slug}`,

@@ -8,12 +8,14 @@ vi.mock("@/lib/prisma", () => ({
 }))
 vi.mock("next/server", () => ({ connection }))
 vi.mock("@/lib/cache", () => ({ cachedQuery: (fn: unknown) => fn }))
+vi.mock("@/lib/queries/edition", () => ({ getCurrentEdition: async () => ({ year: 2027 }) }))
 
 import sitemap from "./sitemap"
 
 describe("sitemap", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    prismaMock.theme.findMany.mockResolvedValue([])
   })
 
   it("renders per request instead of querying the database at build time", async () => {
@@ -154,6 +156,30 @@ describe("sitemap", () => {
     const urls = (await sitemap()).map((entry) => entry.url)
 
     expect(urls.some((url) => url.includes("retour-en-images"))).toBe(false)
+  })
+
+  it("lists the pages of the themes shown this edition", async () => {
+    prismaMock.event.findMany.mockResolvedValue([])
+    prismaMock.news.findMany.mockResolvedValue([])
+    prismaMock.page.findMany.mockResolvedValue([])
+    prismaMock.theme.findMany.mockResolvedValue([
+      { slug: "millennium", updatedAt: "2026-11-20T00:00:00.000Z" },
+    ])
+
+    const result = await sitemap()
+    const entry = result.find(
+      (e) => e.url === "https://pierresenlumieres.fr/en/thematique/millennium"
+    )
+
+    expect(entry?.lastModified).toEqual(new Date("2026-11-20"))
+    expect(entry?.alternates?.languages).toMatchObject({
+      fr: "https://pierresenlumieres.fr/fr/thematique/millennium",
+    })
+    expect(prismaMock.theme.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { OR: [{ years: { isEmpty: true } }, { years: { has: 2027 } }] },
+      })
+    )
   })
 
   it("links each URL to its translations and an x-default", async () => {

@@ -12,10 +12,11 @@ type ThemeSpotlightProps = {
 }
 
 // Home section of a theme flagged "show on home" (e.g. the 2027 Millennium).
+// getHomeThemes leaves out themes without events, so the section is never empty.
 const ThemeSpotlight = async ({ theme, year, markerIndex }: ThemeSpotlightProps) => {
   const t = await getTranslations()
   const locale = (await getLocale()) as Locale
-  const href = `/evenements?theme=${theme.slug}`
+  const href = `/thematique/${encodeURIComponent(theme.slug)}`
 
   return (
     <section
@@ -29,14 +30,12 @@ const ThemeSpotlight = async ({ theme, year, markerIndex }: ThemeSpotlightProps)
           title={<span id={`theme-${theme.slug}`}>{theme.name}</span>}
           lede={theme.description || undefined}
           action={
-            theme.events.length > 0 ? (
-              <Link
-                href={href}
-                className="text-primary hover:text-ed-amber-soft focus-visible:ring-primary/50 border-primary inline-flex min-h-11 items-center rounded-sm border-b pb-1 font-sans text-xs tracking-[0.16em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none"
-              >
-                {t("editorial.theme.viewAll")}
-              </Link>
-            ) : null
+            <Link
+              href={href}
+              className="text-primary hover:text-ed-amber-soft focus-visible:ring-primary/50 border-primary inline-flex min-h-11 items-center rounded-sm border-b pb-1 font-sans text-xs tracking-[0.16em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none"
+            >
+              {t("editorial.theme.viewAll")}
+            </Link>
           }
         />
 
@@ -58,36 +57,21 @@ const ThemeSpotlight = async ({ theme, year, markerIndex }: ThemeSpotlightProps)
             />
           )}
 
-          {theme.events.length > 0 ? (
-            <ul className="grid gap-4 md:grid-cols-3">
-              {theme.events.map((event) => (
-                <li key={event.id}>
-                  <Link
-                    href={`/evenement/${event.slug}`}
-                    className="border-primary/20 hover:bg-primary/5 focus-visible:ring-primary/50 ed-halo block h-full border p-5 focus-visible:ring-2 focus-visible:outline-none"
-                  >
-                    <p className="text-foreground font-display text-xl font-normal">
-                      {event.title}
-                    </p>
-                    <p className="text-ed-bone mt-2 font-serif text-sm italic opacity-85">
-                      {event.city} · {formatEventDate(event.dateStart, locale)}
-                    </p>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className="self-center">
-              <p className="text-ed-bone font-serif text-lg italic">{t("editorial.theme.soon")}</p>
-              {/* Nothing tagged yet: point to the whole programme rather than a dead end. */}
-              <Link
-                href="/evenements"
-                className="text-primary hover:text-ed-amber-soft focus-visible:ring-primary/50 border-primary mt-4 inline-flex min-h-11 items-center rounded-sm border-b pb-1 font-sans text-xs tracking-[0.16em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none"
-              >
-                {t("editorial.theme.browse")}
-              </Link>
-            </div>
-          )}
+          <ul className="grid gap-4 md:grid-cols-3">
+            {theme.events.map((event) => (
+              <li key={event.id}>
+                <Link
+                  href={`/evenement/${event.slug}`}
+                  className="border-primary/20 hover:bg-primary/5 focus-visible:ring-primary/50 ed-halo block h-full border p-5 focus-visible:ring-2 focus-visible:outline-none"
+                >
+                  <p className="text-foreground font-display text-xl font-normal">{event.title}</p>
+                  <p className="text-ed-bone mt-2 font-serif text-sm italic opacity-85">
+                    {event.city} · {formatEventDate(event.dateStart, locale)}
+                  </p>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

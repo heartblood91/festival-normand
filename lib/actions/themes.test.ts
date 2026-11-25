@@ -130,6 +130,45 @@ describe("theme actions", () => {
     })
   })
 
+  it("stores the ribbon texts and the cover image, empty ones as null", async () => {
+    mockPrisma.theme.findFirst.mockResolvedValue(null)
+    mockPrisma.theme.create.mockResolvedValue({ id: "t1" })
+
+    await createTheme(
+      form({
+        ...valid,
+        ribbonTitleFr: "  Millénaire normand  ",
+        ribbonTitleEn: "",
+        ribbonDatesFr: "1027 – 2027",
+        ribbonCtaEn: "Millennium events",
+        coverImage: "/media/uploads/millenaire.webp",
+      })
+    )
+
+    expect(mockPrisma.theme.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        ribbonTitleFr: "Millénaire normand",
+        ribbonTitleEn: null,
+        ribbonDatesFr: "1027 – 2027",
+        ribbonDatesEn: null,
+        ribbonCtaFr: null,
+        ribbonCtaEn: "Millennium events",
+        coverImage: "/media/uploads/millenaire.webp",
+      }),
+    })
+  })
+
+  it("refuses ribbon texts that are too long and cover images that are not URLs", async () => {
+    const result = await createTheme(
+      form({ ...valid, ribbonTitleFr: "x".repeat(81), coverImage: "javascript:alert(1)" })
+    )
+
+    expect(result.success).toBe(false)
+    expect(result.errors?.ribbonTitleFr).toBeDefined()
+    expect(result.errors?.coverImage).toBeDefined()
+    expect(mockPrisma.theme.create).not.toHaveBeenCalled()
+  })
+
   it("refuses invalid years and unknown skins", async () => {
     const result = await createTheme(form({ ...valid, years: "27", skin: "christmas" }))
 

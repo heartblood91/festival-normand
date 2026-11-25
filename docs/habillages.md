@@ -2,7 +2,7 @@
 
 ## Ce que règle l'admin
 
-Le formulaire d'une thématique (`/admin/themes`, carte « Période et habillage ») a trois champs :
+Le formulaire d'une thématique (`/admin/themes`, carte « Période et habillage ») a ces champs :
 
 - **Années d'affichage** : vide = toutes les éditions. Avec « 2027 », la thématique n'existe
   sur le site public que pour l'édition 2027 : filtre du programme, section d'accueil, lien sur
@@ -17,12 +17,35 @@ Le formulaire d'une thématique (`/admin/themes`, carte « Période et habillage
   sur tout le site, « Retirer » revient à l'exemple. Image décorative (`alt=""`) : le titre du
   bandeau est déjà écrit à côté.
 
+- **Textes du bandeau** : titre (80 caractères), dates (40) et texte du lien (60), en français
+  et en anglais. Un champ vide garde le texte par défaut de l'habillage (`copy.ts`) ; un champ
+  anglais vide reprend le français, puis le texte par défaut anglais
+  (`lib/skins/texts.ts`).
+
+La carte « Affichage » a aussi une **image de couverture**, téléversée comme les autres images.
+Elle sert d'en-tête à la page de la thématique et d'image de partage (Open Graph). Elle est
+décorative (`alt=""`) : le nom de la thématique est écrit juste dessous.
+
 Si plusieurs thématiques affichées ont un habillage, la première dans l'ordre d'affichage
 l'emporte (ordre, puis nom).
 
 La migration `20261111180000_add_theme_years_and_skin` règle le thème Millénaire sur 2027 avec
 l'habillage « Millénaire de Guillaume le Conquérant », sauf si un éditeur l'a déjà réglé.
 `20261112050000_add_theme_skin_logo` lui donne l'emblème d'exemple comme logo de bandeau.
+`20261125120000_add_theme_ribbon_and_cover` ajoute les textes du bandeau et l'image de
+couverture, vides par défaut : rien ne change à l'affichage tant qu'un éditeur ne les remplit pas.
+
+## La page d'une thématique
+
+`/[locale]/thematique/[slug]` (`app/[locale]/(public)/thematique/[slug]/page.tsx`) n'existe que
+tant que la thématique est affichée (mêmes années que le reste du site) ; sinon 404. Elle montre
+la couverture, le nom, la présentation (texte riche accepté) et les événements publics de
+l'édition courante, 24 au plus, avec un lien vers le programme filtré au-delà. Sans événement,
+elle renvoie vers le programme. Elle a ses alternates `hreflang` et figure dans le sitemap.
+
+Le lien du bandeau et le « Voir les événements » de la section d'accueil y mènent. L'admin a un
+lien « Voir la page » en haut du formulaire. La section d'accueil d'une thématique n'apparaît que
+si elle a au moins un événement public : jamais de bloc vide.
 
 ## L'habillage Millénaire
 
@@ -30,7 +53,7 @@ Il est dans `components/skins/millennium/` :
 
 | Fichier      | Rôle                                                                                                                                                                                      |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ribbon.tsx` | Bandeau rouge au-dessus de l'en-tête : emblème, titre, dates, lien vers les événements de la thématique. C'est une région `complementary` nommée par le titre.                            |
+| `ribbon.tsx` | Bandeau rouge au-dessus de l'en-tête : emblème, titre, dates, lien vers la page de la thématique. Textes réglables dans l'admin. C'est une région `complementary` nommée par le titre.    |
 | `frieze.tsx` | Frise de la Tapisserie de Bayeux : photographies de ses vraies bordures, la haute sous l'en-tête, la basse au-dessus du pied de page. Décorative : `aria-hidden`, masquée à l'impression. |
 | `copy.ts`    | Textes FR et EN de l'habillage.                                                                                                                                                           |
 | `index.ts`   | Emplacements utilisés (`beforeHeader`, `afterHeader`, `beforeFooter`).                                                                                                                    |
@@ -83,12 +106,29 @@ Pour changer d'images, rester sur des photos CC0 ou domaine public dont la page 
 vérifiée. Ne pas reprendre les numérisations du musée de Bayeux : les conditions d'utilisation de
 son site encadrent leur réutilisation.
 
-Le contraste du bandeau est de 8,5:1 (crème `#f4ebd9` sur rouge `#7f1d1d`). Il n'y a aucune
-animation.
+Le contraste du bandeau est de 8,5:1 (crème `#f4ebd9` sur rouge `#7f1d1d`). Rien ne bouge
+de soi-même.
+
+### Les deux clins d'œil
+
+Purement décoratifs (`aria-hidden`), sans effet sur la mise en page, et entièrement désactivés
+avec `prefers-reduced-motion: reduce` :
+
+- **Tituli** : au survol d'une frise, une inscription latine apparaît en son centre, à la manière
+  des légendes brodées de la Tapisserie : « ISTI · MIRANT · STELLA » (« ceux-ci admirent
+  l'étoile », scène 32, la comète de Halley) en haut, « HIC · WILLELM · DUX » (« ici le duc
+  Guillaume ») en bas. Pur CSS (`.millennium-titulus`, `app/globals.css`).
+- **1066** : taper 1066 au clavier, hors d'un champ de saisie (`input`, `textarea`, `select`,
+  `contenteditable`), fait traverser l'écran à la comète de Halley, une seule fois (3,4 s), puis
+  elle est retirée du DOM. Le code est dans `halley-comet.tsx` ; la comète est un SVG dessiné aux
+  couleurs des laines de la Tapisserie (ocre, garance, vert sauge, contours indigo, points de
+  couchure), pas une photo détourée : un détourage propre de la comète photographiée sur fond
+  sombre n'était pas fiable.
 
 ## Travailler un habillage
 
-1. Les composants reçoivent `{ locale, themeSlug, slot }` (`components/skins/types.ts`).
+1. Les composants reçoivent `{ locale, themeSlug, logo, texts, slot }`
+   (`components/skins/types.ts`).
 2. Les emplacements sont posés dans `app/[locale]/(public)/layout.tsx` par `<SkinSlot>`. Pour
    un nouvel emplacement, l'ajouter au type `SkinSlot`, puis dans le layout.
 3. La racine du site porte `data-skin="millennium"` tant que l'habillage est actif. Un style

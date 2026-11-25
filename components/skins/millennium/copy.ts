@@ -1,6 +1,10 @@
 import type { Locale } from "@/lib/i18n/config"
+import { EMPTY_SKIN_TEXTS, type SkinTexts } from "@/lib/skins/texts"
 
-/** Texts live with the skin so that removing its folder removes them too. */
+/**
+ * Default texts live with the skin so that removing its folder removes them too.
+ * Editors override them from the theme form ("Période et habillage").
+ */
 const COPY = {
   fr: {
     title: "Millénaire de Guillaume le Conquérant",
@@ -14,4 +18,8 @@ const COPY = {
   },
 } as const
 
-export const millenniumCopy = (locale: Locale) => COPY[locale]
+export const millenniumCopy = (locale: Locale, texts: SkinTexts = EMPTY_SKIN_TEXTS) => ({
+  title: texts.title ?? COPY[locale].title,
+  dates: texts.dates ?? COPY[locale].dates,
+  cta: texts.cta ?? COPY[locale].cta,
+})

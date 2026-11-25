@@ -95,9 +95,7 @@
     },
     "theme": {
       "marker": "Fil rouge {year}",
-      "viewAll": "Voir les événements",
-      "soon": "Les lieux participants seront annoncés prochainement.",
-      "browse": "Parcourir le programme"
+      "viewAll": "Voir les événements"
     }
   },
   "a11y": {
@@ -598,5 +596,12 @@
     "socialTitle": "Suivre le site",
     "associationsTitle": "Associations partenaires",
     "socialLink": "{network} de {place}"
+  },
+  "themePage": {
+    "marker": "Thématique",
+    "eventsMarker": "{count, plural, =1 {1 événement} other {# événements}}",
+    "eventsTitle": "Les lieux à découvrir",
+    "viewAll": "Voir les {count} événements dans le programme",
+    "browse": "Parcourir le programme"
   }
 }

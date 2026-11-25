@@ -95,9 +95,7 @@
     },
     "theme": {
       "marker": "{year} common thread",
-      "viewAll": "See the events",
-      "soon": "Participating places will be announced soon.",
-      "browse": "Browse the programme"
+      "viewAll": "See the events"
     }
   },
   "a11y": {
@@ -598,5 +596,12 @@
     "socialTitle": "Follow the site",
     "associationsTitle": "Partner associations",
     "socialLink": "{place} on {network}"
+  },
+  "themePage": {
+    "marker": "Theme",
+    "eventsMarker": "{count, plural, =1 {1 event} other {# events}}",
+    "eventsTitle": "Places to discover",
+    "viewAll": "See all {count} events in the programme",
+    "browse": "Browse the programme"
   }
 }

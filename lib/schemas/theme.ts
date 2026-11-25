@@ -42,6 +42,14 @@ export const themeSchema = z.object({
     .default("")
     .refine((value) => value === "" || isSkinKey(value), "Habillage inconnu"),
   skinLogo: assetImage,
+  // Ribbon texts of the skin; empty keeps the skin's default (EN falls back to FR).
+  ribbonTitleFr: optionalText(80),
+  ribbonTitleEn: optionalText(80),
+  ribbonDatesFr: optionalText(40),
+  ribbonDatesEn: optionalText(40),
+  ribbonCtaFr: optionalText(60),
+  ribbonCtaEn: optionalText(60),
+  coverImage: assetImage,
   order: z.coerce.number().int().min(0).default(0),
 })
 

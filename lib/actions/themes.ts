@@ -66,6 +66,13 @@ const extractThemeFormData = (formData: FormData) => ({
   years: (formData.get("years") as string) ?? "",
   skin: (formData.get("skin") as string) ?? "",
   skinLogo: (formData.get("skinLogo") as string) ?? "",
+  ribbonTitleFr: (formData.get("ribbonTitleFr") as string) ?? "",
+  ribbonTitleEn: (formData.get("ribbonTitleEn") as string) ?? "",
+  ribbonDatesFr: (formData.get("ribbonDatesFr") as string) ?? "",
+  ribbonDatesEn: (formData.get("ribbonDatesEn") as string) ?? "",
+  ribbonCtaFr: (formData.get("ribbonCtaFr") as string) ?? "",
+  ribbonCtaEn: (formData.get("ribbonCtaEn") as string) ?? "",
+  coverImage: (formData.get("coverImage") as string) ?? "",
 })
 
 const parseTheme = async (formData: FormData, id?: string) => {
@@ -107,6 +114,13 @@ const parseTheme = async (formData: FormData, id?: string) => {
       years: parseThemeYears(data.years) ?? [],
       skin: data.skin || null,
       skinLogo: data.skinLogo || null,
+      ribbonTitleFr: data.ribbonTitleFr?.trim() || null,
+      ribbonTitleEn: data.ribbonTitleEn?.trim() || null,
+      ribbonDatesFr: data.ribbonDatesFr?.trim() || null,
+      ribbonDatesEn: data.ribbonDatesEn?.trim() || null,
+      ribbonCtaFr: data.ribbonCtaFr?.trim() || null,
+      ribbonCtaEn: data.ribbonCtaEn?.trim() || null,
+      coverImage: data.coverImage || null,
     },
   }
 }

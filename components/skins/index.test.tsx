@@ -12,7 +12,21 @@ vi.mock("@/lib/i18n/routing", () => ({
 
 import { SkinSlot } from "@/components/skins"
 
-const millennium = { key: "millennium" as const, themeSlug: "millenaire", logo: null }
+const NO_TEXTS = {
+  ribbonTitleFr: null,
+  ribbonTitleEn: null,
+  ribbonDatesFr: null,
+  ribbonDatesEn: null,
+  ribbonCtaFr: null,
+  ribbonCtaEn: null,
+}
+
+const millennium = {
+  key: "millennium" as const,
+  themeSlug: "millenaire",
+  logo: null,
+  texts: NO_TEXTS,
+}
 
 describe("SkinSlot", () => {
   it("renders nothing without an active skin", () => {
@@ -24,7 +38,9 @@ describe("SkinSlot", () => {
       <SkinSlot skin={millennium} slot="beforeHeader" locale="en" />
     )
     expect(html).toContain('<aside aria-label="Millennium of William the Conqueror"')
-    expect(html).toContain('href="/fr/evenements?theme=millenaire"')
+    expect(html).toContain('href="/fr/thematique/millenaire"')
+    expect(html).toContain("1027 – 2027")
+    expect(html).toContain("Millennium events")
     expect(html).toContain('alt=""')
     expect(html).toContain('src="/themes/millennium-emblem.svg"')
   })
@@ -39,6 +55,37 @@ describe("SkinSlot", () => {
     )
     expect(html).toContain('src="/uploads/millenaire-officiel.png"')
     expect(html).not.toContain("millennium-emblem.svg")
+  })
+
+  it("uses the ribbon texts from the theme form, English falling back to French", () => {
+    const skin = {
+      ...millennium,
+      texts: {
+        ...NO_TEXTS,
+        ribbonTitleFr: "Mille ans de Guillaume",
+        ribbonDatesFr: "2027",
+        ribbonCtaEn: "See the programme",
+      },
+    }
+    const fr = renderToStaticMarkup(<SkinSlot skin={skin} slot="beforeHeader" locale="fr" />)
+    const en = renderToStaticMarkup(<SkinSlot skin={skin} slot="beforeHeader" locale="en" />)
+
+    expect(fr).toContain('aria-label="Mille ans de Guillaume"')
+    expect(fr).toContain(">2027<")
+    expect(fr).toContain("Les événements du millénaire")
+    expect(en).toContain('aria-label="Mille ans de Guillaume"')
+    expect(en).toContain("See the programme")
+  })
+
+  it("stitches a Latin titulus on each frieze", () => {
+    const header = renderToStaticMarkup(
+      <SkinSlot skin={millennium} slot="afterHeader" locale="fr" />
+    )
+    const footer = renderToStaticMarkup(
+      <SkinSlot skin={millennium} slot="beforeFooter" locale="fr" />
+    )
+    expect(header).toContain("ISTI · MIRANT · STELLA")
+    expect(footer).toContain("HIC · WILLELM · DUX")
   })
 
   it("keeps the frieze out of the accessibility tree", () => {

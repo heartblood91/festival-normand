@@ -6,8 +6,8 @@ import type { SkinSlotProps } from "@/components/skins/types"
 const EXAMPLE_LOGO = "/themes/millennium-emblem.svg"
 
 /** Heraldic red band above the header; scrolls away with the page. */
-export const MillenniumRibbon = ({ locale, themeSlug, logo }: SkinSlotProps) => {
-  const copy = millenniumCopy(locale)
+export const MillenniumRibbon = ({ locale, themeSlug, logo, texts }: SkinSlotProps) => {
+  const copy = millenniumCopy(locale, texts)
   return (
     <aside
       aria-label={copy.title}
@@ -30,7 +30,7 @@ export const MillenniumRibbon = ({ locale, themeSlug, logo }: SkinSlotProps) => 
           </span>
         </p>
         <Link
-          href={`/evenements?theme=${encodeURIComponent(themeSlug)}`}
+          href={`/thematique/${encodeURIComponent(themeSlug)}`}
           className="inline-flex min-h-11 items-center gap-2 text-sm font-medium underline decoration-[#f59e0b] underline-offset-4 hover:decoration-2 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f4ebd9]"
         >
           {copy.cta}
