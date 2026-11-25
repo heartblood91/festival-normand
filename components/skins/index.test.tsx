@@ -46,6 +46,21 @@ describe("SkinSlot", () => {
       <SkinSlot skin={millennium} slot="beforeFooter" locale="fr" />
     )
     expect(html).toMatch(/^<div aria-hidden="true"/)
-    expect(html).toContain('id="millennium-frieze-beforeFooter"')
+    expect(html).toContain('data-millennium-frieze="beforeFooter"')
+    expect(html).toContain('alt=""')
+  })
+
+  it("puts the tapestry's upper border under the header and its lower border above the footer", () => {
+    const header = renderToStaticMarkup(
+      <SkinSlot skin={millennium} slot="afterHeader" locale="fr" />
+    )
+    const footer = renderToStaticMarkup(
+      <SkinSlot skin={millennium} slot="beforeFooter" locale="fr" />
+    )
+    expect(header).toContain('srcSet="/themes/millennium-frieze-upper.avif"')
+    expect(header).toContain('loading="eager"')
+    expect(footer).toContain('srcSet="/themes/millennium-frieze-lower.avif"')
+    expect(footer).toContain('src="/themes/millennium-frieze-lower.webp"')
+    expect(footer).toContain('loading="lazy"')
   })
 })

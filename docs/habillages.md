@@ -28,17 +28,60 @@ l'habillage « Millénaire de Guillaume le Conquérant », sauf si un éditeur l
 
 Il est dans `components/skins/millennium/` :
 
-| Fichier      | Rôle                                                                                                                                                           |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ribbon.tsx` | Bandeau rouge au-dessus de l'en-tête : emblème, titre, dates, lien vers les événements de la thématique. C'est une région `complementary` nommée par le titre. |
-| `frieze.tsx` | Frise brodée façon Tapisserie de Bayeux (drakkar, donjon), sous l'en-tête et au-dessus du pied de page. Décorative : `aria-hidden`, masquée à l'impression.    |
-| `copy.ts`    | Textes FR et EN de l'habillage.                                                                                                                                |
-| `index.ts`   | Emplacements utilisés (`beforeHeader`, `afterHeader`, `beforeFooter`).                                                                                         |
+| Fichier      | Rôle                                                                                                                                                                                      |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ribbon.tsx` | Bandeau rouge au-dessus de l'en-tête : emblème, titre, dates, lien vers les événements de la thématique. C'est une région `complementary` nommée par le titre.                            |
+| `frieze.tsx` | Frise de la Tapisserie de Bayeux : photographies de ses vraies bordures, la haute sous l'en-tête, la basse au-dessus du pied de page. Décorative : `aria-hidden`, masquée à l'impression. |
+| `copy.ts`    | Textes FR et EN de l'habillage.                                                                                                                                                           |
+| `index.ts`   | Emplacements utilisés (`beforeHeader`, `afterHeader`, `beforeFooter`).                                                                                                                    |
 
 Les visuels sont dans `public/themes/` : `millennium-emblem.svg` (bandeau),
 `millennium-marker.svg` (épingle de carte) et `millennium-wordmark.svg` (logotype avec texte,
 pour la communication). Ils ont été dessinés pour le site : écu rouge, donjon crénelé, bougie.
 Ils ne reprennent pas le logo officiel « MILLENIUM – 2027 » de la Région.
+
+### La frise
+
+La « frise officielle » du Millénaire est la Tapisserie de Bayeux elle-même : l'identité
+visuelle de la Région (logo, aplats rouges et noirs) n'a pas de frise. La frise du site est donc
+faite de **vraies photographies** des bordures de la Tapisserie, pas d'un dessin :
+
+- `millennium-frieze-upper.avif` / `.webp` : bordure haute (animaux affrontés, bandes obliques),
+  tirée des scènes 19 (Dinan), 51 (Hastings) et 23 (serment d'Harold) ;
+- `millennium-frieze-lower.avif` / `.webp` : bordure basse, tirée des scènes 51, 55 (les
+  archers) et 19.
+
+La bordure haute est sous l'en-tête et la basse au-dessus du pied de page : la page se lit
+comme la scène principale entre les deux. Chaque bande est encadrée d'un filet ambré
+(`border-primary/40`) sur fond `ed-bg-deep`, comme une pièce éclairée dans une vitrine.
+
+Chaque image fait 3820 × 112 px, sans répétition. Elle est centrée et affichée à 44 px de haut
+sur mobile (le milieu de la bande : oiseaux affrontés en haut, archers en bas) et à 56 px dès la
+tablette (presque toute la bande sur un écran de 1920 px). Au-delà, ses bords se fondent dans le
+fond. La hauteur est fixe : pas de décalage de mise en page. La bande du haut est chargée tout de
+suite, celle du bas en différé (`loading="lazy"`). L'AVIF pèse 44 et 54 Ko, le WebP de secours
+58 et 60 Ko.
+
+Préparation (non versionnée) : chaque bordure a été redressée sur son fil de séparation rouge,
+ramenée à la même hauteur et à la même teinte de lin, puis les morceaux ont été raccordés dans
+des zones de lin nu, avec un fondu de quelques pixels.
+
+Captures dans `docs/screenshots/frieze-v2/` : accueil en 1920 px (haut et pied de page), en
+390 px, et `reference-side-by-side.png`, qui place la bande du site sous la photo de la scène
+dont elle est tirée.
+
+**Source et licence.** Photos de Myrabella sur Wikimedia Commons, versées dans le domaine public
+(`{{Licensed-PD-Art|1=PD-old-100-expired|2=CC-zero}}`) ; l'œuvre (XIe siècle) est elle-même dans
+le domaine public. Aucune mention n'est obligatoire, le crédit est gardé ici :
+
+- https://commons.wikimedia.org/wiki/File:Bayeux_Tapestry_scene19_Dinan.jpg
+- https://commons.wikimedia.org/wiki/File:Bayeux_Tapestry_scene23_Harold_oath_William.jpg
+- https://commons.wikimedia.org/wiki/File:Bayeux_Tapestry_scene51_Battle_of_Hastings_Norman_knights_and_archers.jpg
+- https://commons.wikimedia.org/wiki/File:Bayeux_Tapestry_scene55_William_Hastings_battlefield.jpg
+
+Pour changer d'images, rester sur des photos CC0 ou domaine public dont la page Commons a été
+vérifiée. Ne pas reprendre les numérisations du musée de Bayeux : les conditions d'utilisation de
+son site encadrent leur réutilisation.
 
 Le contraste du bandeau est de 8,5:1 (crème `#f4ebd9` sur rouge `#7f1d1d`). Il n'y a aucune
 animation.
@@ -65,8 +108,8 @@ Pour ajouter un autre habillage : un dossier `components/skins/<clé>/`, une ent
   2. retirer `millennium` de `lib/skins/registry.ts` et de `components/skins/index.tsx` ;
   3. retirer le premier test « dresses the 2027 site » de `e2e/skins.spec.ts`, ou le fichier si
      plus aucun habillage n'existe ;
-  4. facultatif : supprimer `millennium-emblem.svg` et `millennium-wordmark.svg` de
-     `public/themes/`.
+  4. facultatif : supprimer `millennium-emblem.svg`, `millennium-wordmark.svg` et les quatre
+     `millennium-frieze-*` (`.avif`, `.webp`) de `public/themes/`.
 
   Un thème qui pointe encore vers `millennium` en base affiche alors le site normal : la clé
   inconnue est ignorée. Aucune migration n'est nécessaire.

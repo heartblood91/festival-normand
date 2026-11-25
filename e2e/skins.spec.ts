@@ -44,9 +44,14 @@ test.describe("Millennium skin", () => {
     await expect(page.locator('[data-skin="millennium"]')).toBeVisible()
     await expect(ribbonLink(page)).toHaveAttribute("href", "/fr/evenements?theme=millennium")
     await expect(ribbonLogo(page)).toHaveAttribute("src", EXAMPLE_LOGO)
-    await expect(page.locator('[aria-hidden="true"] pattern[id^="millennium-frieze"]')).toHaveCount(
-      2
-    )
+    await expect(page.locator('[aria-hidden="true"][data-millennium-frieze]')).toHaveCount(2)
+    await expect
+      .poll(() =>
+        page
+          .locator('[data-millennium-frieze="afterHeader"] img')
+          .evaluate((img: HTMLImageElement) => img.naturalWidth)
+      )
+      .toBeGreaterThan(0)
 
     await page.goto("/en/contact")
     await expect(

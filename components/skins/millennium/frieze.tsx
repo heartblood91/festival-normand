@@ -1,53 +1,37 @@
 import type { SkinSlotProps } from "@/components/skins/types"
 
-const LINEN = "#efe4cc"
-const WOOL_RED = "#9b2c1c"
-const WOOL_OCHRE = "#c08a2e"
-const WOOL_GREEN = "#5f6f3a"
-const WOOL_BLUE = "#2f3e6b"
+// Photographs of the Bayeux Tapestry's own borders (public domain, credits in
+// docs/habillages.md): the upper border runs under the header and the lower one above
+// the footer, so the page in between reads as the tapestry's main scene.
+const UPPER_BORDER = "/themes/millennium-frieze-upper"
+const LOWER_BORDER = "/themes/millennium-frieze-lower"
+const BAND_WIDTH = 3820
+const BAND_HEIGHT = 112
 
-/** One repeat of the band: a longship on stitched waves, then a castle keep. */
-const Motif = () => (
-  <>
-    <rect width="160" height="36" fill={LINEN} />
-    <path d="M0 3H160M0 33H160" stroke={WOOL_RED} strokeWidth="2" strokeDasharray="5 3" />
-    <path
-      d="M4 29 Q12 26 20 29 T36 29 T52 29 T68 29 T84 29"
-      fill="none"
-      stroke={WOOL_BLUE}
-      strokeWidth="1.5"
-      strokeDasharray="3 2"
-    />
-    <path d="M14 23 Q44 30 74 23 L70 27 Q44 33 18 27 Z" fill={WOOL_OCHRE} />
-    <path d="M14 23 Q9 18 13 13" fill="none" stroke={WOOL_OCHRE} strokeWidth="2" />
-    <path d="M74 23 Q79 18 75 13" fill="none" stroke={WOOL_OCHRE} strokeWidth="2" />
-    <path d="M44 8V25" stroke={WOOL_BLUE} strokeWidth="1.5" />
-    <path d="M34 10H54V21Q44 23 34 21Z" fill={WOOL_RED} />
-    <path d="M41 10H47V22H41Z" fill={WOOL_GREEN} />
-    <circle cx="26" cy="25" r="1.6" fill={WOOL_BLUE} />
-    <circle cx="36" cy="26" r="1.6" fill={WOOL_GREEN} />
-    <circle cx="52" cy="26" r="1.6" fill={WOOL_BLUE} />
-    <circle cx="62" cy="25" r="1.6" fill={WOOL_GREEN} />
-    <path d="M100 30V15H104V11H108V15H112V11H116V15H120V11H124V15H128V30Z" fill={WOOL_GREEN} />
-    <path d="M111 30V23Q114 20 117 23V30Z" fill={LINEN} />
-    <path d="M94 30H134" stroke={WOOL_OCHRE} strokeWidth="2" />
-    <path d="M144 12 L147 18 L144 24 L141 18Z" fill={WOOL_RED} />
-  </>
-)
-
-/** Decorative embroidered band in the spirit of the Bayeux Tapestry. */
+/** Embroidered border of the Bayeux Tapestry, framed like a lit museum showcase. */
 export const MillenniumFrieze = ({ slot }: SkinSlotProps) => {
-  const patternId = `millennium-frieze-${slot}`
+  const isFooter = slot === "beforeFooter"
+  const band = isFooter ? LOWER_BORDER : UPPER_BORDER
   return (
-    <div aria-hidden="true" className="w-full print:hidden">
-      <svg className="block h-9 w-full" focusable="false">
-        <defs>
-          <pattern id={patternId} width="160" height="36" patternUnits="userSpaceOnUse">
-            <Motif />
-          </pattern>
-        </defs>
-        <rect width="100%" height="36" fill={`url(#${patternId})`} />
-      </svg>
+    <div
+      aria-hidden="true"
+      data-millennium-frieze={slot}
+      className="bg-ed-bg-deep border-primary/40 relative h-11 overflow-hidden border-y after:pointer-events-none after:absolute after:inset-0 after:shadow-[inset_0_0_12px_rgba(6,9,26,0.6)] md:h-14 print:hidden"
+    >
+      <picture>
+        <source type="image/avif" srcSet={`${band}.avif`} />
+        <img
+          src={`${band}.webp`}
+          alt=""
+          width={BAND_WIDTH}
+          height={BAND_HEIGHT}
+          loading={isFooter ? "lazy" : "eager"}
+          fetchPriority="low"
+          decoding="async"
+          draggable={false}
+          className="absolute top-0 left-1/2 h-full w-auto max-w-none -translate-x-1/2 [mask-image:linear-gradient(90deg,transparent,#000_4%,#000_96%,transparent)] select-none"
+        />
+      </picture>
     </div>
   )
 }
