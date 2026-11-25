@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AddressAutocomplete } from "@/components/admin/address-autocomplete"
 import { TourinsoftBanner } from "@/components/admin/events/tourinsoft-banner"
 import { FundraisingSection } from "@/components/admin/events/fundraising-section"
+import { PassPatrimoineSection } from "@/components/admin/events/pass-patrimoine-section"
 import { PublishWizard, type PublishWizardResult } from "@/components/admin/publish/publish-wizard"
 import { FormActionBar } from "@/components/admin/shared/form-action-bar"
 import { CoverImageField } from "@/components/admin/shared/cover-image-field"
@@ -109,6 +110,7 @@ export const EventForm = ({
     title: event?.fundraisingTitle ?? "",
     image: event?.fundraisingImage ?? "",
   })
+  const [passPatrimoineUrl, setPassPatrimoineUrl] = useState(event?.passPatrimoineUrl ?? "")
 
   const draftValues: Record<string, string> = {
     slug,
@@ -133,6 +135,7 @@ export const EventForm = ({
     fundraisingUrl: fundraising.url,
     fundraisingTitle: fundraising.title,
     fundraisingImage: fundraising.image,
+    passPatrimoineUrl,
   }
 
   const { dirty, draft, restoreDraft, discardDraft, markSaved } = useFormDraft({
@@ -163,6 +166,7 @@ export const EventForm = ({
         title: values.fundraisingTitle ?? "",
         image: values.fundraisingImage ?? "",
       })
+      setPassPatrimoineUrl(values.passPatrimoineUrl ?? "")
       setMinDateEnd(values.dateStart ?? minDateEnd)
       // Remounts the address search so it shows the restored address.
       setRestoreCount((count) => count + 1)
@@ -749,6 +753,13 @@ export const EventForm = ({
           value={fundraising}
           onChange={setFundraising}
           suggestions={fundraisingSuggestions}
+          errors={errors}
+        />
+
+        <PassPatrimoineSection
+          value={passPatrimoineUrl}
+          onChange={setPassPatrimoineUrl}
+          place={{ title: titleFr, location, city, postalCode }}
           errors={errors}
         />
 

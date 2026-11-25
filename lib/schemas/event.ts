@@ -1,6 +1,7 @@
 import { z } from "zod"
 import { altTextField, checkImageAlts } from "@/lib/schemas/image-alt"
 import { isFundraisingImageUrl, isFundraisingUrl } from "@/lib/fundraising/fondation"
+import { normalizePassPatrimoineUrl } from "@/lib/pass-patrimoine/url"
 
 export const eventSchema = z
   .object({
@@ -88,6 +89,15 @@ export const eventSchema = z
         (value) => !value || isFundraisingImageUrl(value),
         "L'image doit venir de fondation-patrimoine.org ou de la médiathèque du site"
       )
+      .optional(),
+    passPatrimoineUrl: z
+      .string()
+      .trim()
+      .refine(
+        (value) => !value || normalizePassPatrimoineUrl(value) !== null,
+        "Le lien doit être une fiche https://www.pass-patrimoine.fr/fr/lieux-et-visites/…"
+      )
+      .transform((value) => (value ? normalizePassPatrimoineUrl(value) : ""))
       .optional(),
   })
   .refine(

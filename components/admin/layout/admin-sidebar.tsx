@@ -18,6 +18,7 @@ import {
   ArchiveRestore,
   Users,
   Settings,
+  SlidersHorizontal,
   LogOut,
   ArrowLeft,
 } from "lucide-react"
@@ -123,6 +124,11 @@ const AdminSidebar = ({
       href: `/${locale}/admin/edition`,
       icon: CalendarRange,
       labelKey: "sidebar.edition",
+    },
+    {
+      href: `/${locale}/admin/reglages`,
+      icon: SlidersHorizontal,
+      labelKey: "sidebar.siteSettings",
     },
     {
       href: `/${locale}/admin/recovery`,

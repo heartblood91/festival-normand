@@ -10,6 +10,7 @@ import {
 import { getEventCities } from "@/lib/queries/homepage"
 import { getCurrentEdition } from "@/lib/queries/edition"
 import { getFilterThemes } from "@/lib/queries/themes"
+import { getPassSettings } from "@/lib/queries/site-settings"
 import { formatNight } from "@/lib/festival/edition"
 import {
   defaultProgrammeEdition,
@@ -25,6 +26,7 @@ import { EventsSearchBar } from "@/components/events/events-search-bar"
 import { ViewToggle } from "@/components/events/view-toggle"
 import { EventsMapWrapper } from "@/components/events/events-map-wrapper"
 import { NearbyButton } from "@/components/events/nearby-button"
+import { PassBanner } from "@/components/pass-patrimoine/pass-banner"
 import { Marker } from "@/components/editorial/primitives"
 import { getTranslations } from "next-intl/server"
 import { MapPin } from "lucide-react"
@@ -88,6 +90,7 @@ const parseSearchParams = (params: Record<string, string | string[] | undefined>
     category: getString("category")?.toUpperCase() as Category | undefined,
     department: getString("dept")?.toUpperCase() as Department | undefined,
     accessible: getString("accessible") === "true",
+    passPatrimoine: getString("pass") === "true",
     theme: getString("theme")?.toLowerCase() || undefined,
     page: isNaN(page) || page < 1 ? 1 : page,
     lat: isNaN(lat) ? undefined : lat,
@@ -109,7 +112,14 @@ const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
     preferredEdition === "current" &&
     (await countEditionEvents("current")) === 0
   const programmeEdition: ProgrammeEdition = editionFallback ? "past" : preferredEdition
-  const filters = { ...parseSearchParams(searchParamsData), edition: programmeEdition }
+  const passSettings = await getPassSettings()
+  const parsedParams = parseSearchParams(searchParamsData)
+  const filters = {
+    ...parsedParams,
+    // A stale ?pass=true link must not filter anything once the pass is switched off.
+    passPatrimoine: passSettings.passEnabled && parsedParams.passPatrimoine,
+    edition: programmeEdition,
+  }
 
   const t = await getTranslations()
   const [
@@ -196,6 +206,8 @@ const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
         ) : null}
       </div>
 
+      <PassBanner page="programme" settings={passSettings} locale={locale} />
+
       <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
         {/* Search bar */}
         <div className="mb-6">
@@ -207,7 +219,13 @@ const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
         {/* Filter bar */}
         <div className="mb-6">
           <Suspense>
-            <FilterBar nights={nights} total={total} counts={counts} themes={themes} />
+            <FilterBar
+              nights={nights}
+              total={total}
+              counts={counts}
+              themes={themes}
+              passCount={passSettings.passEnabled ? counts.passPatrimoine : undefined}
+            />
           </Suspense>
         </div>
 
@@ -252,6 +270,7 @@ const EventsPage = async ({ params, searchParams }: EventsPageProps) => {
                       <EventListCard
                         event={event}
                         priority={index < 3}
+                        showPass={passSettings.passEnabled}
                         className="h-full [animation-delay:calc(var(--stagger-index)*50ms)]"
                       />
                     </div>
