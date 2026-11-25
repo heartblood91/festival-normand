@@ -212,7 +212,8 @@
     "geoError": "Impossible de vous localiser. Réessayez dans quelques instants.",
     "dismissError": "Fermer le message d'erreur",
     "theme": "Thématique",
-    "themes": "Thématiques"
+    "themes": "Thématiques",
+    "passPatrimoine": "Sites du Pass Patrimoine"
   },
   "categories": {
     "ILLUMINATIONS": "Illuminations",
@@ -354,7 +355,8 @@
       "surveys": "Questionnaires",
       "gallery": "Retour en images",
       "reviews": "Avis visiteurs",
-      "stats": "Statistiques"
+      "stats": "Statistiques",
+      "siteSettings": "Réglages du site"
     },
     "dashboard": {
       "title": "Tableau de bord",
@@ -598,5 +600,18 @@
     "socialTitle": "Suivre le site",
     "associationsTitle": "Associations partenaires",
     "socialLink": "{network} de {place}"
+  },
+  "passPatrimoine": {
+    "marker": "Pass Patrimoine",
+    "title": "Accessible avec le Pass Patrimoine",
+    "lede": "Ce lieu est partenaire du Pass Patrimoine : un pass annuel qui ouvre plus de 500 sites en France, toute l'année.",
+    "note": "Les conditions d'accès pendant les soirées du festival peuvent différer : vérifiez-les sur la fiche du lieu.",
+    "cta": "Voir la fiche du lieu",
+    "newTab": "(nouvel onglet, pass-patrimoine.fr)",
+    "cardBadge": "Pass Patrimoine",
+    "cardBadgeLabel": "Lieu accessible avec le Pass Patrimoine",
+    "bannerLabel": "Pass Patrimoine",
+    "bannerCta": "Découvrir le Pass",
+    "bannerClose": "Masquer le bandeau du Pass Patrimoine"
   }
 }

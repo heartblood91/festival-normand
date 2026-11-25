@@ -62,7 +62,8 @@ This project uses Ralph (autonomous AI coding loop). When running as Ralph (`cla
 ## Security
 
 - All admin server actions (`lib/actions/{events,news,partners,pages,edition,department-settings,
-ai-publish,translate,registration-links,recovery,text-correction,surveys,gallery,reviews,community}.ts`) call `requireRole("EDITOR")`
+ai-publish,translate,registration-links,recovery,text-correction,surveys,gallery,reviews,community,
+site-settings}.ts`) call `requireRole("EDITOR")`
   first — `"use server"` exposes them as public HTTP endpoints, so the guard is
   the real authorization boundary (middleware only protects page navigation).
   `lib/actions/users.ts` requires `ADMIN`. Keep this invariant when adding new
@@ -80,6 +81,10 @@ ai-publish,translate,registration-links,recovery,text-correction,surveys,gallery
 - The social-page search (`lib/actions/community.ts`) fetches editor-entered websites
   server-side: always go through `lib/events/fetch-public-page.ts` (http(s) on 80/443,
   private/loopback addresses refused at every redirect, size and time caps).
+- `/admin/reglages` (site settings) calls `requireRole("EDITOR")` itself. Pass Patrimoine links
+  are validated by `lib/pass-patrimoine/url.ts`: event links only as
+  `https://www.pass-patrimoine.fr/fr/lieux-et-visites/{slug}` (stored canonical), the banner link
+  as an https page of pass-patrimoine.fr; outbound links use `rel="noopener noreferrer"`.
 - `/admin/stats` calls `requireRole("EDITOR")` itself. Its PostHog reader
   (`lib/analytics/posthog-stats.ts`) uses a server-only personal key
   (`POSTHOG_PERSONAL_API_KEY`, read scope); never expose it with a `NEXT_PUBLIC_` prefix.

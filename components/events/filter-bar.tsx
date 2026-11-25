@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useTranslations } from "next-intl"
-import { ChevronDown, Accessibility, X } from "lucide-react"
+import { ChevronDown, Accessibility, Ticket, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { FilterTheme } from "@/lib/queries/themes"
 
@@ -41,9 +41,11 @@ type FilterBarProps = {
   total?: number
   counts?: FilterCounts
   themes?: FilterTheme[]
+  /** Events with a Pass Patrimoine page; undefined while the pass is switched off. */
+  passCount?: number
 }
 
-const FilterBar = ({ nights, total = 0, counts, themes = [] }: FilterBarProps) => {
+const FilterBar = ({ nights, total = 0, counts, themes = [], passCount }: FilterBarProps) => {
   const router = useRouter()
   const t = useTranslations()
   const searchParams = useSearchParams()
@@ -55,6 +57,11 @@ const FilterBar = ({ nights, total = 0, counts, themes = [] }: FilterBarProps) =
   )
   const [pmrEnabled, setPmrEnabled] = useState(searchParams.get("accessible") === "true")
   const [selectedTheme, setSelectedTheme] = useState(searchParams.get("theme") ?? "")
+  const [passOnly, setPassOnly] = useState(
+    passCount !== undefined && searchParams.get("pass") === "true"
+  )
+  // Never offer a filter that would empty the list.
+  const showPassFilter = passCount !== undefined && (passCount > 0 || passOnly)
 
   const deptRef = useRef<HTMLDivElement>(null)
   const categoryRef = useRef<HTMLDivElement>(null)
@@ -154,6 +161,18 @@ const FilterBar = ({ nights, total = 0, counts, themes = [] }: FilterBarProps) =
     updateUrl(selectedDept, selectedCategory, selectedDates, pmrEnabled, newTheme)
   }
 
+  const handlePassToggle = () => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (passOnly) {
+      params.delete("pass")
+    } else {
+      params.set("pass", "true")
+    }
+    params.delete("page")
+    setPassOnly(!passOnly)
+    router.push(`/evenements?${params}`)
+  }
+
   const clearAll = () => {
     const params = new URLSearchParams()
     // Clearing filters keeps the search and the edition being browsed.
@@ -168,12 +187,18 @@ const FilterBar = ({ nights, total = 0, counts, themes = [] }: FilterBarProps) =
     setSelectedDates([])
     setPmrEnabled(false)
     setSelectedTheme("")
+    setPassOnly(false)
   }
 
   const activeTheme = themes.find((theme) => theme.slug === selectedTheme)
 
   const hasActiveFilters =
-    selectedDept || selectedCategory || selectedDates.length > 0 || pmrEnabled || activeTheme
+    selectedDept ||
+    selectedCategory ||
+    selectedDates.length > 0 ||
+    pmrEnabled ||
+    activeTheme ||
+    passOnly
 
   const getFilterLabel = (type: string, value: string): string => {
     switch (type) {
@@ -230,6 +255,10 @@ const FilterBar = ({ nights, total = 0, counts, themes = [] }: FilterBarProps) =
     })
   }
 
+  if (passOnly) {
+    activeFilters.push({ key: "pass", label: t("filters.passPatrimoine"), type: "pass" })
+  }
+
   const removeFilter = (type: string, value?: string) => {
     if (type === "dept") {
       handleDeptSelect(selectedDept)
@@ -241,6 +270,8 @@ const FilterBar = ({ nights, total = 0, counts, themes = [] }: FilterBarProps) =
       handlePmrToggle()
     } else if (type === "theme") {
       handleThemeToggle(selectedTheme)
+    } else if (type === "pass") {
+      handlePassToggle()
     }
   }
 
@@ -413,6 +444,23 @@ const FilterBar = ({ nights, total = 0, counts, themes = [] }: FilterBarProps) =
             <Accessibility className="size-4" />
             <span className="sr-only">{t("filters.pmr")}</span>
           </button>
+
+          {showPassFilter && (
+            <button
+              onClick={handlePassToggle}
+              className={cn(
+                "focus:ring-primary/50 flex min-h-11 items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-colors focus:ring-2 focus:outline-none sm:text-sm",
+                passOnly
+                  ? "border-primary/30 bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:text-foreground border-white/10 bg-white/5 hover:bg-white/10"
+              )}
+              aria-pressed={passOnly}
+            >
+              <Ticket className="size-4" aria-hidden="true" />
+              {t("filters.passPatrimoine")}
+              <span className="text-muted-foreground text-xs">({passCount})</span>
+            </button>
+          )}
 
           {/* Result counter */}
           <div

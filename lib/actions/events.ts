@@ -147,6 +147,9 @@ export const createEvent = async (formData: FormData): Promise<EventActionResult
           : {}),
         ...fundraisingData(data),
         ...(data.historyUrl === undefined ? {} : { historyUrl: data.historyUrl || null }),
+        ...(data.passPatrimoineUrl === undefined
+          ? {}
+          : { passPatrimoineUrl: data.passPatrimoineUrl || null }),
       },
     })
 
@@ -236,6 +239,9 @@ export const updateEvent = async (id: string, formData: FormData): Promise<Event
           : {}),
         ...fundraisingData(data),
         ...(data.historyUrl === undefined ? {} : { historyUrl: data.historyUrl || null }),
+        ...(data.passPatrimoineUrl === undefined
+          ? {}
+          : { passPatrimoineUrl: data.passPatrimoineUrl || null }),
       },
     })
 
@@ -320,6 +326,9 @@ const extractFormData = (formData: FormData) => ({
     ? String(formData.get("themeIds")).split(",").filter(Boolean)
     : undefined,
   ...(formData.has("historyUrl") ? { historyUrl: String(formData.get("historyUrl")) } : {}),
+  ...(formData.has("passPatrimoineUrl")
+    ? { passPatrimoineUrl: String(formData.get("passPatrimoineUrl")) }
+    : {}),
   // Absent means the form has no collect section: the attached collect is kept.
   ...(formData.has("fundraisingUrl")
     ? {

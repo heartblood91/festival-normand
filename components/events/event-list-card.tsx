@@ -1,20 +1,28 @@
 import { Link } from "@/lib/i18n/routing"
 import { getLocale, getTranslations } from "next-intl/server"
-import { Accessibility, HandHeart } from "lucide-react"
+import { Accessibility, HandHeart, Ticket } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { formatEventDateRange, formatTime } from "@/lib/utils/format-date"
 import { DEFAULT_EVENT_IMAGE } from "@/lib/events/default-image"
 import { EventThumb } from "@/components/editorial/event-thumb"
 import { FavoriteButton } from "@/components/travel-book/favorite-button"
+import { isPassPatrimoineUrl } from "@/lib/pass-patrimoine/url"
 import type { EventListItem } from "@/lib/queries/events"
 
 type EventListCardProps = {
   event: EventListItem
   className?: string
   priority?: boolean
+  /** Pass Patrimoine switched on in the site settings. */
+  showPass?: boolean
 }
 
-const EventListCard = async ({ event, className, priority = false }: EventListCardProps) => {
+const EventListCard = async ({
+  event,
+  className,
+  priority = false,
+  showPass = false,
+}: EventListCardProps) => {
   const locale = await getLocale()
   const t = await getTranslations()
 
@@ -23,7 +31,7 @@ const EventListCard = async ({ event, className, priority = false }: EventListCa
     <div className={cn("animate-fade-in-up relative", className)}>
       <Link
         href={`/evenement/${event.slug}`}
-        className="group bg-ed-bg-soft border-primary/20 hover:border-primary/50 focus-visible:ring-primary/50 flex h-full flex-col border ed-halo focus-visible:ring-2 focus-visible:outline-none"
+        className="group bg-ed-bg-soft border-primary/20 hover:border-primary/50 focus-visible:ring-primary/50 ed-halo flex h-full flex-col border focus-visible:ring-2 focus-visible:outline-none"
       >
         <div className="relative">
           <EventThumb
@@ -66,6 +74,16 @@ const EventListCard = async ({ event, className, priority = false }: EventListCa
             {event.location}
             {event.city ? `, ${event.city}` : ""}
           </p>
+          {showPass && isPassPatrimoineUrl(event.passPatrimoineUrl) ? (
+            <p
+              className="text-primary flex items-center gap-1.5 font-mono text-xs tracking-[0.14em] uppercase"
+              data-testid="pass-patrimoine-card-badge"
+            >
+              <Ticket className="size-3.5" aria-hidden="true" />
+              <span aria-hidden="true">{t("passPatrimoine.cardBadge")}</span>
+              <span className="sr-only">{t("passPatrimoine.cardBadgeLabel")}</span>
+            </p>
+          ) : null}
           <p className="border-primary/20 text-ed-mute mt-auto flex items-center justify-between border-t pt-3 font-mono text-xs tracking-[0.12em] uppercase">
             <span>{formatEventDateRange(event.dateStart, event.dateEnd, locale)}</span>
             {formatTime(event.timeStart ?? undefined) ? (

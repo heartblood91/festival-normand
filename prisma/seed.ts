@@ -1012,6 +1012,16 @@ const seedAdminUser = async () => {
   console.log("Admin user seeded.")
 }
 
+// Everything off until an editor opens /admin/reglages.
+const seedSiteSettings = async () => {
+  await prisma.siteSetting.upsert({
+    where: { key: "pass-patrimoine" },
+    update: {},
+    create: { key: "pass-patrimoine", value: { passEnabled: false, bannerEnabled: false } },
+  })
+  console.log("Site settings seeded.")
+}
+
 const main = async () => {
   console.log("Starting seed...")
   await clearDatabase()
@@ -1021,6 +1031,7 @@ const main = async () => {
   await seedRegistrationLinks()
   await seedPages()
   await seedAdminUser()
+  await seedSiteSettings()
   console.log("Seed complete.")
 }
 

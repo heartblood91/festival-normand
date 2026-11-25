@@ -88,6 +88,24 @@ describe("eventSchema", () => {
     )
   })
 
+  it("keeps a Pass Patrimoine link only for a partner page, in canonical form", () => {
+    const parsed = eventSchema.safeParse({
+      ...validData,
+      passPatrimoineUrl: "https://pass-patrimoine.fr/fr/lieux-et-visites/chateau-de-canon/?x=1",
+    })
+    expect(parsed.data?.passPatrimoineUrl).toBe(
+      "https://www.pass-patrimoine.fr/fr/lieux-et-visites/chateau-de-canon"
+    )
+    expect(
+      eventSchema.safeParse({ ...validData, passPatrimoineUrl: "" }).data?.passPatrimoineUrl
+    ).toBe("")
+    const other = eventSchema.safeParse({
+      ...validData,
+      passPatrimoineUrl: "https://www.pass-patrimoine.fr/fr/offrir",
+    })
+    expect(other.error?.flatten().fieldErrors.passPatrimoineUrl?.[0]).toMatch(/lieux-et-visites/)
+  })
+
   it("accepts a collect image from the Fondation CDN only", () => {
     const base = {
       ...validData,

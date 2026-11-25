@@ -29,6 +29,8 @@ import { PastRevive } from "@/components/home/editorial/past-revive"
 import { GalleryStrip } from "@/components/home/editorial/gallery-strip"
 import { ThemeSpotlight } from "@/components/home/editorial/theme-spotlight"
 import { Reveal } from "@/components/motion/reveal"
+import { PassBanner } from "@/components/pass-patrimoine/pass-banner"
+import { getPassSettings } from "@/lib/queries/site-settings"
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pierresenlumieres.fr"
 
@@ -68,15 +70,17 @@ const HomePage = async ({ params }: HomePageProps) => {
   const edition = await getCurrentEdition()
   const mode = getEditionMode(edition)
 
-  const [featured, news, partners, programme, stats, themes, galleryYears] = await Promise.all([
-    getFeaturedEvents(locale, edition),
-    getLatestNews(locale),
-    getPartners(locale),
-    getProgrammeTeaser(locale, edition),
-    getHomeStats(edition),
-    getHomeThemes(locale, edition),
-    getGalleryYears(),
-  ])
+  const [featured, news, partners, programme, stats, themes, galleryYears, passSettings] =
+    await Promise.all([
+      getFeaturedEvents(locale, edition),
+      getLatestNews(locale),
+      getPartners(locale),
+      getProgrammeTeaser(locale, edition),
+      getHomeStats(edition),
+      getHomeThemes(locale, edition),
+      getGalleryYears(),
+      getPassSettings(),
+    ])
   // After the festival, its own photos; before it, the latest past edition's.
   const galleryYear = galleryYears.find((year) =>
     mode === "bilan" ? year === edition.year : year < edition.year
@@ -84,13 +88,16 @@ const HomePage = async ({ params }: HomePageProps) => {
   const galleryPhotos = galleryYear ? await getGalleryPhotos(galleryYear, locale, 8) : []
 
   const hero = (
-    <Hero
-      edition={edition}
-      mode={mode}
-      totalPlaces={stats.totalPlaces}
-      countdownDays={getCountdownDays(edition)}
-      live={isDuringFestival(edition)}
-    />
+    <>
+      <Hero
+        edition={edition}
+        mode={mode}
+        totalPlaces={stats.totalPlaces}
+        countdownDays={getCountdownDays(edition)}
+        live={isDuringFestival(edition)}
+      />
+      <PassBanner page="home" settings={passSettings} locale={locale} />
+    </>
   )
 
   // Sequential editorial markers — advance only for sections that actually

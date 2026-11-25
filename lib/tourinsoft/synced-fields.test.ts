@@ -19,6 +19,7 @@ describe("TOURINSOFT_SYNCED_FIELDS", () => {
       "accessible",
       "coverImageAltFr",
       "historyUrl",
+      "passPatrimoineUrl",
     ]) {
       expect(TOURINSOFT_SYNCED_FIELDS).not.toHaveProperty(field)
     }

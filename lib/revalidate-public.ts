@@ -16,6 +16,7 @@ export type PublicCacheTag =
   | "reviews"
   | "surveys"
   | "sitemap"
+  | "settings"
 
 /**
  * Public URLs always carry a locale (/fr/…, /en/…): a path without it matches

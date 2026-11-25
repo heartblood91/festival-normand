@@ -24,6 +24,8 @@ export type EventFilters = {
   category?: Category
   department?: Department
   accessible?: boolean
+  /** Only sites with a Pass Patrimoine page; callers pass it only while the pass is enabled. */
+  passPatrimoine?: boolean
   /** Theme slug */
   theme?: string
   /** Current edition, earlier editions or both; no condition when omitted. */
@@ -63,6 +65,7 @@ export const EVENT_LIST_SELECT = {
   latitude: true,
   longitude: true,
   fundraisingUrl: true,
+  passPatrimoineUrl: true,
 } as const
 
 /** Events overlapping at least one of the given local calendar days. */
@@ -100,6 +103,7 @@ const buildFilterWhere = async (
   if (cat) where.category = cat as Category
   if (dept) where.department = dept as Department
   if (accessible) where.accessible = true
+  if (filters.passPatrimoine) where.passPatrimoineUrl = { not: null }
   if (theme) {
     where.themes = { some: { slug: theme, ...activeThemeWhere((await getCurrentEdition()).year) } }
   }
@@ -376,7 +380,7 @@ export const getFilterCounts = async (filters: EventFilters = {}) => {
       const deptValues = ["CALVADOS", "EURE", "MANCHE", "ORNE", "SEINE_MARITIME"]
       const catValues = ["ILLUMINATIONS", "EXPOSITIONS", "ANIMATIONS", "VISITES"]
 
-      const [deptCounts, catCounts] = await Promise.all([
+      const [deptCounts, catCounts, passCount] = await Promise.all([
         Promise.all(
           deptValues.map(async (d) =>
             prisma.event.count({
@@ -391,6 +395,12 @@ export const getFilterCounts = async (filters: EventFilters = {}) => {
             })
           )
         ),
+        prisma.event.count({
+          where: {
+            ...(await buildFilterWhere({ ...filters, passPatrimoine: false })),
+            passPatrimoineUrl: { not: null },
+          },
+        }),
       ])
 
       const departments: Record<string, number> = {}
@@ -402,7 +412,7 @@ export const getFilterCounts = async (filters: EventFilters = {}) => {
         categories[c] = catCounts[i]
       })
 
-      return { departments, categories }
+      return { departments, categories, passPatrimoine: passCount }
     },
     ["filter-counts", cacheKey, String(year)],
     { revalidate: 300, tags: ["events"] }

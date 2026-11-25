@@ -212,7 +212,8 @@
     "geoError": "Unable to locate you. Please try again in a moment.",
     "dismissError": "Dismiss error message",
     "theme": "Theme",
-    "themes": "Themes"
+    "themes": "Themes",
+    "passPatrimoine": "Pass Patrimoine sites"
   },
   "categories": {
     "ILLUMINATIONS": "Light shows",
@@ -354,7 +355,8 @@
       "surveys": "Surveys",
       "gallery": "Photo gallery",
       "reviews": "Visitor reviews",
-      "stats": "Statistics"
+      "stats": "Statistics",
+      "siteSettings": "Site settings"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -598,5 +600,18 @@
     "socialTitle": "Follow the site",
     "associationsTitle": "Partner associations",
     "socialLink": "{place} on {network}"
+  },
+  "passPatrimoine": {
+    "marker": "Pass Patrimoine",
+    "title": "Included in the Pass Patrimoine",
+    "lede": "This site is a partner of the Pass Patrimoine: a yearly pass that opens more than 500 heritage sites across France, all year round.",
+    "note": "Entry conditions during the festival nights may differ: check them on the site's page.",
+    "cta": "See the site's page",
+    "newTab": "(new tab, pass-patrimoine.fr)",
+    "cardBadge": "Pass Patrimoine",
+    "cardBadgeLabel": "Site included in the Pass Patrimoine",
+    "bannerLabel": "Pass Patrimoine",
+    "bannerCta": "Discover the Pass",
+    "bannerClose": "Hide the Pass Patrimoine banner"
   }
 }

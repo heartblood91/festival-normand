@@ -58,6 +58,8 @@ model Event {
   historyUrl             String?                 @map("history_url")
   /// Official social pages of the site. Editor-owned: the Tourinsoft sync never writes it.
   socialLinks            String[]                @default([]) @map("social_links")
+  /// Pass Patrimoine page of the site (free entry for pass holders). Editor-owned: the Tourinsoft sync never writes it.
+  passPatrimoineUrl      String?                 @map("pass_patrimoine_url")
   /// Last search of the official website for social pages, so a bulk search skips it.
   socialLinksCheckedAt   DateTime?               @map("social_links_checked_at")
   associations           EventAssociation[]
@@ -238,6 +240,16 @@ model RegistrationLink {
 
 // Per-department settings. `publishFrom` is the M1 embargo: upcoming
 // Tourinsoft-imported events of the department stay hidden until that date.
+/// Site-wide editor settings, one JSON document per group (lib/site-settings).
+/// A missing or invalid row means the group's defaults: every feature off.
+model SiteSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("site_settings")
+}
+
 model DepartmentSetting {
   department  Department @id
   publishFrom DateTime?  @map("publish_from")

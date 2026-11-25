@@ -16,6 +16,9 @@ import { DEFAULT_EVENT_IMAGE } from "@/lib/events/default-image"
 import { isInNormandyBounds } from "@/lib/geo/normandy"
 import { FavoriteButton } from "@/components/travel-book/favorite-button"
 import { FundraisingCallout } from "@/components/events/fundraising-callout"
+import { PassPatrimoineCallout } from "@/components/events/pass-patrimoine-callout"
+import { PassBanner } from "@/components/pass-patrimoine/pass-banner"
+import { getPassSettings } from "@/lib/queries/site-settings"
 import { HistoryLink } from "@/components/event-detail/history-link"
 import { EventReviews } from "@/components/event-detail/event-reviews"
 import { EventCommunity } from "@/components/event-detail/event-community"
@@ -88,6 +91,7 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
   const nearby = pickNearbySuggestions(event, neighbours)
   const archivedYear = archivedEditionYear(event.dateStart, (await getCurrentEdition()).year)
   const reviews = await getEventReviews(event.id)
+  const passSettings = await getPassSettings()
   const reviewsOpen = event.dateStart !== null && new Date(event.dateStart) <= new Date()
 
   // Prefer the relational photos (with credit); fall back to coverImage/images
@@ -101,173 +105,195 @@ const EventDetailPage = async ({ params }: EventDetailPageProps) => {
   const paragraphs = event.description.split("\n").filter((p) => p.trim().length > 0)
 
   return (
-    <article>
-      {/* Breadcrumb */}
-      <nav
-        aria-label={t("a11y.breadcrumb")}
-        className="border-primary/15 bg-background border-b px-4 py-4 md:px-6"
-      >
-        <ol className="text-ed-mute mx-auto flex max-w-7xl flex-wrap items-center gap-2.5 font-mono text-xs tracking-[0.16em] uppercase">
-          <li>
-            <Link
-              href="/"
-              className="hover:text-primary inline-flex items-center transition-colors"
-            >
-              {t("events.breadcrumbHome")}
-            </Link>
-          </li>
-          <li aria-hidden="true" className="text-primary/50">
-            ›
-          </li>
-          <li>
-            <Link
-              href="/evenements"
-              className="hover:text-primary inline-flex items-center transition-colors"
-            >
-              {t("nav.events")}
-            </Link>
-          </li>
-          <li aria-hidden="true" className="text-primary/50">
-            ›
-          </li>
-          <li aria-current="page" className="text-primary truncate">
-            {event.title}
-          </li>
-        </ol>
-      </nav>
-
-      {/* Hero image — credits must stay visible whenever a photo is shown */}
-      <figure className="relative h-[42vh] min-h-72 w-full overflow-hidden md:h-[55vh]">
-        <Image src={hero.url} alt={heroAlt} fill sizes="100vw" priority className="object-cover" />
-        <div
-          className="from-ed-bg-deep/60 to-background absolute inset-0 bg-gradient-to-b via-transparent"
-          aria-hidden="true"
-        />
-        {hero.credit ? (
-          <figcaption className="bg-ed-bg-deep/70 text-ed-bone absolute right-3 bottom-3 px-2 py-0.5 font-sans text-xs backdrop-blur-sm">
-            © {hero.credit}
-          </figcaption>
-        ) : null}
-      </figure>
-
-      {/* Title + practical info */}
-      <div className="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-14">
-        <div className="grid gap-10 lg:grid-cols-[1fr_360px] lg:gap-16">
-          <div>
-            <div className="mb-5 flex flex-wrap gap-2.5">
+    <>
+      <article>
+        {/* Breadcrumb */}
+        <nav
+          aria-label={t("a11y.breadcrumb")}
+          className="border-primary/15 bg-background border-b px-4 py-4 md:px-6"
+        >
+          <ol className="text-ed-mute mx-auto flex max-w-7xl flex-wrap items-center gap-2.5 font-mono text-xs tracking-[0.16em] uppercase">
+            <li>
               <Link
-                href={`/evenements?category=${event.category.toLowerCase()}`}
-                className="border-primary/50 text-primary hover:bg-primary/10 focus-visible:ring-primary/50 border px-3 py-1.5 font-sans text-xs tracking-[0.16em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                href="/"
+                className="hover:text-primary inline-flex items-center transition-colors"
               >
-                {t(`categories.${event.category}`)}
+                {t("events.breadcrumbHome")}
               </Link>
-              {event.accessible ? (
-                <span className="bg-primary text-primary-foreground px-3 py-1.5 font-sans text-xs font-semibold tracking-[0.16em] uppercase">
-                  {t("events.accessible")}
-                </span>
-              ) : null}
-              {archivedYear ? (
-                <span
-                  data-testid="edition-archive"
-                  className="border-ed-mute text-ed-bone border px-3 py-1.5 font-sans text-xs tracking-[0.16em] uppercase"
-                >
-                  {t("events.archivedEdition", { year: archivedYear })}
-                </span>
-              ) : null}
-            </div>
-            <h1 className="text-foreground font-display text-[clamp(2.25rem,6vw,5rem)] leading-[0.98] font-normal tracking-[-0.025em] break-words italic">
+            </li>
+            <li aria-hidden="true" className="text-primary/50">
+              ›
+            </li>
+            <li>
+              <Link
+                href="/evenements"
+                className="hover:text-primary inline-flex items-center transition-colors"
+              >
+                {t("nav.events")}
+              </Link>
+            </li>
+            <li aria-hidden="true" className="text-primary/50">
+              ›
+            </li>
+            <li aria-current="page" className="text-primary truncate">
               {event.title}
-            </h1>
-            <p className="text-ed-bone mt-4 font-serif text-xl font-light italic md:text-2xl">
-              {event.location} · {event.city}, {t(`departments.${event.department}`)}
-            </p>
-            <FavoriteButton
-              eventId={event.id}
-              title={event.title}
-              variant="labelled"
-              className="mt-6"
-            />
-          </div>
+            </li>
+          </ol>
+        </nav>
 
-          {/* Intentionally NOT sticky: a sticky aside next to a long main column
-              made test users think the two halves scrolled independently. */}
-          <aside aria-label={t("events.practicalInfo")}>
-            <EventInfo event={event} locale={locale} />
-          </aside>
-        </div>
-      </div>
+        {/* Hero image — credits must stay visible whenever a photo is shown */}
+        <figure className="relative h-[42vh] min-h-72 w-full overflow-hidden md:h-[55vh]">
+          <Image
+            src={hero.url}
+            alt={heroAlt}
+            fill
+            sizes="100vw"
+            priority
+            className="object-cover"
+          />
+          <div
+            className="from-ed-bg-deep/60 to-background absolute inset-0 bg-gradient-to-b via-transparent"
+            aria-hidden="true"
+          />
+          {hero.credit ? (
+            <figcaption className="bg-ed-bg-deep/70 text-ed-bone absolute right-3 bottom-3 px-2 py-0.5 font-sans text-xs backdrop-blur-sm">
+              © {hero.credit}
+            </figcaption>
+          ) : null}
+        </figure>
 
-      {/* Description + gallery + location */}
-      <div className="mx-auto max-w-7xl px-4 pb-16 md:px-6 md:pb-20">
-        <div className="grid gap-10 lg:grid-cols-[1fr_360px] lg:gap-16">
-          <div className="min-w-0">
-            <Marker as="h2" className="mb-5">
-              {t("events.description")}
-            </Marker>
-            {isHtmlDescription(event.description) ? (
-              // Edited in the admin rich-text editor: same rendering as pages and news.
-              <MarkdownContent content={htmlToMarkdown(event.description)} />
-            ) : (
-              <div className="text-ed-bone font-serif text-lg leading-relaxed font-light break-words md:text-xl">
-                {paragraphs.map((paragraph, i) => (
-                  <p key={i} className={i === 0 ? "ed-dropcap" : "mt-6"}>
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
-            )}
-
-            <HistoryLink url={event.historyUrl} />
-
-            {photos.length > 1 ? (
-              <div className="mt-10">
-                <PhotoCarousel photos={photos} alt={event.title} />
-              </div>
-            ) : null}
-
-            <FundraisingCallout
-              url={event.fundraisingUrl}
-              title={event.fundraisingTitle}
-              image={event.fundraisingImage}
-            />
-
-            <EventReviews slug={slug} locale={locale} summary={reviews} open={reviewsOpen} />
-          </div>
-
-          <aside aria-label={t("events.locationAndAround")} className="flex min-w-0 flex-col gap-6">
-            {hasNormandyCoordinates ? (
-              <section className="bg-ed-bg-deep border-primary/25 border p-6">
-                <h2 className="text-primary mb-4 font-mono text-xs tracking-[0.22em] uppercase">
-                  <span aria-hidden="true">¶</span> {t("events.location")}
-                </h2>
-                <EventMapWrapper
-                  latitude={event.latitude as number}
-                  longitude={event.longitude as number}
-                  title={event.title}
-                  locale={locale}
-                  suggestions={nearby.items}
-                  neighbours={neighbours}
-                  labels={{
-                    youAreHere: t("events.mapYouAreHere"),
-                    map: t("events.mapLabel", { title: event.title, count: nearby.items.length }),
-                  }}
-                />
-                <p className="text-ed-bone mt-4 font-serif text-base italic">
-                  {event.location}
-                  <br />
-                  <span className="text-ed-mute text-sm not-italic">
-                    {event.postalCode} {event.city}
+        {/* Title + practical info */}
+        <div className="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-14">
+          <div className="grid gap-10 lg:grid-cols-[1fr_360px] lg:gap-16">
+            <div>
+              <div className="mb-5 flex flex-wrap gap-2.5">
+                <Link
+                  href={`/evenements?category=${event.category.toLowerCase()}`}
+                  className="border-primary/50 text-primary hover:bg-primary/10 focus-visible:ring-primary/50 border px-3 py-1.5 font-sans text-xs tracking-[0.16em] uppercase transition-colors focus-visible:ring-2 focus-visible:outline-none"
+                >
+                  {t(`categories.${event.category}`)}
+                </Link>
+                {event.accessible ? (
+                  <span className="bg-primary text-primary-foreground px-3 py-1.5 font-sans text-xs font-semibold tracking-[0.16em] uppercase">
+                    {t("events.accessible")}
                   </span>
-                </p>
-                <NearbySuggestions items={nearby.items} sameDay={nearby.sameDay} locale={locale} />
-              </section>
-            ) : null}
-            <EventContact event={event} />
-            <EventCommunity event={event} />
-          </aside>
+                ) : null}
+                {archivedYear ? (
+                  <span
+                    data-testid="edition-archive"
+                    className="border-ed-mute text-ed-bone border px-3 py-1.5 font-sans text-xs tracking-[0.16em] uppercase"
+                  >
+                    {t("events.archivedEdition", { year: archivedYear })}
+                  </span>
+                ) : null}
+              </div>
+              <h1 className="text-foreground font-display text-[clamp(2.25rem,6vw,5rem)] leading-[0.98] font-normal tracking-[-0.025em] break-words italic">
+                {event.title}
+              </h1>
+              <p className="text-ed-bone mt-4 font-serif text-xl font-light italic md:text-2xl">
+                {event.location} · {event.city}, {t(`departments.${event.department}`)}
+              </p>
+              <FavoriteButton
+                eventId={event.id}
+                title={event.title}
+                variant="labelled"
+                className="mt-6"
+              />
+            </div>
+
+            {/* Intentionally NOT sticky: a sticky aside next to a long main column
+              made test users think the two halves scrolled independently. */}
+            <aside aria-label={t("events.practicalInfo")}>
+              <EventInfo event={event} locale={locale} />
+            </aside>
+          </div>
         </div>
-      </div>
-    </article>
+
+        {/* Description + gallery + location */}
+        <div className="mx-auto max-w-7xl px-4 pb-16 md:px-6 md:pb-20">
+          <div className="grid gap-10 lg:grid-cols-[1fr_360px] lg:gap-16">
+            <div className="min-w-0">
+              <Marker as="h2" className="mb-5">
+                {t("events.description")}
+              </Marker>
+              {isHtmlDescription(event.description) ? (
+                // Edited in the admin rich-text editor: same rendering as pages and news.
+                <MarkdownContent content={htmlToMarkdown(event.description)} />
+              ) : (
+                <div className="text-ed-bone font-serif text-lg leading-relaxed font-light break-words md:text-xl">
+                  {paragraphs.map((paragraph, i) => (
+                    <p key={i} className={i === 0 ? "ed-dropcap" : "mt-6"}>
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              )}
+
+              <HistoryLink url={event.historyUrl} />
+
+              {photos.length > 1 ? (
+                <div className="mt-10">
+                  <PhotoCarousel photos={photos} alt={event.title} />
+                </div>
+              ) : null}
+
+              <FundraisingCallout
+                url={event.fundraisingUrl}
+                title={event.fundraisingTitle}
+                image={event.fundraisingImage}
+              />
+
+              <PassPatrimoineCallout
+                url={event.passPatrimoineUrl}
+                enabled={passSettings.passEnabled}
+              />
+
+              <EventReviews slug={slug} locale={locale} summary={reviews} open={reviewsOpen} />
+            </div>
+
+            <aside
+              aria-label={t("events.locationAndAround")}
+              className="flex min-w-0 flex-col gap-6"
+            >
+              {hasNormandyCoordinates ? (
+                <section className="bg-ed-bg-deep border-primary/25 border p-6">
+                  <h2 className="text-primary mb-4 font-mono text-xs tracking-[0.22em] uppercase">
+                    <span aria-hidden="true">¶</span> {t("events.location")}
+                  </h2>
+                  <EventMapWrapper
+                    latitude={event.latitude as number}
+                    longitude={event.longitude as number}
+                    title={event.title}
+                    locale={locale}
+                    suggestions={nearby.items}
+                    neighbours={neighbours}
+                    labels={{
+                      youAreHere: t("events.mapYouAreHere"),
+                      map: t("events.mapLabel", { title: event.title, count: nearby.items.length }),
+                    }}
+                  />
+                  <p className="text-ed-bone mt-4 font-serif text-base italic">
+                    {event.location}
+                    <br />
+                    <span className="text-ed-mute text-sm not-italic">
+                      {event.postalCode} {event.city}
+                    </span>
+                  </p>
+                  <NearbySuggestions
+                    items={nearby.items}
+                    sameDay={nearby.sameDay}
+                    locale={locale}
+                  />
+                </section>
+              ) : null}
+              <EventContact event={event} />
+              <EventCommunity event={event} />
+            </aside>
+          </div>
+        </div>
+      </article>
+      <PassBanner page="event" settings={passSettings} locale={locale} />
+    </>
   )
 }
 
